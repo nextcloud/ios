@@ -247,7 +247,7 @@ extension BackgroundUploadExtension {
 
         await database.addMetadataAsync(metadata)
 
-        logDebug("Created pending metadata for \(fileName), account: \(account.account), asset: \(asset.localIdentifier)")
+        logInfo("Created pending metadata for \(fileName), account: \(account.account), asset: \(asset.localIdentifier)")
 
         return metadata
     }

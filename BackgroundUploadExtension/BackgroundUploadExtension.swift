@@ -43,7 +43,7 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
             return .failure
         }
 
-        logDebug("processJobs begin")
+        logInfo("processJobs begin")
 
         let account = await setupAccount()
         var processingStage = "cancelRequestedUploadJobs"
@@ -67,7 +67,7 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
 
             if let account {
                 if preferences.isBackgroundUploadSuspended(account: account.account) {
-                    logDebug("Background upload queue is suspended for account \(account.account)")
+                    logInfo("Background upload queue is suspended for account \(account.account)")
                 } else {
                     processingStage = "createUploadJobs(existing metadata)"
                     if try await createUploadJobs(account: account) {
@@ -91,7 +91,7 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
             let hasActiveJobs = hasActiveUploadJobs()
             let result: PHBackgroundResourceUploadProcessingResult = madeProgress || hasActiveJobs ? .processing : .completed
 
-            logDebug("processJobs end, madeProgress: \(madeProgress), hasActiveJobs: \(hasActiveJobs)")
+            logInfo("processJobs end, madeProgress: \(madeProgress), hasActiveJobs: \(hasActiveJobs)")
             return result
         } catch let error as NSError where error.domain == PHPhotosErrorDomain && error.code == PHPhotosError.limitExceeded.rawValue {
             logInfo("Job limit reached during \(processingStage)")
@@ -106,13 +106,7 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
     /// Receives the PhotoKit notification that the extension process is about to terminate.
     /// It currently records the lifecycle event without interrupting an active processing pass.
     func willTerminate() async {
-        logDebug("BackgroundUploadExtension will terminate")
-    }
-
-    /// Writes diagnostic information to the extension's unified logging category.
-    /// Notice level keeps experimental extension diagnostics visible in Console.app.
-    func logDebug(_ message: String) {
-        logger.notice("\(message, privacy: .public)")
+        logInfo("BackgroundUploadExtension will terminate")
     }
 
     /// Writes an informational message and optionally adds it to the persistent Nextcloud log.
@@ -120,9 +114,9 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
     func logInfo(_ message: String, persist: Bool = false) {
         logger.notice("\(message, privacy: .public)")
 
-        if persist {
+       // if persist {
             nkLog(tag: global.logTagBackgroundUpload, emoji: .info, message: message)
-        }
+       // }
     }
 
     /// Writes an error to unified logging and to the persistent Nextcloud log.

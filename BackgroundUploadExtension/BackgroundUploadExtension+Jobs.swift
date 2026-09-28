@@ -13,7 +13,7 @@ extension BackgroundUploadExtension {
         let availableJobs = availableUploadJobSlots()
 
         guard availableJobs > 0 else {
-            logDebug("No available background upload job slots")
+            logInfo("No available background upload job slots")
             return false
         }
 
@@ -206,7 +206,7 @@ extension BackgroundUploadExtension {
             }
 
             guard !metadata.backgroundUploadCancellationRequested else {
-                logDebug("Skipping retry for cancellation-requested job \(jobIdentifier)")
+                logInfo("Skipping retry for cancellation-requested job \(jobIdentifier)")
                 continue
             }
 
@@ -335,7 +335,7 @@ extension BackgroundUploadExtension {
             }
 
             guard !metadata.backgroundUploadCancellationRequested else {
-                logDebug("Skipping normal acknowledgement for cancellation-requested job \(jobIdentifier)")
+                logInfo("Skipping normal acknowledgement for cancellation-requested job \(jobIdentifier)")
                 continue
             }
 
@@ -409,7 +409,7 @@ extension BackgroundUploadExtension {
 
             madeProgress = true
 
-            logDebug("Acknowledged job \(jobIdentifier), state: \(job.state.rawValue)")
+            logInfo("Acknowledged job \(jobIdentifier), state: \(job.state.rawValue)")
         }
 
         return madeProgress

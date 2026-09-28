@@ -48,7 +48,7 @@ extension BackgroundUploadExtension {
             request.setValue("\(modificationDate.timeIntervalSince1970)", forHTTPHeaderField: "X-OC-MTime")
         }
 
-        logDebug("Destination created for \(metadata.fileName) -> \(metadata.serverUrlFileName)")
+        logInfo("Destination created for \(metadata.fileName) -> \(metadata.serverUrlFileName)")
 
         return request
     }

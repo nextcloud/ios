@@ -11,17 +11,17 @@ extension BackgroundUploadExtension {
     /// Configures the account's NextcloudKit session and returns `nil` when processing must be skipped.
     func setupAccount() async -> tableAccount? {
         guard PHPhotoLibrary.authorizationStatus(for: .readWrite) == .authorized else {
-            logDebug("Background upload account setup skipped: Photos authorization is not granted")
+            logInfo("Background upload account setup skipped: Photos authorization is not granted")
             return nil
         }
 
         guard NCPreferences().shouldUseBackgroundUploadExtension else {
-            logDebug("Background upload account setup skipped: feature is disabled")
+            logInfo("Background upload account setup skipped: feature is disabled")
             return nil
         }
 
         guard let account = await database.getTableAccountAsync(predicate: NSPredicate(format: "autoUploadStart == true")) else {
-            logDebug("Background upload account setup skipped: no Auto Upload account")
+            logInfo("Background upload account setup skipped: no Auto Upload account")
             return nil
         }
 
