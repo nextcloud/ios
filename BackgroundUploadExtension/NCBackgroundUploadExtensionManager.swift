@@ -24,11 +24,7 @@ final class NCBackgroundUploadExtensionManager {
             return false
         }
 
-        guard !NCPreferences().formatCompatibility else {
-            return false
-        }
-
-        guard NCBrandOptions.shared.enable_background_upload_extension else {
+        guard NCPreferences().shouldUseBackgroundUploadExtension else {
             return false
         }
 
@@ -38,8 +34,8 @@ final class NCBackgroundUploadExtensionManager {
 
         let capabilities = await NKCapabilities.shared.getCapabilities(for: account.account)
 
-        guard NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v33) else {
-            nkLog(tag: global.logTagBackgroundUpload, message: "Background upload extension unavailable for account \(account.account): server version is lower than 33")
+        guard NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v35) else {
+            nkLog(tag: global.logTagBackgroundUpload, message: "Background upload extension unavailable for account \(account.account): server version is lower than 35")
             return false
         }
 
@@ -49,7 +45,7 @@ final class NCBackgroundUploadExtensionManager {
     /// Enables the PhotoKit upload extension when eligible and refreshes its network options if active.
     /// Returns the resulting PhotoKit enabled state, or `false` when eligibility or configuration fails.
     func ensureEnabled() async -> Bool {
-        guard NCBrandOptions.shared.enable_background_upload_extension else {
+        guard NCPreferences().shouldUseBackgroundUploadExtension else {
             _ = await disableIfIdle()
             return false
         }
@@ -80,7 +76,7 @@ final class NCBackgroundUploadExtensionManager {
     /// Disables the PhotoKit extension after the feature or auto upload is turned off and no jobs remain.
     /// Active metadata defers disabling so cancellations and terminal results can still be reconciled.
     func disableIfIdle() async -> Bool {
-        let featureEnabled = NCBrandOptions.shared.enable_background_upload_extension
+        let featureEnabled = NCPreferences().shouldUseBackgroundUploadExtension
         let account = await database.getTableAccountAsync(predicate: NSPredicate(format: "autoUploadStart == true"))
 
         guard !featureEnabled || account == nil else {

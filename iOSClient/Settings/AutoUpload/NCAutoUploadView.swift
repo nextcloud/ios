@@ -457,6 +457,41 @@ struct NCAutoUploadView: View {
                 model.autoUploadStart || isAutoUploadUnavailable
             )
             .opacity(isAutoUploadUnavailable ? 0.5 : 1)
+
+            if #available(iOS 27, *),
+               NCPreferences.canConfigureBackgroundUploadExtension,
+               let capabilities = NCNetworking.shared.capabilities[model.session.account],
+               NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v35) {
+                Section(content: {
+                    Toggle(isOn: $model.backgroundUploadExtensionEnabled) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .font(.icon())
+                                .foregroundStyle(.orange)
+                                .frame(width: 26)
+
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(NSLocalizedString("_background_upload_extension_", comment: ""))
+                                    .font(.body)
+
+                                Text("TEST")
+                                    .font(.caption2.bold())
+                                    .foregroundStyle(.orange)
+                            }
+                        }
+                    }
+                    .font(.body)
+                    .tint(.orange)
+                    .onChange(of: model.backgroundUploadExtensionEnabled) { _, newValue in
+                        model.handleBackgroundUploadExtensionChange(newValue: newValue)
+                    }
+                    .disabled(model.autoUploadStart || isAutoUploadUnavailable)
+                    .opacity(model.autoUploadStart || isAutoUploadUnavailable ? 0.5 : 1)
+                }, footer: {
+                    Text(NSLocalizedString("_background_upload_extension_footer_", comment: ""))
+                        .font(.footnote)
+                })
+            }
         }
         .safeAreaInset(edge: .bottom) {
             autoUploadStartButton

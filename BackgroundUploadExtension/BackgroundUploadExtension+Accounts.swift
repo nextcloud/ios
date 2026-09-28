@@ -15,12 +15,7 @@ extension BackgroundUploadExtension {
             return nil
         }
 
-        guard !NCPreferences().formatCompatibility else {
-            logDebug("Background upload account setup skipped: compatibility format is enabled")
-            return nil
-        }
-
-        guard NCBrandOptions.shared.enable_background_upload_extension else {
+        guard NCPreferences().shouldUseBackgroundUploadExtension else {
             logDebug("Background upload account setup skipped: feature is disabled")
             return nil
         }
@@ -50,9 +45,9 @@ extension BackgroundUploadExtension {
 
         guard NCBrandOptions.shared.isServerVersion(
             capabilities,
-            greaterOrEqualTo: .v33
+            greaterOrEqualTo: .v35
         ) else {
-            logInfo("Background upload extension stopped because account \(account.account) uses a server lower than version 33", persist: true)
+            logInfo("Background upload extension stopped because account \(account.account) uses a server lower than version 35", persist: true)
             return nil
         }
 

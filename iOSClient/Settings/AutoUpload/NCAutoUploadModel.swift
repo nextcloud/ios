@@ -39,6 +39,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     @Published var photosPermissionsGranted = true
     /// Whether `Always` location authorization has been granted, enabling background location-based auto upload.
     @Published var locationAutoUploadPermissionGranted: Bool = false
+    /// Whether the experimental PhotoKit background upload extension is enabled.
+    @Published var backgroundUploadExtensionEnabled: Bool = false
 
     /// Whether the error alert should be shown in the view.
     @Published var showErrorAlert: Bool = false
@@ -85,6 +87,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         }
 
         serverUrl = NCUtilityFileSystem().getHomeServer(session: session)
+        backgroundUploadExtensionEnabled = NCPreferences().backgroundUploadExtensionEnabled
 
         requestAuthorization()
 
@@ -150,6 +153,24 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
             if #available(iOS 27, *) {
                 _ = await NCBackgroundUploadExtensionManager.shared.ensureEnabled()
+            }
+        }
+    }
+
+    /// Stores the experimental extension opt-in and applies the new PhotoKit state immediately.
+    /// Enabling still requires Auto Upload, full Photos access, and a supported server.
+    func handleBackgroundUploadExtensionChange(newValue: Bool) {
+        NCPreferences().backgroundUploadExtensionEnabled = newValue
+
+        guard #available(iOS 27, *) else {
+            return
+        }
+
+        Task {
+            if newValue {
+                _ = await NCBackgroundUploadExtensionManager.shared.ensureEnabled()
+            } else {
+                _ = await NCBackgroundUploadExtensionManager.shared.disableIfIdle()
             }
         }
     }

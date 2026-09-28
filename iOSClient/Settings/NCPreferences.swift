@@ -697,6 +697,40 @@ final class NCPreferences: NSObject {
 
     // MARK: - Background Upload Extension
 
+    /// Reports whether this installation may expose the experimental background upload setting.
+    /// Debug builds are always eligible; release builds are eligible only with a TestFlight receipt.
+    static var canConfigureBackgroundUploadExtension: Bool {
+#if DEBUG
+        return true
+#else
+        let bundles = [
+            Bundle.main,
+            Bundle(url: Bundle.main.bundleURL.deletingLastPathComponent().deletingLastPathComponent())
+        ]
+
+        return bundles.contains {
+            $0?.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt"
+        }
+#endif
+    }
+
+    /// Stores the user's opt-in for the experimental PhotoKit background upload extension.
+    /// The default is `false` and the value is shared with the extension through the App Group.
+    var backgroundUploadExtensionEnabled: Bool {
+        get {
+            getBoolPreference(key: "backgroundUploadExtensionEnabled", defaultValue: false)
+        }
+        set {
+            setUserDefaults(newValue, forKey: "backgroundUploadExtensionEnabled")
+        }
+    }
+
+    /// Returns the effective feature state after applying Debug or TestFlight eligibility.
+    /// This prevents a stored TestFlight opt-in from carrying over to an App Store installation.
+    var shouldUseBackgroundUploadExtension: Bool {
+        Self.canConfigureBackgroundUploadExtension && backgroundUploadExtensionEnabled
+    }
+
     /// Reports whether automatic background uploads are suspended for the account.
     /// The value is shared between the host app and its background upload extension.
     func isBackgroundUploadSuspended(account: String) -> Bool {
