@@ -81,7 +81,9 @@ extension NCManageDatabase {
 
         await core.performRealmWriteAsync { realm in
             if let result = realm.object(ofType: tableLivePhoto.self, forPrimaryKey: primaryKey) {
-                result.errorCount = result.errorCount + 1
+                if result.errorCount < Int.max {
+                    result.errorCount += 1
+                }
             }
         }
     }
@@ -101,6 +103,33 @@ extension NCManageDatabase {
                 }
             return results.map { tableLivePhoto(value: $0) } // detached copy
         }
+    }
+
+    /// Returns a bounded batch of complete Live Photo pairs, prioritizing those with fewer failures.
+    /// This prevents repeatedly failing records from starving untried pairs in later batches.
+    func getLivePhotos(account: String, limit: Int) async -> [tableLivePhoto] {
+        guard limit > 0 else {
+            return []
+        }
+
+        let results: [tableLivePhoto]? = await core.performRealmReadAsync { realm in
+            let livePhotos = realm.objects(tableLivePhoto.self)
+                .where {
+                    $0.account == account &&
+                    $0.serverUrlFileNameImage != "" &&
+                    $0.serverUrlFileNameVideo != "" &&
+                    $0.fileIdImage != "" &&
+                    $0.fileIdVideo != ""
+                }
+                .sorted(by: [
+                    SortDescriptor(keyPath: "errorCount", ascending: true),
+                    SortDescriptor(keyPath: "primaryKey", ascending: true)
+                ])
+                .prefix(limit)
+
+            return livePhotos.map { tableLivePhoto(value: $0) } // detached copy
+        }
+        return results ?? []
     }
 
     func getLivePhotoAccounts() async -> [String] {

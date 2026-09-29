@@ -56,6 +56,7 @@ final class NCBackgroundUploadExtensionManager {
 
         let library = PHPhotoLibrary.shared()
         let options = PHAssetResourceUploadJobOptions()
+        // Per-request settings still enforce Wi-Fi-only uploads where configured by the account.
         options.preventsExpensiveNetworkAccess = false
 
         do {

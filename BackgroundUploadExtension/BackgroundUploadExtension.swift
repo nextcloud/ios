@@ -55,35 +55,49 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
         do {
             var madeProgress = false
 
+            // Remove jobs cancelled by the user and clean up PhotoKit jobs no longer backed by metadata.
             if try await cancelRequestedUploadJobs() {
                 madeProgress = true
             }
 
+            // Retry failed PhotoKit jobs while respecting per-file limits and the account circuit breaker.
             processingStage = "retryUploadJobs"
             if try await retryUploadJobs() {
                 madeProgress = true
             }
 
+            // Persist terminal upload results before acknowledging them and releasing PhotoKit capacity.
             processingStage = "acknowledgeUploadJobs"
             if try await acknowledgeUploadJobs() {
                 madeProgress = true
             }
 
             if let account {
+                // Link completed Live Photo pairs unless a previous failure suspended the account queue.
+                if !preferences.isBackgroundUploadSuspended(account: account.account) {
+                    processingStage = "processPendingLivePhotos"
+                    if await processPendingLivePhotos(account: account.account) {
+                        madeProgress = true
+                    }
+                }
+
                 if preferences.isBackgroundUploadSuspended(account: account.account) {
                     logInfo("Background upload queue is suspended for account \(account.account)")
                 } else {
+                    // Register metadata already waiting in Realm before discovering more Photos assets.
                     processingStage = "createUploadJobs(existing metadata)"
                     if try await createUploadJobs(account: account) {
                         madeProgress = true
                     }
 
+                    // Fill only the remaining PhotoKit slots so discovery stays bounded for large libraries.
                     let availableJobs = availableUploadJobSlots()
 
                     if availableJobs > 0,
                        await createPendingMetadatas(account: account, limit: availableJobs) {
                         madeProgress = true
 
+                        // Convert the metadata just discovered into executable PhotoKit upload jobs.
                         processingStage = "createUploadJobs(new metadata)"
                         if try await createUploadJobs(account: account) {
                             madeProgress = true
@@ -92,6 +106,7 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
                 }
             }
 
+            // Keep the extension scheduled while this pass progressed or PhotoKit still owns active jobs.
             let hasActiveJobs = hasActiveUploadJobs()
             let result: PHBackgroundResourceUploadProcessingResult = madeProgress || hasActiveJobs ? .processing : .completed
 

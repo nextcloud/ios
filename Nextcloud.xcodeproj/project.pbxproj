@@ -765,6 +765,7 @@
 		F793E7C83041802600F011FE /* BackgroundUploadExtension+Jobs.swift in Sources */ = {isa = PBXBuildFile; fileRef = F793E7C73041802400F011FE /* BackgroundUploadExtension+Jobs.swift */; };
 		F793E7CA3041803C00F011FE /* BackgroundUploadExtension+Destination.swift in Sources */ = {isa = PBXBuildFile; fileRef = F793E7C93041803B00F011FE /* BackgroundUploadExtension+Destination.swift */; };
 		F793E7CC3041804C00F011FE /* BackgroundUploadExtension+Results.swift in Sources */ = {isa = PBXBuildFile; fileRef = F793E7CB3041804B00F011FE /* BackgroundUploadExtension+Results.swift */; };
+		F75E197530484B77008ACFDC /* BackgroundUploadExtension+LivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75E197430484B77008ACFDC /* BackgroundUploadExtension+LivePhoto.swift */; };
 		F793E7CD30418A4E00F011FE /* NCManageDatabase+AutoUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D7A76B2DCDD437003D2007 /* NCManageDatabase+AutoUpload.swift */; };
 		F793E7CF304190AD00F011FE /* BackgroundUploadExtension+Discovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = F793E7CE304190AC00F011FE /* BackgroundUploadExtension+Discovery.swift */; };
 		F793E7DB304575AB00F011FE /* NCManageDatabase+Capabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F763D29C2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift */; };
@@ -1832,6 +1833,7 @@
 		F793E7C73041802400F011FE /* BackgroundUploadExtension+Jobs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackgroundUploadExtension+Jobs.swift"; sourceTree = "<group>"; };
 		F793E7C93041803B00F011FE /* BackgroundUploadExtension+Destination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackgroundUploadExtension+Destination.swift"; sourceTree = "<group>"; };
 		F793E7CB3041804B00F011FE /* BackgroundUploadExtension+Results.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackgroundUploadExtension+Results.swift"; sourceTree = "<group>"; };
+		F75E197430484B77008ACFDC /* BackgroundUploadExtension+LivePhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackgroundUploadExtension+LivePhoto.swift"; sourceTree = "<group>"; };
 		F793E7CE304190AC00F011FE /* BackgroundUploadExtension+Discovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackgroundUploadExtension+Discovery.swift"; sourceTree = "<group>"; };
 		F7948DE62FBAE52F00253D1C /* NCVideoAVPlayerPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoAVPlayerPresenter.swift; sourceTree = "<group>"; };
 		F7948DE82FBAEC5300253D1C /* NCVideoAVPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoAVPlayerViewController.swift; sourceTree = "<group>"; };
@@ -3276,6 +3278,7 @@
 				F793E7C93041803B00F011FE /* BackgroundUploadExtension+Destination.swift */,
 				F793E7CE304190AC00F011FE /* BackgroundUploadExtension+Discovery.swift */,
 				F793E7C73041802400F011FE /* BackgroundUploadExtension+Jobs.swift */,
+				F75E197430484B77008ACFDC /* BackgroundUploadExtension+LivePhoto.swift */,
 				F793E7CB3041804B00F011FE /* BackgroundUploadExtension+Results.swift */,
 				F793E7C230417C7100F011FE /* NCBackgroundUploadExtensionManager.swift */,
 				F793E7AA3041611600F011FE /* NCManageDatabase.swift */,
@@ -5647,6 +5650,7 @@
 				F793E7AC3041614D00F011FE /* NCBrand.swift in Sources */,
 				F793E7C1304170F200F011FE /* NCUtility.swift in Sources */,
 				F793E7CC3041804C00F011FE /* BackgroundUploadExtension+Results.swift in Sources */,
+				F75E197530484B77008ACFDC /* BackgroundUploadExtension+LivePhoto.swift in Sources */,
 				F793E7AF3041619800F011FE /* UIColor+Extension.swift in Sources */,
 				F793E7CF304190AD00F011FE /* BackgroundUploadExtension+Discovery.swift in Sources */,
 				F793E7CA3041803C00F011FE /* BackgroundUploadExtension+Destination.swift in Sources */,
@@ -6703,7 +6707,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
@@ -6771,7 +6775,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
