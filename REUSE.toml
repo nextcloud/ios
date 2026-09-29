@@ -41,6 +41,12 @@ precedence = "aggregate"
 SPDX-FileCopyrightText = "2017-2023 Nextcloud GmbH and Nextcloud contributors"
 SPDX-License-Identifier = "GPL-3.0-or-later"
 
+[[annotations]]
+path = ["BackgroundUploadExtension/diagram.png"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Nextcloud GmbH and Marino Faggiana"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
 # Translations are managed on Transifex; headers here would be overwritten on sync.
 [[annotations]]
 path = ["iOSClient/Supporting Files/*.lproj/*.strings", "iOSClient/Supporting Files/*.lproj/*.stringsdict", "Widget/Intent/*.lproj/*.strings"]
