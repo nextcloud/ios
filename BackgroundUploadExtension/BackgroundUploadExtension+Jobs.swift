@@ -79,13 +79,10 @@ extension BackgroundUploadExtension {
                 continue
             }
 
-            metadata.backgroundUploadJobIdentifier = jobIdentifier
-            metadata.status = global.metadataStatusUploading
-            metadata.sessionDate = Date()
-            metadata.sessionError = ""
-            metadata.errorCode = 0
-
-            await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+            await persistMetadataState(
+                .uploading(jobIdentifier: jobIdentifier, incrementRetryCount: false),
+                metadata: metadata
+            )
 
             madeProgress = true
 
@@ -222,7 +219,7 @@ extension BackgroundUploadExtension {
 
                 // Close local tracking before acknowledging PhotoKit. If the extension stops between
                 // these operations, the remaining terminal job is safely acknowledged as an orphan.
-                await clearCompletedJobTracking(metadata: metadata)
+                await persistMetadataState(.completed, metadata: metadata)
 
                 // Acknowledgement is the final confirmation to PhotoKit: it removes the completed job
                 // from the system queue and prevents PhotoKit from uploading the same resource again.
@@ -259,9 +256,7 @@ extension BackgroundUploadExtension {
                 }
 
                 // Keep the failed transfer available for an explicit retry from the host app.
-                metadata.backgroundUploadJobIdentifier = "pending"
-                metadata.backgroundUploadNextRetryDate = nil
-                await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+                await persistMetadataState(.manualRetryRequired, metadata: metadata)
 
                 madeProgress = true
                 if authenticationRequired {
@@ -310,17 +305,10 @@ extension BackgroundUploadExtension {
             }
 
             // PhotoKit is about to perform the next upload attempt for the same job.
-            if metadata.backgroundUploadRetryCount < Int.max {
-                metadata.backgroundUploadRetryCount += 1
-            }
-
-            metadata.backgroundUploadNextRetryDate = nil
-            metadata.sessionDate = Date()
-            metadata.sessionError = ""
-            metadata.errorCode = 0
-            metadata.status = global.metadataStatusUploading
-
-            await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+            await persistMetadataState(
+                .uploading(jobIdentifier: jobIdentifier, incrementRetryCount: true),
+                metadata: metadata
+            )
 
             madeProgress = true
 
@@ -407,7 +395,7 @@ extension BackgroundUploadExtension {
             if uploadSucceeded {
                 // Persist the closed local state first. If acknowledgement is interrupted, the
                 // remaining PhotoKit job is harmless and will be cleaned up as an orphan next time.
-                await clearCompletedJobTracking(metadata: metadata)
+                await persistMetadataState(.completed, metadata: metadata)
             }
 
             // The terminal result is now stored locally; acknowledge it to release PhotoKit's job slot.
@@ -418,24 +406,12 @@ extension BackgroundUploadExtension {
 
             if !uploadSucceeded && createNewJob {
                 // A PhotoKit job can be retried only once; create a fresh job for the remaining attempt.
-                if metadata.backgroundUploadRetryCount < Int.max {
-                    metadata.backgroundUploadRetryCount += 1
-                }
-
-                metadata.backgroundUploadJobIdentifier = "pending"
-                metadata.backgroundUploadNextRetryDate = nil
-                metadata.sessionTaskIdentifier = 0
-                metadata.sessionDate = Date()
-                metadata.status = global.metadataStatusWaitUpload
-
-                await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+                await persistMetadataState(.pendingRetry, metadata: metadata)
 
                 logInfo("Prepared new background upload job for \(metadata.fileName), retry: \(metadata.backgroundUploadRetryCount)")
             } else if !uploadSucceeded {
                 // `uploadError` prevents automatic scheduling while `pending` enables manual retry.
-                metadata.backgroundUploadJobIdentifier = "pending"
-                metadata.backgroundUploadNextRetryDate = nil
-                await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+                await persistMetadataState(.manualRetryRequired, metadata: metadata)
 
                 logInfo("Background upload requires a manual retry for \(metadata.fileName)")
             }
@@ -446,15 +422,6 @@ extension BackgroundUploadExtension {
         }
 
         return madeProgress
-    }
-
-    /// Removes the PhotoKit identifier and retry state after the server result is stored successfully.
-    /// Persisting this before acknowledgement makes interruption recovery idempotent.
-    private func clearCompletedJobTracking(metadata: tableMetadata) async {
-        metadata.backgroundUploadJobIdentifier = ""
-        metadata.backgroundUploadRetryCount = 0
-        metadata.backgroundUploadNextRetryDate = nil
-        await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
     }
 
     /// Resolves a job through its stored identifier or reconnects it to metadata left pending by an interruption.
@@ -489,12 +456,10 @@ extension BackgroundUploadExtension {
         }
 
         // PhotoKit committed the job before the previous process could store its identifier in Realm.
-        metadata.backgroundUploadJobIdentifier = job.localIdentifier
-        metadata.status = global.metadataStatusUploading
-        metadata.sessionDate = Date()
-        metadata.sessionError = ""
-        metadata.errorCode = 0
-        await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+        await persistMetadataState(
+            .uploading(jobIdentifier: job.localIdentifier, incrementRetryCount: false),
+            metadata: metadata
+        )
 
         logInfo(
             "Recovered background upload job \(job.localIdentifier), file: \(metadata.fileName), " +

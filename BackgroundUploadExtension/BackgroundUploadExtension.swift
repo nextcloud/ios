@@ -9,6 +9,14 @@ import OSLog
 
 @main
 final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
+    enum MetadataState: Sendable {
+        case uploading(jobIdentifier: String, incrementRetryCount: Bool)
+        case pendingRetry
+        case manualRetryRequired
+        case failed(message: String, errorCode: Int)
+        case completed
+    }
+
     let global = NCGlobal.shared
     let database = NCManageDatabase.shared
     let utilityFileSystem = NCUtilityFileSystem()

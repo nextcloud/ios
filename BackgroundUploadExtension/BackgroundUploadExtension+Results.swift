@@ -113,16 +113,14 @@ extension BackgroundUploadExtension {
     func updateMetadataForUploadFailure(metadata: tableMetadata, job: PHAssetResourceUploadJob) async {
         let error = job.error.map { $0 as NSError }
         let authenticationRequired = isAuthenticationFailure(job: job)
-
-        metadata.sessionTaskIdentifier = 0
-        metadata.sessionDate = Date()
-        metadata.sessionError = authenticationRequired
+        let message = authenticationRequired
             ? "Authentication required for account \(metadata.user)"
             : error?.localizedDescription ?? "Background upload failed"
-        metadata.errorCode = authenticationRequired ? NSURLErrorUserAuthenticationRequired : error?.code ?? NSURLErrorUnknown
-        metadata.status = global.metadataStatusUploadError
+        let errorCode = authenticationRequired
+            ? NSURLErrorUserAuthenticationRequired
+            : error?.code ?? NSURLErrorUnknown
 
-        await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+        await persistMetadataState(.failed(message: message, errorCode: errorCode), metadata: metadata)
 
         logError("Background upload failed for \(metadata.fileName), account: \(metadata.account), job: \(job.localIdentifier), error: \(metadata.errorCode) \(metadata.sessionError)")
     }
@@ -135,14 +133,10 @@ extension BackgroundUploadExtension {
         guard let ocId = headers["oc-fileid"], !ocId.isEmpty else {
             // A successful response without Nextcloud metadata is a server-level compatibility error.
             preferences.setBackgroundUploadSuspended(true, account: metadata.account)
-            metadata.session = ""
-            metadata.sessionTaskIdentifier = 0
-            metadata.sessionDate = Date()
-            metadata.sessionError = "Upload response missing oc-fileid"
-            metadata.errorCode = NSURLErrorBadServerResponse
-            metadata.status = global.metadataStatusUploadError
-
-            await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+            await persistMetadataState(
+                .failed(message: "Upload response missing oc-fileid", errorCode: NSURLErrorBadServerResponse),
+                metadata: metadata
+            )
 
             logError("Successful job without oc-fileid: \(job.localIdentifier)")
 
@@ -182,14 +176,6 @@ extension BackgroundUploadExtension {
            metadata.permissions = permissions
        }
 
-        metadata.chunk = 0
-        metadata.sceneIdentifier = nil
-        metadata.session = ""
-        metadata.sessionError = ""
-        metadata.sessionDate = nil
-        metadata.sessionTaskIdentifier = 0
-        metadata.status = NCGlobal.shared.metadataStatusNormal
-
         if metadata.sessionSelector == global.selectorUploadAutoUpload,
            let serverUrlBase = metadata.autoUploadServerUrlBase {
             await database.addAutoUploadTransferAsync(
@@ -217,5 +203,59 @@ extension BackgroundUploadExtension {
         logInfo("Completed background upload for \(metadata.fileName), job: \(job.localIdentifier), ocId: \(ocId)")
 
         return true
+    }
+
+    /// Applies a complete background-upload state transition and persists it in Realm.
+    /// Keeping related fields together prevents partially configured metadata between processing stages.
+    func persistMetadataState(_ state: MetadataState, metadata: tableMetadata) async {
+        switch state {
+        case let .uploading(jobIdentifier, incrementRetryCount):
+            if incrementRetryCount, metadata.backgroundUploadRetryCount < Int.max {
+                metadata.backgroundUploadRetryCount += 1
+            }
+
+            metadata.backgroundUploadJobIdentifier = jobIdentifier
+            metadata.backgroundUploadNextRetryDate = nil
+            metadata.sessionDate = Date()
+            metadata.sessionError = ""
+            metadata.errorCode = 0
+            metadata.status = global.metadataStatusUploading
+
+        case .pendingRetry:
+            if metadata.backgroundUploadRetryCount < Int.max {
+                metadata.backgroundUploadRetryCount += 1
+            }
+
+            metadata.backgroundUploadJobIdentifier = "pending"
+            metadata.backgroundUploadNextRetryDate = nil
+            metadata.sessionTaskIdentifier = 0
+            metadata.sessionDate = Date()
+            metadata.status = global.metadataStatusWaitUpload
+
+        case .manualRetryRequired:
+            metadata.backgroundUploadJobIdentifier = "pending"
+            metadata.backgroundUploadNextRetryDate = nil
+
+        case let .failed(message, errorCode):
+            metadata.sessionTaskIdentifier = 0
+            metadata.sessionDate = Date()
+            metadata.sessionError = message
+            metadata.errorCode = errorCode
+            metadata.status = global.metadataStatusUploadError
+
+        case .completed:
+            metadata.chunk = 0
+            metadata.sceneIdentifier = nil
+            metadata.session = ""
+            metadata.sessionError = ""
+            metadata.sessionDate = nil
+            metadata.sessionTaskIdentifier = 0
+            metadata.status = global.metadataStatusNormal
+            metadata.backgroundUploadJobIdentifier = ""
+            metadata.backgroundUploadRetryCount = 0
+            metadata.backgroundUploadNextRetryDate = nil
+        }
+
+        await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
     }
 }
