@@ -68,6 +68,7 @@ extension BackgroundUploadExtension {
 
             var jobIdentifier: String?
 
+            // PhotoKit job creation must happen inside its library change transaction.
             try library.performChangesAndWait {
                 let request = PHAssetResourceUploadJobChangeRequest.creationRequestForJob(destination: destination, resource: resource)
                 jobIdentifier = request.placeholderForCreatedAssetResourceUploadJob?.localIdentifier
@@ -378,6 +379,7 @@ extension BackgroundUploadExtension {
             }
 
             if uploadSucceeded {
+                // An empty identifier marks metadata that no longer belongs to an active PhotoKit job.
                 metadata.backgroundUploadJobIdentifier = ""
                 metadata.backgroundUploadRetryCount = 0
                 metadata.backgroundUploadNextRetryDate = nil

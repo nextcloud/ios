@@ -78,6 +78,7 @@ extension BackgroundUploadExtension {
 
             let isLivePhoto = asset.mediaSubtypes.contains(.photoLive) && livePhotoEnabled
 
+            // A Live Photo may still be missing one component, so evaluate its two resources separately.
             guard isLivePhoto || !skipAssetLocalIdentifiers.contains(asset.localIdentifier) else {
                 continue
             }
@@ -119,6 +120,7 @@ extension BackgroundUploadExtension {
                 !trackedMetadataFileNames.contains($0.fileName) && !transferredFileNames.contains($0.fileName)
             }
 
+            // Do not split a newly discovered Live Photo pair across two discovery passes.
             guard resourcesToUpload.count <= remaining else {
                 break
             }
@@ -144,6 +146,7 @@ extension BackgroundUploadExtension {
         }
 
         if let lastQueuedDate {
+            // Advance only after metadata is stored, so an interrupted pass can rediscover unqueued assets.
             await database.updateAccountPropertyAsync(\.autoUploadSinceDate, value: lastQueuedDate, account: account.account)
         }
 

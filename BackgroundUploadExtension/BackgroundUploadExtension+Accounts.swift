@@ -25,6 +25,7 @@ extension BackgroundUploadExtension {
             return nil
         }
 
+        // The extension runs in its own process, so rebuild the in-memory session from shared account data.
         NextcloudKit.shared.appendSession(
             account: account.account,
             urlBase: account.urlBase,
