@@ -118,11 +118,20 @@ extension NCManageDatabase {
     /// This bounded set is fetched once per discovery pass instead of once for every candidate.
     func fetchActiveAutoUploadFileNamesAsync(account: String, autoUploadServerUrlBase: String) async -> Set<String> {
         let result: Set<String>? = await core.performRealmReadAsync { realm in
-            let fileNames = realm.objects(tableMetadata.self)
+            let metadatas = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND autoUploadServerUrlBase == %@ AND status IN %@", account, autoUploadServerUrlBase, NCGlobal.shared.metadataStatusUploadingAllMode)
-                .map(\.fileNameView)
+            var fileNames = Set(metadatas.map(\.fileNameView))
 
-            return Set(fileNames)
+            // A deferred Live Photo uses one seed metadata; reserve its paired filename until
+            // NCCameraRoll extracts both resources in the host app.
+            for metadata in metadatas where metadata.chunk > 0 &&
+                !metadata.isExtractFile &&
+                metadata.backgroundUploadJobIdentifier.isEmpty &&
+                !metadata.livePhotoFile.isEmpty {
+                fileNames.insert(metadata.livePhotoFile)
+            }
+
+            return fileNames
         }
 
         return result ?? []
