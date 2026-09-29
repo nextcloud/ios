@@ -9,6 +9,14 @@ import OSLog
 
 @main
 final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
+    enum MetadataState: Sendable {
+        case uploading(jobIdentifier: String, incrementRetryCount: Bool)
+        case pendingRetry
+        case manualRetryRequired
+        case failed(message: String, errorCode: Int)
+        case completed
+    }
+
     let global = NCGlobal.shared
     let database = NCManageDatabase.shared
     let utilityFileSystem = NCUtilityFileSystem()
@@ -60,9 +68,9 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
                 madeProgress = true
             }
 
-            // Retry failed PhotoKit jobs while respecting per-file limits and the account circuit breaker.
-            processingStage = "retryUploadJobs"
-            if try await retryUploadJobs() {
+            // Inspect jobs offered for retry; confirmed uploads are acknowledged without uploading again.
+            processingStage = "processRetryableUploadJobs"
+            if try await processRetryableUploadJobs() {
                 madeProgress = true
             }
 

@@ -995,6 +995,20 @@ extension NCManageDatabase {
         }
     }
 
+    /// Returns metadata stored before PhotoKit supplied its persistent job identifier.
+    /// The caller must still match the destination because a Live Photo has two resources per asset.
+    func getPendingBackgroundUploadMetadatasAsync(assetLocalIdentifier: String) async -> [tableMetadata] {
+        await core.performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .filter(
+                    "assetLocalIdentifier == %@ AND backgroundUploadJobIdentifier == %@",
+                    assetLocalIdentifier,
+                    "pending"
+                )
+                .map { $0.detachedCopy() }
+        } ?? []
+    }
+
     func getResultsMetadatasAsync(predicate: NSPredicate) async -> Results<tableMetadata>? {
         await core.performRealmReadAsync { realm in
             let results = realm.objects(tableMetadata.self)
