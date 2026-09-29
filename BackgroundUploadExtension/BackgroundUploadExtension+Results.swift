@@ -40,6 +40,16 @@ extension BackgroundUploadExtension {
             (error?.domain == NSURLErrorDomain && error?.code == URLError.userAuthenticationRequired.rawValue)
     }
 
+    /// Treats a valid Nextcloud file identifier as proof that the server committed the upload.
+    /// This covers successful overwrites that PhotoKit may expose as failed after an HTTP 204 response.
+    func hasConfirmedUploadResponse(job: PHAssetResourceUploadJob) -> Bool {
+        guard let ocId = job.responseHeaderFields?["oc-fileid"] else {
+            return false
+        }
+
+        return !ocId.isEmpty
+    }
+
     /// Logs the diagnostic values PhotoKit exposes for a failed or otherwise unexpected upload job.
     /// Request headers are excluded and sensitive response header values are redacted.
     func logUploadJobDiagnostics(job: PHAssetResourceUploadJob, action: String) {
