@@ -504,6 +504,7 @@
 		F75DD767290ABB25002EB562 /* Intent.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F75DD769290ABB25002EB562 /* Intent.intentdefinition */; };
 		F75E197330484B77008ACFDC /* NCManageDatabase+LivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77E8C1E2E79717D00EAE68F /* NCManageDatabase+LivePhoto.swift */; };
 		F75E197530484B77008ACFDC /* BackgroundUploadExtension+LivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75E197430484B77008ACFDC /* BackgroundUploadExtension+LivePhoto.swift */; };
+		F75E197730484B77008ACFDC /* BackgroundUploadExtension+Chunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75E197630484B77008ACFDC /* BackgroundUploadExtension+Chunk.swift */; };
 		F75F4BC02FD008D7009E55ED /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
 		F75F4BC12FD008D7009E55ED /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
 		F75F4BC22FD008D7009E55ED /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
@@ -1685,6 +1686,7 @@
 		F75D90202D2BE26C003E740B /* NCRecommendationsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCRecommendationsCell.swift; sourceTree = "<group>"; };
 		F75DD768290ABB25002EB562 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; name = Base; path = Base.lproj/Intent.intentdefinition; sourceTree = "<group>"; };
 		F75E197430484B77008ACFDC /* BackgroundUploadExtension+LivePhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackgroundUploadExtension+LivePhoto.swift"; sourceTree = "<group>"; };
+		F75E197630484B77008ACFDC /* BackgroundUploadExtension+Chunk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackgroundUploadExtension+Chunk.swift"; sourceTree = "<group>"; };
 		F760A4852FE959EB001B212E /* NCTransferCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTransferCoordinator.swift; sourceTree = "<group>"; };
 		F760A4892FE95D04001B212E /* NCTransferDelegateDispatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTransferDelegateDispatcher.swift; sourceTree = "<group>"; };
 		F761856629E98543006EB3B0 /* NCIntro.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCIntro.storyboard; sourceTree = "<group>"; };
@@ -3275,6 +3277,7 @@
 			children = (
 				F78DB20C3040239E00E6FE24 /* BackgroundUploadExtension.swift */,
 				F793E7C53041801300F011FE /* BackgroundUploadExtension+Accounts.swift */,
+				F75E197630484B77008ACFDC /* BackgroundUploadExtension+Chunk.swift */,
 				F793E7C93041803B00F011FE /* BackgroundUploadExtension+Destination.swift */,
 				F793E7CE304190AC00F011FE /* BackgroundUploadExtension+Discovery.swift */,
 				F793E7C73041802400F011FE /* BackgroundUploadExtension+Jobs.swift */,
@@ -5649,6 +5652,7 @@
 			files = (
 				F793E7AC3041614D00F011FE /* NCBrand.swift in Sources */,
 				F793E7C1304170F200F011FE /* NCUtility.swift in Sources */,
+				F75E197730484B77008ACFDC /* BackgroundUploadExtension+Chunk.swift in Sources */,
 				F793E7CC3041804C00F011FE /* BackgroundUploadExtension+Results.swift in Sources */,
 				F75E197530484B77008ACFDC /* BackgroundUploadExtension+LivePhoto.swift in Sources */,
 				F793E7AF3041619800F011FE /* UIColor+Extension.swift in Sources */,
