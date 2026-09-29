@@ -487,9 +487,36 @@ struct NCAutoUploadView: View {
                     }
                     .disabled(model.autoUploadStart || isAutoUploadUnavailable)
                     .opacity(model.autoUploadStart || isAutoUploadUnavailable ? 0.5 : 1)
+                }, header: {
+                    Text(NSLocalizedString("_experimental_", comment: ""))
+                        .font(.headline)
                 }, footer: {
-                    Text(NSLocalizedString("_background_upload_extension_footer_", comment: ""))
-                        .font(.footnote)
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text(NSLocalizedString("_background_upload_extension_footer_", comment: ""))
+                            .font(.footnote)
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            Label(
+                                NSLocalizedString("_background_upload_extension_apache_title_", comment: ""),
+                                systemImage: "exclamationmark.triangle.fill"
+                            )
+                            .font(.footnote.bold())
+
+                            Text(NSLocalizedString("_background_upload_extension_apache_warning_", comment: ""))
+                                .font(.footnote)
+
+                            Text(verbatim: "RewriteEngine On\nRewriteCond %{REQUEST_METHOD} =OPTIONS\nRewriteCond %{HTTP:X-NC-PhotoKit-Upload} =1\nRewriteRule ^ - [R=501,L]")
+                                .font(.caption.monospaced())
+                                .textSelection(.enabled)
+                        }
+                        .foregroundStyle(.red)
+                        .padding(12)
+                        .background(Color.red.opacity(0.1), in: RoundedRectangle(cornerRadius: 10))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.red.opacity(0.6), lineWidth: 1)
+                        }
+                    }
                 })
             }
         }
