@@ -7,9 +7,102 @@ import Photos
 import NextcloudKit
 
 extension BackgroundUploadExtension {
+    /// Reports whether another automatic upload attempt is available for the metadata.
+    /// The stored retry count excludes the initial upload, so the limit reserves one attempt for it.
+    func canAutomaticallyRetry(metadata: tableMetadata) -> Bool {
+        metadata.backgroundUploadRetryCount < maximumBackgroundUploadAttempts - 1
+    }
+
+    /// Records a terminal asset failure and suspends the account after three distinct failures.
+    /// Returns `true` when this failure opens the account-level circuit breaker.
+    @discardableResult
+    func recordTerminalUploadFailure(metadata: tableMetadata) -> Bool {
+        let assetIdentifier = metadata.assetLocalIdentifier.isEmpty ? metadata.ocIdTransfer : metadata.assetLocalIdentifier
+        let failureCount = preferences.recordBackgroundUploadFailure(
+            account: metadata.account,
+            assetIdentifier: assetIdentifier
+        )
+        let shouldSuspend = failureCount >= maximumConsecutiveBackgroundUploadFailures
+
+        if shouldSuspend {
+            preferences.setBackgroundUploadSuspended(true, account: metadata.account)
+        }
+
+        return shouldSuspend
+    }
+
+    /// Detects authentication failures from normalized response headers or the sanitized URL error.
+    /// The shared classification keeps retry and acknowledgement behavior consistent.
+    func isAuthenticationFailure(job: PHAssetResourceUploadJob) -> Bool {
+        let error = job.error.map { $0 as NSError }
+
+        return job.responseHeaderFields?["www-authenticate"] != nil ||
+            (error?.domain == NSURLErrorDomain && error?.code == URLError.userAuthenticationRequired.rawValue)
+    }
+
+    /// Logs the diagnostic values PhotoKit exposes for a failed or otherwise unexpected upload job.
+    /// Request headers are excluded and sensitive response header values are redacted.
+    func logUploadJobDiagnostics(job: PHAssetResourceUploadJob, action: String) {
+        let error = job.error.map { $0 as NSError }
+        let sensitiveHeaderNames = Set(["authorization", "cookie", "proxy-authorization", "set-cookie"])
+        let responseHeaders = job.responseHeaderFields?.reduce(into: [String: String]()) { result, header in
+            result[header.key] = sensitiveHeaderNames.contains(header.key.lowercased())
+                ? "<redacted>"
+                : header.value
+        } ?? [:]
+        let state: String
+        let type: String
+
+        switch job.state {
+        case .registered:
+            state = "registered"
+        case .pending:
+            state = "pending"
+        case .failed:
+            state = "failed"
+        case .succeeded:
+            state = "succeeded"
+        case .cancelled:
+            state = "cancelled"
+        @unknown default:
+            state = "unknown"
+        }
+
+        switch job.type {
+        case .upload:
+            type = "upload"
+        case .downloadOnly:
+            type = "downloadOnly"
+        @unknown default:
+            type = "unknown"
+        }
+
+        var destinationComponents = job.destination.url.flatMap {
+            URLComponents(url: $0, resolvingAgainstBaseURL: false)
+        }
+        destinationComponents?.user = nil
+        destinationComponents?.password = nil
+        destinationComponents?.query = nil
+        destinationComponents?.fragment = nil
+
+        logInfo(
+            "PhotoKit job diagnostics, action: \(action), job: \(job.localIdentifier), " +
+            "state: \(state) (\(job.state.rawValue)), type: \(type) (\(job.type.rawValue)), " +
+            "method: \(job.destination.httpMethod ?? "<nil>"), " +
+            "destination: \(destinationComponents?.string ?? "<nil>"), " +
+            "error domain: \(error?.domain ?? "<nil>"), code: \(error?.code ?? 0), " +
+            "description: \(error?.localizedDescription ?? "<nil>"), " +
+            "failure reason: \(error?.localizedFailureReason ?? "<nil>"), " +
+            "recovery suggestion: \(error?.localizedRecoverySuggestion ?? "<nil>"), " +
+            "userInfo: \(error?.userInfo ?? [:]), headers: \(responseHeaders)"
+        )
+    }
+
+    /// Stores the terminal upload error and resets transient task state on the associated metadata.
+    /// Authentication failures receive a stable error code so the host app can require manual retry.
     func updateMetadataForUploadFailure(metadata: tableMetadata, job: PHAssetResourceUploadJob) async {
         let error = job.error.map { $0 as NSError }
-        let authenticationRequired = job.responseHeaderFields?["www-authenticate"] != nil
+        let authenticationRequired = isAuthenticationFailure(job: job)
 
         metadata.sessionTaskIdentifier = 0
         metadata.sessionDate = Date()
@@ -24,10 +117,14 @@ extension BackgroundUploadExtension {
         logError("Background upload failed for \(metadata.fileName), account: \(metadata.account), job: \(job.localIdentifier), error: \(metadata.errorCode) \(metadata.sessionError)")
     }
 
+    /// Applies Nextcloud response metadata and records the asset as successfully auto-uploaded.
+    /// A missing `oc-fileid` converts the result to an upload error and requires manual recovery.
     func processUploadSuccess(metadata: tableMetadata, job: PHAssetResourceUploadJob) async -> Bool {
         let headers = job.responseHeaderFields ?? [:]
 
         guard let ocId = headers["oc-fileid"], !ocId.isEmpty else {
+            // A successful response without Nextcloud metadata is a server-level compatibility error.
+            preferences.setBackgroundUploadSuspended(true, account: metadata.account)
             metadata.session = ""
             metadata.sessionTaskIdentifier = 0
             metadata.sessionDate = Date()
@@ -41,6 +138,9 @@ extension BackgroundUploadExtension {
 
             return false
         }
+
+        // Any confirmed upload breaks the sequence of consecutive asset failures.
+        preferences.resetBackgroundUploadConsecutiveFailures(account: metadata.account)
 
         let etag = nkComm.normalizedETag(
             headers["oc-etag"] ?? headers["etag"]

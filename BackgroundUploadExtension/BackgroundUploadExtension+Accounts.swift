@@ -7,24 +7,21 @@ import Photos
 import NextcloudKit
 
 extension BackgroundUploadExtension {
+    /// Validates Photos access, feature settings, the active auto-upload account, and server support.
+    /// Configures the account's NextcloudKit session and returns `nil` when processing must be skipped.
     func setupAccount() async -> tableAccount? {
         guard PHPhotoLibrary.authorizationStatus(for: .readWrite) == .authorized else {
-            logDebug("Background upload account setup skipped: Photos authorization is not granted")
+            logInfo("Background upload account setup skipped: Photos authorization is not granted")
             return nil
         }
 
-        guard !NCPreferences().formatCompatibility else {
-            logDebug("Background upload account setup skipped: compatibility format is enabled")
-            return nil
-        }
-
-        guard NCBrandOptions.shared.enable_background_upload_extension else {
-            logDebug("Background upload account setup skipped: feature is disabled")
+        guard NCPreferences().shouldUseBackgroundUploadExtension else {
+            logInfo("Background upload account setup skipped: feature is disabled")
             return nil
         }
 
         guard let account = await database.getTableAccountAsync(predicate: NSPredicate(format: "autoUploadStart == true")) else {
-            logDebug("Background upload account setup skipped: no Auto Upload account")
+            logInfo("Background upload account setup skipped: no Auto Upload account")
             return nil
         }
 
@@ -48,9 +45,9 @@ extension BackgroundUploadExtension {
 
         guard NCBrandOptions.shared.isServerVersion(
             capabilities,
-            greaterOrEqualTo: .v33
+            greaterOrEqualTo: .v35
         ) else {
-            logInfo("Background upload extension stopped because account \(account.account) uses a server lower than version 33", persist: true)
+            logInfo("Background upload extension stopped because account \(account.account) uses a server lower than version 35")
             return nil
         }
 

@@ -51,6 +51,7 @@ struct NextcloudVersion: Comparable {
     static let v32_0_2 = NextcloudVersion(32, 0, 2)
     static let v33 = NextcloudVersion(33)
     static let v34 = NextcloudVersion(34)
+    static let v35 = NextcloudVersion(35)
 
     static func < (lhs: NextcloudVersion, rhs: NextcloudVersion) -> Bool {
         (lhs.major, lhs.minor, lhs.micro) < (rhs.major, rhs.minor, rhs.micro)
@@ -118,9 +119,6 @@ final class NCBrandOptions: @unchecked Sendable {
     // Number of failed attempts before resetting the app
     let resetAppPasscodeAttempts: Int = 10
     let passcodeSecondsFail: Int = 60
-
-    // Enables the PhotoKit background resource upload extension on iOS 27 and later.
-    var enable_background_upload_extension: Bool = false
 
     // Info Paging
     enum NCInfoPagingTab: Int, CaseIterable {

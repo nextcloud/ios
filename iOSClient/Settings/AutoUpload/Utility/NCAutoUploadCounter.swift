@@ -10,6 +10,8 @@ import Observation
 final class NCAutoUploadCounter {
     private(set) var count = 0
     private(set) var failedCount = 0
+    private(set) var isSuspended = false
+    private(set) var suspensionError: String?
     private(set) var isLoaded = false
 
     init() {}
@@ -42,6 +44,18 @@ final class NCAutoUploadCounter {
     }
 
     var itemsLeftSummary: String {
+        // A suspended queue cannot make progress, so its blocking error is more useful than counters.
+        if isSuspended {
+            if let suspensionError {
+                return String.localizedStringWithFormat(
+                    NSLocalizedString("_auto_upload_suspended_error_", comment: ""),
+                    suspensionError
+                )
+            }
+
+            return NSLocalizedString("_auto_upload_suspended_", comment: "")
+        }
+
         if failedCount == 0 {
             return itemsLeftMessage
         }
@@ -110,6 +124,8 @@ final class NCAutoUploadCounter {
         autoUploadServerUrlBase = nil
         count = 0
         failedCount = 0
+        isSuspended = false
+        suspensionError = nil
         isLoaded = false
     }
 
@@ -123,6 +139,32 @@ final class NCAutoUploadCounter {
 
         count = counts.pending
         failedCount = counts.failed
+
+        isSuspended = NCPreferences().isBackgroundUploadSuspended(account: account)
+        suspensionError = nil
+
+        if isSuspended {
+            // The newest stopped transfer contains the server error that opened the circuit breaker.
+            let predicate = NSPredicate(
+                format: "account == %@ AND autoUploadServerUrlBase == %@ AND directory == false AND status == %d AND backgroundUploadJobIdentifier == %@",
+                account,
+                autoUploadServerUrlBase,
+                NCGlobal.shared.metadataStatusUploadError,
+                "pending"
+            )
+            let metadata = await NCManageDatabase.shared.getMetadatasAsync(
+                predicate: predicate,
+                sortedByKeyPath: "sessionDate",
+                ascending: false,
+                limit: 1
+            )?.first
+            let error = metadata?.sessionError.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            if let error, !error.isEmpty {
+                suspensionError = error
+            }
+        }
+
         isLoaded = true
     }
 }

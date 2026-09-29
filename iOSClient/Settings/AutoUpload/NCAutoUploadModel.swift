@@ -39,6 +39,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     @Published var photosPermissionsGranted = true
     /// Whether `Always` location authorization has been granted, enabling background location-based auto upload.
     @Published var locationAutoUploadPermissionGranted: Bool = false
+    /// Whether the experimental PhotoKit background upload extension is enabled.
+    @Published var backgroundUploadExtensionEnabled: Bool = false
 
     /// Whether the error alert should be shown in the view.
     @Published var showErrorAlert: Bool = false
@@ -85,6 +87,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         }
 
         serverUrl = NCUtilityFileSystem().getHomeServer(session: session)
+        backgroundUploadExtensionEnabled = NCPreferences().backgroundUploadExtensionEnabled
 
         requestAuthorization()
 
@@ -154,6 +157,24 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         }
     }
 
+    /// Stores the experimental extension opt-in and applies the new PhotoKit state immediately.
+    /// Enabling still requires Auto Upload, full Photos access, and a supported server.
+    func handleBackgroundUploadExtensionChange(newValue: Bool) {
+        NCPreferences().backgroundUploadExtensionEnabled = newValue
+
+        guard #available(iOS 27, *) else {
+            return
+        }
+
+        Task {
+            if newValue {
+                _ = await NCBackgroundUploadExtensionManager.shared.ensureEnabled()
+            } else {
+                _ = await NCBackgroundUploadExtensionManager.shared.disableIfIdle()
+            }
+        }
+    }
+
     /// Updates the auto-upload full content setting.
     func handleAutoUploadChange(newValue: Bool, assetCollections: [PHAssetCollection]) {
         let accountIdentifier = session.account
@@ -168,6 +189,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
             if newValue {
                 await database.setAutoUploadStartAsync(true, account: accountIdentifier)
+                // Enabling Auto Upload is an explicit request to resume a previously suspended queue.
+                NCPreferences().setBackgroundUploadSuspended(false, account: accountIdentifier)
 
                 guard let updatedAccount = await database.getTableAccountAsync(
                     predicate: NSPredicate(format: "account == %@", accountIdentifier)

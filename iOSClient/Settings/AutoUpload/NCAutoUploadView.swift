@@ -457,6 +457,68 @@ struct NCAutoUploadView: View {
                 model.autoUploadStart || isAutoUploadUnavailable
             )
             .opacity(isAutoUploadUnavailable ? 0.5 : 1)
+
+            if #available(iOS 27, *),
+               NCPreferences.canConfigureBackgroundUploadExtension,
+               let capabilities = NCNetworking.shared.capabilities[model.session.account],
+               NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v35) {
+                Section(content: {
+                    Toggle(isOn: $model.backgroundUploadExtensionEnabled) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .font(.icon())
+                                .foregroundStyle(.orange)
+                                .frame(width: 26)
+
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(NSLocalizedString("_background_upload_extension_", comment: ""))
+                                    .font(.body)
+
+                                Text("TEST")
+                                    .font(.caption2.bold())
+                                    .foregroundStyle(.orange)
+                            }
+                        }
+                    }
+                    .font(.body)
+                    .tint(.orange)
+                    .onChange(of: model.backgroundUploadExtensionEnabled) { _, newValue in
+                        model.handleBackgroundUploadExtensionChange(newValue: newValue)
+                    }
+                    .disabled(model.autoUploadStart || isAutoUploadUnavailable)
+                    .opacity(model.autoUploadStart || isAutoUploadUnavailable ? 0.5 : 1)
+                }, header: {
+                    Text(NSLocalizedString("_experimental_", comment: ""))
+                        .font(.headline)
+                }, footer: {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text(NSLocalizedString("_background_upload_extension_footer_", comment: ""))
+                            .font(.footnote)
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            Label(
+                                NSLocalizedString("_background_upload_extension_apache_title_", comment: ""),
+                                systemImage: "exclamationmark.triangle.fill"
+                            )
+                            .font(.footnote.bold())
+
+                            Text(NSLocalizedString("_background_upload_extension_apache_warning_", comment: ""))
+                                .font(.footnote)
+
+                            Text(verbatim: "RewriteEngine On\nRewriteCond %{REQUEST_METHOD} =OPTIONS\nRewriteCond %{HTTP:X-NC-PhotoKit-Upload} =1\nRewriteRule ^ - [R=501,L]")
+                                .font(.caption.monospaced())
+                                .textSelection(.enabled)
+                        }
+                        .foregroundStyle(.red)
+                        .padding(12)
+                        .background(Color.red.opacity(0.1), in: RoundedRectangle(cornerRadius: 10))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.red.opacity(0.6), lineWidth: 1)
+                        }
+                    }
+                })
+            }
         }
         .safeAreaInset(edge: .bottom) {
             autoUploadStartButton

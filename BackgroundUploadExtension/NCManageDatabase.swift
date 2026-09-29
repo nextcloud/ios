@@ -14,6 +14,8 @@ final class NCManageDatabase {
     internal let databaseURL: URL?
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "BackgroundUploadExtension", category: NCGlobal.shared.logTagBackgroundUpload)
 
+    /// Creates the extension database facade and resolves the Realm file inside the shared app group.
+    /// A missing app-group container leaves `databaseURL` unset and causes `openRealm()` to fail safely.
     private init() {
         self.core = NCManageDatabaseCore()
 
@@ -26,7 +28,17 @@ final class NCManageDatabase {
         }
     }
 
-    func openRealm() {
+    /// Validates the shared Realm schema before installing and opening the extension configuration.
+    /// Returns `false` without migrating when the database is unavailable, incompatible, or cannot open.
+    @discardableResult
+    func openRealm() -> Bool {
+        guard let databaseURL,
+              let schemaVersion = try? schemaVersionAtURL(databaseURL),
+              schemaVersion == databaseSchemaVersion else {
+            logger.error("Realm was not opened because its schema version does not match the extension")
+            return false
+        }
+
         do {
             let configuration = Realm.Configuration(
                 fileURL: databaseURL,
@@ -40,12 +52,14 @@ final class NCManageDatabase {
 
             let realm = try Realm(configuration: configuration)
             if let url = realm.configuration.fileURL {
-                logger.debug("Realm is located at: \(url.path, privacy: .public)")
+                logger.notice("Realm is located at: \(url.path, privacy: .public)")
             }
+            return true
         } catch let error {
             logger.error("Realm error: \(error.localizedDescription, privacy: .public)")
             nkLog(tag: NCGlobal.shared.logTagBackgroundUpload, emoji: .error, message: "Realm error: \(error)")
             isSuspendingDatabaseOperation = true
+            return false
         }
     }
 }

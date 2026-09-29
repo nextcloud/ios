@@ -290,8 +290,10 @@ extension NCNetworking {
 
         // UPLOADING-FOREGROUND
         //
+        // PhotoKit jobs have neither a client URLSession task nor a local upload file.
+        // Restrict zombie recovery to traditional uploads so their Realm records remain intact.
         if let metadatas = await NCManageDatabase.shared.getMetadatasAsync(
-            predicate: NSPredicate(format: "session == %@ AND status == %d",
+            predicate: NSPredicate(format: "session == %@ AND status == %d AND backgroundUploadJobIdentifier == ''",
                                    sessionUpload,
                                    global.metadataStatusUploading)) {
             let metadatasByAccount = Dictionary(grouping: metadatas, by: \.account)
@@ -322,8 +324,9 @@ extension NCNetworking {
 
         // UPLOADING-BACKGROUND
         //
+        // Apply the same exclusion to background URLSession uploads managed by the host app.
         if let metadatas = await NCManageDatabase.shared.getMetadatasAsync(
-            predicate: NSPredicate(format: "session IN %@ AND status == %d",
+            predicate: NSPredicate(format: "session IN %@ AND status == %d AND backgroundUploadJobIdentifier == ''",
                                    [sessionUploadBackground,
                                     sessionUploadBackgroundWWan],
                                    global.metadataStatusUploading)) {
