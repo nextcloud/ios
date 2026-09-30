@@ -616,6 +616,10 @@
 		F76BED78306D0000002E1442 /* NCLocalDatabaseMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76BED76306D0000002E1442 /* NCLocalDatabaseMigrator.swift */; };
 		F76BED7C306D0000002E1442 /* NCLocalDatabase+photoLibraryAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76BED79306D0000002E1442 /* NCLocalDatabase+photoLibraryAsset.swift */; };
 		F76BED7E306D0000002E1442 /* NCPhotoLibraryAssetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76BED7B306D0000002E1442 /* NCPhotoLibraryAssetTests.swift */; };
+		F76BED80306D13AD002E1442 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = F76BED7F306D13AD002E1442 /* GRDB */; };
+		F76BED81306D13CF002E1442 /* NCLocalDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76BED75306D0000002E1442 /* NCLocalDatabase.swift */; };
+		F76BED82306D13D5002E1442 /* NCLocalDatabaseMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76BED76306D0000002E1442 /* NCLocalDatabaseMigrator.swift */; };
+		F76BED83306D13DC002E1442 /* NCLocalDatabase+photoLibraryAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76BED79306D0000002E1442 /* NCLocalDatabase+photoLibraryAsset.swift */; };
 		F76C26A62850D3A500E42BDF /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
 		F76D364628A4F8BF00214537 /* NCActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D364528A4F8BF00214537 /* NCActivityIndicator.swift */; };
 		F76D364728A4F8BF00214537 /* NCActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D364528A4F8BF00214537 /* NCActivityIndicator.swift */; };
@@ -2293,6 +2297,7 @@
 				F70CAC8130408F4D00CCCB7F /* RealmSwift in Frameworks */,
 				F70CAC7F30408F3100CCCB7F /* KeychainAccess in Frameworks */,
 				F70CAC7D30408F2600CCCB7F /* NextcloudKit in Frameworks */,
+				F76BED80306D13AD002E1442 /* GRDB in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4314,6 +4319,7 @@
 				F70CAC7C30408F2600CCCB7F /* NextcloudKit */,
 				F70CAC7E30408F3100CCCB7F /* KeychainAccess */,
 				F70CAC8030408F4D00CCCB7F /* RealmSwift */,
+				F76BED7F306D13AD002E1442 /* GRDB */,
 			);
 			productName = BackgroundUploadExtension;
 			productReference = F7FB188030401D0D00EB0AE6 /* BackgroundUploadExtension.appex */;
@@ -5671,8 +5677,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				F793E7AC3041614D00F011FE /* NCBrand.swift in Sources */,
+				F76BED83306D13DC002E1442 /* NCLocalDatabase+photoLibraryAsset.swift in Sources */,
 				F793E7C1304170F200F011FE /* NCUtility.swift in Sources */,
 				F75E197730484B77008ACFDC /* BackgroundUploadExtension+Chunk.swift in Sources */,
+				F76BED81306D13CF002E1442 /* NCLocalDatabase.swift in Sources */,
 				F793E7CC3041804C00F011FE /* BackgroundUploadExtension+Results.swift in Sources */,
 				F75E197530484B77008ACFDC /* BackgroundUploadExtension+LivePhoto.swift in Sources */,
 				F793E7AF3041619800F011FE /* UIColor+Extension.swift in Sources */,
@@ -5703,6 +5711,7 @@
 				F793E7A93041601800F011FE /* ThreadSafeArray.swift in Sources */,
 				F793E7B1304161BD00F011FE /* NCEndToEndKeySet.swift in Sources */,
 				F70CAC7B30408EB200CCCB7F /* NCGlobal.swift in Sources */,
+				F76BED82306D13D5002E1442 /* NCLocalDatabaseMigrator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6865,7 +6874,12 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = YES;
-				HEADER_SEARCH_PATHS = "$(BUILD_DIR)/../../SourcePackages/checkouts/realm-swift/include";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILD_DIR)/../../SourcePackages/checkouts/realm-swift/include",
+					"$(BUILD_DIR)/../../SourcePackages/checkouts/GRDB.swift/Sources/GRDBSQLite",
+					"$(BUILD_DIR)/../../../../../SourcePackages/checkouts/GRDB.swift/Sources/GRDBSQLite",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/BackgroundUploadExtension.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = BackgroundUploadExtension;
 				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
@@ -6920,6 +6934,8 @@
 					"$(inherited)",
 					"$(BUILD_DIR)/../../SourcePackages/checkouts/realm-swift/include",
 					"$(BUILD_DIR)/../../../../../SourcePackages/checkouts/realm-swift/include",
+					"$(BUILD_DIR)/../../SourcePackages/checkouts/GRDB.swift/Sources/GRDBSQLite",
+					"$(BUILD_DIR)/../../../../../SourcePackages/checkouts/GRDB.swift/Sources/GRDBSQLite",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/BackgroundUploadExtension.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = BackgroundUploadExtension;
@@ -7557,6 +7573,11 @@
 			productName = KeychainAccess;
 		};
 		F76BED73306CE862002E1442 /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F76BED72306CE862002E1442 /* XCRemoteSwiftPackageReference "GRDB" */;
+			productName = GRDB;
+		};
+		F76BED7F306D13AD002E1442 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F76BED72306CE862002E1442 /* XCRemoteSwiftPackageReference "GRDB" */;
 			productName = GRDB;
