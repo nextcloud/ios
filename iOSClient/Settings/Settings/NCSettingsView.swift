@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
+import UIKit
 import Combine
 import NextcloudKit
 import FirebaseCrashlytics
@@ -21,6 +22,11 @@ struct NCSettingsView: View {
     @State private var showBrowser = false
     // State to control the visibility of the Source Code  view
     @State private var showSourceCode = false
+#if DEBUG
+    @State private var isExportingDatabase = false
+    @State private var showDatabaseExportError = false
+    @State private var databaseExportError = ""
+#endif
     // Object of ViewModel of this view
     @ObservedObject var model: NCSettingsModel
 
@@ -260,6 +266,20 @@ struct NCSettingsView: View {
             })
 #if DEBUG
             Section(header: Text("Debug").font(.headline), content: {
+                Button(action: exportDebugDatabase, label: {
+                    HStack {
+                        Image(systemName: "cylinder.split.1x2")
+                            .font(.icon())
+                            .foregroundColor(.orange)
+                            .frame(width: 39)
+
+                        Text(isExportingDatabase ? "Exporting GRDB database…" : "Export GRDB database")
+                            .font(.body)
+                    }
+                })
+                .tint(Color(NCBrandColor.shared.textColor))
+                .disabled(isExportingDatabase)
+
                 Button(action: {
                     Crashlytics.crashlytics().log("Test crash triggered")
                     fatalError("🔥 Crash test")
@@ -291,9 +311,55 @@ struct NCSettingsView: View {
         .sheet(isPresented: $showChangePasscode) {
             SetupPasscodeView(isLockActive: $model.isLockActive, controller: model.controller, changePasscode: true)
         }
+#if DEBUG
+        .alert("Database export failed", isPresented: $showDatabaseExportError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(databaseExportError)
+        }
+#endif
         .navigationBarTitle(NSLocalizedString("_settings_", comment: ""))
         .defaultViewModifier(model)
     }
+
+#if DEBUG
+    private func exportDebugDatabase() {
+        isExportingDatabase = true
+
+        Task {
+            defer { isExportingDatabase = false }
+
+            do {
+                let exportURL = try await Task.detached(priority: .userInitiated) {
+                    try NCLocalDatabase.shared.exportDebugDatabase()
+                }.value
+
+                guard let controller = model.controller else {
+                    throw CocoaError(.coderInvalidValue)
+                }
+                let presentingViewController = controller.topMostViewController()
+
+                let activityViewController = UIActivityViewController(
+                    activityItems: [exportURL],
+                    applicationActivities: nil
+                )
+                if let popover = activityViewController.popoverPresentationController {
+                    popover.sourceView = presentingViewController.view
+                    popover.sourceRect = CGRect(
+                        x: presentingViewController.view.bounds.midX,
+                        y: presentingViewController.view.bounds.midY,
+                        width: 0,
+                        height: 0
+                    )
+                }
+                presentingViewController.present(activityViewController, animated: true)
+            } catch {
+                databaseExportError = error.localizedDescription
+                showDatabaseExportError = true
+            }
+        }
+    }
+#endif
 }
 
 struct E2EESection: View {
