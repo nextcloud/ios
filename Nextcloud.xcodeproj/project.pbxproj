@@ -614,6 +614,8 @@
 		F76BED74306CE862002E1442 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = F76BED73306CE862002E1442 /* GRDB */; };
 		F76BED77306D0000002E1442 /* NCLocalDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76BED75306D0000002E1442 /* NCLocalDatabase.swift */; };
 		F76BED78306D0000002E1442 /* NCLocalDatabaseMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76BED76306D0000002E1442 /* NCLocalDatabaseMigrator.swift */; };
+		F76BED7C306D0000002E1442 /* NCLocalDatabase+photoLibraryAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76BED79306D0000002E1442 /* NCLocalDatabase+photoLibraryAsset.swift */; };
+		F76BED7E306D0000002E1442 /* NCPhotoLibraryAssetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76BED7B306D0000002E1442 /* NCPhotoLibraryAssetTests.swift */; };
 		F76C26A62850D3A500E42BDF /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
 		F76D364628A4F8BF00214537 /* NCActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D364528A4F8BF00214537 /* NCActivityIndicator.swift */; };
 		F76D364728A4F8BF00214537 /* NCActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D364528A4F8BF00214537 /* NCActivityIndicator.swift */; };
@@ -1741,6 +1743,8 @@
 		F76B649B2ADFFAED00014640 /* NCImageCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCImageCache.swift; sourceTree = "<group>"; };
 		F76BED75306D0000002E1442 /* NCLocalDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLocalDatabase.swift; sourceTree = "<group>"; };
 		F76BED76306D0000002E1442 /* NCLocalDatabaseMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLocalDatabaseMigrator.swift; sourceTree = "<group>"; };
+		F76BED79306D0000002E1442 /* NCLocalDatabase+photoLibraryAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCLocalDatabase+photoLibraryAsset.swift"; sourceTree = "<group>"; };
+		F76BED7B306D0000002E1442 /* NCPhotoLibraryAssetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCPhotoLibraryAssetTests.swift; sourceTree = "<group>"; };
 		F76D364528A4F8BF00214537 /* NCActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityIndicator.swift; sourceTree = "<group>"; };
 		F76D3CF02428B40E005DFA87 /* NCViewerPDFSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerPDFSearch.swift; sourceTree = "<group>"; };
 		F76D3CF22428B94E005DFA87 /* NCViewerPDFSearchCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCViewerPDFSearchCell.xib; sourceTree = "<group>"; };
@@ -2345,6 +2349,7 @@
 		AA52EB442D42AC500089C348 /* NextcloudUnitTests */ = {
 			isa = PBXGroup;
 			children = (
+				F76BED7B306D0000002E1442 /* NCPhotoLibraryAssetTests.swift */,
 				A1E2EE010000000000000009 /* NCEndToEndKeySetArchiveTests.swift */,
 				A1E2EE020000000000000007 /* NCEndToEndKeySetResolverTests.swift */,
 				AABBCC0330A8000100F0A001 /* NCMediaPlaybackOptionsTests.swift */,
@@ -3420,6 +3425,7 @@
 			children = (
 				F76BED75306D0000002E1442 /* NCLocalDatabase.swift */,
 				F76BED76306D0000002E1442 /* NCLocalDatabaseMigrator.swift */,
+				F76BED79306D0000002E1442 /* NCLocalDatabase+photoLibraryAsset.swift */,
 				F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */,
 				AF4BF613275629E20081CEEF /* NCManageDatabase+Account.swift */,
 				AF4BF61D27562B3F0081CEEF /* NCManageDatabase+Activity.swift */,
@@ -4782,6 +4788,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F76BED7E306D0000002E1442 /* NCPhotoLibraryAssetTests.swift in Sources */,
 				A1E2EE01000000000000000A /* NCEndToEndKeySetArchiveTests.swift in Sources */,
 				A1E2EE020000000000000008 /* NCEndToEndKeySetResolverTests.swift in Sources */,
 				AABBCC0430A8000100F0A001 /* NCMediaPlaybackOptionsTests.swift in Sources */,
@@ -5136,6 +5143,7 @@
 			files = (
 				F76BED77306D0000002E1442 /* NCLocalDatabase.swift in Sources */,
 				F76BED78306D0000002E1442 /* NCLocalDatabaseMigrator.swift in Sources */,
+				F76BED7C306D0000002E1442 /* NCLocalDatabase+photoLibraryAsset.swift in Sources */,
 				F77444F522281649000D5EB0 /* NCMediaCell.swift in Sources */,
 				F78C6FDE296D677300C952C3 /* NCContextMenuMain.swift in Sources */,
 				F7C8A93A3025B757004E3A10 /* NCDocumentEditorCoordinator.swift in Sources */,
