@@ -200,6 +200,19 @@ extension BackgroundUploadExtension {
             )
         }
 
+        do {
+            try await NCLocalDatabase.shared.recordPhotoLibraryAssetUpload(
+                account: metadata.account,
+                assetLocalIdentifier: metadata.assetLocalIdentifier,
+                classFile: metadata.classFile,
+                isLivePhoto: metadata.isLivePhoto,
+                creationDate: metadata.creationDate as Date
+            )
+        } catch {
+            // The server upload remains successful even if its local PhotoKit state cannot be recorded.
+            logError("Unable to record uploaded photo library asset \(metadata.assetLocalIdentifier): \(error)")
+        }
+
         logInfo("Completed background upload for \(metadata.fileName), job: \(job.localIdentifier), ocId: \(ocId)")
 
         return true

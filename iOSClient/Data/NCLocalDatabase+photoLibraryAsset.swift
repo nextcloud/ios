@@ -4,6 +4,7 @@
 
 import Foundation
 import GRDB
+import NextcloudKit
 
 /// Persistent local state for one PhotoKit asset and the resources it is expected to upload.
 struct NCPhotoLibraryAsset: Codable, Equatable, FetchableRecord, PersistableRecord, Sendable {
@@ -24,17 +25,25 @@ struct NCPhotoLibraryAsset: Codable, Equatable, FetchableRecord, PersistableReco
 
 /// Stores PhotoKit asset progress independently from metadata refreshed by the server.
 extension NCLocalDatabase {
-    /// Registers the resources expected for an asset without resetting components already uploaded.
-    func registerPhotoLibraryAsset(
-        account: String,
-        assetLocalIdentifier: String,
-        hasPhoto: Bool,
-        hasVideo: Bool,
-        creationDate: Date
-    ) async throws {
-        guard hasPhoto || hasVideo else { return }
+    /// Registers the expected components and marks the resource confirmed by the server.
+    /// Live Photos remain pending until both their photo and video components are uploaded.
+    func recordPhotoLibraryAssetUpload(account: String, assetLocalIdentifier: String, classFile: String, isLivePhoto: Bool, creationDate: Date) async throws {
+        guard !assetLocalIdentifier.isEmpty else { return }
 
+        let isVideoComponent: Bool
+        switch classFile {
+        case NKTypeClassFile.image.rawValue:
+            isVideoComponent = false
+        case NKTypeClassFile.video.rawValue:
+            isVideoComponent = true
+        default:
+            return
+        }
+
+        let hasPhoto = isLivePhoto || !isVideoComponent
+        let hasVideo = isLivePhoto || isVideoComponent
         let databasePool = try databasePool()
+
         try await databasePool.write { database in
             if var asset = try NCPhotoLibraryAsset.fetchOne(
                 database,
@@ -46,57 +55,23 @@ extension NCLocalDatabase {
                 if hasVideo, asset.videoUploaded == nil {
                     asset.videoUploaded = false
                 }
+
+                if isVideoComponent {
+                    asset.videoUploaded = true
+                } else {
+                    asset.photoUploaded = true
+                }
                 try asset.update(database)
             } else {
                 let asset = NCPhotoLibraryAsset(
                     account: account,
                     assetLocalIdentifier: assetLocalIdentifier,
-                    photoUploaded: hasPhoto ? false : nil,
-                    videoUploaded: hasVideo ? false : nil,
+                    photoUploaded: hasPhoto ? !isVideoComponent : nil,
+                    videoUploaded: hasVideo ? isVideoComponent : nil,
                     creationDate: creationDate
                 )
                 try asset.insert(database)
             }
-        }
-    }
-
-    /// Marks the photo component as uploaded. Returns false when the asset or component is unknown.
-    @discardableResult
-    func markPhotoLibraryAssetPhotoUploaded(account: String, assetLocalIdentifier: String) async throws -> Bool {
-        let databasePool = try databasePool()
-        return try await databasePool.write { database in
-            guard var asset = try NCPhotoLibraryAsset.fetchOne(
-                database,
-                key: ["account": account, "assetLocalIdentifier": assetLocalIdentifier]
-            ), asset.photoUploaded != nil else {
-                return false
-            }
-
-            if asset.photoUploaded == false {
-                asset.photoUploaded = true
-                try asset.update(database)
-            }
-            return true
-        }
-    }
-
-    /// Marks the video component as uploaded. Returns false when the asset or component is unknown.
-    @discardableResult
-    func markPhotoLibraryAssetVideoUploaded(account: String, assetLocalIdentifier: String) async throws -> Bool {
-        let databasePool = try databasePool()
-        return try await databasePool.write { database in
-            guard var asset = try NCPhotoLibraryAsset.fetchOne(
-                database,
-                key: ["account": account, "assetLocalIdentifier": assetLocalIdentifier]
-            ), asset.videoUploaded != nil else {
-                return false
-            }
-
-            if asset.videoUploaded == false {
-                asset.videoUploaded = true
-                try asset.update(database)
-            }
-            return true
         }
     }
 

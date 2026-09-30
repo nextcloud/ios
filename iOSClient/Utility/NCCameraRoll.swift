@@ -461,6 +461,7 @@ final class NCCameraRoll: CameraRollExtractor {
         let capturedServerUrl = metadata.serverUrl
         let capturedSceneIdentifier = metadata.sceneIdentifier
         let capturedLivePhotoFile = metadata.fileName
+        let capturedAssetLocalIdentifier = metadata.assetLocalIdentifier
         let capturedSession = metadata.session
         let capturedSessionSelector = metadata.sessionSelector
         let capturedStatus = metadata.status
@@ -483,6 +484,7 @@ final class NCCameraRoll: CameraRollExtractor {
                     session: session,
                     sceneIdentifier: capturedSceneIdentifier) { metadataLivePhoto in
                     metadataLivePhoto.livePhotoFile = capturedLivePhotoFile
+                    metadataLivePhoto.assetLocalIdentifier = capturedAssetLocalIdentifier
                     metadataLivePhoto.isExtractFile = true
                     metadataLivePhoto.session = capturedSession
                     metadataLivePhoto.sessionSelector = capturedSessionSelector
