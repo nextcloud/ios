@@ -63,14 +63,14 @@ struct NCVideoPlaybackCoverView: View {
                         } else {
                             Image(systemName: "play.fill")
                                 .font(.system(size: 36, weight: .regular))
-                                .foregroundStyle(isPlayEnabled ? .white : .black.opacity(0.35))
-                                .videoControlIconShadow()
+                                .foregroundStyle(isPlayEnabled ? .primary : .tertiary)
                                 .transition(.opacity)
                         }
                     }
                     .frame(width: 62, height: 62)
-                    .coverPlayButtonBackground(isEnabled: isPlayEnabled)
+                    .coverPlayButtonBackground()
                 }
+                .buttonStyle(.plain)
                 .disabled(!isPlayEnabled || isLoading || isLaunchingPlayback)
                 .scaleEffect(isLaunchingPlayback ? 1.06 : 1)
                 .animation(.easeInOut(duration: 0.18), value: isLoading)
@@ -108,7 +108,7 @@ struct NCVideoPlaybackCoverView: View {
 
 private extension View {
     @ViewBuilder
-    func coverPlayButtonBackground(isEnabled: Bool) -> some View {
+    func coverPlayButtonBackground() -> some View {
         if #available(iOS 26.0, *) {
             self
                 .glassEffect(.regular, in: .circle)
@@ -130,20 +130,9 @@ private extension View {
                 )
         } else {
             self
-                .background(.white.opacity(isEnabled ? 0.92 : 0.45))
+                .background(.regularMaterial)
                 .clipShape(Circle())
         }
-    }
-}
-
-private extension View {
-    func videoControlIconShadow() -> some View {
-        shadow(
-            color: .black.opacity(0.5),
-            radius: 2.5,
-            x: 0,
-            y: 1
-        )
     }
 }
 

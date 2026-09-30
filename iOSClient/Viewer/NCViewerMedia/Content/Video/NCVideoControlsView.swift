@@ -521,9 +521,8 @@ private struct NCVideoControlsSwiftUIView: View {
         HStack(spacing: NCVideoControlsView.topActionsSpacing) {
             Button(action: onToggleRepeat) {
                 topActionIcon(
-                    systemName: "repeat.1",
-                    pointSize: 17,
-                    isActive: state.isRepeatEnabled
+                    systemName: state.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1",
+                    pointSize: 17
                 )
             }
             .buttonStyle(.plain)
@@ -532,8 +531,7 @@ private struct NCVideoControlsSwiftUIView: View {
             Button(action: onToggleAutoAdvance) {
                 topActionIcon(
                     systemName: state.isAutoAdvanceEnabled ? "forward.end.fill" : "forward.end",
-                    pointSize: 17,
-                    isActive: state.isAutoAdvanceEnabled
+                    pointSize: 17
                 )
             }
             .buttonStyle(.plain)
@@ -557,7 +555,6 @@ private struct NCVideoControlsSwiftUIView: View {
                         width: NCVideoControlsView.topActionsButtonSize,
                         height: NCVideoControlsView.topActionsButtonSize
                     )
-                    .videoControlIconShadow()
                     .controlGlassBackground(shape: Circle())
 
             case .vlcTracks:
@@ -663,13 +660,11 @@ private struct NCVideoControlsSwiftUIView: View {
 
     private func topActionIcon(
         systemName: String,
-        pointSize: CGFloat,
-        isActive: Bool = false
+        pointSize: CGFloat
     ) -> some View {
         Image(systemName: systemName)
             .font(.system(size: pointSize, weight: .regular))
-            .foregroundStyle(isActive ? Color.accentColor : .white)
-            .videoControlIconShadow()
+            .foregroundStyle(.primary)
             .frame(
                 width: NCVideoControlsView.topActionsButtonSize,
                 height: NCVideoControlsView.topActionsButtonSize
@@ -693,8 +688,7 @@ private struct NCVideoControlsSwiftUIView: View {
         } label: {
             Image(systemName: systemName)
                 .font(.system(size: pointSize, weight: .regular))
-                .foregroundStyle(.white)
-                .videoControlIconShadow()
+                .foregroundStyle(.primary)
                 .frame(width: size, height: size)
                 .controlGlassBackground(shape: Circle())
         }
@@ -707,8 +701,7 @@ private struct NCVideoControlsSwiftUIView: View {
     private func timeLabel(_ text: String) -> some View {
         Text(text)
             .font(.system(size: 15, weight: .medium, design: .rounded).monospacedDigit())
-            .foregroundStyle(.gray)
-            .videoControlIconShadow()
+            .foregroundStyle(.secondary)
             .lineLimit(1)
             .minimumScaleFactor(0.85)
     }
@@ -720,8 +713,8 @@ private struct NCVideoAirPlayRoutePickerView: UIViewRepresentable {
     func makeUIView(context: Context) -> AVRoutePickerView {
         let routePickerView = AVRoutePickerView()
         routePickerView.backgroundColor = .clear
-        routePickerView.tintColor = .white
-        routePickerView.activeTintColor = .white
+        routePickerView.tintColor = .label
+        routePickerView.activeTintColor = .label
         routePickerView.prioritizesVideoDevices = true
         return routePickerView
     }
@@ -758,20 +751,9 @@ private extension View {
                 )
         } else {
             self
-                .background(.white.opacity(0.92))
+                .background(.regularMaterial)
                 .clipShape(shape)
         }
-    }
-}
-
-private extension View {
-    func videoControlIconShadow() -> some View {
-        shadow(
-            color: .black.opacity(0.5),
-            radius: 2.5,
-            x: 0,
-            y: 1
-        )
     }
 }
 
