@@ -39,6 +39,14 @@ final class NCLocalDatabase: @unchecked Sendable {
         return databasePool
     }
 
+    /// Clears the local state stored in GRDB while preserving its schema and migrations.
+    func clearDBCache() async throws {
+        let databasePool = try databasePool()
+        try await databasePool.write { database in
+            _ = try NCPhotoLibraryAsset.deleteAll(database)
+        }
+    }
+
 #if DEBUG
     /// Creates a consistent database snapshot that can be inspected with a desktop SQLite browser.
     func exportDebugDatabase() throws -> URL {

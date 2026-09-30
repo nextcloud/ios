@@ -785,16 +785,6 @@ extension NCManageDatabase {
         }
     }
 
-    func clearAssetLocalIdentifiersAsync(_ assetLocalIdentifiers: [String]) async {
-        await core.performRealmWriteAsync { realm in
-            let results = realm.objects(tableMetadata.self)
-                .filter("assetLocalIdentifier IN %@", assetLocalIdentifiers)
-            for result in results {
-                result.assetLocalIdentifier = ""
-            }
-        }
-    }
-
     /// Asynchronously sets the favorite status of a `tableMetadata` entry.
     /// Optionally stores the previous favorite flag and updates the sync status.
     func setMetadataFavoriteAsync(ocId: String, favorite: Bool?, saveOldFavorite: String?, status: Int) async {

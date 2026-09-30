@@ -408,9 +408,6 @@ actor NCNetworkingProcess {
             nkLog(error: "Unable to remove deleted photo library assets for \(account): \(error)")
             return
         }
-
-        // Realm is no longer the source of truth, but clear its legacy identifiers after deletion.
-        await NCManageDatabase.shared.clearAssetLocalIdentifiersAsync(localIdentifiers)
     }
 
     @MainActor

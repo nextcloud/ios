@@ -85,6 +85,22 @@ struct NCPhotoLibraryAssetTests {
         #expect(try await database.uploadedPhotoLibraryAssets(account: "second").map(\.assetLocalIdentifier) == ["shared-identifier"])
     }
 
+    @Test("Clearing the local database removes uploaded asset state")
+    func clearDatabase() async throws {
+        let database = try makeDatabase()
+        try await database.recordPhotoLibraryAssetUpload(
+            account: "account",
+            assetLocalIdentifier: "photo",
+            classFile: NKTypeClassFile.image.rawValue,
+            isLivePhoto: false,
+            creationDate: Date()
+        )
+
+        try await database.clearDBCache()
+
+        #expect(try await database.uploadedPhotoLibraryAssets(account: "account").isEmpty)
+    }
+
     @Test("A Live Photo can complete when its video is uploaded first")
     func livePhotoVideoFirst() async throws {
         let database = try makeDatabase()
