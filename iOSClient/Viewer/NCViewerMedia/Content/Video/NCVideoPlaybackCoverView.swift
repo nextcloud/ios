@@ -58,7 +58,7 @@ struct NCVideoPlaybackCoverView: View {
                         if isLoading || isLaunchingPlayback {
                             ProgressView()
                                 .controlSize(.large)
-                                .tint(.white)
+                                .tint(.primary.opacity(0.6))
                                 .transition(.opacity)
                         } else {
                             Image(systemName: "play.fill")
