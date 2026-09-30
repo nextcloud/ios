@@ -15,6 +15,11 @@ final class NCLocalDatabase: @unchecked Sendable {
 
     private init() { }
 
+    /// Opens an isolated database at a caller-provided location.
+    init(databaseURL: URL) throws {
+        self.storedDatabasePool = try Self.makeDatabasePool(at: databaseURL)
+    }
+
     /// Creates the database and applies pending migrations when it is first needed.
     func open() throws {
         _ = try databasePool()
@@ -32,6 +37,14 @@ final class NCLocalDatabase: @unchecked Sendable {
         let databasePool = try Self.makeDatabasePool()
         self.storedDatabasePool = databasePool
         return databasePool
+    }
+
+    /// Clears the local state stored in GRDB while preserving its schema and migrations.
+    func clearDBCache() async throws {
+        let databasePool = try databasePool()
+        try await databasePool.write { database in
+            _ = try NCPhotoLibraryAsset.deleteAll(database)
+        }
     }
 
 #if DEBUG
@@ -75,6 +88,10 @@ final class NCLocalDatabase: @unchecked Sendable {
         )
 
         let databaseURL = databaseDirectoryURL.appendingPathComponent("nextcloud.sqlite")
+        return try makeDatabasePool(at: databaseURL)
+    }
+
+    private static func makeDatabasePool(at databaseURL: URL) throws -> DatabasePool {
         let databasePool = try DatabasePool(path: databaseURL.path)
         try NCLocalDatabaseMigrator.migrate(databasePool)
         return databasePool

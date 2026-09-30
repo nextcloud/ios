@@ -567,6 +567,23 @@ extension NCNetworking {
                                                                              urlBase: metadata.urlBase)
         utilityFileSystem.removeFile(atPath: fileNamePath)
 
+#if !EXTENSION
+        if metadata.sessionSelector == global.selectorUploadAutoUpload {
+            do {
+                try await NCLocalDatabase.shared.recordPhotoLibraryAssetUpload(
+                    account: metadata.account,
+                    assetLocalIdentifier: metadata.assetLocalIdentifier,
+                    classFile: metadata.classFile,
+                    isLivePhoto: metadata.isLivePhoto,
+                    creationDate: metadata.creationDate as Date
+                )
+            } catch {
+                // The server upload remains successful even if its local PhotoKit state cannot be recorded.
+                nkLog(error: "Unable to record uploaded photo library asset \(metadata.assetLocalIdentifier): \(error)")
+            }
+        }
+#endif
+
         // Live Photo
         let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
         if capabilities.isLivePhotoServerAvailable,

@@ -134,6 +134,11 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
             NCNetworking.shared.removeServerErrorAccount(self.session.account)
             NCManageDatabase.shared.clearDBCache()
+            do {
+                try await NCLocalDatabase.shared.clearDBCache()
+            } catch {
+                nkLog(error: "Unable to clear the local GRDB cache: \(error)")
+            }
 
             let ufs = NCUtilityFileSystem()
             ufs.removeGroupDirectoryProviderStorage()

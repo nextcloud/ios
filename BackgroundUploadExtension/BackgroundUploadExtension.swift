@@ -9,6 +9,25 @@ import OSLog
 
 @main
 final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
+    private actor ProcessingCoordinator {
+        private var isProcessing = false
+
+        /// Claims the processing pass, or returns false when another invocation already owns it.
+        func beginProcessing() -> Bool {
+            guard !isProcessing else { return false }
+
+            isProcessing = true
+            return true
+        }
+
+        /// Releases the processing pass after every success or handled failure.
+        func endProcessing() {
+            isProcessing = false
+        }
+    }
+
+    private static let processingCoordinator = ProcessingCoordinator()
+
     enum MetadataState: Sendable {
         case uploading(jobIdentifier: String, incrementRetryCount: Bool)
         case pendingRetry
@@ -54,6 +73,19 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
         guard isDatabaseAvailable else {
             return .failure
         }
+
+        guard await Self.processingCoordinator.beginProcessing() else {
+            logInfo("processJobs skipped because another invocation is active")
+            return .processing
+        }
+
+        let result = await processJobsPass()
+        await Self.processingCoordinator.endProcessing()
+        return result
+    }
+
+    /// Performs one exclusive reconciliation pass after the shared coordinator grants ownership.
+    private func processJobsPass() async -> PHBackgroundResourceUploadProcessingResult {
 
         logInfo("processJobs begin")
 

@@ -1,5 +1,5 @@
 {
-  "originHash" : "e7d9aadbedd7b9502f3f0e0a0ddbb2a2cfb14e59560ff4e7c3999ae352acba7f",
+  "originHash" : "7880536aedfe5f5b326df402ac666a6126ac1b325106ab3eb7b6c78a6ef725ff",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -205,7 +205,7 @@
       "location" : "https://github.com/nextcloud/NextcloudKit",
       "state" : {
         "branch" : "main",
-        "revision" : "07f2d9ac5bbe320348f902613fc7fd44f7021363"
+        "revision" : "053d6eb161a7024e00e1064ab2825cad3e9317a2"
       }
     },
     {
@@ -276,8 +276,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-collections.git",
       "state" : {
-        "revision" : "a0cb0954ecb21e4e31b0070e6ed5674e8556685a",
-        "version" : "1.6.0"
+        "revision" : "98ef3c98609a1e31b7e157b5b619579001a789d6",
+        "version" : "1.7.1"
       }
     },
     {
