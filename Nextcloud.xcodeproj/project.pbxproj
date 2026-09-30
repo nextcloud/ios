@@ -111,7 +111,6 @@
 		AFCE353927E5DE0500FEA6C2 /* Shareable.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCE353827E5DE0400FEA6C2 /* Shareable.swift */; };
 		B601AA012F10000100C0D3E5 /* NCLogFilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B601AA002F10000100C0D3E5 /* NCLogFilesView.swift */; };
 		C0DECA022F65000100C0D001 /* NCCameraRollTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */; };
-		CA1700013000000000000001 /* NCUploadedAssetsCleanupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA1700013000000000000002 /* NCUploadedAssetsCleanupTests.swift */; };
 		CB3666201AF7550816B5CD6A /* NCContextMenuComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8932E90EC4278026D86CCCC9 /* NCContextMenuComment.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
 		F0A1B2C430B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A1B2C330B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift */; };
@@ -1460,7 +1459,6 @@
 		C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCameraRollTests.swift; sourceTree = "<group>"; };
-		CA1700013000000000000002 /* NCUploadedAssetsCleanupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUploadedAssetsCleanupTests.swift; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
 		F0A1B2C330B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerFloatingTitleViewTests.swift; sourceTree = "<group>"; };
 		F0A1B2C530B6000100D4E5F6 /* NCImageZoomViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCImageZoomViewTests.swift; sourceTree = "<group>"; };
@@ -2365,7 +2363,6 @@
 				F34BDB3B2F574A58007A222C /* BidiSafeFilenameTests.swift */,
 				439616AAA50F4360A761E5EF /* NCAlbumsPersistenceTests.swift */,
 				C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */,
-				CA1700013000000000000002 /* NCUploadedAssetsCleanupTests.swift */,
 			);
 			path = NextcloudUnitTests;
 			sourceTree = "<group>";
@@ -4805,7 +4802,6 @@
 				F34BDB3C2F574A58007A222C /* BidiSafeFilenameTests.swift in Sources */,
 				63563FE53573412998852DD3 /* NCAlbumsPersistenceTests.swift in Sources */,
 				C0DECA022F65000100C0D001 /* NCCameraRollTests.swift in Sources */,
-				CA1700013000000000000001 /* NCUploadedAssetsCleanupTests.swift in Sources */,
 				F372087D2BAB4C0F006B5430 /* TestConstants.swift in Sources */,
 				F78E2D6C29AF02DB0024D4F3 /* Database.swift in Sources */,
 			);

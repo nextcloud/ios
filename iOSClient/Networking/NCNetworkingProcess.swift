@@ -359,10 +359,19 @@ actor NCNetworkingProcess {
         guard await MainActor.run(body: { UIApplication.shared.applicationState == .active }) else {
             return
         }
+
+        let account = currentAccount
         let livePhotoAccounts = await NCManageDatabase.shared.getLivePhotoAccounts()
         let localIdentifiers: [String]
         if NCPreferences().removePhotoCameraRoll {
-            localIdentifiers = await NCManageDatabase.shared.getAssetLocalIdentifiersUploadedAsync() ?? []
+            do {
+                localIdentifiers = try await NCLocalDatabase.shared
+                    .uploadedPhotoLibraryAssets(account: account)
+                    .map(\.assetLocalIdentifier)
+            } catch {
+                nkLog(error: "Unable to read uploaded photo library assets for \(account): \(error)")
+                localIdentifiers = []
+            }
         } else {
             localIdentifiers = []
         }
@@ -392,6 +401,15 @@ actor NCNetworkingProcess {
               await Self.removeUploadedAssets(localIdentifiers) else {
             return
         }
+
+        do {
+            try await NCLocalDatabase.shared.removePhotoLibraryAssets(account: account, assetLocalIdentifiers: localIdentifiers)
+        } catch {
+            nkLog(error: "Unable to remove deleted photo library assets for \(account): \(error)")
+            return
+        }
+
+        // Realm is no longer the source of truth, but clear its legacy identifiers after deletion.
         await NCManageDatabase.shared.clearAssetLocalIdentifiersAsync(localIdentifiers)
     }
 
