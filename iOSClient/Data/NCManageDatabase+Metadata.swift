@@ -251,15 +251,14 @@ extension tableMetadata {
               NextcloudKit.shared.isNetworkReachable() else {
             return false
         }
-        let directEditingEditors = NCDocumentEditorSupport.directEditingEditorIdentifiers(account: account, contentType: contentType)
+        let directEditingEditors = NCDocumentEditorSupport.directEditingEditorIdentifiers(account: account, contentType: contentType, fileName: fileNameView)
         let supportsRichdocuments = NCDocumentEditorSupport.isFileSupportedByRichdocuments(self)
 
         return supportsRichdocuments || !directEditingEditors.isEmpty
     }
 
     var isLegacyRichdocumentsEditorAvailable: Bool {
-        guard !isPDF,
-              classFile == NKTypeClassFile.document.rawValue,
+        guard classFile == NKTypeClassFile.document.rawValue,
               NextcloudKit.shared.isNetworkReachable(),
               NCDocumentEditorSupport.isFileSupportedByRichdocuments(self) else {
             return false
@@ -267,7 +266,8 @@ extension tableMetadata {
 
         let directEditingEditors = NCDocumentEditorSupport.directEditingEditorIdentifiers(
             account: account,
-            contentType: contentType
+            contentType: contentType,
+            fileName: fileNameView
         )
         return !directEditingEditors.contains {
             $0.caseInsensitiveCompare(NCGlobal.shared.editorCollabora) == .orderedSame
@@ -278,7 +278,7 @@ extension tableMetadata {
         guard (classFile == NKTypeClassFile.document.rawValue) && NextcloudKit.shared.isNetworkReachable() else {
             return false
         }
-        let editors = NCDocumentEditorSupport.directEditingEditorIdentifiers(account: account, contentType: contentType)
+        let editors = NCDocumentEditorSupport.directEditingEditorIdentifiers(account: account, contentType: contentType, fileName: fileNameView)
         return !editors.isEmpty
     }
 

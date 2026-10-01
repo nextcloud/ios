@@ -37,25 +37,29 @@ final class NCDocumentEditorCoordinator {
         self.delegate = delegate
     }
 
-    func selectEditor() async -> UIViewController? {
+    func selectEditor() async throws -> UIViewController? {
         guard let route = resolveEditorRoute() else {
+            if selectedEditor != nil {
+                throw NKError.invalidData
+            }
             return nil
         }
 
         switch route {
         case .directEditing(let editorId):
-            return await makeDirectEditingViewController(editorId: editorId)
+            return try await makeDirectEditingViewController(editorId: editorId)
         case .legacyRichdocuments:
-            return await makeLegacyRichdocumentsViewController()
+            return try await makeLegacyRichdocumentsViewController()
         }
     }
 
     private func resolveEditorRoute() -> EditorRoute? {
+        // Cached editor capabilities must not prevent offline preview of downloaded documents.
+        guard NextcloudKit.shared.isNetworkReachable() else {
+            return nil
+        }
         let directEditingEditors = Set(
-            NCDocumentEditorSupport.directEditingEditorIdentifiers(
-                account: metadata.account,
-                contentType: metadata.contentType
-            )
+            NCDocumentEditorSupport.directEditingEditorIdentifiers(account: metadata.account, contentType: metadata.contentType, fileName: metadata.fileNameView)
             .map { $0.lowercased() }
         )
         let supportsLegacyRichdocuments = metadata.isLegacyRichdocumentsEditorAvailable
@@ -84,16 +88,14 @@ final class NCDocumentEditorCoordinator {
         return nil
     }
 
-    private func makeDirectEditingViewController(editorId: String) async -> UIViewController? {
+    private func makeDirectEditingViewController(editorId: String) async throws -> UIViewController {
         guard let editorAdapter = NCDirectEditorAdapter.resolve(from: [editorId]) else {
-            return nil
+            throw NKError.invalidData
         }
 
         let editorUserAgent = editorAdapter.userAgent()
         let options = NKRequestOptions(customUserAgent: editorUserAgent)
-        guard let link = await directEditingURL(editorId: editorAdapter.apiKey, options: options) else {
-            return nil
-        }
+        let link = try await directEditingURL(editorId: editorAdapter.apiKey, options: options)
 
         let storyboard = UIStoryboard(name: "NCViewerDirectEditing", bundle: nil)
         guard let viewController = storyboard.instantiateInitialViewController(
@@ -108,14 +110,14 @@ final class NCDocumentEditorCoordinator {
                 )
             }
         ) else {
-            return nil
+            throw NKError.invalidData
         }
 
         viewController.navigationItem.setBidiSafeTitle(metadata.fileNameView)
         return viewController
     }
 
-    private func directEditingURL(editorId: String, options: NKRequestOptions) async -> String? {
+    private func directEditingURL(editorId: String, options: NKRequestOptions) async throws -> String {
         if !metadata.url.isEmpty {
             return metadata.url
         }
@@ -142,23 +144,20 @@ final class NCDocumentEditorCoordinator {
         guard results.error == .success,
               let generatedURL = results.url,
               !generatedURL.isEmpty else {
-            await showEditorError(results.error == .success ? .invalidData : results.error)
-            return nil
+            throw results.error == .success ? NKError.invalidData : results.error
         }
 
         return generatedURL
     }
 
-    private func makeLegacyRichdocumentsViewController() async -> UIViewController? {
-        guard let link = await legacyRichdocumentsURL() else {
-            return nil
-        }
+    private func makeLegacyRichdocumentsViewController() async throws -> UIViewController {
+        let link = try await legacyRichdocumentsURL()
 
         guard let viewController = UIStoryboard(
             name: "NCViewerRichdocuments",
             bundle: nil
         ).instantiateInitialViewController() as? NCViewerRichdocuments else {
-            return nil
+            throw NKError.invalidData
         }
 
         viewController.metadata = metadata
@@ -168,14 +167,13 @@ final class NCDocumentEditorCoordinator {
         return viewController
     }
 
-    private func legacyRichdocumentsURL() async -> String? {
+    private func legacyRichdocumentsURL() async throws -> String {
         if !metadata.url.isEmpty {
             return metadata.url
         }
 
         guard !metadata.fileId.isEmpty else {
-            await showEditorError(.invalidData)
-            return nil
+            throw NKError.invalidData
         }
 
         NCActivityIndicator.shared.start(backgroundView: delegate?.view)
@@ -189,21 +187,9 @@ final class NCDocumentEditorCoordinator {
         guard results.error == .success,
               let generatedURL = results.url,
               !generatedURL.isEmpty else {
-            await showEditorError(results.error == .success ? .invalidData : results.error)
-            return nil
+            throw results.error == .success ? NKError.invalidData : results.error
         }
 
         return generatedURL
-    }
-
-    private func showEditorError(_ error: NKError) async {
-        let windowScene = SceneManager.shared.getWindowScene(
-            controller: delegate?.tabBarController as? NCMainTabBarController
-        )
-        await showErrorBanner(
-            windowScene: windowScene,
-            text: error.errorDescription,
-            errorCode: error.errorCode
-        )
     }
 }
