@@ -67,11 +67,59 @@ final class NCBackgroundUploadExtensionManager {
             }
 
             nkLog(tag: global.logTagBackgroundUpload, message: "Background upload extension enabled: \(library.uploadJobExtensionEnabled)")
+            logUploadJobSnapshot()
             return library.uploadJobExtensionEnabled
         } catch {
             nkLog(tag: global.logTagBackgroundUpload, message: "Background upload extension enable failed: \(error)")
             return false
         }
+    }
+
+    /// Reads PhotoKit's actionable jobs without changing their state or requesting another upload.
+    /// Pending jobs are outstanding work, not evidence that data is currently being transferred.
+    private func logUploadJobSnapshot() {
+        let actions: [(PHAssetResourceUploadJob.Action, String)] = [
+            (.process, "process"),
+            (.retry, "retry"),
+            (.acknowledge, "acknowledge")
+        ]
+        var jobIdentifiers = Set<String>()
+
+        for (action, actionName) in actions {
+            let jobs = PHAssetResourceUploadJob.fetchJobs(action: action, options: nil)
+            nkLog(tag: global.logTagBackgroundUpload, message: "PhotoKit queue snapshot, action: \(actionName), count: \(jobs.count)")
+
+            for index in 0..<jobs.count {
+                let job = jobs.object(at: index)
+                jobIdentifiers.insert(job.localIdentifier)
+                let state: String
+
+                switch job.state {
+                case .registered:
+                    state = "registered"
+                case .pending:
+                    state = "pending"
+                case .failed:
+                    state = "failed"
+                case .succeeded:
+                    state = "succeeded"
+                case .cancelled:
+                    state = "cancelled"
+                @unknown default:
+                    state = "unknown"
+                }
+
+                let error = job.error.map { $0 as NSError }
+                nkLog(
+                    tag: global.logTagBackgroundUpload,
+                    message: "PhotoKit queue job, action: \(actionName), job: \(job.localIdentifier), " +
+                        "state: \(state) (\(job.state.rawValue)), type: \(job.type.rawValue), " +
+                        "error domain: \(error?.domain ?? "<nil>"), code: \(error?.code ?? 0)"
+                )
+            }
+        }
+
+        nkLog(tag: global.logTagBackgroundUpload, message: "PhotoKit queue snapshot, unique jobs: \(jobIdentifiers.count)")
     }
 
     /// Disables the PhotoKit extension after the feature or auto upload is turned off and no jobs remain.
