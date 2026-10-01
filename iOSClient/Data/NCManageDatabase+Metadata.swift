@@ -467,7 +467,7 @@ extension NCManageDatabase {
     }
 
     /// Inserts discovered transfers only if the start/stop session is still current.
-    func addAutoUploadMetadatasAsync(_ metadatas: [tableMetadata], account: String, sessionIdentifier: String, discoveryDate: Date? = nil, seedOcId: String? = nil) async {
+    func addAutoUploadMetadatasAsync(_ metadatas: [tableMetadata], account: String, sessionIdentifier: String, seedOcId: String? = nil) async {
         let detached = metadatas.map { $0.detachedCopy() }
         await core.performRealmWriteAsync { realm in
             guard let current = realm.objects(tableAccount.self).filter("account == %@", account).first,
@@ -477,9 +477,6 @@ extension NCManageDatabase {
                 guard realm.objects(tableMetadata.self).filter("account == %@ AND (ocId == %@ OR ocIdTransfer == %@)", account, seedOcId, seedOcId).first != nil else { return }
             }
             realm.add(detached, update: .all)
-            if let discoveryDate {
-                current.autoUploadDiscoveryDate = [current.autoUploadDiscoveryDate, discoveryDate].compactMap({ $0 }).max()
-            }
         }
     }
 

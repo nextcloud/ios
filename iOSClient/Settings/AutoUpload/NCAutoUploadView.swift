@@ -60,7 +60,7 @@ struct NCAutoUploadView: View {
             stopAutoUploadCounterSubscription()
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
-            model.checkPermission()
+            model.onViewAppear()
             refreshOtherAutoUploadAccount()
         }
         .alert(model.error, isPresented: $model.showErrorAlert) {
@@ -107,6 +107,10 @@ struct NCAutoUploadView: View {
                 userId: model.session.userId
             )
             .environment(autoUploadCounter)
+        }
+        .onChange(of: autoUploadCounter.sinceDate) { _, date in
+            guard model.autoUploadStart, autoUploadCounter.isLoaded else { return }
+            model.autoUploadSinceDate = date
         }
         .onChange(of: model.autoUploadStart) { _, newValue in
             if !newValue {

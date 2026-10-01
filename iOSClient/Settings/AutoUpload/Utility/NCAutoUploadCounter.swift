@@ -8,6 +8,7 @@ import Observation
 @MainActor
 @Observable
 final class NCAutoUploadCounter {
+    private(set) var sinceDate: Date?
     private(set) var count = 0
     private(set) var failedCount = 0
     private(set) var isSuspended = false
@@ -103,7 +104,12 @@ final class NCAutoUploadCounter {
             self.account = account
             self.autoUploadServerUrlBase = base
 
-            await refresh()
+            // PhotoKit can replace completed jobs without changing the queue count.
+            // Refresh while the view is subscribed so the incremental date stays current too.
+            while !Task.isCancelled {
+                await refresh()
+                do { try await Task.sleep(for: .seconds(2)) } catch { return }
+            }
         }
     }
 
@@ -122,6 +128,7 @@ final class NCAutoUploadCounter {
 
         account = nil
         autoUploadServerUrlBase = nil
+        sinceDate = nil
         count = 0
         failedCount = 0
         isSuspended = false
@@ -137,6 +144,9 @@ final class NCAutoUploadCounter {
         let counts = await NCManageDatabase.shared.countAutoUploadMetadatasAsync(account: account,
                                                                                  autoUploadServerUrlBase: autoUploadServerUrlBase)
 
+        let currentSinceDate = await NCManageDatabase.shared.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account))?.autoUploadSinceDate
+        guard self.account == account, self.autoUploadServerUrlBase == autoUploadServerUrlBase else { return }
+        sinceDate = currentSinceDate
         count = counts.pending
         failedCount = counts.failed
 

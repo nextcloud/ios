@@ -33,7 +33,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     @Published var autoUploadCreateSubfolder: Bool = false
     /// The granularity of the subfolders, either daily, monthly, or yearly
     @Published var autoUploadSubfolderGranularity: Granularity = .monthly
-    /// The date from when new photos/videos will be uploaded.
+    /// The incremental restart date, editable while Auto Upload is stopped.
     @Published var autoUploadSinceDate: Date?
     var autoUploadTimespan: AutoUploadTimespan { autoUploadSinceDate == nil ? .allPhotos : .fromDate }
     /// Whether Photos permissions have been granted or not.
@@ -142,13 +142,13 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         }
     }
 
-    /// Choosing a range preserves its displayed date until the user explicitly edits it.
+    /// Starts from the whole library or the current incremental restart date.
     @MainActor
     func handleAutoUploadTimespan(_ timespan: AutoUploadTimespan) {
         handleAutoUploadSinceDate(timespan == .allPhotos ? nil : autoUploadSinceDate ?? Date.now)
     }
 
-    /// Saves the user cutoff and resets discovery together, only while Auto Upload is stopped.
+    /// Saves a new incremental restart date only while Auto Upload is stopped.
     @MainActor
     func handleAutoUploadSinceDate(_ date: Date?) {
         guard !isChangingAutoUpload, !autoUploadStart else { return }
@@ -236,6 +236,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
                 if #available(iOS 27, *) {
                     _ = await NCBackgroundUploadExtensionManager.shared.disableIfIdle()
                 }
+                autoUploadSinceDate = database.getTableAccount(account: accountIdentifier)?.autoUploadSinceDate
                 isChangingAutoUpload = false
             }
         }

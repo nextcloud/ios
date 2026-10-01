@@ -67,16 +67,14 @@ extension NCManageDatabase {
 
     // MARK: - Realm Read
 
-    /// Asynchronously fetches a set of filenames that should be skipped for auto-upload,
-    /// based on metadata and ongoing transfers for a given account and server URL base.
+    /// Separates queued files from confirmed uploads for incremental discovery.
     ///
     /// - Parameters:
     ///   - account: The account identifier.
     ///   - autoUploadServerUrlBase: The server base URL used for auto-upload.
-    /// - Returns: A set of file names that are either in metadata with a relevant status or currently being transferred.
-    func fetchSkipFileNamesAsync(account: String,
-                                 autoUploadServerUrlBase: String) async -> Set<String> {
-        let result: Set<String>? = await core.performRealmReadAsync { realm in
+    /// - Returns: File names queued or already uploaded to this destination.
+    func fetchAutoUploadFileNamesAsync(account: String, autoUploadServerUrlBase: String) async -> (queued: Set<String>, uploaded: Set<String>) {
+        let result = await core.performRealmReadAsync { realm in
             let metadatas = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND autoUploadServerUrlBase == %@ AND status IN %@", account, autoUploadServerUrlBase, NCGlobal.shared.metadataStatusUploadingAllMode)
                 .map(\.fileNameView)
@@ -85,14 +83,15 @@ extension NCManageDatabase {
                 .filter("account == %@ AND serverUrlBase == %@", account, autoUploadServerUrlBase)
                 .map(\.fileName)
 
-            return Set(metadatas).union(transfers)
+            return (queued: Set(metadatas), uploaded: Set(transfers))
         }
 
-        return result ?? []
+        return result ?? (queued: [], uploaded: [])
     }
 
-    func fetchSkipAssetLocalIdentifiersAsync(account: String, autoUploadServerUrlBase: String, createdOnOrAfter startDate: Date? = nil) async -> Set<String> {
-        let result: Set<String>? = await core.performRealmReadAsync { realm in
+    /// Keeps the bulk asset lookup while distinguishing tracked resources from confirmed uploads.
+    func fetchAutoUploadAssetIdentifiersAsync(account: String, autoUploadServerUrlBase: String, createdOnOrAfter startDate: Date? = nil) async -> (tracked: Set<String>, uploaded: Set<String>) {
+        let result = await core.performRealmReadAsync { realm in
             var metadatas = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND autoUploadServerUrlBase == %@ AND assetLocalIdentifier != ''",
                         account, autoUploadServerUrlBase)
@@ -108,10 +107,10 @@ extension NCManageDatabase {
             let metadataIdentifiers = metadatas.map(\.assetLocalIdentifier)
             let transferIdentifiers = transfers.map(\.assetLocalIdentifier)
 
-            return Set(metadataIdentifiers).union(transferIdentifiers)
+            return (tracked: Set(metadataIdentifiers), uploaded: Set(transferIdentifiers))
         }
 
-        return result ?? []
+        return result ?? (tracked: [], uploaded: [])
     }
 
     /// Returns active auto-upload file names that must not be queued a second time.
@@ -154,22 +153,6 @@ extension NCManageDatabase {
         }
 
         return result ?? []
-    }
-
-    /// Fetches the latest date recorded in successful upload history for the account and destination.
-    /// PhotoKit records the asset capture date here, not the time of the HTTP upload.
-    /// - Parameters:
-    ///   - account: The account identifier.
-    ///   - autoUploadServerUrlBase: The server base URL for auto-upload.
-    /// - Returns: The latest recorded asset date, or `nil` if no entry exists.
-    func fetchLastAutoUploadedDateAsync(account: String,
-                                        autoUploadServerUrlBase: String) async -> Date? {
-        await core.performRealmReadAsync { realm in
-            realm.objects(tableAutoUploadTransfer.self)
-                .filter("account == %@ AND serverUrlBase == %@", account, autoUploadServerUrlBase)
-                .sorted(byKeyPath: "date", ascending: false)
-                .first?.date
-        }
     }
 
     func countAutoUploadMetadatasAsync(account: String,

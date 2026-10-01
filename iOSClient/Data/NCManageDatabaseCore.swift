@@ -72,15 +72,6 @@ final class NCManageDatabaseCore {
             }
         }
 
-        if oldSchemaVersion < 419 {
-            migration.enumerateObjects(ofType: tableAccount.className()) { _, newObject in
-                guard let newObject else { return }
-                // The old date served both purposes; preserve its existing cutoff and progress.
-                let sinceDate = newObject.value("autoUploadSinceDate", as: Date.self)
-                newObject.setValueSafely(sinceDate, for: "autoUploadDiscoveryDate")
-            }
-        }
-
         //
         // AUTOMATIC / DEFENSIVE MIGRATIONS
         //

@@ -8,7 +8,7 @@ import NextcloudKit
 
 extension BackgroundUploadExtension {
     /// Finds eligible assets and creates up to `limit` pending metadata records for their resources.
-    /// Existing transfers are skipped and the account discovery cursor advances only after queuing work.
+    /// Confirmed transfers advance the incremental date; unfinished resources keep it from moving past them.
     func createPendingMetadatas(account: tableAccount, limit: Int) async -> Bool {
         guard limit > 0,
               account.autoUploadImage || account.autoUploadVideo else {
@@ -35,7 +35,7 @@ extension BackgroundUploadExtension {
 
         var predicates: [NSPredicate] = [NSCompoundPredicate(orPredicateWithSubpredicates: mediaPredicates)]
 
-        let discoveryStartDate = account.autoUploadDiscoveryStartDate
+        let discoveryStartDate = account.autoUploadSinceDate
 
         if let discoveryStartDate {
             predicates.append(NSPredicate(format: "creationDate >= %@", discoveryStartDate as NSDate))
@@ -49,7 +49,7 @@ extension BackgroundUploadExtension {
         }
         var fetchIndexes = Array(repeating: 0, count: fetchResults.count)
         var yieldedAssetIdentifiers = Set<String>()
-        var skipAssetLocalIdentifiers = await database.fetchSkipAssetLocalIdentifiersAsync(
+        let knownAssetIdentifiers = await database.fetchAutoUploadAssetIdentifiersAsync(
             account: account.account,
             autoUploadServerUrlBase: autoUploadServerUrlBase,
             createdOnOrAfter: discoveryStartDate
@@ -61,7 +61,8 @@ extension BackgroundUploadExtension {
 
         var remaining = limit
         var madeProgress = false
-        var lastQueuedDate: Date?
+        var lastUploadedDate: Date?
+        var canAdvanceSinceDate = true
 
         // PhotoKit already sorts every result; merge them lazily and stop as soon as the job slots are full.
         discoveryLoop: while remaining > 0,
@@ -70,10 +71,15 @@ extension BackgroundUploadExtension {
                   current.autoUploadStart,
                   current.autoUploadSessionIdentifier == account.autoUploadSessionIdentifier else { break }
 
-            let isLivePhoto = asset.mediaSubtypes.contains(.photoLive) && livePhotoEnabled
+            let isLivePhotoAsset = asset.mediaSubtypes.contains(.photoLive)
+            let isLivePhoto = isLivePhotoAsset && livePhotoEnabled
 
-            // A Live Photo may still be missing one component, so evaluate its two resources separately.
-            guard isLivePhoto || !skipAssetLocalIdentifiers.contains(asset.localIdentifier) else {
+            if !isLivePhotoAsset, knownAssetIdentifiers.uploaded.contains(asset.localIdentifier) {
+                if canAdvanceSinceDate { lastUploadedDate = asset.creationDate ?? lastUploadedDate }
+                continue
+            }
+            if !isLivePhotoAsset, knownAssetIdentifiers.tracked.contains(asset.localIdentifier) {
+                canAdvanceSinceDate = false
                 continue
             }
 
@@ -81,6 +87,7 @@ extension BackgroundUploadExtension {
                   let originalFileName = primaryResource.filename,
                   !originalFileName.isEmpty else {
                 logError("Upload resource not found for asset \(asset.localIdentifier)")
+                canAdvanceSinceDate = false
                 continue
             }
 
@@ -93,6 +100,7 @@ extension BackgroundUploadExtension {
             if isLivePhoto {
                 guard let pairedVideoResource = pairedVideoResource(for: asset) else {
                     logError("Paired video resource not found for Live Photo asset \(asset.localIdentifier)")
+                    canAdvanceSinceDate = false
                     continue
                 }
 
@@ -110,6 +118,13 @@ extension BackgroundUploadExtension {
 
             let fileNames = uploadResources.map(\.fileName)
             let transferredFileNames = await database.fetchTransferredAutoUploadFileNamesAsync(account: account.account, autoUploadServerUrlBase: autoUploadServerUrlBase, fileNames: fileNames)
+            if fileNames.allSatisfy({ transferredFileNames.contains($0) }) {
+                if canAdvanceSinceDate { lastUploadedDate = asset.creationDate ?? lastUploadedDate }
+                continue
+            }
+
+            // Keep the date before the first unfinished asset, including either Live Photo component.
+            canAdvanceSinceDate = false
             let resourcesToUpload = uploadResources.filter {
                 !trackedMetadataFileNames.contains($0.fileName) && !transferredFileNames.contains($0.fileName)
             }
@@ -135,8 +150,6 @@ extension BackgroundUploadExtension {
 
                 guard inserted else { break discoveryLoop }
                 trackedMetadataFileNames.insert(seedResource.fileName)
-                skipAssetLocalIdentifiers.insert(asset.localIdentifier)
-                lastQueuedDate = creationDate
                 remaining -= 1
                 madeProgress = true
                 continue
@@ -166,16 +179,13 @@ extension BackgroundUploadExtension {
 
                 guard inserted else { break discoveryLoop }
                 trackedMetadataFileNames.insert(uploadResource.fileName)
-                skipAssetLocalIdentifiers.insert(asset.localIdentifier)
-                lastQueuedDate = creationDate
                 remaining -= 1
                 madeProgress = true
             }
         }
 
-        if let lastQueuedDate {
-            // Advance only after metadata is stored, so an interrupted pass can rediscover unqueued assets.
-            await database.updateAutoUploadDiscoveryDateIfEnabledAsync(lastQueuedDate, account: account.account, sessionIdentifier: account.autoUploadSessionIdentifier)
+        if let lastUploadedDate {
+            await database.updateAutoUploadSinceDateIfEnabledAsync(lastUploadedDate, account: account.account, sessionIdentifier: account.autoUploadSessionIdentifier)
         }
 
         return madeProgress

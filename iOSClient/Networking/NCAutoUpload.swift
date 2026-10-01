@@ -98,6 +98,7 @@ class NCAutoUpload: NSObject {
         }
 
         let num = await uploadAssets(controller: controller, tblAccount: tblAccount, assets: assets, fileNames: fileNames, filterExistingQueue: false)
+        model.onViewAppear()
         nkLog(debug: "Automatic upload \(num) upload")
     }
 
@@ -114,8 +115,12 @@ class NCAutoUpload: NSObject {
         let formatCompatibility = NCPreferences().formatCompatibility
         let keychainLivePhoto = NCPreferences().livePhoto
         let fileSystem = NCUtilityFileSystem()
-        let skipFileNames = await self.database.fetchSkipFileNamesAsync(account: tblAccount.account,
+        let knownFileNames = await self.database.fetchAutoUploadFileNamesAsync(account: tblAccount.account,
                                                                         autoUploadServerUrlBase: autoUploadServerUrlBase)
+
+        let skipFileNames = knownFileNames.queued.union(knownFileNames.uploaded)
+        var lastUploadedDate: Date?
+        var canAdvanceSinceDate = true
 
         nkLog(debug: "Automatic upload, new \(assets.count) assets found")
 
@@ -133,12 +138,20 @@ class NCAutoUpload: NSObject {
                 nativeFormat: !formatCompatibility
             )
 
-            if skipFileNames.contains(fileNameCompatible) || skipFileNames.contains(fileName) {
+            let mediaType = asset.mediaType
+            let isLivePhoto = asset.mediaSubtypes.contains(.photoLive) && keychainLivePhoto
+            let pairedFileName = (fileNameCompatible as NSString).deletingPathExtension + ".mov"
+            let primaryUploaded = knownFileNames.uploaded.contains(fileNameCompatible) || knownFileNames.uploaded.contains(fileName)
+            if primaryUploaded && (!isLivePhoto || knownFileNames.uploaded.contains(pairedFileName)) {
+                if canAdvanceSinceDate { lastUploadedDate = asset.creationDate ?? lastUploadedDate }
                 continue
             }
 
-            let mediaType = asset.mediaType
-            let isLivePhoto = asset.mediaSubtypes.contains(.photoLive) && keychainLivePhoto
+            // A later success cannot move the restart date past an unfinished photo or Live Photo.
+            canAdvanceSinceDate = false
+            if skipFileNames.contains(fileNameCompatible) || skipFileNames.contains(fileName) {
+                continue
+            }
             let serverUrl = tblAccount.autoUploadCreateSubfolder
                 ? fileSystem.createGranularityPath(asset: asset, serverUrlBase: autoUploadServerUrlBase, granularity: tblAccount.autoUploadSubfolderGranularity)
                 : autoUploadServerUrlBase
@@ -192,7 +205,9 @@ class NCAutoUpload: NSObject {
             metadatas.append(metadata)
         }
 
-        let discoveryDate = assets.compactMap(\.creationDate).max()
+        if let lastUploadedDate {
+            await database.updateAutoUploadSinceDateIfEnabledAsync(lastUploadedDate, account: tblAccount.account, sessionIdentifier: tblAccount.autoUploadSessionIdentifier)
+        }
         let metadatasToAdd: [tableMetadata]
 
         if filterExistingQueue {
@@ -202,8 +217,6 @@ class NCAutoUpload: NSObject {
         }
 
         guard !metadatasToAdd.isEmpty else {
-            // All discovered files are already tracked; avoid scanning that whole range again.
-            await database.addAutoUploadMetadatasAsync([], account: tblAccount.account, sessionIdentifier: tblAccount.autoUploadSessionIdentifier, discoveryDate: discoveryDate)
             return 0
         }
 
@@ -218,8 +231,8 @@ class NCAutoUpload: NSObject {
             entriesToAdd = metadatasFolder + metadatasToAdd
         }
 
-        // Queue insertion and cursor advancement share the session check and Realm transaction.
-        await database.addAutoUploadMetadatasAsync(entriesToAdd, account: tblAccount.account, sessionIdentifier: tblAccount.autoUploadSessionIdentifier, discoveryDate: discoveryDate)
+        // A stopped or restarted scan cannot insert its old work.
+        await database.addAutoUploadMetadatasAsync(entriesToAdd, account: tblAccount.account, sessionIdentifier: tblAccount.autoUploadSessionIdentifier)
 
         return metadatasToAdd.count
     }
@@ -249,7 +262,7 @@ class NCAutoUpload: NSObject {
             mediaPredicates.append(NSPredicate(format: "mediaType == %i", PHAssetMediaType.video.rawValue))
         }
 
-        if let autoUploadSinceDate = tblAccount.autoUploadDiscoveryStartDate {
+        if let autoUploadSinceDate = tblAccount.autoUploadSinceDate {
             datePredicates.append(NSPredicate(format: "creationDate >= %@", autoUploadSinceDate as NSDate))
         }
 
@@ -287,7 +300,10 @@ class NCAutoUpload: NSObject {
             let result = PHAsset.fetchAssets(in: collection, options: fetchOptions)
             return result.objects(at: IndexSet(0..<result.count))
         }
-        let newAssets = OrderedSet(allAssets)
+        // Selected albums may overlap and are not globally ordered.
+        let newAssets = OrderedSet(allAssets).sorted {
+            ($0.creationDate ?? .distantPast) < ($1.creationDate ?? .distantPast)
+        }
         let fileNames = newAssets.compactMap { asset -> String? in
             let date = asset.creationDate ?? Date()
             return NCUtilityFileSystem().createFileName(asset.originalFilename, fileDate: date, fileType: asset.mediaType)

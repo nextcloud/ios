@@ -933,6 +933,6 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_autoupload_whole_library_" = "Whole photo library";
 "_autoupload_whole_library_description_" = "Checks the entire selected library. Files already uploaded to %@ are skipped.";
 "_autoupload_from_date_" = "From a date";
-"_autoupload_start_date_" = "Starts on";
+"_autoupload_start_date_" = "Upload starting from";
 "_autoupload_set_to_now_" = "Set to now";
-"_autoupload_date_range_footer_" = "Files already uploaded to %@ are skipped. Turning auto upload off and on preserves the selected date.";
+"_autoupload_date_range_footer_" = "Files already uploaded to %@ are skipped. The date advances through confirmed uploads and is preserved when auto upload is stopped.";
