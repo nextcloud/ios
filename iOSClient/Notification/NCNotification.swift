@@ -8,6 +8,7 @@ import SwiftyJSON
 
 class NCNotification: UITableViewController, NCNotificationCellDelegate {
     private var dataSourceTask: URLSessionTask?
+
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     var notifications: [NKNotifications] = []
@@ -82,6 +83,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard notifications.indices.contains(indexPath.row) else { return }
+
         let notification = notifications[indexPath.row]
 
         do {
@@ -101,6 +104,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard notifications.indices.contains(indexPath.row) else { return UITableViewCell() }
         guard let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCNotificationCell else { return UITableViewCell() }
 
         let notification = notifications[indexPath.row]
@@ -234,6 +238,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                         cell.secondary.setTitle(label, for: .normal)
                     }
                 }
+
             } else if jsonActions.count >= 3 {
 
                 cell.more.isEnabled = true
@@ -329,27 +334,29 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
             return
         }
 
-        self.tableView.reloadData()
-
         let results = await NextcloudKit.shared.getNotificationsAsync(account: session.account) { task in
             Task { @MainActor in
                 self.dataSourceTask = task
             }
         }
+
         guard results.error == .success, let notifications = results.notifications else {
+            self.refreshControl?.endRefreshing()
             return
         }
 
-        self.notifications.removeAll()
         let sortedNotifications = notifications.sorted { $0.date > $1.date }
+        var newNotifications: [NKNotifications] = []
+        newNotifications.reserveCapacity(sortedNotifications.count)
+
         for notification in sortedNotifications {
             if let icon = notification.icon {
-                if await self.utility.convertSVGtoPNGWriteToUserData(serverUrl: icon, rewrite: false, account: session.account).image != nil {
-                    self.tableView.reloadData()
-                }
+                _ = await self.utility.convertSVGtoPNGWriteToUserData(serverUrl: icon, rewrite: false, account: session.account)
             }
-            self.notifications.append(notification)
+            newNotifications.append(notification)
         }
+
+        self.notifications = newNotifications
         self.refreshControl?.endRefreshing()
         self.tableView.reloadData()
     }
@@ -385,16 +392,16 @@ class NCNotificationCell: UITableViewCell {
 
     @IBAction func touchUpInsidePrimary(_ sender: Any) {
         guard let notification = notification,
-                let button = sender as? UIButton,
-                let label = button.titleLabel?.text
+              let button = sender as? UIButton,
+              let label = button.titleLabel?.text
         else { return }
         delegate?.tapAction(with: notification, label: label, sender: sender)
     }
 
     @IBAction func touchUpInsideSecondary(_ sender: Any) {
         guard let notification = notification,
-                let button = sender as? UIButton,
-                let label = button.titleLabel?.text
+              let button = sender as? UIButton,
+              let label = button.titleLabel?.text
         else { return }
         delegate?.tapAction(with: notification, label: label, sender: sender)
     }

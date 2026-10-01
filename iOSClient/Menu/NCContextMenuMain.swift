@@ -94,10 +94,7 @@ class NCContextMenuMain: NSObject {
 
     // MARK: Main Actions Menu
 
-    private func buildMainActionsMenu(
-        metadata: tableMetadata,
-        capabilities: NKCapabilities.Capabilities
-    ) -> [UIMenuElement] {
+    private func buildMainActionsMenu(metadata: tableMetadata, capabilities: NKCapabilities.Capabilities) -> [UIMenuElement] {
         var menuElements: [UIMenuElement] = []
 
         if NCNetworking.shared.isOnline,
@@ -110,13 +107,34 @@ class NCContextMenuMain: NSObject {
             )
         }
 
-        if metadata.isDirectEditingEditorAvailable {
-            let availableEditors = NCDocumentEditorSupport.directEditingEditorIdentifiers(
-                account: metadata.account,
-                contentType: metadata.contentType
-            ).map { $0.lowercased() }
-            if availableEditors.contains(global.editorEuroOffice) {
-                menuElements.append(makeOpenWithOffice(metadata: metadata, selectedEditor: global.editorEuroOffice))
+        if !metadata.isDirectoryE2EE,
+           metadata.classFile == NKTypeClassFile.document.rawValue,
+           NextcloudKit.shared.isNetworkReachable() {
+            var availableEditors = Set(NCDocumentEditorSupport.directEditingEditorIdentifiers(account: metadata.account, contentType: metadata.contentType, fileName: metadata.fileNameView).map { $0.lowercased() })
+            if metadata.isLegacyRichdocumentsEditorAvailable {
+                availableEditors.insert(global.editorCollabora)
+            }
+            let officeEditors = [global.editorEuroOffice, global.editorCollabora, global.editorOnlyOffice]
+                .filter { availableEditors.contains($0) }
+            let officeActions = officeEditors.map { editorId in
+                let editorName = capabilities.directEditingEditors.first {
+                    $0.identifier.lowercased() == editorId
+                }?.name
+                let fallbackName: String
+                switch editorId {
+                case global.editorCollabora: fallbackName = "Collabora"
+                case global.editorOnlyOffice: fallbackName = "ONLYOFFICE"
+                default: fallbackName = "EuroOffice"
+                }
+                let displayName = editorName.flatMap { $0.isEmpty ? nil : $0 } ?? fallbackName
+
+                return makeOpenWithOffice(metadata: metadata, selectedEditor: editorId, title: officeEditors.count > 1 ? displayName : nil)
+            }
+
+            if officeActions.count == 1, let action = officeActions.first {
+                menuElements.append(action)
+            } else if !officeActions.isEmpty {
+                menuElements.append(UIMenu(title: NSLocalizedString("_open_in_office_", comment: ""), image: UIImage(systemName: "doc.richtext"), children: officeActions))
             }
         }
 
@@ -323,11 +341,8 @@ class NCContextMenuMain: NSObject {
 
     // MARK: - Open with Office
 
-    private func makeOpenWithOffice(metadata: tableMetadata, selectedEditor: String) -> UIAction {
-        return UIAction(
-            title: NSLocalizedString("_open_in_office_", comment: ""),
-            image: UIImage(systemName: "doc.richtext")
-        ) { _ in
+    private func makeOpenWithOffice(metadata: tableMetadata, selectedEditor: String, title: String? = nil) -> UIAction {
+        return UIAction(title: title ?? NSLocalizedString("_open_in_office_", comment: ""), image: UIImage(systemName: "doc.richtext")) { _ in
             Task {
                 if let vc = await NCViewer().getViewerController(metadata: metadata, image: nil, delegate: self.viewController, viewerTransitionSource: nil, selectedEditor: selectedEditor) {
                     self.viewController.navigationController?.pushViewController(vc, animated: true)

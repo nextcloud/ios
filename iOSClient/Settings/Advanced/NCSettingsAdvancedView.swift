@@ -148,20 +148,6 @@ struct NCSettingsAdvancedView: View {
                     .onChange(of: model.selectedLogLevel) {
                         model.updateSelectedLogLevel()
                     }
-                    // Clear Log File
-                    Button(action: {
-                        model.clearLogFile()
-                    }, label: {
-                        HStack {
-                            Image(systemName: "xmark")
-                                .font(.icon())
-                                .frame(width: 26)
-                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                            Text(NSLocalizedString("_clear_log_", comment: ""))
-                                .font(.body)
-                        }
-                    })
-                    .tint(Color(UIColor.label))
                 }, header: {
                     Text(NSLocalizedString("_diagnostics_", comment: ""))
                         .font(.headline)

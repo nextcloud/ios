@@ -80,8 +80,17 @@ class NCViewer: NSObject {
 
             // TEXT - OFFICE
             let documentEditorCoordinator = NCDocumentEditorCoordinator(metadata: metadata, image: image, selectedEditor: selectedEditor, delegate: delegate)
-            if let viewController = await documentEditorCoordinator.selectEditor() {
-                return viewController
+            do {
+                if let viewController = try await documentEditorCoordinator.selectEditor() {
+                    return viewController
+                }
+            } catch {
+                // An editor failure must not fall back to downloading a protected document.
+                let editorError = (error as? NKError) ?? .invalidData
+                let windowScene = SceneManager.shared.getWindowScene(controller: delegate?.tabBarController as? NCMainTabBarController)
+
+                await showErrorBanner(windowScene: windowScene, text: editorError.errorDescription, errorCode: editorError.errorCode)
+                return nil
             }
 
             self.QLPreview(metadata: metadata, delegate: delegate)

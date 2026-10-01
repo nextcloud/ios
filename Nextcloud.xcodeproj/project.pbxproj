@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		22BA14432CF44BDBA2E6C291 /* NCDocumentEditorSupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B74B947E07444CC9CFE0A6C /* NCDocumentEditorSupportTests.swift */; };
 		2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		2C33C48223E2C475005F963B /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33C48123E2C475005F963B /* NotificationService.swift */; };
@@ -258,7 +259,6 @@
 		F708B451304EC5F9009D013A /* NCInputAlbumNameAlertModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B419304EC5F9009D013A /* NCInputAlbumNameAlertModifier.swift */; };
 		F708B452304EC5F9009D013A /* AlbumsRoutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B42B304EC5F9009D013A /* AlbumsRoutes.swift */; };
 		F708B453304EC5F9009D013A /* NCMediaViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B42D304EC5F9009D013A /* NCMediaViewRepresentable.swift */; };
-		F70968A424212C4E00ED60E5 /* NCLivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */; };
 		F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */; };
 		F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
@@ -335,7 +335,6 @@
 		F723985C253C95CE00257F49 /* NCViewerRichdocuments.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F723985B253C95CE00257F49 /* NCViewerRichdocuments.storyboard */; };
 		F723B3DD22FC6D1D00301EFE /* NCShareCommentsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */; };
 		F72408332B8A27C900F128E2 /* NCMedia+Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72408322B8A27C900F128E2 /* NCMedia+Command.swift */; };
-		F72429362AFE39860040AEF3 /* NCLivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */; };
 		F724377B2C10B83E00C7C68D /* NCSharePermissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F724377A2C10B83E00C7C68D /* NCSharePermissions.swift */; };
 		F724377C2C10B92200C7C68D /* NCSharePermissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F724377A2C10B83E00C7C68D /* NCSharePermissions.swift */; };
 		F724377D2C10B92300C7C68D /* NCSharePermissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F724377A2C10B83E00C7C68D /* NCSharePermissions.swift */; };
@@ -1319,6 +1318,7 @@
 		2C33C48A23E2CC26005F963B /* Notification_Service_Extension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Notification_Service_Extension-Bridging-Header.h"; sourceTree = "<group>"; };
 		370D26AE248A3D7A00121797 /* NCCellMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCellMain.swift; sourceTree = "<group>"; };
 		439616AAA50F4360A761E5EF /* NCAlbumsPersistenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAlbumsPersistenceTests.swift; sourceTree = "<group>"; };
+		4B74B947E07444CC9CFE0A6C /* NCDocumentEditorSupportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCDocumentEditorSupportTests.swift; sourceTree = "<group>"; };
 		8932E90EC4278026D86CCCC9 /* NCContextMenuComment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCContextMenuComment.swift; sourceTree = "<group>"; };
 		A1B2C3D330B0000100ABCDEF /* NCMediaViewerLoadingPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerLoadingPolicy.swift; sourceTree = "<group>"; };
 		A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySet.swift; sourceTree = "<group>"; };
@@ -1553,7 +1553,6 @@
 		F708B430304EC5F9009D013A /* AlbumsRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsRootView.swift; sourceTree = "<group>"; };
 		F708B433304EC5F9009D013A /* AlbumsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsViewController.swift; sourceTree = "<group>"; };
 		F708B434304EC5F9009D013A /* NCAlbums.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCAlbums.storyboard; sourceTree = "<group>"; };
-		F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCLivePhoto.swift; sourceTree = "<group>"; };
 		F70A07C8205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F70BFC7320E0FA7C00C67599 /* NCUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUtility.swift; sourceTree = "<group>"; };
 		F70C8741301B1E5600170B1F /* NCCollectionViewCommon+CollectionViewDataSourcePrefetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+CollectionViewDataSourcePrefetching.swift"; sourceTree = "<group>"; };
@@ -2363,6 +2362,7 @@
 				F34BDB3B2F574A58007A222C /* BidiSafeFilenameTests.swift */,
 				439616AAA50F4360A761E5EF /* NCAlbumsPersistenceTests.swift */,
 				C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */,
+				4B74B947E07444CC9CFE0A6C /* NCDocumentEditorSupportTests.swift */,
 			);
 			path = NextcloudUnitTests;
 			sourceTree = "<group>";
@@ -3511,7 +3511,6 @@
 				F733598025C1C188002ABA72 /* NCAskAuthorization.swift */,
 				F77C97382953131000FDDD09 /* NCCameraRoll.swift */,
 				F7A3DB8F2DDE238C008F7EC8 /* NCDebouncer.swift */,
-				F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */,
 				F7A560412AE1593700BE8FD6 /* NCSaveLivePhoto.swift */,
 				F702F30725EE5D47008F8E80 /* NCPopupViewController.swift */,
 				F707C26421A2DC5200F6181E /* NCStoreReview.swift */,
@@ -4802,6 +4801,7 @@
 				F34BDB3C2F574A58007A222C /* BidiSafeFilenameTests.swift in Sources */,
 				63563FE53573412998852DD3 /* NCAlbumsPersistenceTests.swift in Sources */,
 				C0DECA022F65000100C0D001 /* NCCameraRollTests.swift in Sources */,
+				22BA14432CF44BDBA2E6C291 /* NCDocumentEditorSupportTests.swift in Sources */,
 				F372087D2BAB4C0F006B5430 /* TestConstants.swift in Sources */,
 				F78E2D6C29AF02DB0024D4F3 /* Database.swift in Sources */,
 			);
@@ -4890,7 +4890,6 @@
 				F73EF7DA2B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
 				F70557BF2ED44F1800135623 /* UploadBannerView.swift in Sources */,
 				F7817CFB29801A3500FFBC65 /* Data+Extension.swift in Sources */,
-				F72429362AFE39860040AEF3 /* NCLivePhoto.swift in Sources */,
 				F74B91E82F51D45A0050813D /* ErrorBannerView.swift in Sources */,
 				AF4BF61F27562B3F0081CEEF /* NCManageDatabase+Activity.swift in Sources */,
 				F760A48B2FE95D06001B212E /* NCTransferDelegateDispatcher.swift in Sources */,
@@ -5473,7 +5472,6 @@
 				F7EDBB5C2FA8DBE800098C42 /* NCMediaViewerPresenter.swift in Sources */,
 				F7CADEFD2EA159210057849E /* NCMetadataUploadTranfersSuccess.swift in Sources */,
 				F343A4B32A1E01FF00DDA874 /* PHAsset+Extension.swift in Sources */,
-				F70968A424212C4E00ED60E5 /* NCLivePhoto.swift in Sources */,
 				F7C30DFA291BCF790017149B /* NCNetworkingE2EECreateFolder.swift in Sources */,
 				F72CA05C2F5051DB002E2F06 /* AlertActionBannerView.swift in Sources */,
 				F76995F42F9A4AC400291FA7 /* NCCollectionViewCommon+UIEditMenuInteractionDelegate.swift in Sources */,
@@ -6736,7 +6734,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
@@ -6804,7 +6802,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
