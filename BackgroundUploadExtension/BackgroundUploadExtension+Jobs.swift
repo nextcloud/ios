@@ -42,6 +42,16 @@ extension BackgroundUploadExtension {
         var madeProgress = false
 
         for metadata in metadatas {
+            guard let currentAccount = await database.getTableAccountAsync(
+                predicate: NSPredicate(format: "account == %@", account.account)
+            ), currentAccount.autoUploadStart else {
+                break
+            }
+
+            guard let currentMetadata = await database.getMetadataAsync(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)),
+                  !currentMetadata.backgroundUploadCancellationRequested else {
+                continue
+            }
             let assets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
 
             guard let asset = assets.firstObject else {
@@ -70,6 +80,7 @@ extension BackgroundUploadExtension {
 
             // PhotoKit job creation must happen inside its library change transaction.
             try library.performChangesAndWait {
+                guard database.getTableAccount(account: account.account)?.autoUploadStart == true else { return }
                 let request = PHAssetResourceUploadJobChangeRequest.creationRequestForJob(destination: destination, resource: resource)
                 jobIdentifier = request.placeholderForCreatedAssetResourceUploadJob?.localIdentifier
             }
@@ -83,6 +94,13 @@ extension BackgroundUploadExtension {
                 .uploading(jobIdentifier: jobIdentifier, incrementRetryCount: false),
                 metadata: metadata
             )
+
+            if database.getTableAccount(account: account.account)?.autoUploadStart != true {
+                metadata.backgroundUploadCancellationRequested = true
+                await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+                _ = try await cancelRequestedUploadJobs()
+                break
+            }
 
             madeProgress = true
 
@@ -160,12 +178,22 @@ extension BackgroundUploadExtension {
                     continue
                 }
 
+                if !(job.responseHeaderFields?["oc-fileid"] ?? "").isEmpty {
+                    guard await processUploadSuccess(metadata: metadata, job: job) else { continue }
+                    await persistMetadataState(.completed, metadata: metadata)
+                } else if job.state == .succeeded {
+                    logError("Stop deferred for successful job without oc-fileid: \(jobIdentifier)")
+                    continue
+                }
+
                 guard try acknowledge(job: job, library: library) else {
                     logError("Unable to acknowledge cancelled job \(jobIdentifier)")
                     continue
                 }
 
-                await database.deleteMetadataAsync(id: metadata.ocId)
+                if metadata.status != global.metadataStatusNormal {
+                    await database.deleteMetadataAsync(id: metadata.ocId)
+                }
                 madeProgress = true
                 logInfo("Acknowledged cancelled background upload job \(jobIdentifier), state: \(job.state.rawValue)")
             }

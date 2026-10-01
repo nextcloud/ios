@@ -221,6 +221,10 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     private func cancelAutoUploadTransfers(account: String) async {
         await database.requestBackgroundAutoUploadCancellationAsync(account: account)
 
+        if #available(iOS 27, *) {
+            await NCBackgroundUploadExtensionManager.shared.cancelUploads(account: account)
+        }
+
         let predicate = NSPredicate(
             format: "account == %@ AND sessionSelector == %@ AND backgroundUploadJobIdentifier == '' AND status != %d",
             account,

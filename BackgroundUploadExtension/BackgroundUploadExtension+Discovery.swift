@@ -75,6 +75,7 @@ extension BackgroundUploadExtension {
         // PhotoKit already sorts every result; merge them lazily and stop as soon as the job slots are full.
         while remaining > 0,
               let asset = nextAsset(from: fetchResults, indexes: &fetchIndexes, yieldedIdentifiers: &yieldedAssetIdentifiers) {
+            guard database.getTableAccount(account: account.account)?.autoUploadStart == true else { break }
 
             let isLivePhoto = asset.mediaSubtypes.contains(.photoLive) && livePhotoEnabled
 
