@@ -55,7 +55,7 @@ import NextcloudKit
 
     func setStatus(account: String) {
         Task {
-            let result = await NextcloudKit.shared.setUserStatusAsync(status: selectedStatus ?? "", account: account) { task in
+            let result = await NextcloudKit.shared.setUserStatusAsync(status: selectedStatus ?? "", account: account) { _ in
                 Task { @MainActor in
                     self.canDismiss = true
                 }

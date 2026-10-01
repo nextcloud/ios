@@ -97,7 +97,7 @@ actor NCMetadataUploadTranfersSuccess {
         let hasLivePhotos = await NCManageDatabase.shared.hasLivePhotos()
         tranfersSuccess.removeAll(keepingCapacity: true)
 
-        var metadatasLocalFiles: [tableMetadata] = []
+        let metadatasLocalFiles: [tableMetadata] = []
         var metadatasLivePhoto: [tableMetadata] = []
         var autoUploads: [tableAutoUploadTransfer] = []
 
