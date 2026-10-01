@@ -719,6 +719,7 @@
 "_account_not_available_" = "Account not available";
 "_autoupload_active_other_account_title_" = "Auto upload is already active";
 "_autoupload_active_other_account_message_" = "Auto upload is already enabled for “%@”. Disable it for that account before enabling it here.";
+"_autoupload_cleanup_pending_" = "Previous uploads are still being stopped. Try starting the backup again to retry cleanup.";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";
@@ -927,3 +928,4 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_add_to_album"                                     = "Add to Album";
 "_remove_from_album_"                               = "Remove from Album";
 "_want_remove_from_album_"                          = "Do you really want to remove from Album?";
+

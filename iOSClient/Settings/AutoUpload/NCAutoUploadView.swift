@@ -454,7 +454,7 @@ struct NCAutoUploadView: View {
                 })
             }
             .disabled(
-                model.autoUploadStart || isAutoUploadUnavailable
+                model.autoUploadStart || model.isChangingAutoUpload || isAutoUploadUnavailable
             )
             .opacity(isAutoUploadUnavailable ? 0.5 : 1)
 
@@ -485,8 +485,8 @@ struct NCAutoUploadView: View {
                     .onChange(of: model.backgroundUploadExtensionEnabled) { _, newValue in
                         model.handleBackgroundUploadExtensionChange(newValue: newValue)
                     }
-                    .disabled(model.autoUploadStart || isAutoUploadUnavailable)
-                    .opacity(model.autoUploadStart || isAutoUploadUnavailable ? 0.5 : 1)
+                    .disabled(model.autoUploadStart || model.isChangingAutoUpload || isAutoUploadUnavailable)
+                    .opacity(model.autoUploadStart || model.isChangingAutoUpload || isAutoUploadUnavailable ? 0.5 : 1)
                 }, header: {
                     Text(NSLocalizedString("_experimental_", comment: ""))
                         .font(.headline)
@@ -524,7 +524,7 @@ struct NCAutoUploadView: View {
             autoUploadStartButton
                 .frame(maxWidth: .infinity)
                 .padding(.bottom, 10)
-                .disabled(isAutoUploadUnavailable)
+                .disabled(model.isChangingAutoUpload || isAutoUploadUnavailable)
                 .opacity(isAutoUploadUnavailable ? 0.5 : 1)
         }
     }

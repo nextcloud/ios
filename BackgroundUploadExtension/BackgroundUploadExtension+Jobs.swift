@@ -44,7 +44,8 @@ extension BackgroundUploadExtension {
         for metadata in metadatas {
             guard let currentAccount = await database.getTableAccountAsync(
                 predicate: NSPredicate(format: "account == %@", account.account)
-            ), currentAccount.autoUploadStart else {
+            ), currentAccount.autoUploadStart,
+               currentAccount.autoUploadSessionIdentifier == account.autoUploadSessionIdentifier else {
                 break
             }
 
@@ -80,7 +81,9 @@ extension BackgroundUploadExtension {
 
             // PhotoKit job creation must happen inside its library change transaction.
             try library.performChangesAndWait {
-                guard self.database.getTableAccount(account: account.account)?.autoUploadStart == true else { return }
+                guard let current = self.database.getTableAccount(account: account.account),
+                      current.autoUploadStart,
+                      current.autoUploadSessionIdentifier == account.autoUploadSessionIdentifier else { return }
                 let request = PHAssetResourceUploadJobChangeRequest.creationRequestForJob(destination: destination, resource: resource)
                 jobIdentifier = request.placeholderForCreatedAssetResourceUploadJob?.localIdentifier
             }
@@ -95,7 +98,8 @@ extension BackgroundUploadExtension {
                 metadata: metadata
             )
 
-            if database.getTableAccount(account: account.account)?.autoUploadStart != true {
+            if let current = database.getTableAccount(account: account.account),
+               !current.autoUploadStart || current.autoUploadSessionIdentifier != account.autoUploadSessionIdentifier {
                 metadata.backgroundUploadCancellationRequested = true
                 await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
                 _ = try await cancelRequestedUploadJobs()
@@ -316,9 +320,16 @@ extension BackgroundUploadExtension {
                 continue
             }
 
+            guard let retryAccount = database.getTableAccount(account: metadata.account),
+                  retryAccount.autoUploadStart else { continue }
             var retryRequested = false
 
             try library.performChangesAndWait {
+                guard let current = self.database.getTableAccount(account: metadata.account),
+                      current.autoUploadStart,
+                      current.autoUploadSessionIdentifier == retryAccount.autoUploadSessionIdentifier,
+                      let currentMetadata = self.database.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)),
+                      !currentMetadata.backgroundUploadCancellationRequested else { return }
                 guard let request = PHAssetResourceUploadJobChangeRequest(for: job) else {
                     return
                 }
@@ -338,6 +349,13 @@ extension BackgroundUploadExtension {
                 metadata: metadata
             )
 
+            if let current = database.getTableAccount(account: metadata.account),
+               !current.autoUploadStart || current.autoUploadSessionIdentifier != retryAccount.autoUploadSessionIdentifier {
+                metadata.backgroundUploadCancellationRequested = true
+                await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+                _ = try await cancelRequestedUploadJobs()
+                continue
+            }
             madeProgress = true
 
             logInfo("Retry requested for \(metadata.fileName), job: \(jobIdentifier)")

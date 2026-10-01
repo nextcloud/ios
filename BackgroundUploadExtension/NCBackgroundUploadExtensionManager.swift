@@ -278,6 +278,12 @@ final class NCBackgroundUploadExtensionManager {
         _ = await disableIfIdle()
     }
 
+    /// Includes queued jobs and terminal results still waiting for acknowledgement.
+    func hasOutstandingUploadJobs() -> Bool {
+        let actions: [PHAssetResourceUploadJob.Action] = [.process, .retry, .acknowledge]
+        return actions.contains { PHAssetResourceUploadJob.fetchJobs(action: $0, options: nil).count > 0 }
+    }
+
     /// Disables the PhotoKit extension after the feature or auto upload is turned off and no jobs remain.
     /// Active metadata defers disabling so cancellations and terminal results can still be reconciled.
     func disableIfIdle() async -> Bool {
@@ -291,8 +297,8 @@ final class NCBackgroundUploadExtensionManager {
         let predicate = NSPredicate(format: "sessionSelector == %@ AND backgroundUploadJobIdentifier != ''", global.selectorUploadAutoUpload)
         let metadatas: [tableMetadata] = await database.getMetadatasAsync(predicate: predicate)
 
-        guard metadatas.isEmpty else {
-            nkLog(tag: global.logTagBackgroundUpload, message: "Background upload extension disable deferred: \(metadatas.count) jobs still active")
+        guard metadatas.isEmpty, !hasOutstandingUploadJobs() else {
+            nkLog(tag: global.logTagBackgroundUpload, message: "Background upload extension disable deferred: metadata or PhotoKit jobs still active")
             return false
         }
 

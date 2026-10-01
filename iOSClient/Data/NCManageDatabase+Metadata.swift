@@ -466,6 +466,17 @@ extension NCManageDatabase {
         }
     }
 
+    /// Inserts discovered transfers only if the start/stop session is still current.
+    func addAutoUploadMetadatasAsync(_ metadatas: [tableMetadata], account: String, sessionIdentifier: String) async {
+        let detached = metadatas.map { $0.detachedCopy() }
+        await core.performRealmWriteAsync { realm in
+            guard let current = realm.objects(tableAccount.self).filter("account == %@", account).first,
+                  current.autoUploadStart,
+                  current.autoUploadSessionIdentifier == sessionIdentifier else { return }
+            realm.add(detached, update: .all)
+        }
+    }
+
     func addMetadatas(_ metadatas: [tableMetadata], sync: Bool = true) {
         let detached = metadatas.map { $0.detachedCopy() }
 

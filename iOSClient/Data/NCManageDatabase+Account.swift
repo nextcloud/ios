@@ -17,6 +17,8 @@ class tableAccount: Object {
     @objc dynamic var autoUploadDirectory = ""
     @objc dynamic var autoUploadFileName = ""
     @objc dynamic var autoUploadStart: Bool = false
+    /// Invalidates scans belonging to a previous start/stop session.
+    @objc dynamic var autoUploadSessionIdentifier = ""
     @objc dynamic var autoUploadImage: Bool = false
     @objc dynamic var autoUploadVideo: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
@@ -364,26 +366,25 @@ extension NCManageDatabase {
         }
     }
 
+    /// Updates the discovery date only while auto upload is enabled.
+    /// Checking and writing in one transaction prevents a scan from advancing it after Stop.
+    func updateAutoUploadSinceDateIfEnabledAsync(_ date: Date, account: String, sessionIdentifier: String) async {
+        await core.performRealmWriteAsync { realm in
+            guard let current = realm.objects(tableAccount.self).filter("account == %@", account).first,
+                  current.autoUploadStart,
+                  current.autoUploadSessionIdentifier == sessionIdentifier else { return }
+            current.autoUploadSinceDate = date
+        }
+    }
+
     func setAutoUploadStartAsync(_ enabled: Bool, account: String) async {
         await core.performRealmWriteAsync { realm in
             let accounts = realm.objects(tableAccount.self)
-
-            if enabled {
-                guard accounts
-                    .filter("autoUploadStart == true AND account != %@", account)
-                    .isEmpty else {
-                    return
-                }
-
-                accounts
-                    .filter("account == %@", account)
-                    .first?
-                    .autoUploadStart = true
-            } else {
-                accounts
-                    .filter("account == %@", account)
-                    .first?
-                    .autoUploadStart = false
+            guard let current = accounts.filter("account == %@", account).first else { return }
+            if enabled, !accounts.filter("autoUploadStart == true AND account != %@", account).isEmpty { return }
+            if current.autoUploadStart != enabled {
+                current.autoUploadSessionIdentifier = UUID().uuidString
+                current.autoUploadStart = enabled
             }
         }
     }

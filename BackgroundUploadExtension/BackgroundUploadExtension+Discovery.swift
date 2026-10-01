@@ -73,9 +73,11 @@ extension BackgroundUploadExtension {
         var lastQueuedDate: Date?
 
         // PhotoKit already sorts every result; merge them lazily and stop as soon as the job slots are full.
-        while remaining > 0,
+        discoveryLoop: while remaining > 0,
               let asset = nextAsset(from: fetchResults, indexes: &fetchIndexes, yieldedIdentifiers: &yieldedAssetIdentifiers) {
-            guard database.getTableAccount(account: account.account)?.autoUploadStart == true else { break }
+            guard let current = database.getTableAccount(account: account.account),
+                  current.autoUploadStart,
+                  current.autoUploadSessionIdentifier == account.autoUploadSessionIdentifier else { break }
 
             let isLivePhoto = asset.mediaSubtypes.contains(.photoLive) && livePhotoEnabled
 
@@ -130,7 +132,7 @@ extension BackgroundUploadExtension {
                let seedResource = uploadResources.first {
                 // Store only the primary metadata as a seed. No PhotoKit job is requested for it:
                 // the host app will extract and upload both Live Photo components in foreground.
-                await createPendingMetadata(
+                let inserted = await createPendingMetadata(
                     asset: asset,
                     resource: seedResource.resource,
                     fileName: seedResource.fileName,
@@ -140,6 +142,7 @@ extension BackgroundUploadExtension {
                     account: account
                 )
 
+                guard inserted else { break discoveryLoop }
                 trackedMetadataFileNames.insert(seedResource.fileName)
                 skipAssetLocalIdentifiers.insert(asset.localIdentifier)
                 lastQueuedDate = creationDate
@@ -160,7 +163,7 @@ extension BackgroundUploadExtension {
                 // reaching this loop keeps its remaining component(s) in the PhotoKit pipeline.
                 let chunkSize = isLivePhoto ? nil : legacyChunkSize(resource: uploadResource.resource)
 
-                await createPendingMetadata(
+                let inserted = await createPendingMetadata(
                     asset: asset,
                     resource: uploadResource.resource,
                     fileName: uploadResource.fileName,
@@ -170,6 +173,7 @@ extension BackgroundUploadExtension {
                     account: account
                 )
 
+                guard inserted else { break discoveryLoop }
                 trackedMetadataFileNames.insert(uploadResource.fileName)
                 skipAssetLocalIdentifiers.insert(asset.localIdentifier)
                 lastQueuedDate = creationDate
@@ -180,7 +184,7 @@ extension BackgroundUploadExtension {
 
         if let lastQueuedDate {
             // Advance only after metadata is stored, so an interrupted pass can rediscover unqueued assets.
-            await database.updateAccountPropertyAsync(\.autoUploadSinceDate, value: lastQueuedDate, account: account.account)
+            await database.updateAutoUploadSinceDateIfEnabledAsync(lastQueuedDate, account: account.account, sessionIdentifier: account.autoUploadSessionIdentifier)
         }
 
         return madeProgress
@@ -225,7 +229,7 @@ extension BackgroundUploadExtension {
 
     /// Creates the transfer metadata that connects a Photos resource to its server path.
     /// Large resources remain ordinary metadata for the host app; all others wait for a PhotoKit job.
-    private func createPendingMetadata(asset: PHAsset, resource: PHAssetResource, fileName: String, classFile: String, livePhotoFile: String, legacyChunkSize: Int?, account: tableAccount) async {
+    private func createPendingMetadata(asset: PHAsset, resource: PHAssetResource, fileName: String, classFile: String, livePhotoFile: String, legacyChunkSize: Int?, account: tableAccount) async -> Bool {
         let session = NCSession.Session(account: account.account, urlBase: account.urlBase, user: account.user, userId: account.userId)
         let autoUploadServerUrlBase = await database.getAccountAutoUploadServerUrlBaseAsync(account: account.account, urlBase: account.urlBase, userId: account.userId)
 
@@ -266,13 +270,15 @@ extension BackgroundUploadExtension {
         metadata.chunk = legacyChunkSize ?? 0
         metadata.backgroundUploadJobIdentifier = legacyChunkSize == nil ? "pending" : ""
 
-        await database.addMetadataAsync(metadata)
+        await database.addAutoUploadMetadatasAsync([metadata], account: account.account, sessionIdentifier: account.autoUploadSessionIdentifier)
+        guard await database.getMetadataAsync(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) != nil else { return false }
 
         if legacyChunkSize == nil {
             logInfo("Created pending metadata for \(fileName), account: \(account.account), asset: \(asset.localIdentifier)")
         } else {
             logInfo("Deferred large resource to the host app chunked upload pipeline: \(fileName), size: \(metadata.size)")
         }
+        return true
     }
 
     /// Selects the full-size primary resource for an image or video asset when available.
