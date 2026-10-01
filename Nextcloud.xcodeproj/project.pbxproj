@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C0DEDA7E30C1000100A00002 /* NCAutoUploadDateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEDA7E30C1000100A00001 /* NCAutoUploadDateTests.swift */; };
 		22BA14432CF44BDBA2E6C291 /* NCDocumentEditorSupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B74B947E07444CC9CFE0A6C /* NCDocumentEditorSupportTests.swift */; };
 		2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
@@ -1314,6 +1315,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C0DEDA7E30C1000100A00001 /* NCAutoUploadDateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAutoUploadDateTests.swift; sourceTree = "<group>"; };
 		2C33C47F23E2C475005F963B /* Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C33C48123E2C475005F963B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		2C33C48A23E2CC26005F963B /* Notification_Service_Extension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Notification_Service_Extension-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -2352,6 +2354,7 @@
 		AA52EB442D42AC500089C348 /* NextcloudUnitTests */ = {
 			isa = PBXGroup;
 			children = (
+				C0DEDA7E30C1000100A00001 /* NCAutoUploadDateTests.swift */,
 				F76BED7B306D0000002E1442 /* NCPhotoLibraryAssetTests.swift */,
 				A1E2EE010000000000000009 /* NCEndToEndKeySetArchiveTests.swift */,
 				A1E2EE020000000000000007 /* NCEndToEndKeySetResolverTests.swift */,
@@ -4791,6 +4794,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C0DEDA7E30C1000100A00002 /* NCAutoUploadDateTests.swift in Sources */,
 				F76BED7E306D0000002E1442 /* NCPhotoLibraryAssetTests.swift in Sources */,
 				A1E2EE01000000000000000A /* NCEndToEndKeySetArchiveTests.swift in Sources */,
 				A1E2EE020000000000000008 /* NCEndToEndKeySetResolverTests.swift in Sources */,

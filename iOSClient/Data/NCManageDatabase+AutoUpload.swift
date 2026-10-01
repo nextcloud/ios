@@ -156,11 +156,12 @@ extension NCManageDatabase {
         return result ?? []
     }
 
-    /// Asynchronously fetches the most recent auto-uploaded date for the given account and server base URL.
+    /// Fetches the latest date recorded in successful upload history for the account and destination.
+    /// PhotoKit records the asset capture date here, not the time of the HTTP upload.
     /// - Parameters:
     ///   - account: The account identifier.
     ///   - autoUploadServerUrlBase: The server base URL for auto-upload.
-    /// - Returns: The most recent upload `Date`, or `nil` if no entry exists.
+    /// - Returns: The latest recorded asset date, or `nil` if no entry exists.
     func fetchLastAutoUploadedDateAsync(account: String,
                                         autoUploadServerUrlBase: String) async -> Date? {
         await core.performRealmReadAsync { realm in

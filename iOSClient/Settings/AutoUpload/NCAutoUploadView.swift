@@ -14,7 +14,6 @@ struct NCAutoUploadView: View {
     @StateObject var albumModel: AlbumModel
     @State private var showUploadFolder = false
     @State private var showSelectAlbums = false
-    @State private var showUploadAllPhotosWarning = false
     @State private var showFocusedAutoUploadIntro = false
     @State private var showFocusedAutoUploadProgress = false
     @State private var openFocusedAutoUploadFinish = false
@@ -80,13 +79,6 @@ struct NCAutoUploadView: View {
         }
         .sheet(isPresented: $showSelectAlbums) {
             SelectAlbumView(model: albumModel)
-        }
-        .sheet(isPresented: $showUploadAllPhotosWarning) {
-            ConfirmAutoUploadSheet(
-                model: model,
-                isPresented: $showUploadAllPhotosWarning
-            )
-            .presentationDetents([.medium, .large])
         }
         .sheet(isPresented: $showFocusedAutoUploadIntro, onDismiss: {
             guard openFocusedAutoUploadFinish else {
@@ -235,40 +227,10 @@ struct NCAutoUploadView: View {
                         }
                     }
 
-                    Toggle(
-                        NSLocalizedString("_back_up_new_photos_only_", comment: ""),
-                        isOn: Binding(
-                            get: {
-                                model.autoUploadSinceDate != nil
-                            },
-                            set: { newValue in
-                                model.handleAutoUploadOnlyNew(newValue: newValue)
-                            }
-                        )
-                    )
-                    .font(.body)
-                    .tint(
-                        Color(
-                            NCBrandColor.shared.getElement(
-                                account: model.session.account
-                            )
-                        )
-                    )
-                    .opacity(model.autoUploadStart ? 0.15 : 1)
-                    .accessibilityIdentifier("NewPhotosToggle")
+                    autoUploadTimespanOptions
                 }, footer: {
-                    if let date = model.autoUploadSinceDate {
-                        Text(
-                            String(
-                                format: NSLocalizedString(
-                                    "_new_photos_starting_",
-                                    comment: ""
-                                ),
-                                NCUtility().longDate(date)
-                            )
-                        )
+                    Text(autoUploadTimespanDescription)
                         .font(.footnote)
-                    }
                 })
 
                 Section(content: {
@@ -530,14 +492,59 @@ struct NCAutoUploadView: View {
     }
 
     @ViewBuilder
+    private var autoUploadTimespanOptions: some View {
+        ForEach(AutoUploadTimespan.allCases) { timespan in
+            Button {
+                model.handleAutoUploadTimespan(timespan)
+            } label: {
+                HStack {
+                    Text(NSLocalizedString(timespan == .allPhotos ? "_autoupload_whole_library_" : "_autoupload_from_date_", comment: ""))
+                        .foregroundStyle(.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    if model.autoUploadTimespan == timespan {
+                        Image(systemName: "checkmark")
+                            .foregroundStyle(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                    }
+                }
+                .contentShape(Rectangle())
+            }
+            .disabled(model.autoUploadStart || model.isChangingAutoUpload)
+            .accessibilityIdentifier("AutoUploadTimespan-" + timespan.rawValue)
+            .accessibilityAddTraits(model.autoUploadTimespan == timespan ? .isSelected : [])
+        }
+
+        if model.autoUploadSinceDate != nil {
+            DatePicker(
+                "_autoupload_start_date_",
+                selection: Binding(
+                    get: { model.autoUploadSinceDate ?? Date.now },
+                    set: { model.handleAutoUploadSinceDate($0) }
+                ),
+                displayedComponents: [.date, .hourAndMinute]
+            )
+            .disabled(model.autoUploadStart || model.isChangingAutoUpload)
+            .accessibilityIdentifier("AutoUploadStartDate")
+
+            Button("_autoupload_set_to_now_") {
+                model.handleAutoUploadSinceDate(Date.now)
+            }
+            .disabled(model.autoUploadStart || model.isChangingAutoUpload)
+            .accessibilityIdentifier("AutoUploadSetToNow")
+        }
+    }
+
+    private var autoUploadTimespanDescription: String {
+        let destination = model.returnPath()
+        if let date = model.autoUploadSinceDate {
+            return String(format: NSLocalizedString("_autoupload_from_date_description_", comment: ""), date.formatted(date: .abbreviated, time: .shortened), destination)
+        }
+        return String(format: NSLocalizedString("_autoupload_whole_library_description_", comment: ""), destination)
+    }
+
+    @ViewBuilder
     var autoUploadStartButton: some View {
         Section {
-            let toggleBinding = model.autoUploadSinceDate != nil ||
-                model.autoUploadStart
-                ? $model.autoUploadStart
-                : $showUploadAllPhotosWarning
-
-            let toggle = Toggle(isOn: toggleBinding) {
+            let toggle = Toggle(isOn: $model.autoUploadStart) {
                 Text(
                     model.autoUploadStart
                         ? "_stop_autoupload_"
@@ -704,112 +711,6 @@ private struct AutoUploadProminentButtonStyle: ToggleStyle {
             x: 0,
             y: 3
         )
-    }
-}
-
-struct ConfirmAutoUploadSheet: View {
-    @ObservedObject var model: NCAutoUploadModel
-    @Binding var isPresented: Bool
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Text(
-                NSLocalizedString(
-                    "_auto_upload_all_photos_warning_title_",
-                    comment: ""
-                )
-            )
-            .font(.headline)
-            .multilineTextAlignment(.center)
-
-            Text(
-                NSLocalizedString(
-                    "_auto_upload_all_photos_warning_message_",
-                    comment: ""
-                )
-            )
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
-            .multilineTextAlignment(.center)
-
-            Spacer()
-                .frame(height: 20)
-
-            if model.existsAutoUpload() {
-                Button {
-                    model.autoUploadStart = true
-                    isPresented = false
-                } label: {
-                    Text(
-                        NSLocalizedString(
-                            "_confirm_continue_",
-                            comment: ""
-                        )
-                    )
-                    .font(.body)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-
-                Button {
-                    model.deleteAutoUploadTransfer()
-                    model.autoUploadStart = true
-                    isPresented = false
-                } label: {
-                    Text(
-                        NSLocalizedString(
-                            "_confirm_resetting_",
-                            comment: ""
-                        )
-                    )
-                    .font(.body)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.bordered)
-
-                Spacer()
-                    .frame(height: 20)
-
-                Button(role: .cancel) {
-                    model.autoUploadStart = false
-                    isPresented = false
-                } label: {
-                    Text(NSLocalizedString("_cancel_", comment: ""))
-                        .font(.body)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.bordered)
-            } else {
-                Button {
-                    model.autoUploadStart = true
-                    isPresented = false
-                } label: {
-                    Text(NSLocalizedString("_confirm_", comment: ""))
-                        .font(.body)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-
-                Spacer()
-                    .frame(height: 20)
-
-                Button(role: .cancel) {
-                    model.autoUploadStart = false
-                    isPresented = false
-                } label: {
-                    Text(NSLocalizedString("_cancel_", comment: ""))
-                        .font(.body)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.bordered)
-            }
-        }
-        .padding(.horizontal, 20)
     }
 }
 

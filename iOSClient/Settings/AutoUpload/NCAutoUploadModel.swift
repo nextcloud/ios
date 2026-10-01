@@ -10,8 +10,8 @@ import NextcloudKit
 import SwiftUI
 
 enum AutoUploadTimespan: String, CaseIterable, Identifiable {
-    case allPhotos = "_all_photos_"
-    case newPhotosOnly = "_new_photos_only_"
+    case allPhotos = "all"
+    case fromDate = "fromDate"
     var id: Self { self }
 }
 
@@ -35,8 +35,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     @Published var autoUploadSubfolderGranularity: Granularity = .monthly
     /// The date from when new photos/videos will be uploaded.
     @Published var autoUploadSinceDate: Date?
-    /// Whether a warning should be shown if all photos must be uploaded.
-    @Published var showUploadAllPhotosWarning = false
+    var autoUploadTimespan: AutoUploadTimespan { autoUploadSinceDate == nil ? .allPhotos : .fromDate }
     /// Whether Photos permissions have been granted or not.
     @Published var photosPermissionsGranted = true
     /// Whether `Always` location authorization has been granted, enabling background location-based auto upload.
@@ -143,17 +142,22 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         }
     }
 
-    /// Sets the cut-off date so only photos/videos created after it are uploaded.
+    /// Choosing a range preserves its displayed date until the user explicitly edits it.
     @MainActor
-    func handleAutoUploadOnlyNew(newValue: Bool) {
-        guard !isChangingAutoUpload else { return }
+    func handleAutoUploadTimespan(_ timespan: AutoUploadTimespan) {
+        handleAutoUploadSinceDate(timespan == .allPhotos ? nil : autoUploadSinceDate ?? Date.now)
+    }
+
+    /// Saves the user cutoff and resets discovery together, only while Auto Upload is stopped.
+    @MainActor
+    func handleAutoUploadSinceDate(_ date: Date?) {
+        guard !isChangingAutoUpload, !autoUploadStart else { return }
         isChangingAutoUpload = true
-        let sinceDate = newValue ? Date.now : nil
         let accountIdentifier = session.account
-        autoUploadSinceDate = sinceDate
+        autoUploadSinceDate = date
         Task {
             defer { isChangingAutoUpload = false }
-            await database.updateAccountPropertyAsync(\.autoUploadSinceDate, value: sinceDate, account: accountIdentifier)
+            await database.setAutoUploadSinceDateAsync(date, account: accountIdentifier)
         }
     }
 
@@ -313,6 +317,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     func setAutoUploadDirectory(serverUrl: String?) {
         guard let serverUrl else { return }
         Task {
+            let previousDestination = database.getAccountAutoUploadServerUrlBase(session: session)
             let home = NCUtilityFileSystem().getHomeServer(session: session)
             if home != serverUrl {
                 let fileName = (serverUrl as NSString).lastPathComponent
@@ -322,6 +327,9 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
                 }
             }
 
+            if database.getAccountAutoUploadServerUrlBase(session: session) != previousDestination {
+                await database.setAutoUploadSinceDateAsync(nil, account: session.account)
+            }
             onViewAppear()
         }
     }
@@ -336,20 +344,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             return (album?.assetCollectionSubtype == .smartAlbumUserLibrary) ? NSLocalizedString("_camera_roll_", comment: "") : (album?.localizedTitle ?? "")
         } else {
             return NSLocalizedString("_multiple_albums_", comment: "")
-        }
-    }
-
-    /// Whether any auto-upload entry exists for the current account.
-    func existsAutoUpload() -> Bool {
-        let autoUploadServerUrlBase = NCManageDatabase.shared.getAccountAutoUploadServerUrlBase(session: session)
-        return NCManageDatabase.shared.existsAutoUpload(account: session.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
-    }
-
-    /// Deletes pending auto-upload transfers for the current account.
-    func deleteAutoUploadTransfer() {
-        Task {
-            let autoUploadServerUrlBase = await NCManageDatabase.shared.getAccountAutoUploadServerUrlBaseAsync(session: session)
-            await NCManageDatabase.shared.deleteAutoUploadTransferAsync(account: session.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
         }
     }
 

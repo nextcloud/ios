@@ -35,16 +35,7 @@ extension BackgroundUploadExtension {
 
         var predicates: [NSPredicate] = [NSCompoundPredicate(orPredicateWithSubpredicates: mediaPredicates)]
 
-        let discoveryStartDate: Date?
-
-        if let sinceDate = account.autoUploadSinceDate {
-            discoveryStartDate = sinceDate
-        } else {
-            discoveryStartDate = await database.fetchLastAutoUploadedDateAsync(
-                account: account.account,
-                autoUploadServerUrlBase: autoUploadServerUrlBase
-            )
-        }
+        let discoveryStartDate = account.autoUploadDiscoveryStartDate
 
         if let discoveryStartDate {
             predicates.append(NSPredicate(format: "creationDate >= %@", discoveryStartDate as NSDate))
@@ -184,7 +175,7 @@ extension BackgroundUploadExtension {
 
         if let lastQueuedDate {
             // Advance only after metadata is stored, so an interrupted pass can rediscover unqueued assets.
-            await database.updateAutoUploadSinceDateIfEnabledAsync(lastQueuedDate, account: account.account, sessionIdentifier: account.autoUploadSessionIdentifier)
+            await database.updateAutoUploadDiscoveryDateIfEnabledAsync(lastQueuedDate, account: account.account, sessionIdentifier: account.autoUploadSessionIdentifier)
         }
 
         return madeProgress

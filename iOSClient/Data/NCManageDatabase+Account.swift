@@ -23,7 +23,10 @@ class tableAccount: Object {
     @objc dynamic var autoUploadVideo: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
     @objc dynamic var autoUploadWWAnVideo: Bool = false
+    /// User-selected cutoff; nil means the whole library.
     @objc dynamic var autoUploadSinceDate: Date?
+    /// Progress of discovery, independent of the selected backup mode.
+    @objc dynamic var autoUploadDiscoveryDate: Date?
     @objc dynamic var backend = ""
     @objc dynamic var backendCapabilitiesSetDisplayName: Bool = false
     @objc dynamic var backendCapabilitiesSetPassword: Bool = false
@@ -57,6 +60,11 @@ class tableAccount: Object {
     @objc dynamic var userStatusStatusIsUserDefined: Bool = false
     @objc dynamic var website = ""
 
+    var autoUploadDiscoveryStartDate: Date? {
+        let dates = [autoUploadSinceDate, autoUploadDiscoveryDate].compactMap { $0 }
+        return dates.max()
+    }
+
     override static func primaryKey() -> String {
         return "account"
     }
@@ -75,6 +83,7 @@ class tableAccount: Object {
                                    autoUploadWWAnPhoto: self.autoUploadWWAnPhoto,
                                    autoUploadWWAnVideo: self.autoUploadWWAnVideo,
                                    autoUploadSinceDate: self.autoUploadSinceDate,
+                                   autoUploadDiscoveryDate: self.autoUploadDiscoveryDate,
                                    user: self.user,
                                    userId: self.userId,
                                    urlBase: self.urlBase)
@@ -95,6 +104,8 @@ class tableAccount: Object {
         self.autoUploadVideo = codableObject.autoUploadVideo
         self.autoUploadWWAnPhoto = codableObject.autoUploadWWAnPhoto
         self.autoUploadWWAnVideo = codableObject.autoUploadWWAnVideo
+        self.autoUploadSinceDate = codableObject.autoUploadSinceDate
+        self.autoUploadDiscoveryDate = codableObject.autoUploadDiscoveryDate ?? codableObject.autoUploadSinceDate
 
         self.user = codableObject.user
         self.userId = codableObject.userId
@@ -117,6 +128,7 @@ struct tableAccountCodable: Codable {
     var autoUploadWWAnPhoto: Bool
     var autoUploadWWAnVideo: Bool
     var autoUploadSinceDate: Date?
+    var autoUploadDiscoveryDate: Date?
 
     var user: String
     var userId: String
@@ -368,21 +380,42 @@ extension NCManageDatabase {
 
     /// Updates the discovery date only while auto upload is enabled.
     /// Checking and writing in one transaction prevents a scan from advancing it after Stop.
-    func updateAutoUploadSinceDateIfEnabledAsync(_ date: Date, account: String, sessionIdentifier: String) async {
+    func updateAutoUploadDiscoveryDateIfEnabledAsync(_ date: Date, account: String, sessionIdentifier: String) async {
         await core.performRealmWriteAsync { realm in
             guard let current = realm.objects(tableAccount.self).filter("account == %@", account).first,
                   current.autoUploadStart,
                   current.autoUploadSessionIdentifier == sessionIdentifier else { return }
+            current.autoUploadDiscoveryDate = date
+        }
+    }
+
+    /// Changes backup mode while stopped and resets the discovery cursor in the same transaction.
+    func setAutoUploadSinceDateAsync(_ date: Date?, account: String) async {
+        await core.performRealmWriteAsync { realm in
+            guard let current = realm.objects(tableAccount.self).filter("account == %@", account).first,
+                  !current.autoUploadStart else { return }
             current.autoUploadSinceDate = date
+            current.autoUploadDiscoveryDate = date
         }
     }
 
     func setAutoUploadStartAsync(_ enabled: Bool, account: String) async {
+        let session = NCSession.shared.getSession(account: account)
+        let serverUrlBase = await getAccountAutoUploadServerUrlBaseAsync(session: session)
         await core.performRealmWriteAsync { realm in
             let accounts = realm.objects(tableAccount.self)
             guard let current = accounts.filter("account == %@", account).first else { return }
             if enabled, !accounts.filter("autoUploadStart == true AND account != %@", account).isEmpty { return }
             if current.autoUploadStart != enabled {
+                if !enabled {
+                    // Preserve a safe restart point before pending transfers are deleted by cleanup.
+                    let earliestPendingDate = realm.objects(tableMetadata.self)
+                        .filter("account == %@ AND autoUploadServerUrlBase == %@ AND sessionSelector == %@ AND status != %d", account, serverUrlBase, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.metadataStatusNormal)
+                        .sorted(byKeyPath: "creationDate", ascending: true).first.map { $0.creationDate as Date }
+                    if let earliestPendingDate {
+                        current.autoUploadDiscoveryDate = [current.autoUploadDiscoveryDate, earliestPendingDate].compactMap({ $0 }).min()
+                    }
+                }
                 current.autoUploadSessionIdentifier = UUID().uuidString
                 current.autoUploadStart = enabled
             }

@@ -88,9 +88,6 @@ class NCAutoUpload: NSObject {
 
         let result = await getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: tblAccount)
 
-        // IMPORTANT: Always set to autoUploadSinceDate to now
-        await self.database.updateAccountPropertyAsync(\.autoUploadSinceDate, value: Date.now, account: tblAccount.account)
-
         model.onViewAppear()
 
         guard let assets = result.assets,
@@ -123,6 +120,10 @@ class NCAutoUpload: NSObject {
         nkLog(debug: "Automatic upload, new \(assets.count) assets found")
 
         for (index, asset) in assets.enumerated() {
+            guard !Task.isCancelled,
+                  let current = await database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", tblAccount.account)),
+                  current.autoUploadStart,
+                  current.autoUploadSessionIdentifier == tblAccount.autoUploadSessionIdentifier else { return 0 }
             let fileName = fileNames[index]
 
             let sourceFileExtension = (fileName as NSString).pathExtension.lowercased()
@@ -155,6 +156,8 @@ class NCAutoUpload: NSObject {
                 metadata.livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".mov"
             }
 
+            metadata.creationDate = (asset.creationDate ?? Date()) as NSDate
+            metadata.date = (asset.modificationDate ?? Date()) as NSDate
             metadata.assetLocalIdentifier = asset.localIdentifier
             metadata.autoUploadServerUrlBase = autoUploadServerUrlBase
             metadata.session = uploadSession
@@ -189,16 +192,7 @@ class NCAutoUpload: NSObject {
             metadatas.append(metadata)
         }
 
-        // Set last date in autoUploadOnlyNewSinceDate
-        if let metadata = metadatas.last {
-            let date = metadata.creationDate as Date
-            await self.database.updateAccountPropertyAsync(\.autoUploadSinceDate, value: date, account: session.account)
-        }
-
-        guard !metadatas.isEmpty else {
-            return 0
-        }
-
+        let discoveryDate = assets.compactMap(\.creationDate).max()
         let metadatasToAdd: [tableMetadata]
 
         if filterExistingQueue {
@@ -208,18 +202,24 @@ class NCAutoUpload: NSObject {
         }
 
         guard !metadatasToAdd.isEmpty else {
+            // All discovered files are already tracked; avoid scanning that whole range again.
+            await database.addAutoUploadMetadatasAsync([], account: tblAccount.account, sessionIdentifier: tblAccount.autoUploadSessionIdentifier, discoveryDate: discoveryDate)
             return 0
         }
 
+        let entriesToAdd: [tableMetadata]
         if autoMkcol {
-            await self.database.addMetadatasAsync(metadatasToAdd)
+            entriesToAdd = metadatasToAdd
         } else {
             let metadatasFolder = await NCManageDatabaseCreateMetadata().createMetadatasFolderAsync(
                 assets: assets,
                 useSubFolder: tblAccount.autoUploadCreateSubfolder,
                 session: session)
-            await self.database.addMetadatasAsync(metadatasFolder + metadatasToAdd)
+            entriesToAdd = metadatasFolder + metadatasToAdd
         }
+
+        // Queue insertion and cursor advancement share the session check and Realm transaction.
+        await database.addAutoUploadMetadatasAsync(entriesToAdd, account: tblAccount.account, sessionIdentifier: tblAccount.autoUploadSessionIdentifier, discoveryDate: discoveryDate)
 
         return metadatasToAdd.count
     }
@@ -237,7 +237,6 @@ class NCAutoUpload: NSObject {
         guard hasPermission else {
             return (nil, nil)
         }
-        let autoUploadServerUrlBase = await self.database.getAccountAutoUploadServerUrlBaseAsync(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
         var mediaPredicates: [NSPredicate] = []
         var datePredicates: [NSPredicate] = []
         let fetchOptions = PHFetchOptions()
@@ -250,10 +249,8 @@ class NCAutoUpload: NSObject {
             mediaPredicates.append(NSPredicate(format: "mediaType == %i", PHAssetMediaType.video.rawValue))
         }
 
-        if let autoUploadSinceDate = tblAccount.autoUploadSinceDate {
-            datePredicates.append(NSPredicate(format: "creationDate > %@", autoUploadSinceDate as NSDate))
-        } else if let lastDate = await self.database.fetchLastAutoUploadedDateAsync(account: tblAccount.account, autoUploadServerUrlBase: autoUploadServerUrlBase) {
-            datePredicates.append(NSPredicate(format: "creationDate > %@", lastDate as NSDate))
+        if let autoUploadSinceDate = tblAccount.autoUploadDiscoveryStartDate {
+            datePredicates.append(NSPredicate(format: "creationDate >= %@", autoUploadSinceDate as NSDate))
         }
 
         fetchOptions.predicate = {
@@ -394,7 +391,9 @@ class NCAutoUpload: NSObject {
         let cameraRoll = NCCameraRoll()
 
         for metadata in metadatasToUpload {
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled,
+                  let uploadAccount = await database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", metadata.account)),
+                  uploadAccount.autoUploadStart else { return }
 
             // Check whether the file already exists remotely.
             let existsResult = await NCNetworking.shared.fileExists(
@@ -412,7 +411,10 @@ class NCAutoUpload: NSObject {
             // Expand the seed into concrete metadata entries (for example, Live Photo pairs).
             let extractedMetadatas = await cameraRoll.extractCameraRoll(from: metadata)
 
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled,
+                  let current = await database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", metadata.account)),
+                  current.autoUploadStart,
+                  current.autoUploadSessionIdentifier == uploadAccount.autoUploadSessionIdentifier else { return }
 
             for extractedMetadata in extractedMetadatas {
                 guard !Task.isCancelled else { return }
