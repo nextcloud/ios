@@ -136,7 +136,7 @@ extension NCMedia: UICollectionViewDataSource {
             return
         }
         let ocId = compactMetadata.ocId
-        let ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
+        let ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns, viewWidth: self.collectionView.bounds.width)
         let imageExists = self.utilityFileSystem.fileProviderStorageImageExists(ocId, etag: compactMetadata.etag, userId: self.session.userId, urlBase: self.session.urlBase)
 
         guard !imageExists else {
@@ -233,7 +233,7 @@ extension NCMedia: UICollectionViewDataSource {
 
         let ocId = compactMetadata.ocId
         let etag = compactMetadata.etag
-        let ext = global.getSizeExtension(column: numberOfColumns)
+        let ext = global.getSizeExtension(column: numberOfColumns, viewWidth: self.collectionView.bounds.width)
         let cacheKey = "\(ocId)-\(etag)-\(ext)"
 
         cell.image.image = imageCache.getImageCache(ocId: ocId, etag: etag, ext: ext)

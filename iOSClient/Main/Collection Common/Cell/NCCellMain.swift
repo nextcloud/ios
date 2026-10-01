@@ -139,7 +139,7 @@ extension NCCollectionViewCommon {
         }
 
         if metadata.name == global.appName {
-            let ext = global.getSizeExtension(column: self.numberOfColumns)
+            let ext = global.getSizeExtension(column: self.numberOfColumns, viewWidth: self.collectionView.bounds.width)
             if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
                 cell.previewImg?.image = image
             } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase) {

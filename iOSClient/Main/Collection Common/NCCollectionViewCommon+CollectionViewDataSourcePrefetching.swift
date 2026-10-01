@@ -8,7 +8,7 @@ import UIKit
 extension NCCollectionViewCommon: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         /*
-        let ext = global.getSizeExtension(column: self.numberOfColumns)
+        let ext = global.getSizeExtension(column: self.numberOfColumns, viewWidth: self.collectionView.bounds.width)
         guard !isSearchingMode else {
             return
         }

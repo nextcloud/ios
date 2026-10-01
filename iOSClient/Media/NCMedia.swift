@@ -53,8 +53,8 @@ class NCMedia: UIViewController {
                 return
             }
 
-            let oldExtension = global.getSizeExtension(column: oldValue)
-            let newExtension = global.getSizeExtension(column: numberOfColumns)
+            let oldExtension = global.getSizeExtension(column: oldValue, viewWidth: self.collectionView.bounds.width)
+            let newExtension = global.getSizeExtension(column: numberOfColumns, viewWidth: self.collectionView.bounds.width)
 
             guard oldExtension != newExtension else {
                 return
@@ -399,6 +399,7 @@ class NCMedia: UIViewController {
             imageCacheWindowItems: dataSource.imageCacheWindowItems,
             centerIndex: centerIndex,
             numberOfColumns: numberOfColumns,
+            viewWidth: collectionView.bounds.width,
             session: session,
             force: force
         )

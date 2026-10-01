@@ -61,7 +61,7 @@ extension NCCollectionViewCommon {
     // MARK: - LAYOUT PHOTO
     //
     func photoCell(cell: NCPhotoCell, indexPath: IndexPath, metadata: tableMetadata) -> NCPhotoCell {
-        let ext = global.getSizeExtension(column: self.numberOfColumns)
+        let ext = global.getSizeExtension(column: self.numberOfColumns, viewWidth: self.collectionView.bounds.width)
 
         cell.metadata = metadata
 
