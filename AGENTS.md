@@ -78,7 +78,7 @@ The following details are important when working on the iOS client.
 ### Code Style
 
 - Write new code to be Swift 6-compatible and strict-concurrency-friendly (proper actor isolation, `Sendable` types). Note that the project currently builds in Swift 5 language mode without strict concurrency checking, so the compiler will not enforce this.
-- CI runs SwiftLint on every non-draft PR using the root `.swiftlint.yml`; `Tests/`, `Brand/NCBrand.swift`, `iOSClient/NCGlobal.swift` and `iOSClient/Utility/NCLivePhoto.swift` are excluded from linting.
+- CI runs SwiftLint on every non-draft PR using the root `.swiftlint.yml`; `Tests/`, `Brand/NCBrand.swift` and `iOSClient/NCGlobal.swift` are excluded from linting.
 
 ### Tests
 

@@ -48,7 +48,6 @@ excluded:
   - Tests
   - Brand/NCBrand.swift
   - iOSClient/NCGlobal.swift
-  - iOSClient/Utility/NCLivePhoto.swift
   - DerivedData
   - .claude
   
