@@ -197,6 +197,31 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
             }
     }
 
+    /// Deletes a listed log file, coordinating with writes from the app and extensions.
+    func deleteLogFile(at url: URL) throws {
+        guard logFiles.contains(url) else { return }
+        NextcloudKit.flushLogger()
+
+        var coordinationError: NSError?
+        var deletionError: Error?
+        let coordinator = NSFileCoordinator(filePresenter: nil)
+        coordinator.coordinate(writingItemAt: url, options: .forDeleting, error: &coordinationError) { coordinatedURL in
+            do {
+                try FileManager.default.removeItem(at: coordinatedURL)
+            } catch {
+                deletionError = error
+            }
+        }
+
+        if let coordinationError {
+            throw coordinationError
+        }
+        if let deletionError {
+            throw deletionError
+        }
+        logFiles.removeAll { $0 == url }
+    }
+
     /// Returns the localized modification date and size shown below a log file name.
     func logFileDetails(for url: URL) -> String {
         guard let values = try? url.resourceValues(forKeys: [.contentModificationDateKey, .fileSizeKey]) else {
