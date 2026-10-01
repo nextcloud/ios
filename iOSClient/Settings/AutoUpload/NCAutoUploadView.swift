@@ -508,35 +508,51 @@ struct NCAutoUploadView: View {
                 }
                 .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
+            .font(.body)
             .disabled(model.autoUploadStart || model.isChangingAutoUpload)
             .accessibilityIdentifier("AutoUploadTimespan-" + timespan.rawValue)
             .accessibilityAddTraits(model.autoUploadTimespan == timespan ? .isSelected : [])
         }
 
         if model.autoUploadSinceDate != nil {
-            DatePicker(
-                "_autoupload_start_date_",
-                selection: Binding(
-                    get: { model.autoUploadSinceDate ?? Date.now },
-                    set: { model.handleAutoUploadSinceDate($0) }
-                ),
-                displayedComponents: [.date, .hourAndMinute]
-            )
-            .disabled(model.autoUploadStart || model.isChangingAutoUpload)
-            .accessibilityIdentifier("AutoUploadStartDate")
+            VStack(alignment: .leading, spacing: 4) {
+                DatePicker(
+                    "_autoupload_start_date_",
+                    selection: Binding(
+                        get: { model.autoUploadSinceDate ?? Date.now },
+                        set: { model.handleAutoUploadSinceDate($0) }
+                    ),
+                    displayedComponents: [.date, .hourAndMinute]
+                )
+                .datePickerStyle(.compact)
+                .font(.body)
+                .accessibilityIdentifier("AutoUploadStartDate")
 
-            Button("_autoupload_set_to_now_") {
-                model.handleAutoUploadSinceDate(Date.now)
+                HStack {
+                    Spacer()
+                    Button {
+                        model.handleAutoUploadSinceDate(Date.now)
+                    } label: {
+                        Label("_autoupload_set_to_now_", systemImage: "clock.arrow.circlepath")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .frame(minHeight: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("AutoUploadSetToNow")
+                }
             }
             .disabled(model.autoUploadStart || model.isChangingAutoUpload)
-            .accessibilityIdentifier("AutoUploadSetToNow")
+            .opacity(model.autoUploadStart || model.isChangingAutoUpload ? 0.5 : 1)
         }
     }
 
     private var autoUploadTimespanDescription: String {
         let destination = model.returnPath()
-        if let date = model.autoUploadSinceDate {
-            return String(format: NSLocalizedString("_autoupload_from_date_description_", comment: ""), date.formatted(date: .abbreviated, time: .shortened), destination)
+        if model.autoUploadSinceDate != nil {
+            return String(format: NSLocalizedString("_autoupload_date_range_footer_", comment: ""), destination)
         }
         return String(format: NSLocalizedString("_autoupload_whole_library_description_", comment: ""), destination)
     }

@@ -224,14 +224,21 @@ extension NCManageDatabase {
 
     func addAccountAsync(_ account: String, urlBase: String, user: String, userId: String, password: String) async {
         await core.performRealmWriteAsync { realm in
+            let newAccount: tableAccount
             if let existing = realm.object(ofType: tableAccount.self, forPrimaryKey: account) {
+                // Re-registering an account preserves its selected range and discovery progress.
+                newAccount = tableAccount(value: existing)
                 realm.delete(existing)
+            } else {
+                newAccount = tableAccount()
+                // Initialize once; opening settings or restarting Auto Upload never changes this date.
+                let startingDate = Date.now
+                newAccount.autoUploadSinceDate = startingDate
+                newAccount.autoUploadDiscoveryDate = startingDate
             }
 
             // Save password in Keychain
             NCPreferences().setPassword(account: account, password: password)
-
-            let newAccount = tableAccount()
 
             newAccount.account = account
             newAccount.urlBase = urlBase
