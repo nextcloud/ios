@@ -140,7 +140,8 @@ extension BackgroundUploadExtension {
 
     /// Applies a complete background-upload state transition and persists it in Realm.
     /// Keeping related fields together prevents partially configured metadata between processing stages.
-    func persistMetadataState(_ state: MetadataState, metadata: tableMetadata) async {
+    func persistMetadataState(_ state: MetadataState, metadata: tableMetadata, sessionIdentifier: String? = nil) async {
+        let expectedJobIdentifier = metadata.backgroundUploadJobIdentifier
         switch state {
         case let .uploading(jobIdentifier, incrementRetryCount):
             if incrementRetryCount, metadata.backgroundUploadRetryCount < Int.max {
@@ -189,6 +190,6 @@ extension BackgroundUploadExtension {
             metadata.backgroundUploadNextRetryDate = nil
         }
 
-        await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+        await database.updateBackgroundUploadMetadataAsync(metadata, expectedJobIdentifier: expectedJobIdentifier, sessionIdentifier: sessionIdentifier)
     }
 }

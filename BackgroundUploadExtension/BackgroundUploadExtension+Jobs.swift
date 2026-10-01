@@ -83,7 +83,10 @@ extension BackgroundUploadExtension {
             try library.performChangesAndWait {
                 guard let current = self.database.getTableAccount(account: account.account),
                       current.autoUploadStart,
-                      current.autoUploadSessionIdentifier == account.autoUploadSessionIdentifier else { return }
+                      current.autoUploadSessionIdentifier == account.autoUploadSessionIdentifier,
+                      let currentMetadata = self.database.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)),
+                      !currentMetadata.backgroundUploadCancellationRequested,
+                      currentMetadata.backgroundUploadJobIdentifier == "pending" else { return }
                 let request = PHAssetResourceUploadJobChangeRequest.creationRequestForJob(destination: destination, resource: resource)
                 jobIdentifier = request.placeholderForCreatedAssetResourceUploadJob?.localIdentifier
             }
@@ -98,10 +101,15 @@ extension BackgroundUploadExtension {
                 metadata: metadata
             )
 
+            guard let savedMetadata = await database.getMetadataAsync(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)),
+                  !savedMetadata.backgroundUploadCancellationRequested else {
+                _ = try await cancelRequestedUploadJobs()
+                continue
+            }
             if let current = database.getTableAccount(account: account.account),
                !current.autoUploadStart || current.autoUploadSessionIdentifier != account.autoUploadSessionIdentifier {
                 metadata.backgroundUploadCancellationRequested = true
-                await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+                await database.updateBackgroundUploadMetadataAsync(metadata, expectedJobIdentifier: jobIdentifier)
                 _ = try await cancelRequestedUploadJobs()
                 break
             }
@@ -239,6 +247,7 @@ extension BackgroundUploadExtension {
                 continue
             }
 
+            let sessionIdentifier = database.getTableAccount(account: metadata.account)?.autoUploadSessionIdentifier ?? ""
             logUploadJobDiagnostics(job: job, action: "retry")
 
             if hasConfirmedUploadResponse(job: job) {
@@ -288,7 +297,7 @@ extension BackgroundUploadExtension {
                 }
 
                 // Keep the failed transfer available for an explicit retry from the host app.
-                await persistMetadataState(.manualRetryRequired, metadata: metadata)
+                await persistMetadataState(.manualRetryRequired, metadata: metadata, sessionIdentifier: sessionIdentifier)
 
                 madeProgress = true
                 if authenticationRequired {
@@ -352,7 +361,7 @@ extension BackgroundUploadExtension {
             if let current = database.getTableAccount(account: metadata.account),
                !current.autoUploadStart || current.autoUploadSessionIdentifier != retryAccount.autoUploadSessionIdentifier {
                 metadata.backgroundUploadCancellationRequested = true
-                await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+                await database.updateBackgroundUploadMetadataAsync(metadata, expectedJobIdentifier: jobIdentifier)
                 _ = try await cancelRequestedUploadJobs()
                 continue
             }
@@ -397,6 +406,7 @@ extension BackgroundUploadExtension {
                 continue
             }
 
+            let sessionIdentifier = database.getTableAccount(account: metadata.account)?.autoUploadSessionIdentifier ?? ""
             let uploadSucceeded: Bool
             let createNewJob: Bool
 
@@ -452,12 +462,12 @@ extension BackgroundUploadExtension {
 
             if !uploadSucceeded && createNewJob {
                 // A PhotoKit job can be retried only once; create a fresh job for the remaining attempt.
-                await persistMetadataState(.pendingRetry, metadata: metadata)
+                await persistMetadataState(.pendingRetry, metadata: metadata, sessionIdentifier: sessionIdentifier)
 
                 logInfo("Prepared new background upload job for \(metadata.fileName), retry: \(metadata.backgroundUploadRetryCount)")
             } else if !uploadSucceeded {
                 // `uploadError` prevents automatic scheduling while `pending` enables manual retry.
-                await persistMetadataState(.manualRetryRequired, metadata: metadata)
+                await persistMetadataState(.manualRetryRequired, metadata: metadata, sessionIdentifier: sessionIdentifier)
 
                 logInfo("Background upload requires a manual retry for \(metadata.fileName)")
             }
@@ -511,7 +521,7 @@ extension BackgroundUploadExtension {
             "Recovered background upload job \(job.localIdentifier), file: \(metadata.fileName), " +
             "resource: \(resource.filename ?? "<unknown>")"
         )
-        return metadata
+        return await database.getMetadataAsync(backgroundUploadJobIdentifier: job.localIdentifier)
     }
 
     /// Resolves the Photos resource represented by a metadata record, including Live Photo components.

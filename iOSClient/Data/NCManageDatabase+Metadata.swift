@@ -522,6 +522,28 @@ extension NCManageDatabase {
         }
     }
 
+    /// Updates an existing job without recreating a deleted transfer or clearing cancellation.
+    /// Requeueing also requires the same active auto-upload session.
+    func updateBackgroundUploadMetadataAsync(_ metadata: tableMetadata, expectedJobIdentifier: String, sessionIdentifier: String? = nil) async {
+        let detached = metadata.detachedCopy()
+        await core.performRealmWriteAsync { realm in
+            guard let current = realm.object(ofType: tableMetadata.self, forPrimaryKey: detached.ocId),
+                  current.backgroundUploadJobIdentifier == expectedJobIdentifier else { return }
+            if let sessionIdentifier {
+                guard !current.backgroundUploadCancellationRequested,
+                      let account = realm.objects(tableAccount.self).filter("account == %@", detached.account).first,
+                      account.autoUploadStart,
+                      account.autoUploadSessionIdentifier == sessionIdentifier else {
+                    // This terminal job has already been acknowledged; do not leave a stale identifier.
+                    if current.status != NCGlobal.shared.metadataStatusNormal { realm.delete(current) }
+                    return
+                }
+            }
+            detached.backgroundUploadCancellationRequested = current.backgroundUploadCancellationRequested || detached.backgroundUploadCancellationRequested
+            realm.add(detached, update: .modified)
+        }
+    }
+
     func replaceMetadataAsync(ocId: String, metadata: tableMetadata) async {
         let detached = metadata.detachedCopy()
 
