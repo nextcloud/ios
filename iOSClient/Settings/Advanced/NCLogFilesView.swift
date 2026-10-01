@@ -6,14 +6,14 @@ import SwiftUI
 
 struct NCLogFilesView: View {
     @ObservedObject var model: NCSettingsAdvancedModel
-    @State private var showDeletionError = false
-    @State private var deletionErrorMessage = ""
+    @State private var showLogError = false
+    @State private var logErrorMessage = ""
 
     var body: some View {
         List {
             Section {
                 Button {
-                    model.clearLogFile()
+                    Task { await model.clearLogFile() }
                 } label: {
                     Label(NSLocalizedString("_clear_log_", comment: ""), systemImage: "trash")
                 }
@@ -31,7 +31,12 @@ struct NCLogFilesView: View {
                     ForEach(model.logFiles, id: \.self) { logFile in
                         HStack(spacing: 12) {
                             Button {
-                                model.viewLogFile(at: logFile)
+                                Task {
+                                    do { try await model.viewLogFile(at: logFile) } catch {
+                                        logErrorMessage = error.localizedDescription
+                                        showLogError = true
+                                    }
+                                }
                             } label: {
                                 HStack(spacing: 12) {
                                     Image(systemName: logFile.lastPathComponent == "log.txt" ? "doc.text.fill" : "doc.text")
@@ -64,11 +69,11 @@ struct NCLogFilesView: View {
                         }
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
-                                do {
-                                    try model.deleteLogFile(at: logFile)
-                                } catch {
-                                    deletionErrorMessage = error.localizedDescription
-                                    showDeletionError = true
+                                Task {
+                                    do { try await model.deleteLogFile(at: logFile) } catch {
+                                        logErrorMessage = error.localizedDescription
+                                        showLogError = true
+                                    }
                                 }
                             } label: {
                                 Label(NSLocalizedString("_delete_", comment: ""), systemImage: "trash")
@@ -78,18 +83,22 @@ struct NCLogFilesView: View {
                 }
             }
         }
+        .disabled(model.isPreparingLogPreview)
+        .overlay {
+            if model.isPreparingLogPreview { ProgressView() }
+        }
         .refreshable {
-            model.loadLogFiles()
+            await model.loadLogFiles()
         }
         .navigationTitle(NSLocalizedString("_view_log_", comment: ""))
         .navigationBarTitleDisplayMode(.inline)
-        .alert(NSLocalizedString("_error_", comment: ""), isPresented: $showDeletionError) {
+        .alert(NSLocalizedString("_error_", comment: ""), isPresented: $showLogError) {
             Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
         } message: {
-            Text(deletionErrorMessage)
+            Text(logErrorMessage)
         }
-        .onAppear {
-            model.loadLogFiles()
+        .task {
+            await model.loadLogFiles()
         }
     }
 }
