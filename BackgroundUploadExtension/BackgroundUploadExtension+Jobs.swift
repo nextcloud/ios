@@ -80,7 +80,7 @@ extension BackgroundUploadExtension {
 
             // PhotoKit job creation must happen inside its library change transaction.
             try library.performChangesAndWait {
-                guard database.getTableAccount(account: account.account)?.autoUploadStart == true else { return }
+                guard self.database.getTableAccount(account: account.account)?.autoUploadStart == true else { return }
                 let request = PHAssetResourceUploadJobChangeRequest.creationRequestForJob(destination: destination, resource: resource)
                 jobIdentifier = request.placeholderForCreatedAssetResourceUploadJob?.localIdentifier
             }
