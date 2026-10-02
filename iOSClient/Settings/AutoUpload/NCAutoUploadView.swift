@@ -206,7 +206,7 @@ struct NCAutoUploadView: View {
                             showSelectAlbums.toggle()
                         } label: {
                             HStack {
-                                Image(systemName: "person.2.crop.square.stack")
+                                Image(systemName: "photo.on.rectangle.angled")
                                     .font(.icon())
                                     .frame(width: 26)
                                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
@@ -543,17 +543,23 @@ struct NCAutoUploadView: View {
 
         if model.autoUploadSinceDate != nil {
             VStack(alignment: .leading, spacing: 4) {
-                DatePicker(
-                    "_autoupload_start_date_",
-                    selection: Binding(
-                        get: { model.autoUploadSinceDate ?? Date.now },
-                        set: { model.handleAutoUploadSinceDate($0) }
-                    ),
-                    displayedComponents: [.date, .hourAndMinute]
-                )
-                .datePickerStyle(.compact)
-                .font(.body)
-                .accessibilityIdentifier("AutoUploadStartDate")
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("_autoupload_start_date_")
+                        .font(.body)
+
+                    DatePicker(
+                        "_autoupload_start_date_",
+                        selection: Binding(
+                            get: { model.autoUploadSinceDate ?? Date.now },
+                            set: { model.handleAutoUploadSinceDate($0) }
+                        ),
+                        displayedComponents: [.date, .hourAndMinute]
+                    )
+                    .datePickerStyle(.compact)
+                    .labelsHidden()
+                    .font(.body)
+                    .accessibilityIdentifier("AutoUploadStartDate")
+                }
 
                 HStack {
                     Spacer()
