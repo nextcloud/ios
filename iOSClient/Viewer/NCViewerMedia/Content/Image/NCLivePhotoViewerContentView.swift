@@ -105,6 +105,7 @@ struct NCLivePhotoViewerContentView: View {
             livePhotoBadge
         }
         .background(Color.ncViewerBackground(backgroundStyle))
+        // Resource URLs change after downloading; preserve the pending playback request.
         .task(id: taskIdentifier) {
             await loadLivePhotoIfNeeded()
         }
@@ -122,9 +123,6 @@ struct NCLivePhotoViewerContentView: View {
             cancelResourceLoadingIfNeeded()
             stopLivePhotoPlayback()
             zoomStateStore.value = initialZoomState
-        }
-        .onChange(of: taskIdentifier) { _, _ in
-            stopLivePhotoPlayback()
         }
         .onChange(of: isPlayingLivePhoto) { _, isPlaying in
             if !isPlaying {
