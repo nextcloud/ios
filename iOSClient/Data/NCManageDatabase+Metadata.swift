@@ -466,6 +466,20 @@ extension NCManageDatabase {
         }
     }
 
+    /// Inserts discovered transfers only if the start/stop session is still current.
+    func addAutoUploadMetadatasAsync(_ metadatas: [tableMetadata], account: String, sessionIdentifier: String, seedOcId: String? = nil) async {
+        let detached = metadatas.map { $0.detachedCopy() }
+        await core.performRealmWriteAsync { realm in
+            guard let current = realm.objects(tableAccount.self).filter("account == %@", account).first,
+                  current.autoUploadStart,
+                  current.autoUploadSessionIdentifier == sessionIdentifier else { return }
+            if let seedOcId {
+                guard realm.objects(tableMetadata.self).filter("account == %@ AND (ocId == %@ OR ocIdTransfer == %@)", account, seedOcId, seedOcId).first != nil else { return }
+            }
+            realm.add(detached, update: .all)
+        }
+    }
+
     func addMetadatas(_ metadatas: [tableMetadata], sync: Bool = true) {
         let detached = metadatas.map { $0.detachedCopy() }
 
@@ -508,6 +522,28 @@ extension NCManageDatabase {
             if let object = realm.object(ofType: tableMetadata.self, forPrimaryKey: ocId) {
                 realm.delete(object)
             }
+        }
+    }
+
+    /// Updates an existing job without recreating a deleted transfer or clearing cancellation.
+    /// Requeueing also requires the same active auto-upload session.
+    func updateBackgroundUploadMetadataAsync(_ metadata: tableMetadata, expectedJobIdentifier: String, sessionIdentifier: String? = nil) async {
+        let detached = metadata.detachedCopy()
+        await core.performRealmWriteAsync { realm in
+            guard let current = realm.object(ofType: tableMetadata.self, forPrimaryKey: detached.ocId),
+                  current.backgroundUploadJobIdentifier == expectedJobIdentifier else { return }
+            if let sessionIdentifier {
+                guard !current.backgroundUploadCancellationRequested,
+                      let account = realm.objects(tableAccount.self).filter("account == %@", detached.account).first,
+                      account.autoUploadStart,
+                      account.autoUploadSessionIdentifier == sessionIdentifier else {
+                    // This terminal job has already been acknowledged; do not leave a stale identifier.
+                    if current.status != NCGlobal.shared.metadataStatusNormal { realm.delete(current) }
+                    return
+                }
+            }
+            detached.backgroundUploadCancellationRequested = current.backgroundUploadCancellationRequested || detached.backgroundUploadCancellationRequested
+            realm.add(detached, update: .modified)
         }
     }
 

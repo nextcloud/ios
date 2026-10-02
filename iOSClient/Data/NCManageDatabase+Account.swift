@@ -17,10 +17,13 @@ class tableAccount: Object {
     @objc dynamic var autoUploadDirectory = ""
     @objc dynamic var autoUploadFileName = ""
     @objc dynamic var autoUploadStart: Bool = false
+    /// Invalidates scans belonging to a previous start/stop session.
+    @objc dynamic var autoUploadSessionIdentifier = ""
     @objc dynamic var autoUploadImage: Bool = false
     @objc dynamic var autoUploadVideo: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
     @objc dynamic var autoUploadWWAnVideo: Bool = false
+    /// Incremental restart date; nil scans the whole library. Advances only past confirmed uploads.
     @objc dynamic var autoUploadSinceDate: Date?
     @objc dynamic var backend = ""
     @objc dynamic var backendCapabilitiesSetDisplayName: Bool = false
@@ -93,6 +96,7 @@ class tableAccount: Object {
         self.autoUploadVideo = codableObject.autoUploadVideo
         self.autoUploadWWAnPhoto = codableObject.autoUploadWWAnPhoto
         self.autoUploadWWAnVideo = codableObject.autoUploadWWAnVideo
+        self.autoUploadSinceDate = codableObject.autoUploadSinceDate
 
         self.user = codableObject.user
         self.userId = codableObject.userId
@@ -210,14 +214,20 @@ extension NCManageDatabase {
 
     func addAccountAsync(_ account: String, urlBase: String, user: String, userId: String, password: String) async {
         await core.performRealmWriteAsync { realm in
+            let newAccount: tableAccount
             if let existing = realm.object(ofType: tableAccount.self, forPrimaryKey: account) {
+                // Re-registering an account preserves its incremental restart date.
+                newAccount = tableAccount(value: existing)
                 realm.delete(existing)
+            } else {
+                newAccount = tableAccount()
+                // Initialize once; opening settings or restarting Auto Upload never changes this date.
+                let startingDate = Date.now
+                newAccount.autoUploadSinceDate = startingDate
             }
 
             // Save password in Keychain
             NCPreferences().setPassword(account: account, password: password)
-
-            let newAccount = tableAccount()
 
             newAccount.account = account
             newAccount.urlBase = urlBase
@@ -364,26 +374,34 @@ extension NCManageDatabase {
         }
     }
 
+    /// Advances only through the confirmed prefix of a scan, in the same active start/stop session.
+    func updateAutoUploadSinceDateIfEnabledAsync(_ date: Date, account: String, sessionIdentifier: String) async {
+        await core.performRealmWriteAsync { realm in
+            guard let current = realm.objects(tableAccount.self).filter("account == %@", account).first,
+                  current.autoUploadStart,
+                  current.autoUploadSessionIdentifier == sessionIdentifier else { return }
+            if let sinceDate = current.autoUploadSinceDate, date <= sinceDate { return }
+            current.autoUploadSinceDate = date
+        }
+    }
+
+    /// Changes the incremental restart date only while Auto Upload is stopped.
+    func setAutoUploadSinceDateAsync(_ date: Date?, account: String) async {
+        await core.performRealmWriteAsync { realm in
+            guard let current = realm.objects(tableAccount.self).filter("account == %@", account).first,
+                  !current.autoUploadStart else { return }
+            current.autoUploadSinceDate = date
+        }
+    }
+
     func setAutoUploadStartAsync(_ enabled: Bool, account: String) async {
         await core.performRealmWriteAsync { realm in
             let accounts = realm.objects(tableAccount.self)
-
-            if enabled {
-                guard accounts
-                    .filter("autoUploadStart == true AND account != %@", account)
-                    .isEmpty else {
-                    return
-                }
-
-                accounts
-                    .filter("account == %@", account)
-                    .first?
-                    .autoUploadStart = true
-            } else {
-                accounts
-                    .filter("account == %@", account)
-                    .first?
-                    .autoUploadStart = false
+            guard let current = accounts.filter("account == %@", account).first else { return }
+            if enabled, !accounts.filter("autoUploadStart == true AND account != %@", account).isEmpty { return }
+            if current.autoUploadStart != enabled {
+                current.autoUploadSessionIdentifier = UUID().uuidString
+                current.autoUploadStart = enabled
             }
         }
     }

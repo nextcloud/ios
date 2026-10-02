@@ -93,7 +93,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // PREVIEW IMAGE
         //
-        let ext = self.global.getSizeExtension(column: self.numberOfColumns)
+        let ext = self.global.getSizeExtension(column: self.numberOfColumns, viewWidth: self.collectionView.bounds.width)
         let imageExists = self.utilityFileSystem.fileProviderStorageImageExists(ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
 
         guard metadata.hasPreview,

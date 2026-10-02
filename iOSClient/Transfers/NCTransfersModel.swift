@@ -139,6 +139,9 @@ final class TransfersViewModel: ObservableObject, NCMetadataDownloadTransfersSuc
 
         metadata.backgroundUploadCancellationRequested = true
         await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+        if #available(iOS 27, *) {
+            await NCBackgroundUploadExtensionManager.shared.cancelUploads(account: metadata.account)
+        }
     }
 
     func canRetry(item: tableMetadata) -> Bool {

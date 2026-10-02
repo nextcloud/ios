@@ -128,99 +128,20 @@ extension BackgroundUploadExtension {
     /// Applies Nextcloud response metadata and records the asset as successfully auto-uploaded.
     /// A missing `oc-fileid` converts the result to an upload error and requires manual recovery.
     func processUploadSuccess(metadata: tableMetadata, job: PHAssetResourceUploadJob) async -> Bool {
-        let headers = job.responseHeaderFields ?? [:]
-
-        guard let ocId = headers["oc-fileid"], !ocId.isEmpty else {
-            // A successful response without Nextcloud metadata is a server-level compatibility error.
-            preferences.setBackgroundUploadSuspended(true, account: metadata.account)
+        let succeeded = await NCBackgroundUploadExtensionManager.shared.recordUploadSuccess(metadata: metadata, job: job)
+        if !succeeded {
             await persistMetadataState(
                 .failed(message: "Upload response missing oc-fileid", errorCode: NSURLErrorBadServerResponse),
                 metadata: metadata
             )
-
-            logError("Successful job without oc-fileid: \(job.localIdentifier)")
-
-            return false
         }
-
-        // Any confirmed upload breaks the sequence of consecutive asset failures.
-        preferences.resetBackgroundUploadConsecutiveFailures(account: metadata.account)
-
-        let etag = nkComm.normalizedETag(
-            headers["oc-etag"] ?? headers["etag"]
-        )
-
-        let date = headers["date"]?.parsedDate(
-            using: "EEE, dd MMM y HH:mm:ss zzz"
-        )
-
-        let ownerId = headers["x-nc-ownerid"]
-        let permissions = headers["x-nc-permissions"]
-
-        metadata.uploadDate = (date as? NSDate) ?? NSDate()
-        metadata.etag = etag ?? ""
-        metadata.ocId = ocId
-
-        if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
-            metadata.fileId = fileId
-        }
-
-        if let ownerId, !ownerId.isEmpty {
-           metadata.ownerId = ownerId
-           if let ownerDisplayName = await NCManageDatabase.shared.getOwnerDisplayName(account: metadata.account, ownerId: ownerId) {
-               metadata.ownerDisplayName = ownerDisplayName
-           }
-       }
-
-       if let permissions, !permissions.isEmpty {
-           metadata.permissions = permissions
-       }
-
-        if metadata.sessionSelector == global.selectorUploadAutoUpload,
-           let serverUrlBase = metadata.autoUploadServerUrlBase {
-            await database.addAutoUploadTransferAsync(
-                account: metadata.account,
-                serverUrlBase: serverUrlBase,
-                fileName: metadata.fileNameView,
-                assetLocalIdentifier: metadata.assetLocalIdentifier,
-                date: metadata.creationDate as Date
-            )
-        }
-
-        await database.replaceMetadataAsync(ocId: metadata.ocIdTransfer, metadata: metadata)
-
-        if metadata.isLivePhoto,
-           let capabilities = await database.getCapabilities(account: metadata.account),
-           capabilities.isLivePhotoServerAvailable {
-            await database.setLivePhotoVideo(
-                account: metadata.account,
-                serverUrlFileName: metadata.serverUrlFileName,
-                fileId: metadata.fileId,
-                classFile: metadata.classFile
-            )
-        }
-
-        do {
-            try await NCLocalDatabase.shared.recordPhotoLibraryAssetUpload(
-                account: metadata.account,
-                assetLocalIdentifier: metadata.assetLocalIdentifier,
-                classFile: metadata.classFile,
-                isLivePhoto: metadata.isLivePhoto,
-                creationDate: metadata.creationDate as Date
-            )
-        } catch {
-            // The server upload remains successful even if its local PhotoKit state cannot be recorded.
-            logError("Unable to record uploaded photo library asset \(metadata.assetLocalIdentifier): \(error)")
-        }
-
-        logInfo("Completed background upload for \(metadata.fileName), job: \(job.localIdentifier), ocId: \(ocId)")
-
-        return true
+        return succeeded
     }
 
     /// Applies a complete background-upload state transition and persists it in Realm.
     /// Keeping related fields together prevents partially configured metadata between processing stages.
-    func persistMetadataState(_ state: MetadataState, metadata: tableMetadata) async {
+    func persistMetadataState(_ state: MetadataState, metadata: tableMetadata, sessionIdentifier: String? = nil) async {
+        let expectedJobIdentifier = metadata.backgroundUploadJobIdentifier
         switch state {
         case let .uploading(jobIdentifier, incrementRetryCount):
             if incrementRetryCount, metadata.backgroundUploadRetryCount < Int.max {
@@ -269,6 +190,6 @@ extension BackgroundUploadExtension {
             metadata.backgroundUploadNextRetryDate = nil
         }
 
-        await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+        await database.updateBackgroundUploadMetadataAsync(metadata, expectedJobIdentifier: expectedJobIdentifier, sessionIdentifier: sessionIdentifier)
     }
 }

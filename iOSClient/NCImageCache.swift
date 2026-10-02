@@ -79,6 +79,7 @@ final class NCImageCache: @unchecked Sendable {
         imageCacheWindowItems: [ImageCacheWindowItem],
         centerIndex: Int,
         numberOfColumns: Int,
+        viewWidth: CGFloat,
         session: NCSession.Session,
         force: Bool = false
     ) {
@@ -87,6 +88,7 @@ final class NCImageCache: @unchecked Sendable {
                 imageCacheWindowItems: imageCacheWindowItems,
                 centerIndex: centerIndex,
                 numberOfColumns: numberOfColumns,
+                viewWidth: viewWidth,
                 session: session,
                 force: force
             )
@@ -213,6 +215,7 @@ private actor MediaWindowCache {
         imageCacheWindowItems: [NCImageCache.ImageCacheWindowItem],
         centerIndex: Int,
         numberOfColumns: Int,
+        viewWidth: CGFloat,
         session: NCSession.Session,
         force: Bool
     ) {
@@ -220,7 +223,7 @@ private actor MediaWindowCache {
             return
         }
 
-        let ext = NCGlobal.shared.getSizeExtension(column: numberOfColumns)
+        let ext = NCGlobal.shared.getSizeExtension(column: numberOfColumns, viewWidth: viewWidth)
 
         if !force,
            lastCacheExtension == ext,

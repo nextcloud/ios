@@ -58,12 +58,23 @@ final class NCCameraRoll: CameraRollExtractor {
     /// - Parameter metadata: Metadata to extract
     /// - Returns: Extracted metadata, possibly including a paired Live Photo
     func extractCameraRoll(from metadata: tableMetadata) async -> [tableMetadata] {
-        guard !metadata.isExtractFile else {
-            return [metadata]
-        }
-
         var metadatas: [tableMetadata] = []
         let metadataSource = metadata.detachedCopy()
+        let autoUploadSessionIdentifier: String?
+        if metadata.sessionSelector == NCGlobal.shared.selectorUploadAutoUpload {
+            guard let account = await database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", metadata.account)),
+                  account.autoUploadStart else { return [] }
+            autoUploadSessionIdentifier = account.autoUploadSessionIdentifier
+        } else {
+            autoUploadSessionIdentifier = nil
+        }
+        if metadata.isExtractFile {
+            if autoUploadSessionIdentifier != nil {
+                guard let current = await database.getMetadataAsync(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) else { return [] }
+                return [current]
+            }
+            return [metadata]
+        }
         let chunkSize = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
             ? NCGlobal.shared.chunkSizeMBEthernetOrWiFi
             : NCGlobal.shared.chunkSizeMBCellular
@@ -95,7 +106,7 @@ final class NCCameraRoll: CameraRollExtractor {
             }
             metadataSource.isExtractFile = true
 
-            if let metadata = self.database.addAndReturnMetadata(metadataSource) {
+            if let metadata = await persistExtractedMetadata(metadataSource, sessionIdentifier: autoUploadSessionIdentifier, seedOcId: metadata.ocId) {
                 metadatas.append(metadata)
             }
             return metadatas
@@ -130,7 +141,8 @@ final class NCCameraRoll: CameraRollExtractor {
                   let extractedMetadata = await updateMetadataForUploadAsync(
                       metadata: result.metadata,
                       size: Int(finalSize),
-                      chunkSize: chunkSize
+                      chunkSize: chunkSize,
+                      sessionIdentifier: autoUploadSessionIdentifier
                   ) else {
                 throw NSError(
                     domain: "ExtractAssetError",
@@ -145,7 +157,7 @@ final class NCCameraRoll: CameraRollExtractor {
             if extractedMetadata.isLivePhoto,
                let asset = fetchAssets.firstObject,
                let livePhotoMetadata = await createMetadataLivePhoto(metadata: extractedMetadata, asset: asset) {
-                if let metadata = self.database.addAndReturnMetadata(livePhotoMetadata) {
+                if let metadata = await persistExtractedMetadata(livePhotoMetadata, sessionIdentifier: autoUploadSessionIdentifier, seedOcId: metadataSource.ocId) {
                     metadatas.append(metadata)
                 }
             }
@@ -303,14 +315,26 @@ final class NCCameraRoll: CameraRollExtractor {
         return self.database.addAndReturnMetadata(metadata)
     }
 
-    private func updateMetadataForUploadAsync(metadata: tableMetadata, size: Int, chunkSize: Int) async -> tableMetadata? {
+    private func updateMetadataForUploadAsync(metadata: tableMetadata, size: Int, chunkSize: Int, sessionIdentifier: String? = nil) async -> tableMetadata? {
         metadata.chunk = size > chunkSize ? chunkSize : 0
         metadata.e2eEncrypted = metadata.isDirectoryE2EE
         if metadata.chunk > 0 || metadata.e2eEncrypted {
             metadata.session = NCNetworking.shared.sessionUpload
         }
         metadata.isExtractFile = true
-        return await self.database.addAndReturnMetadataAsync(metadata)
+        return await persistExtractedMetadata(metadata, sessionIdentifier: sessionIdentifier, seedOcId: metadata.ocId)
+    }
+
+    /// Auto Upload extraction must not recreate a seed deleted by Stop or Transfers cancellation.
+    private func persistExtractedMetadata(_ metadata: tableMetadata, sessionIdentifier: String?, seedOcId: String) async -> tableMetadata? {
+        guard let sessionIdentifier else {
+            return await database.addAndReturnMetadataAsync(metadata)
+        }
+        await database.addAutoUploadMetadatasAsync([metadata], account: metadata.account, sessionIdentifier: sessionIdentifier, seedOcId: seedOcId)
+        guard let account = await database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", metadata.account)),
+              account.autoUploadStart,
+              account.autoUploadSessionIdentifier == sessionIdentifier else { return nil }
+        return await database.getMetadataAsync(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
     }
 
     private func extractImage(asset: PHAsset, ext: String, filePath: String, convertToJPEG: Bool) async throws {

@@ -303,7 +303,7 @@ extension NCMedia {
             await self.searchNetworkNewMedia(firstDate: firstDateNew,
                                              lastDate: lastDateNew,
                                              mediaPath: tblAccount.mediaPath,
-                                             account: account) {
+                                             account: account) { [weak self] in
                 Task { [weak self] in
                     guard let self else {
                         return
@@ -337,7 +337,7 @@ extension NCMedia {
                                       lastDate: lastVisibleCellDate,
                                       mediaPath: tblAccount.mediaPath,
                                       account: account,
-                                      limit: verificationLimit) {
+                                      limit: verificationLimit) { [weak self] in
             Task { [weak self] in
                 guard let self else {
                     return
