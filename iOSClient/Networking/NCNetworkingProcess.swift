@@ -554,8 +554,8 @@ actor NCNetworkingProcess {
                 if metadata.sessionSelector == global.selectorUploadAutoUpload {
                     let existsResult = await networking.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
                     if existsResult == .success {
-                        // File exists → delete from local metadata and skip
-                        await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
+                        // Preserve completion in the incremental upload history before removing the transfer.
+                        await database.completeExistingAutoUploadAsync(metadata)
                         continue
                     } else if existsResult.errorCode == 404 {
                         // 404 Not Found → file does not exist

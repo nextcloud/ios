@@ -31,6 +31,26 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
+    /// Records a resource already present on the server without treating it as a new upload.
+    func completeExistingAutoUploadAsync(_ metadata: tableMetadata) async {
+        let detached = metadata.detachedCopy()
+        await core.performRealmWriteAsync { realm in
+            guard let transfer = realm.object(ofType: tableMetadata.self, forPrimaryKey: detached.ocId),
+                  transfer.sessionSelector == NCGlobal.shared.selectorUploadAutoUpload,
+                  let account = realm.objects(tableAccount.self).filter("account == %@", detached.account).first,
+                  account.autoUploadStart else { return }
+            if let serverUrlBase = transfer.autoUploadServerUrlBase {
+                let completed = tableAutoUploadTransfer(account: transfer.account,
+                                                        serverUrlBase: serverUrlBase,
+                                                        fileName: transfer.fileNameView,
+                                                        assetLocalIdentifier: transfer.assetLocalIdentifier,
+                                                        date: transfer.creationDate as Date)
+                realm.add(completed, update: .all)
+            }
+            realm.delete(transfer)
+        }
+    }
+
     func addAutoUploadTransferAsync(account: String,
                                     serverUrlBase: String,
                                     fileName: String,
