@@ -115,10 +115,8 @@ class NCAutoUpload: NSObject {
         let formatCompatibility = NCPreferences().formatCompatibility
         let keychainLivePhoto = NCPreferences().livePhoto
         let fileSystem = NCUtilityFileSystem()
-        let knownFileNames = await self.database.fetchAutoUploadFileNamesAsync(account: tblAccount.account,
-                                                                        autoUploadServerUrlBase: autoUploadServerUrlBase)
+        let knownFileNames = await self.database.fetchAutoUploadFileNamesAsync(account: tblAccount.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
 
-        let skipFileNames = knownFileNames.queued.union(knownFileNames.uploaded)
         var lastUploadedDate: Date?
         var canAdvanceSinceDate = true
 
@@ -149,7 +147,8 @@ class NCAutoUpload: NSObject {
 
             // A later success cannot move the restart date past an unfinished photo or Live Photo.
             canAdvanceSinceDate = false
-            if skipFileNames.contains(fileNameCompatible) || skipFileNames.contains(fileName) {
+            if knownFileNames.queued.contains(fileNameCompatible) || knownFileNames.queued.contains(fileName) ||
+                (isLivePhoto && knownFileNames.queued.contains(pairedFileName)) {
                 continue
             }
             let serverUrl = tblAccount.autoUploadCreateSubfolder
@@ -417,10 +416,10 @@ class NCAutoUpload: NSObject {
                 account: metadata.account
             )
 
-            if existsResult == .success {
-                await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
+            if existsResult == .success && !metadata.isLivePhoto {
+                await database.completeExistingAutoUploadAsync(metadata)
                 continue
-            } else if existsResult.errorCode != 404 {
+            } else if existsResult != .success && existsResult.errorCode != 404 {
                 continue
             }
 
@@ -434,6 +433,19 @@ class NCAutoUpload: NSObject {
 
             for extractedMetadata in extractedMetadatas {
                 guard !Task.isCancelled else { return }
+
+                if extractedMetadata.isLivePhoto {
+                    let resourceExists = await NCNetworking.shared.fileExists(
+                        serverUrlFileName: extractedMetadata.serverUrlFileName,
+                        account: extractedMetadata.account
+                    )
+                    if resourceExists == .success {
+                        await database.completeExistingAutoUploadAsync(extractedMetadata)
+                        continue
+                    } else if resourceExists.errorCode != 404 {
+                        continue
+                    }
+                }
 
                 let err = await NCNetworking.shared.uploadFileInBackground(
                     metadata: extractedMetadata.detachedCopy()
