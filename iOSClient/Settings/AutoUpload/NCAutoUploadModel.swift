@@ -43,6 +43,16 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Whether the experimental PhotoKit background upload extension is enabled.
     @Published var backgroundUploadExtensionEnabled: Bool = false
 
+    /// Legacy controls remain available when PhotoKit is disabled or unsupported for this account.
+    var usesPhotoKitAutoUpload: Bool {
+        guard #available(iOS 27, *),
+              NCPreferences.canConfigureBackgroundUploadExtension,
+              backgroundUploadExtensionEnabled,
+              PHPhotoLibrary.authorizationStatus(for: .readWrite) == .authorized,
+              let capabilities = NCNetworking.shared.capabilities[session.account] else { return false }
+        return NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v35)
+    }
+
     /// Whether the error alert should be shown in the view.
     @Published var showErrorAlert: Bool = false
     /// The currently displayed section name.

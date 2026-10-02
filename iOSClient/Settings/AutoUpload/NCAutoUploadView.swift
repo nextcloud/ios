@@ -142,7 +142,7 @@ struct NCAutoUploadView: View {
                 }
             }
 
-            if model.autoUploadStart && autoUploadCounter.hasItemsToUpload {
+            if !model.usesPhotoKitAutoUpload, model.autoUploadStart && autoUploadCounter.hasItemsToUpload {
                 Section(content: {
                     Button {
                         showFocusedAutoUploadIntro = true
@@ -231,7 +231,11 @@ struct NCAutoUploadView: View {
                         }
                     }
 
-                    autoUploadTimespanOptions
+                    if model.autoUploadStart {
+                        autoUploadProgressDate
+                    } else {
+                        autoUploadTimespanOptions
+                    }
                 }, footer: {
                     Text(autoUploadTimespanDescription)
                         .font(.footnote)
@@ -387,37 +391,39 @@ struct NCAutoUploadView: View {
                     .font(.footnote)
                 })
 
-                Section(content: {
-                    Toggle(
-                        NSLocalizedString(
-                            "_enable_background_location_title_",
-                            comment: ""
-                        ),
-                        isOn: $model.locationAutoUploadPermissionGranted
-                    )
-                    .font(.body)
-                    .tint(
-                        Color(
-                            NCBrandColor.shared.getElement(
-                                account: model.session.account
+                if !model.usesPhotoKitAutoUpload {
+                    Section(content: {
+                        Toggle(
+                            NSLocalizedString(
+                                "_enable_background_location_title_",
+                                comment: ""
+                            ),
+                            isOn: $model.locationAutoUploadPermissionGranted
+                        )
+                        .font(.body)
+                        .tint(
+                            Color(
+                                NCBrandColor.shared.getElement(
+                                    account: model.session.account
+                                )
                             )
                         )
-                    )
-                    .opacity(model.autoUploadStart ? 0.15 : 1)
-                    .onChange(
-                        of: model.locationAutoUploadPermissionGranted
-                    ) { _, newValue in
-                        model.handleLocationChange(newValue: newValue)
-                    }
-                }, footer: {
-                    Text(
-                        NSLocalizedString(
-                            "_enable_background_location_footer_",
-                            comment: ""
+                        .opacity(model.autoUploadStart ? 0.15 : 1)
+                        .onChange(
+                            of: model.locationAutoUploadPermissionGranted
+                        ) { _, newValue in
+                            model.handleLocationChange(newValue: newValue)
+                        }
+                    }, footer: {
+                        Text(
+                            NSLocalizedString(
+                                "_enable_background_location_footer_",
+                                comment: ""
+                            )
                         )
-                    )
-                    .font(.footnote)
-                })
+                        .font(.footnote)
+                    })
+                }
             }
             .disabled(
                 model.autoUploadStart || model.isChangingAutoUpload || isAutoUploadUnavailable
@@ -493,6 +499,22 @@ struct NCAutoUploadView: View {
                 .disabled(model.isChangingAutoUpload || isAutoUploadUnavailable)
                 .opacity(isAutoUploadUnavailable ? 0.5 : 1)
         }
+    }
+
+    private var autoUploadProgressDate: some View {
+        LabeledContent {
+            if let date = model.autoUploadSinceDate {
+                Text(date.formatted(date: .abbreviated, time: .shortened))
+                    .multilineTextAlignment(.trailing)
+            } else {
+                Text("_autoupload_waiting_for_uploads_")
+            }
+        } label: {
+            Text("_autoupload_completed_until_")
+        }
+        .font(.body)
+        .foregroundStyle(.primary)
+        .accessibilityIdentifier("AutoUploadProgressDate")
     }
 
     @ViewBuilder
