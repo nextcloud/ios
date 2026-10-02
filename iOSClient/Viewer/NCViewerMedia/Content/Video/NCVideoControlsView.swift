@@ -513,7 +513,7 @@ private struct NCVideoControlsSwiftUIView: View {
         }
         .padding(.horizontal, 18)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .controlGlassBackground(shape: Capsule())
+        .controlGlassBackground(shape: Capsule(), isInteractive: false)
         .contentShape(Capsule())
     }
 
@@ -728,27 +728,12 @@ private struct NCVideoAirPlayRoutePickerView: UIViewRepresentable {
 private extension View {
     @ViewBuilder
     func controlGlassBackground<BackgroundShape: Shape>(
-        shape: BackgroundShape
+        shape: BackgroundShape,
+        isInteractive: Bool = true
     ) -> some View {
         if #available(iOS 26.0, *) {
             self
-                .glassEffect(.regular, in: shape)
-                .overlay {
-                    shape
-                        .stroke(.white.opacity(0.58), lineWidth: 1.2)
-                }
-                .overlay {
-                    shape
-                        .stroke(.white.opacity(0.20), lineWidth: 4)
-                        .blur(radius: 2)
-                        .mask(shape)
-                }
-                .shadow(
-                    color: .black.opacity(0.18),
-                    radius: 14,
-                    x: 0,
-                    y: 4
-                )
+                .glassEffect(.regular.interactive(isInteractive), in: shape)
         } else {
             self
                 .background(.regularMaterial)
