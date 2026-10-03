@@ -8,6 +8,7 @@ import NextcloudKit
 import Photos
 import OrderedCollections
 import LucidBanner
+import os
 
 class NCAutoUpload: NSObject {
     static let shared = NCAutoUpload()
@@ -15,6 +16,7 @@ class NCAutoUpload: NSObject {
     private let database = NCManageDatabase.shared
     private let global = NCGlobal.shared
     private let networking = NCNetworking.shared
+    private let backgroundSyncRunning = OSAllocatedUnfairLock(initialState: false)
 
     func initAutoUpload(controller: NCMainTabBarController? = nil) async -> Int {
         if #available(iOS 27, *),
@@ -325,6 +327,17 @@ class NCAutoUpload: NSObject {
     //
     // The flow cooperates with Swift task cancellation triggered by BGTask expiration.
     func autoUploadBackgroundSync() async {
+        guard !Task.isCancelled else { return }
+        // Refresh, processing, and location tasks share this entry point.
+        // Keep the running flag set across awaits without holding the lock.
+        let acquired = backgroundSyncRunning.withLock { running in
+            guard !running else { return false }
+            running = true
+            return true
+        }
+        guard acquired else { return }
+        defer { backgroundSyncRunning.withLock { $0 = false } }
+
         if #available(iOS 27, *),
            await NCBackgroundUploadExtensionManager.shared.ensureEnabled() {
             return
