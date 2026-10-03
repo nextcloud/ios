@@ -551,7 +551,9 @@ actor NCNetworkingProcess {
 
                 // AUTO-UPLOAD: CHECK FILE EXISTS
                 //
-                if metadata.sessionSelector == global.selectorUploadAutoUpload {
+                if metadata.sessionSelector == global.selectorUploadAutoUpload,
+                   let uploadAccount = await database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", metadata.account)),
+                   !uploadAccount.autoUploadForceReupload {
                     let existsResult = await networking.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
                     if existsResult == .success {
                         // Preserve completion in the incremental upload history before removing the transfer.

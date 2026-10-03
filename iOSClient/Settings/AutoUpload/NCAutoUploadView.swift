@@ -236,6 +236,15 @@ struct NCAutoUploadView: View {
                     } else {
                         autoUploadTimespanOptions
                     }
+
+                    Toggle(NSLocalizedString("_autoupload_ignore_history_", comment: ""), isOn: Binding(
+                        get: { model.autoUploadForceReupload },
+                        set: { model.handleAutoUploadForceReupload($0) }
+                    ))
+                    .disabled(model.autoUploadStart || model.isChangingAutoUpload)
+                    Text(NSLocalizedString("_autoupload_ignore_history_description_", comment: ""))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                 }, footer: {
                     Text(autoUploadTimespanDescription)
                         .font(.footnote)
@@ -582,6 +591,9 @@ struct NCAutoUploadView: View {
     }
 
     private var autoUploadTimespanDescription: String {
+        if model.autoUploadForceReupload {
+            return NSLocalizedString("_autoupload_force_reupload_footer_", comment: "")
+        }
         let destination = model.returnPath()
         if model.autoUploadSinceDate != nil {
             return String(format: NSLocalizedString("_autoupload_date_range_footer_", comment: ""), destination)

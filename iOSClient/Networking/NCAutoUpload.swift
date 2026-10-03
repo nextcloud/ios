@@ -410,17 +410,19 @@ class NCAutoUpload: NSObject {
                   let uploadAccount = await database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", metadata.account)),
                   uploadAccount.autoUploadStart else { return }
 
-            // Check whether the file already exists remotely.
-            let existsResult = await NCNetworking.shared.fileExists(
-                serverUrlFileName: metadata.serverUrlFileName,
-                account: metadata.account
-            )
+            // Forced uploads intentionally replace existing server resources.
+            if !uploadAccount.autoUploadForceReupload {
+                let existsResult = await NCNetworking.shared.fileExists(
+                    serverUrlFileName: metadata.serverUrlFileName,
+                    account: metadata.account
+                )
 
-            if existsResult == .success && !metadata.isLivePhoto {
-                await database.completeExistingAutoUploadAsync(metadata)
-                continue
-            } else if existsResult != .success && existsResult.errorCode != 404 {
-                continue
+                if existsResult == .success && !metadata.isLivePhoto {
+                    await database.completeExistingAutoUploadAsync(metadata)
+                    continue
+                } else if existsResult != .success && existsResult.errorCode != 404 {
+                    continue
+                }
             }
 
             // Expand the seed into concrete metadata entries (for example, Live Photo pairs).
@@ -434,7 +436,7 @@ class NCAutoUpload: NSObject {
             for extractedMetadata in extractedMetadatas {
                 guard !Task.isCancelled else { return }
 
-                if extractedMetadata.isLivePhoto {
+                if extractedMetadata.isLivePhoto && !uploadAccount.autoUploadForceReupload {
                     let resourceExists = await NCNetworking.shared.fileExists(
                         serverUrlFileName: extractedMetadata.serverUrlFileName,
                         account: extractedMetadata.account
