@@ -26,6 +26,10 @@ struct NCAutoUploadView: View {
         isCheckingOtherAutoUploadAccount || otherAutoUploadAccountName != nil
     }
 
+    private var areSettingsDisabled: Bool {
+        model.autoUploadStart || model.isChangingAutoUpload || isAutoUploadUnavailable
+    }
+
     var body: some View {
         ZStack {
             if model.photosPermissionsGranted {
@@ -184,18 +188,15 @@ struct NCAutoUploadView: View {
                                 .font(.icon())
                                 .frame(width: 26)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                                .opacity(model.autoUploadStart ? 0.15 : 1)
 
                             Text(NSLocalizedString("_destination_", comment: ""))
                                 .font(.body)
-                                .opacity(model.autoUploadStart ? 0.5 : 1)
                                 .tint(.primary)
 
                             Text(model.returnPath())
                                 .font(.body)
                                 .tint(.primary)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
-                                .opacity(model.autoUploadStart ? 0.5 : 1)
                         }
                     }
                 })
@@ -210,7 +211,6 @@ struct NCAutoUploadView: View {
                                     .font(.icon())
                                     .frame(width: 26)
                                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                                    .opacity(model.autoUploadStart ? 0.3 : 1)
 
                                 Text(NSLocalizedString("_upload_from_", comment: ""))
                                     .font(.body)
@@ -241,7 +241,6 @@ struct NCAutoUploadView: View {
                         get: { model.autoUploadForceReupload },
                         set: { model.handleAutoUploadForceReupload($0) }
                     ))
-                    .disabled(model.autoUploadStart || model.isChangingAutoUpload)
                     Text(NSLocalizedString("_autoupload_ignore_history_description_", comment: ""))
                         .font(.footnote)
                         .foregroundStyle(.secondary)
@@ -263,7 +262,6 @@ struct NCAutoUploadView: View {
                             )
                         )
                     )
-                    .opacity(model.autoUploadStart ? 0.15 : 1)
                     .onChange(of: model.autoUploadImage) { _, newValue in
                         if !newValue {
                             model.autoUploadVideo = true
@@ -285,7 +283,6 @@ struct NCAutoUploadView: View {
                                 )
                             )
                         )
-                        .opacity(model.autoUploadStart ? 0.15 : 1)
                         .onChange(of: model.autoUploadWWAnPhoto) { _, newValue in
                             model.handleAutoUploadWWAnPhotoChange(
                                 newValue: newValue
@@ -307,7 +304,6 @@ struct NCAutoUploadView: View {
                             )
                         )
                     )
-                    .opacity(model.autoUploadStart ? 0.15 : 1)
                     .onChange(of: model.autoUploadVideo) { _, newValue in
                         if !newValue {
                             model.autoUploadImage = true
@@ -329,7 +325,6 @@ struct NCAutoUploadView: View {
                                 )
                             )
                         )
-                        .opacity(model.autoUploadStart ? 0.15 : 1)
                         .onChange(of: model.autoUploadWWAnVideo) { _, newValue in
                             model.handleAutoUploadWWAnVideoChange(
                                 newValue: newValue
@@ -354,7 +349,6 @@ struct NCAutoUploadView: View {
                             )
                         )
                     )
-                    .opacity(model.autoUploadStart ? 0.15 : 1)
                     .onChange(of: model.autoUploadCreateSubfolder) { _, newValue in
                         model.handleAutoUploadCreateSubfolderChange(
                             newValue: newValue
@@ -381,7 +375,6 @@ struct NCAutoUploadView: View {
                                 .tag(Granularity.yearly)
                                 .font(.body)
                         }
-                        .opacity(model.autoUploadStart ? 0.15 : 1)
                         .onChange(
                             of: model.autoUploadSubfolderGranularity
                         ) { _, newValue in
@@ -417,7 +410,6 @@ struct NCAutoUploadView: View {
                                 )
                             )
                         )
-                        .opacity(model.autoUploadStart ? 0.15 : 1)
                         .onChange(
                             of: model.locationAutoUploadPermissionGranted
                         ) { _, newValue in
@@ -434,10 +426,8 @@ struct NCAutoUploadView: View {
                     })
                 }
             }
-            .disabled(
-                model.autoUploadStart || model.isChangingAutoUpload || isAutoUploadUnavailable
-            )
-            .opacity(isAutoUploadUnavailable ? 0.5 : 1)
+            .disabled(areSettingsDisabled)
+            .opacity(areSettingsDisabled ? 0.5 : 1)
 
             if #available(iOS 27, *),
                NCPreferences.canConfigureBackgroundUploadExtension,
@@ -466,8 +456,8 @@ struct NCAutoUploadView: View {
                     .onChange(of: model.backgroundUploadExtensionEnabled) { _, newValue in
                         model.handleBackgroundUploadExtensionChange(newValue: newValue)
                     }
-                    .disabled(model.autoUploadStart || model.isChangingAutoUpload || isAutoUploadUnavailable)
-                    .opacity(model.autoUploadStart || model.isChangingAutoUpload || isAutoUploadUnavailable ? 0.5 : 1)
+                    .disabled(areSettingsDisabled)
+                    .opacity(areSettingsDisabled ? 0.5 : 1)
                 }, header: {
                     Text(NSLocalizedString("_experimental_", comment: ""))
                         .font(.headline)
@@ -545,7 +535,6 @@ struct NCAutoUploadView: View {
             }
             .buttonStyle(.plain)
             .font(.body)
-            .disabled(model.autoUploadStart || model.isChangingAutoUpload)
             .accessibilityIdentifier("AutoUploadTimespan-" + timespan.rawValue)
             .accessibilityAddTraits(model.autoUploadTimespan == timespan ? .isSelected : [])
         }
@@ -585,8 +574,6 @@ struct NCAutoUploadView: View {
                     .accessibilityIdentifier("AutoUploadSetToNow")
                 }
             }
-            .disabled(model.autoUploadStart || model.isChangingAutoUpload)
-            .opacity(model.autoUploadStart || model.isChangingAutoUpload ? 0.5 : 1)
         }
     }
 
