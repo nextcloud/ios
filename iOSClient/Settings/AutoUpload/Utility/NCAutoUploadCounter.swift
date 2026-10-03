@@ -4,6 +4,7 @@
 
 import Foundation
 import Observation
+import Photos
 
 @MainActor
 @Observable
@@ -30,10 +31,20 @@ final class NCAutoUploadCounter {
 
     private var itemsLeftMessage: String {
         if count == 0 {
-            return NSLocalizedString("_auto_upload_no_new_items_to_upload_", comment: "")
+            let key = usesPhotoKitAutoUpload ? "_auto_upload_active_" : "_auto_upload_no_new_items_to_upload_"
+            return NSLocalizedString(key, comment: "")
         }
 
-        return String.localizedStringWithFormat(NSLocalizedString("_focused_auto_upload_items_left_", comment: ""), count)
+        return String.localizedStringWithFormat(NSLocalizedString("_auto_upload_files_in_queue_", comment: ""), count)
+    }
+
+    private var usesPhotoKitAutoUpload: Bool {
+        guard #available(iOS 27, *),
+              NCPreferences().shouldUseBackgroundUploadExtension,
+              PHPhotoLibrary.authorizationStatus(for: .readWrite) == .authorized,
+              let account,
+              let capabilities = NCNetworking.shared.capabilities[account] else { return false }
+        return NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v35)
     }
 
     var photosToBackUpMessage: String {

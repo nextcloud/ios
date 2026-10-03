@@ -8,6 +8,7 @@ import NextcloudKit
 import Photos
 import OrderedCollections
 import LucidBanner
+import os
 
 class NCAutoUpload: NSObject {
     static let shared = NCAutoUpload()
@@ -15,6 +16,7 @@ class NCAutoUpload: NSObject {
     private let database = NCManageDatabase.shared
     private let global = NCGlobal.shared
     private let networking = NCNetworking.shared
+    private let backgroundSyncRunning = OSAllocatedUnfairLock(initialState: false)
 
     func initAutoUpload(controller: NCMainTabBarController? = nil) async -> Int {
         if #available(iOS 27, *),
@@ -325,6 +327,17 @@ class NCAutoUpload: NSObject {
     //
     // The flow cooperates with Swift task cancellation triggered by BGTask expiration.
     func autoUploadBackgroundSync() async {
+        guard !Task.isCancelled else { return }
+        // Refresh, processing, and location tasks share this entry point.
+        // Keep the running flag set across awaits without holding the lock.
+        let acquired = backgroundSyncRunning.withLock { running in
+            guard !running else { return false }
+            running = true
+            return true
+        }
+        guard acquired else { return }
+        defer { backgroundSyncRunning.withLock { $0 = false } }
+
         if #available(iOS 27, *),
            await NCBackgroundUploadExtensionManager.shared.ensureEnabled() {
             return
@@ -410,17 +423,19 @@ class NCAutoUpload: NSObject {
                   let uploadAccount = await database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", metadata.account)),
                   uploadAccount.autoUploadStart else { return }
 
-            // Check whether the file already exists remotely.
-            let existsResult = await NCNetworking.shared.fileExists(
-                serverUrlFileName: metadata.serverUrlFileName,
-                account: metadata.account
-            )
+            // Forced uploads intentionally replace existing server resources.
+            if !uploadAccount.autoUploadForceReupload {
+                let existsResult = await NCNetworking.shared.fileExists(
+                    serverUrlFileName: metadata.serverUrlFileName,
+                    account: metadata.account
+                )
 
-            if existsResult == .success && !metadata.isLivePhoto {
-                await database.completeExistingAutoUploadAsync(metadata)
-                continue
-            } else if existsResult != .success && existsResult.errorCode != 404 {
-                continue
+                if existsResult == .success && !metadata.isLivePhoto {
+                    await database.completeExistingAutoUploadAsync(metadata)
+                    continue
+                } else if existsResult != .success && existsResult.errorCode != 404 {
+                    continue
+                }
             }
 
             // Expand the seed into concrete metadata entries (for example, Live Photo pairs).
@@ -434,7 +449,7 @@ class NCAutoUpload: NSObject {
             for extractedMetadata in extractedMetadatas {
                 guard !Task.isCancelled else { return }
 
-                if extractedMetadata.isLivePhoto {
+                if extractedMetadata.isLivePhoto && !uploadAccount.autoUploadForceReupload {
                     let resourceExists = await NCNetworking.shared.fileExists(
                         serverUrlFileName: extractedMetadata.serverUrlFileName,
                         account: extractedMetadata.account

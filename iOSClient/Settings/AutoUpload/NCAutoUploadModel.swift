@@ -35,6 +35,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     @Published var autoUploadSubfolderGranularity: Granularity = .monthly
     /// The incremental restart date, editable while Auto Upload is stopped.
     @Published var autoUploadSinceDate: Date?
+    @Published var autoUploadForceReupload = false
     var autoUploadTimespan: AutoUploadTimespan { autoUploadSinceDate == nil ? .allPhotos : .fromDate }
     /// Whether Photos permissions have been granted or not.
     @Published var photosPermissionsGranted = true
@@ -95,6 +96,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             autoUploadCreateSubfolder = tableAccount.autoUploadCreateSubfolder
             autoUploadSubfolderGranularity = Granularity(rawValue: tableAccount.autoUploadSubfolderGranularity) ?? .monthly
             autoUploadSinceDate = tableAccount.autoUploadSinceDate
+            autoUploadForceReupload = tableAccount.autoUploadForceReupload
         }
 
         serverUrl = NCUtilityFileSystem().getHomeServer(session: session)
@@ -168,6 +170,18 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         Task {
             defer { isChangingAutoUpload = false }
             await database.setAutoUploadSinceDateAsync(date, account: accountIdentifier)
+        }
+    }
+
+    @MainActor
+    func handleAutoUploadForceReupload(_ enabled: Bool) {
+        guard !isChangingAutoUpload, !autoUploadStart else { return }
+        isChangingAutoUpload = true
+        let accountIdentifier = session.account
+        autoUploadForceReupload = enabled
+        Task {
+            defer { isChangingAutoUpload = false }
+            await database.setAutoUploadForceReuploadAsync(enabled, account: accountIdentifier)
         }
     }
 

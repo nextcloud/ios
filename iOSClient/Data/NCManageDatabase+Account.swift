@@ -25,6 +25,8 @@ class tableAccount: Object {
     @objc dynamic var autoUploadWWAnVideo: Bool = false
     /// Incremental restart date; nil scans the whole library. Advances only past confirmed uploads.
     @objc dynamic var autoUploadSinceDate: Date?
+    /// Ignores completed uploads from previous sessions while preserving the local history.
+    @objc dynamic var autoUploadForceReupload = false
     @objc dynamic var backend = ""
     @objc dynamic var backendCapabilitiesSetDisplayName: Bool = false
     @objc dynamic var backendCapabilitiesSetPassword: Bool = false
@@ -76,6 +78,7 @@ class tableAccount: Object {
                                    autoUploadWWAnPhoto: self.autoUploadWWAnPhoto,
                                    autoUploadWWAnVideo: self.autoUploadWWAnVideo,
                                    autoUploadSinceDate: self.autoUploadSinceDate,
+                                   autoUploadForceReupload: self.autoUploadForceReupload,
                                    user: self.user,
                                    userId: self.userId,
                                    urlBase: self.urlBase)
@@ -97,6 +100,7 @@ class tableAccount: Object {
         self.autoUploadWWAnPhoto = codableObject.autoUploadWWAnPhoto
         self.autoUploadWWAnVideo = codableObject.autoUploadWWAnVideo
         self.autoUploadSinceDate = codableObject.autoUploadSinceDate
+        self.autoUploadForceReupload = codableObject.autoUploadForceReupload ?? false
 
         self.user = codableObject.user
         self.userId = codableObject.userId
@@ -119,6 +123,8 @@ struct tableAccountCodable: Codable {
     var autoUploadWWAnPhoto: Bool
     var autoUploadWWAnVideo: Bool
     var autoUploadSinceDate: Date?
+    // Optional so backups written before this setting remain readable.
+    var autoUploadForceReupload: Bool?
 
     var user: String
     var userId: String
@@ -391,6 +397,14 @@ extension NCManageDatabase {
             guard let current = realm.objects(tableAccount.self).filter("account == %@", account).first,
                   !current.autoUploadStart else { return }
             current.autoUploadSinceDate = date
+        }
+    }
+
+    func setAutoUploadForceReuploadAsync(_ enabled: Bool, account: String) async {
+        await core.performRealmWriteAsync { realm in
+            guard let current = realm.objects(tableAccount.self).filter("account == %@", account).first,
+                  !current.autoUploadStart else { return }
+            current.autoUploadForceReupload = enabled
         }
     }
 

@@ -206,7 +206,7 @@ struct NCAutoUploadView: View {
                             showSelectAlbums.toggle()
                         } label: {
                             HStack {
-                                Image(systemName: "person.2.crop.square.stack")
+                                Image(systemName: "photo.on.rectangle.angled")
                                     .font(.icon())
                                     .frame(width: 26)
                                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
@@ -236,6 +236,15 @@ struct NCAutoUploadView: View {
                     } else {
                         autoUploadTimespanOptions
                     }
+
+                    Toggle(NSLocalizedString("_autoupload_ignore_history_", comment: ""), isOn: Binding(
+                        get: { model.autoUploadForceReupload },
+                        set: { model.handleAutoUploadForceReupload($0) }
+                    ))
+                    .disabled(model.autoUploadStart || model.isChangingAutoUpload)
+                    Text(NSLocalizedString("_autoupload_ignore_history_description_", comment: ""))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                 }, footer: {
                     Text(autoUploadTimespanDescription)
                         .font(.footnote)
@@ -543,17 +552,23 @@ struct NCAutoUploadView: View {
 
         if model.autoUploadSinceDate != nil {
             VStack(alignment: .leading, spacing: 4) {
-                DatePicker(
-                    "_autoupload_start_date_",
-                    selection: Binding(
-                        get: { model.autoUploadSinceDate ?? Date.now },
-                        set: { model.handleAutoUploadSinceDate($0) }
-                    ),
-                    displayedComponents: [.date, .hourAndMinute]
-                )
-                .datePickerStyle(.compact)
-                .font(.body)
-                .accessibilityIdentifier("AutoUploadStartDate")
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("_autoupload_start_date_")
+                        .font(.body)
+
+                    DatePicker(
+                        "_autoupload_start_date_",
+                        selection: Binding(
+                            get: { model.autoUploadSinceDate ?? Date.now },
+                            set: { model.handleAutoUploadSinceDate($0) }
+                        ),
+                        displayedComponents: [.date, .hourAndMinute]
+                    )
+                    .datePickerStyle(.compact)
+                    .labelsHidden()
+                    .font(.body)
+                    .accessibilityIdentifier("AutoUploadStartDate")
+                }
 
                 HStack {
                     Spacer()
@@ -576,6 +591,9 @@ struct NCAutoUploadView: View {
     }
 
     private var autoUploadTimespanDescription: String {
+        if model.autoUploadForceReupload {
+            return NSLocalizedString("_autoupload_force_reupload_footer_", comment: "")
+        }
         let destination = model.returnPath()
         if model.autoUploadSinceDate != nil {
             return String(format: NSLocalizedString("_autoupload_date_range_footer_", comment: ""), destination)
