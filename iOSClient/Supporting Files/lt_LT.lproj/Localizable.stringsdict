@@ -22,6 +22,22 @@
 			<string>%d likusių leidžiamų atsisiuntimų skaičius</string>
 		</dict>
 	</dict>
+	<key>_auto_upload_files_in_queue_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@files@</string>
+		<key>files</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d file in queue</string>
+			<key>other</key>
+			<string>%d files in queue</string>
+		</dict>
+	</dict>
 	<key>_focused_auto_upload_items_left_</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
