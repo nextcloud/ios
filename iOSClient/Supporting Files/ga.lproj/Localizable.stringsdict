@@ -35,9 +35,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d file in queue</string>
+			<string>%d comhad sa scuaine</string>
+			<key>two</key>
+			<string>%d comhad sa scuaine</string>
+			<key>few</key>
+			<string>%d comhad sa scuaine</string>
+			<key>many</key>
+			<string>%d comhad sa scuaine</string>
 			<key>other</key>
-			<string>%d files in queue</string>
+			<string>%d comhad sa scuaine</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_items_left_</key>
