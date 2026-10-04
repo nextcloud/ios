@@ -22,11 +22,9 @@
 
 "_cancel_"                  = "Cancel";
 "_edit_"                    = "Edit";
-"_tap_to_cancel_"           = "Tap to cancel";
 "_tap_to_min_max_"          = "Tap to minimize / maximize";
 "_cancel_request_"          = "Do you want to cancel?";
 "_upload_file_"             = "Upload file";
-"_download_file_"           = "Download file";
 "_delete_"                  = "Delete";
 "_rename_"                  = "Rename";
 "_rename_file_"             = "Rename file";
@@ -46,7 +44,6 @@
 "_ok_"                      = "OK";
 "_done_"                    = "Done";
 "_clear_"                   = "Clear";
-"_continue_anyway_"         = "Continue anyway";
 "_selected_"                = "Selected";
 "_no_active_account_"       = "No account found";
 "_info_"                    = "Info";
@@ -76,17 +73,13 @@
 "_denied_camera_"           = "This app does not have access to the \"Camera\". You can enable access in Privacy Settings.";
 "_save_to_camera_roll_"        = "Save to camera roll";
 "_save_to_camera_roll_desc_"   = "When enabled, photos and videos taken with the in-app camera will also be saved to your iOS camera roll.";
-"_force_start_"             = "Force the start";
-"_account_does_not_exist_"  = "The account %@ does not exist. Please log in again.";
 "_sharing_"                 = "Sharing";
 "_details_"                 = "Details";
-"_no_permission_add_file_"  = "You don't have permission to add files.";
 "_no_permission_delete_file_" = "You don't have permission to delete files.";
 "_no_permission_modify_file_" = "You don't have permission to modify files.";
 "_no_permission_favorite_file_" = "You don't have permission to add the file to your favorites.";
 "_add_folder_info_"         = "Add folder info";
 "_back_"                    = "Back";
-"_go_back_"                 = "Go Back";
 "_search_"                  = "Search";
 "_search_or_create_tags"    = "Search or create tag";
 "_tags_"                    = "Tags";
@@ -98,8 +91,6 @@
 "_of_"                      = "of";
 "_livephoto_save_"          = "Save Live Photo to Photo Album";
 "_livephoto_save_error_"    = "Error during save of Live Photo.";
-"_livephoto_no_"            = "Disable Live Photo";
-"_convert_live_photo_"      = "Convert to Live Photo";
 "_file_conflict_num_"       = "file conflict";
 "_file_conflicts_num_"      = "file conflicts";
 "_file_conflict_desc_"      = "Which files do you want to keep?\nIf you select both versions, the copied file will have a number added to its name.";
@@ -107,25 +98,19 @@
 "_file_conflict_exists_"    = "Already existing files";
 "_file_not_rewite_doc_"     = "It is not possible to overwrite a document but only to create a new one.";
 "_move_or_copy_"            = "Move or copy";
-"_move_copy_diff_account_"  = "You cannot copy or move files between different accounts.";
 "_copy_"                    = "Copy";
 "_now_"                     = "Now";
 "_wait_"                    = "Please wait …";
 "_recent_"                  = "Recent";
 "_view_in_folder_"          = "View in folder";
-"_leave_share_"             = "Leave this share";
 "_disabled_"                = "Disabled";
 "_compact_"                 = "Compact";
 "_normal_"                  = "Normal";
 "_verbose_"                 = "Verbose";
-"_standard_"                = "Standard";
-"_maximum_"                 = "Maximum";
 "_error_occurred_"          = "An error occurred, please try again.";
 "_retry_"                   = "Retry";
 "_images_"                  = "Images";
 "_confirm_"                 = "Confirm";
-"_confirm_continue_"        = "Confirm by continuing the previous uploading";
-"_confirm_resetting_"       = "Confirm ignoring previous uploading";
 "_background_location_access_title_"    = "Background Location Access";
 "_background_location_access_message_"  = "This app needs background location access to automatically upload files when you move between areas. GPS is not used and your location is never stored.";
 "_enable_background_location_title_"    = "Enable Background Location";
@@ -138,8 +123,6 @@
 "_unlock_"                          = "Unlock";
 "_lock_file_"                       = "Lock file";
 "_unlock_file_"                     = "Unlock file";
-"_lock_selected_files_"             = "Lock files";
-"_unlock_selected_files_"           = "Unlock files";
 "_locked_by_"                       = "Locked by %@";
 "_file_locked_no_override_"         = "This file is locked. It cannot be overridden.";
 "_lock_no_permissions_selected_"    = "Not allowed for some selected files or folders.";
@@ -208,12 +191,10 @@
 "_select_status_message_"      = "Set status message";
 "_status_message_"          = "Status message";
 "_status_message_placehorder_"  = "What is your status?";
-"_online_status_"           = "Online status";
 "_set_status_message_"      = "Set status message";
 "_clear_status_message_after_"  = "Clear status after";
 
 /* User status */
-"_select_option_"           = "Select option";
 "_dont_clear_"              = "Don't clear";
 "_15_minutes_"              = "15 minutes";
 "_30_minutes_"              = "30 minutes";
@@ -229,7 +210,6 @@
 
 "_network_not_available_"   = "Network unavailable.";
 "_file_already_exists_"     = "Unable to complete the operation, a file with the same name exists.";
-"_files_lock_error_"        = "There was an error changing the lock of this file.";
 "_more_"                        = "More";
 "_notifications_"               = "Notifications";
 "_quota_space_unlimited_"       = "Unlimited";
@@ -253,9 +233,6 @@
 "_want_delete_cache_"           = "Do you want to delete the cache (this also removes the transfers in progress)?";
 "_add_account_"                 = "Add account";
 "_want_delete_"                 = "You will delete the following: ";
-"_want_leave_share_"            = "You will leave the following shares: ";
-"_no_delete_"                   = "No, do not delete";
-"_yes_delete_"                  = "Yes, delete";
 "_information_"                 = "Information";
 "_select_offline_warning_"      = "Making multiple files and folders available offline may take a while and use a lot of memory while doing so.";
 "_advanced_"                    = "Advanced";
@@ -263,23 +240,17 @@
 "_custom_permissions_"          = "Custom permissions";
 "_disable_files_app_"           = "Disable Files App integration";
 "_disable_files_app_footer_"    = "Do not permit the access of files via the iOS Files application.";
-"_time_remaining_"              = "%@ remaining";
 "_autoupload_"                      = "Auto upload photos/videos";
-"_autoupload_select_folder_"        = "Select the \"Auto upload\" folder";
 "_autoupload_photos_"               = "Auto upload photos";
 "_autoupload_videos_"               = "Auto upload videos";
-"_autoupload_favorites_"            = "Auto upload favorites only";
 "_autoupload_description_"          = "Choose whether new photos or videos will be automatically uploaded to your account.";
-"_autoupload_fullphotos_"           = "Upload the whole camera roll";
 "_start_autoupload_"                = "Turn on auto upload";
 "_stop_autoupload_"                 = "Turn off auto upload";
-"_autoupload_fullphotos_footer_"    = "Adjust the options above before uploading.";
 "_autoupload_create_subfolder_"     = "Use subfolders";
 "_autoupload_create_subfolder_footer_"  = "Store photos in subfolders based on year, month or day.";
 "_autoupload_subfolder_granularity_"    = "Subfolder Granularity";
 "_filenamemask_"                        = "Change filename mask";
 "_filenamemask_footer_"                 = "By default, when a file is uploaded, it automatically gets the following format: yy-mm-dd hh-mm-ss plus a 4-digit counter. If you do not like this format, you can change it here except for the final 4-digit counter, which cannot be omitted.";
-"_autoupload_current_folder_"           = "Currently selected folder";
 "_show_hidden_files_"           = "Show hidden files";
 "_format_compatibility_"        = "Most Compatible";
 "_format_compatibility_footer_" = "\"Most compatible\" will save photos as JPEG, if possible.";
@@ -297,13 +268,11 @@
 "_no_log_files_"                = "No log files available";
 "_clear_log_"                   = "Clear log file";
 "_set_log_level_"               = "Set Log level";
-"_log_file_clear_alert_"        = "Log file cleared!";
 "_connect_server_anyway_"       = "Do you want to connect to the server anyway?";
 "_server_is_trusted_"           = "Do you consider this server trusted?";
 "_connection_error_"            = "Connection error";
 "_login_url_"                   = "Server address https:// …";
 "_login_url_error_"             = "URL error, please verify your server URL";
-"_login_error_"                 = "Could not log in. Please try again later.";
 "_favorites_"                   = "Favorites";
 "_favorite_short_"              = "Favorite";
 "_tutorial_favorite_view_"      = "Files and folders you mark as favorites will show up here";
@@ -319,7 +288,6 @@
 "_access_photo_not_enabled_"                = "Access to Photos is not enabled";
 "_access_photo_not_enabled_msg_"            = "Please go to Settings → Apps → Nextcloud → Photos and enable Photo Library Access";
 "_access_background_app_refresh_denied_"    = "\"Background App Refresh\" is denied. Please enable it in \"Settings\" otherwise, new photos or videos will not be detected when the application is in the background";
-"_new_photos_starting_"                     = "Only photos or videos starting %@ will be uploaded.";
 "_tutorial_photo_view_"                     = "No photos or videos uploaded yet";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
 "_remove_photo_CameraRoll_"                 = "Remove from camera roll";
@@ -332,7 +300,6 @@
 "_hours_ago_"                   = "%d hours ago";
 "_a_day_ago_"                   = "a day ago";
 "_days_ago_"                    = "%d days ago";
-"_forbidden_characters_"        = "Forbidden characters: %@";
 "_cannot_send_mail_error_"      = "No account is set up, or wrong email address entered.";
 "_open_url_error_"              = "Cannot open the URL for this action.";
 "_media_"                       = "Media";
@@ -340,7 +307,6 @@
 "_name_"                        = "Name";
 "_date_"                        = "Date";
 "_size_"                        = "Size";
-"_delete_selected_files_"       = "Delete files";
 "_remove_favorites_"            = "Unfavorite";
 "_add_favorites_"               = "Favorite";
 "_share_"                       = "Share";
@@ -352,9 +318,7 @@
 "_no_file_pull_down_"           = "Upload a file or pull down to refresh";
 "_no_file_no_permission_to_create_" = "You don't have permission to create or upload files in this folder.";
 "_limited_dimension_"           = "Maximum size reached";
-"_save_selected_files_"         = "Save to photo gallery";
 "_file_not_saved_cameraroll_"   = "Error: File not saved in photo album";
-"_file_saved_cameraroll_"       = "File saved in photo album";
 "_favorite_on_top_"             = "Sort favorite first";
 "_directory_on_top_"            = "Sort folders before files";
 "_show_description_"            = "Show folder description";
@@ -375,7 +339,6 @@
 "video"                         = "VIDEO";
 
 "_paste_file_"                  = "Paste";
-"_cancel_all_task_"             = "Cancel all transfers";
 "_status_wait_download_"        = "Waiting for download";
 "_status_downloading_"          = "Downloading";
 "_status_wait_upload_"          = "Waiting to upload";
@@ -406,7 +369,6 @@
 "_password_"                    = "Password";
 "_share_password_"              = "Password protected link";
 "_date_"                        = "Date";
-"_user_sharee_footer_"          = "Tap to change permissions";
 "_enforce_password_protection_" = "Enforce password protection";
 "_shared_with_you_by_"          = "Shared with you by";
 "_shareLinksearch_placeholder_" = "Name, email, or Federated Cloud ID …";
@@ -415,9 +377,7 @@
 "_delete_comment_"              = "Delete comment";
 "_share_read_only_"             = "View only";
 "_share_editing_"               = "Can edit";
-"_share_allow_upload_"          = "Allow upload and editing";
 "_share_file_drop_"             = "File request";
-"_share_secure_file_drop_"      = "Secure file drop (upload only)";
 "_share_hide_download_"         = "Hide download";
 "_share_allowed_downloads_"     = "Allowed downloads";
 "_share_limit_download_"        = "Limit downloads";
@@ -526,8 +486,6 @@
 "_ssl_certificate_untrusted_"           = "The certificate for this server is invalid.";
 "_ssl_certificate_changed_"             = "The certificate for this server seems to have changed.";
 "_file_already_exists_"                 = "Could not complete the operation, a file with the same name exists.";
-"_error_files_upload_"                  = "Error uploading files.";
-"_internal_generic_error_"              = "internal error.";
 "_err_permission_microphone_"           = "Please allow Microphone usage from Settings.";
 "_err_permission_photolibrary_"         = "Please allow Photos from Settings.";
 "_qrcode_not_authorized_"   = "This app is not authorized to use the Back Camera.";
@@ -538,7 +496,6 @@
 "Enter Passcode"            = "Enter Passcode";
 "Enter a new passcode"      = "Enter a new passcode";
 "Confirm new passcode"      = "Confirm new passcode";
-"_too_many_failed_passcode_attempts_error_" = "Too many failed passcode attempts. Please try again.";
 "Passcodes didn't match. Try again." = "Passcodes didn't match. Try again.";
 "Delete"                    = "Delete";
 "Cancel"                    = "Cancel";
@@ -565,7 +522,6 @@
 "_monthly_"                 = "Monthly";
 "_yearly_"                  = "Yearly";
 "_daily_"                   = "Daily";
-"_used_space_"              = "Used space:";
 "_login_address_detail_"    = "The link to your %@ web interface when you open it in the browser.";
 "_go_to_page_"              = "Go to page";
 "_page_"                    = "Page";
@@ -573,10 +529,6 @@
 "_invalid_page_"                            = "Invalid Page";
 "_the_entered_page_number_does_not_exist_"   = "The entered page number does not exist.";
 "_error_something_wrong_"   = "Something went wrong";
-"_try_download_full_resolution_"            = "Download full resolution image";
-"_full_resolution_image_info_"            = "This may reveal more information about the photo.";
-"_download_audio_"          = "Download the audio locally";
-"_copied_path_"             = "Copied path";
 "_privacy_screen_"          = "Hide content when app is inactive";
 "_privacy_screen_footer_"   = "Hide the content in the app and show a splash screen when the app is inactive.";
 "_in_"                      = "in";
@@ -619,21 +571,16 @@
 "_play_from_files_"         = "Play video from a file";
 "_play_from_url_"           = "Play video from a link";
 "_valid_video_url_"         = "Insert a valid URL";
-"_chunk_move_"              = "The sent file could not be reassembled, please check the server log.";
 "_download_image_"          = "Download image";
-"_download_video_"          = "Download video";
 "_reset_wrong_passcode_"    = "Resetting application...";
 "_reset_wrong_passcode_option_" = "Reset application after 10 failed attempts";
 "_reset_wrong_passcode_desc_" = "Enabling this will remove all accounts and local data after %d failed passcode entry attempts.";
 "_deviceOwnerAuthentication_" = "The biometric sensor has been temporarily disabled due to multiple failed attempts. Enter the device passcode to re-enable the sensor.";
 "_virus_detect_"            = "Virus detected. Upload cannot be completed!";
-"_select_photos_"           = "Select photos";
-"_selected_photo_"          = "selected photo";
 "_selected_photos_"         = "selected photos";
 "_delete_selected_photos_"  = "Delete selected photos";
 "_media_square_"            = "Square grid";
 "_media_ratio_"             = "Aspect ratio grid";
-"_autoupload_notice_"       = "To ensure the proper functioning of this feature, it is necessary to enable Background App Refresh. Otherwise, new photos or videos will not be detected when the application is in the background.\n\nAdditionally, please note that the app will not be able to detect new photos and videos if it is manually terminated. When the app is in the background, data transfer may be slower, and new photos and/or videos will generally be detected every 10 minutes, depending on the device’s battery level.\n\nTo verify that the app is functioning correctly, you can use the log file available in Advanced settings.";
 "_display_"                 = "Display";
 "_appearance_"              = "Appearance";
 "_light_"                   = "Light";
@@ -651,20 +598,12 @@
 "_additional_options_"      = "Additional options";
 "_unauthorizedFilesPasscode_" = "Files app cannot be used with an activated passcode";
 "_disableFilesApp_"         = "Files app cannot be used because it is disabled";
-"_widget_available_nc25_"   = "Widget only available starting with server version 25";
 "_no_items_"                = "No items";
 "_check_back_later_"        = "Check back later";
 "_no_data_available_"       = "No data available";
 "_recent_activity_"         = "Recent activity";
 "_maintenance_mode_"        = "The server is currently in maintenance mode, which may take a while.";
-"_account_disabled_"        = "Account disabled";
 "_user_"                    = "User";
-"_add_subtitle_"            = "Add an external subtitle";
-"_add_audio_"               = "Add an external audio";
-"_upload_foreground_msg_"   = "Do not close %@ to complete the transfer …";
-"_upload_background_msg_"   = "Files upload in progress …";
-"_create_folder_error_"     = "An error has occurred while creating the folder:\n%@.\n\nPlease resolve the issue as soon as possible.\n\nAll uploads are suspended until the problem is resolved.\n";
-"_creating_dir_progress_"   = "Creating directories in progress … keep the application active.";
 "_creating_db_photo_progress_" = "Creating photo archive in progress … keep the application active.";
 "_account_unauthorized_"    = "There was an issue authorizing the account %@. Please log in again.";
 "_folder_offline_desc_"     = "Even without an internet connection, you can organize your folders, create files. Once you're back online, your pending actions will automatically sync.";
@@ -673,14 +612,9 @@
 "_Upload_native_format_no_" = "Upload in native format: no";
 "_terms_of_service_"        = "Terms of service";
 "_terms_accept_"            = "I acknowledge that I have read and agree to the above terms of service.";
-"_terms_accepted_"          = "Terms accepted";
 "_recommended_files_"       = "Recommended Files";
 "_propagate_layout_"        = "Apply the following change to all subfolders";
 "_version_mismatch_error_"  = "Version change: please open the main app to update the data.";
-"_check_auto_upload_"       = "Automatic photo upload is currently disabled.\nWith Nextcloud iOS you can automatically back up your photos and keep them safe on your server.\nJust open Settings → Auto Upload, choose the options you prefer, and turn it on with the \"%@\" button.";
-"_cancel_all_request_"      = "Are you sure you want to cancel all transfers?";
-"_cancel_all_"              = "Cancel All";
-"_dismiss_"                 = "Dismiss";
 "_opt_in_pro_"              = "Optimization in progress …";
 "_update_in_progress_"      = "Update in progress …";
 "_delete_in_progress_"      = "Delete in progress …";
@@ -725,16 +659,10 @@
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";
 "_tip_accountrequest_"      = "Touch here to change account or to add a new one";
 "_tip_addcopyimage_"        = "Long press to paste a copied image";
-"_tip_open_mediadetail_"    = "Swipe up to show the details";
-"_tip_autoupload_button_"   = "Configure the options as you prefer (folder, Wi-Fi, new content, subfolders) and tap ‘Turn on auto uploading’.
-You can stop it at any time, adjust the settings, and enable it again.";
 
 // MARK: Accessibility
 
 // Accessibility, floating panel top element
-"_cart_controller_"             = "Card controller";
-"_accessibility_add_upload_"    = "Add and upload";
-"_dismiss_menu_"                = "Dismiss the menu";
 "_show_profile_"                = "Show profile";
 // a11y: On/Off
 "_on_"                          = "On";
@@ -777,10 +705,8 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_client_cert_wrong_password_"   = "Sorry, you entered an invalid password.";
 
 // MARK: Login poll
-"_poll_desc_"                    = "Please complete the log in process in your browser.";
 
 // MARK: File name validator (used by NextcloudKit, don't remove)
-"_file_name_validator_error_ends_with_space_period_" = "Name must not contain spaces at the beginning or end.";
 "_file_name_validator_error_reserved_name_" = "\"%@\" is a forbidden name.";
 "_file_name_validator_error_forbidden_file_extension_" = "\".%@\" is a forbidden file extension.";
 "_file_name_validator_error_invalid_character_" = "Name contains an invalid character: \"%@\".";
@@ -792,16 +718,10 @@ You can stop it at any time, adjust the settings, and enable it again.";
 
 "_camera_roll_" = "Camera roll";
 "_destination_" = "Destination";
-"_select_autoupload_albums_" = "Select albums";
 "_upload_from_" = "Upload from";
 "_multiple_albums_" = "Multiple albums";
 "_smart_albums_" = "Smart albums";
 "_albums_" = "Albums";
-"_new_photos_only_" = "New photos only";
-"_all_photos_" = "All photos";
-"_back_up_new_photos_only_" = "Back up new photos/videos only";
-"_auto_upload_all_photos_warning_title_" = "Are you sure you want to upload all photos?";
-"_auto_upload_all_photos_warning_message_" = "This can take some time to process depending on the amount of photos.";
 "_auto_upload_no_new_items_to_upload_" = "No new items to upload";
 "_background_upload_extension_" = "PhotoKit background upload extension";
 "_experimental_" = "Experimental";
