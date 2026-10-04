@@ -137,10 +137,9 @@ enum NCVideoAVPlayerPresenter {
 
         navigationController.modalPresentationStyle = .fullScreen
         navigationController.navigationBar.prefersLargeTitles = false
-        navigationController.navigationBar.barStyle = .black
-        navigationController.navigationBar.tintColor = .white
+        navigationController.navigationBar.tintColor = .label
         navigationController.navigationBar.titleTextAttributes = [
-            .foregroundColor: UIColor.white
+            .foregroundColor: UIColor.label
         ]
 
         if !playbackStartReason.shouldShowControlsOnStart {

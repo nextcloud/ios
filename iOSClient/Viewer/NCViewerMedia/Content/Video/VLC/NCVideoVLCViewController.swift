@@ -1083,9 +1083,10 @@ final class NCVideoVLCViewController: UIViewController {
                 return nil
             }
 
+            // VLC reports the "Disable" track as index -1.
             return NCVideoTrackMenuItem(
                 index: trackIndex,
-                title: title,
+                title: trackIndex == -1 ? NSLocalizedString("_disable_", comment: "") : title,
                 isSelected: currentIndex == Int(trackIndex)
             )
         }
