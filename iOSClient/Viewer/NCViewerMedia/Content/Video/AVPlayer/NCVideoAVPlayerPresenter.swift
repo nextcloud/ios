@@ -159,9 +159,7 @@ enum NCVideoAVPlayerPresenter {
         return true
     }
 
-    static func clearCurrent(
-        _ viewController: NCVideoAVPlayerViewController
-    ) {
+    static func clearCurrent(_ viewController: NCVideoAVPlayerViewController) {
         guard currentViewController === viewController else {
             return
         }
@@ -200,9 +198,7 @@ enum NCVideoAVPlayerPresenter {
         dismissCurrent(completion: completion)
     }
 
-    private static func finishDismissal(
-        for viewController: NCVideoAVPlayerViewController?
-    ) {
+    private static func finishDismissal(for viewController: NCVideoAVPlayerViewController?) {
         if let viewController {
             clearCurrent(viewController)
         } else {
@@ -230,9 +226,7 @@ enum NCVideoAVPlayerPresenter {
         return visibleViewController(from: rootViewController)
     }
 
-    private static func visibleViewController(
-        from viewController: UIViewController?
-    ) -> UIViewController? {
+    private static func visibleViewController(from viewController: UIViewController?) -> UIViewController? {
         if let navigationController = viewController as? UINavigationController {
             return visibleViewController(
                 from: navigationController.visibleViewController

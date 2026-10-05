@@ -59,10 +59,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
         NCMediaViewerThumbnailLayout.preferredHeight
     }
 
-    static func == (
-        lhs: NCMediaViewerThumbnail,
-        rhs: NCMediaViewerThumbnail
-    ) -> Bool {
+    static func == (lhs: NCMediaViewerThumbnail, rhs: NCMediaViewerThumbnail) -> Bool {
         lhs.selectedIndex == rhs.selectedIndex &&
         lhs.numberOfPages == rhs.numberOfPages &&
         lhs.reloadRevision == rhs.reloadRevision
@@ -102,10 +99,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
         return collectionView
     }
 
-    func updateUIView(
-        _ collectionView: UICollectionView,
-        context: Context
-    ) {
+    func updateUIView(_ collectionView: UICollectionView, context: Context) {
         context.coordinator.selectedIndex = selectedIndex
         context.coordinator.numberOfPages = numberOfPages
         context.coordinator.reloadRevision = reloadRevision
@@ -203,17 +197,11 @@ extension NCMediaViewerThumbnail {
 
         // MARK: - UICollectionViewDataSource
 
-        func collectionView(
-            _ collectionView: UICollectionView,
-            numberOfItemsInSection section: Int
-        ) -> Int {
+        func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
             numberOfPages
         }
 
-        func collectionView(
-            _ collectionView: UICollectionView,
-            cellForItemAt indexPath: IndexPath
-        ) -> UICollectionViewCell {
+        func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
             guard let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: NCMediaViewerThumbnailUICollectionCell.reuseIdentifier,
                 for: indexPath
@@ -231,10 +219,7 @@ extension NCMediaViewerThumbnail {
 
         // MARK: - UICollectionViewDelegate
 
-        func collectionView(
-            _ collectionView: UICollectionView,
-            didSelectItemAt indexPath: IndexPath
-        ) {
+        func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
             let selectedIndex = indexPath.item
 
             shouldEmphasizeSelectedThumbnail = true
@@ -267,10 +252,7 @@ extension NCMediaViewerThumbnail {
             selectCenteredThumbnailDuringScrollIfNeeded()
         }
 
-        func scrollViewDidEndDragging(
-            _ scrollView: UIScrollView,
-            willDecelerate decelerate: Bool
-        ) {
+        func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
             guard !decelerate else {
                 return
             }
@@ -302,10 +284,7 @@ extension NCMediaViewerThumbnail {
 
         // MARK: - UICollectionViewDataSourcePrefetching
 
-        func collectionView(
-            _ collectionView: UICollectionView,
-            prefetchItemsAt indexPaths: [IndexPath]
-        ) {
+        func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
             for indexPath in indexPaths {
                 prefetchThumbnail(at: indexPath.item)
             }
@@ -640,10 +619,7 @@ extension NCMediaViewerThumbnail {
 
         // MARK: - Cell Configuration
 
-        private func configure(
-            _ cell: NCMediaViewerThumbnailUICollectionCell,
-            at index: Int
-        ) {
+        private func configure(_ cell: NCMediaViewerThumbnailUICollectionCell, at index: Int) {
             let isDeleted = isDeletedProvider(index)
             let metadata = isDeleted ? nil : metadataProvider(index)
             let ocId = metadata?.ocId
@@ -796,10 +772,7 @@ extension NCMediaViewerThumbnail {
             }
         }
 
-        private func loadThumbnailIfNeeded(
-            index: Int,
-            metadata initialMetadata: tableMetadata?
-        ) {
+        private func loadThumbnailIfNeeded(index: Int, metadata initialMetadata: tableMetadata?) {
             guard index >= 0,
                   index < numberOfPages,
                   !isDeletedProvider(index),
@@ -994,15 +967,7 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
         )
     }
 
-    func configure(
-        image: UIImage?,
-        isCurrent: Bool,
-        isVideo: Bool,
-        isAudio: Bool,
-        isMetadataResolved: Bool,
-        shouldShowPlaceholder: Bool,
-        isDeleted: Bool
-    ) {
+    func configure(image: UIImage?, isCurrent: Bool, isVideo: Bool, isAudio: Bool, isMetadataResolved: Bool, shouldShowPlaceholder: Bool, isDeleted: Bool) {
         isCurrentThumbnail = isCurrent
         imageView.image = isDeleted ? nil : image
         placeholderView.isHidden = !shouldShowPlaceholder

@@ -369,11 +369,7 @@ final class NCMediaViewerPresenter: NSObject {
     // MARK: - Opening Animation
 
     /// Animates the source thumbnail into the fullscreen viewer.
-    private func animateOpening(
-        viewerTransitionSource: NCMediaViewerTransitionSource,
-        in window: UIWindow,
-        viewerView: UIView
-    ) {
+    private func animateOpening(viewerTransitionSource: NCMediaViewerTransitionSource, in window: UIWindow, viewerView: UIView) {
         let dimView = UIView(frame: window.bounds)
         dimView.backgroundColor = .ncViewerBackground(.system)
         dimView.alpha = 0
@@ -416,12 +412,7 @@ final class NCMediaViewerPresenter: NSObject {
     // MARK: - Closing Animation
 
     /// Animates the fullscreen viewer back into the current thumbnail frame.
-    private func animateClosing(
-        viewerTransitionSource: NCMediaViewerTransitionSource,
-        closingImage: UIImage,
-        in window: UIWindow,
-        viewerView: UIView
-    ) {
+    private func animateClosing(viewerTransitionSource: NCMediaViewerTransitionSource, closingImage: UIImage, in window: UIWindow, viewerView: UIView) {
         let startFrame = aspectFitFrame(
             imageSize: closingImage.size,
             containerSize: window.bounds.size
@@ -540,10 +531,7 @@ final class NCMediaViewerPresenter: NSObject {
     }
 
     /// Computes the aspect-fit frame for an image inside the container.
-    private func aspectFitFrame(
-        imageSize: CGSize,
-        containerSize: CGSize
-    ) -> CGRect {
+    private func aspectFitFrame(imageSize: CGSize, containerSize: CGSize) -> CGRect {
         guard imageSize.width > 0,
               imageSize.height > 0,
               containerSize.width > 0,
@@ -591,10 +579,7 @@ extension NCMediaViewerPresenter: UIGestureRecognizerDelegate {
         return abs(velocity.y) > abs(velocity.x) * 1.10
     }
 
-    func gestureRecognizer(
-        _ gestureRecognizer: UIGestureRecognizer,
-        shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
-    ) -> Bool {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         gestureRecognizer === dismissPanGesture
     }
 }

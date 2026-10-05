@@ -127,10 +127,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         return URL(fileURLWithPath: localPath)
     }
 
-    func downloadMedia(
-        for metadata: tableMetadata,
-        onDownloadStarted: (@Sendable () async -> Void)? = nil
-    ) async throws -> URL {
+    func downloadMedia(for metadata: tableMetadata, onDownloadStarted: (@Sendable () async -> Void)? = nil) async throws -> URL {
         if let localURL = await localMediaURL(for: metadata) {
             return localURL
         }

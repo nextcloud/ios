@@ -349,10 +349,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     }
 
     /// Updates the floating title using the current media metadata.
-    private func updateTitleLabel(
-        metadata: tableMetadata?,
-        backgroundColor: UIColor
-    ) {
+    private func updateTitleLabel(metadata: tableMetadata?, backgroundColor: UIColor) {
         guard let metadata else {
             floatingTitleView.clear()
             return
@@ -524,12 +521,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     }
 
     /// Presents the SwiftUI media detail panel.
-    private func presentDetailView(
-        metadata: tableMetadata,
-        index: Int,
-        exif: ExifData,
-        animated: Bool
-    ) {
+    private func presentDetailView(metadata: tableMetadata, index: Int, exif: ExifData, animated: Bool) {
         let detailView = NCMediaViewerDetailView(
             metadata: metadata,
             exif: exif
@@ -600,33 +592,20 @@ final class NCMediaViewerTransferDelegate: NSObject, NCTransferDelegate {
     private let onReloadDataSource: @MainActor () async -> Void
     let sceneIdentifier: String = ""
 
-    init(
-        onDeletedOcId: @escaping @MainActor (_ ocId: String) -> Void,
-        onReloadDataSource: @escaping @MainActor () async -> Void
-    ) {
+    init(onDeletedOcId: @escaping @MainActor (_ ocId: String) -> Void, onReloadDataSource: @escaping @MainActor () async -> Void) {
         self.onDeletedOcId = onDeletedOcId
         self.onReloadDataSource = onReloadDataSource
     }
 
     func transferReloadData(serverUrl: String?) { }
 
-    func transferReloadDataSource(
-        serverUrl: String?,
-        requestData: Bool,
-        status: Int?
-    ) {
+    func transferReloadDataSource(serverUrl: String?, requestData: Bool, status: Int?) {
         Task { @MainActor in
             await onReloadDataSource()
         }
     }
 
-    func transferProgressDidUpdate(
-        progress: Float,
-        totalBytes: Int64,
-        totalBytesExpected: Int64,
-        fileName: String,
-        serverUrl: String
-    ) { }
+    func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
     func transferChange(
         networkingStatus: String,

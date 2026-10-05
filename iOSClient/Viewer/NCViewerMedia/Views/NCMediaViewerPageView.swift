@@ -179,11 +179,7 @@ struct NCMediaViewerPageView: View {
     }
 
     @ViewBuilder
-    private func imageStateView(
-        previewURL: URL?,
-        localURL: URL?,
-        livePhotoURL: URL?
-    ) -> some View {
+    private func imageStateView(previewURL: URL?, localURL: URL?, livePhotoURL: URL?) -> some View {
         if previewURL != nil || localURL != nil {
             imageContentView(
                 previewURL: previewURL,
@@ -197,10 +193,7 @@ struct NCMediaViewerPageView: View {
     }
 
     @ViewBuilder
-    private func videoStateView(
-        localURL: URL?,
-        previewURL: URL?
-    ) -> some View {
+    private func videoStateView(localURL: URL?, previewURL: URL?) -> some View {
         if let metadata = page.metadata {
             NCVideoViewerContentView(
                 metadata: metadata,
@@ -242,10 +235,7 @@ struct NCMediaViewerPageView: View {
     }
 
     @ViewBuilder
-    private func audioStateView(
-        localURL: URL,
-        previewURL: URL?
-    ) -> some View {
+    private func audioStateView(localURL: URL, previewURL: URL?) -> some View {
         if let metadata = page.metadata {
             NCAudioViewerContentView(
                 metadata: metadata,
@@ -276,10 +266,7 @@ struct NCMediaViewerPageView: View {
     }
 
     @ViewBuilder
-    private func downloadingStateView(
-        previewURL: URL?,
-        _ progress: Double?
-    ) -> some View {
+    private func downloadingStateView(previewURL: URL?, _ progress: Double?) -> some View {
         switch page.metadata?.classFile {
         case NKTypeClassFile.video.rawValue:
             if isSelected {
@@ -309,10 +296,7 @@ struct NCMediaViewerPageView: View {
     }
 
     @ViewBuilder
-    private func genericReadyStateView(
-        localURL: URL,
-        previewURL: URL?
-    ) -> some View {
+    private func genericReadyStateView(localURL: URL, previewURL: URL?) -> some View {
         if let metadata = page.metadata {
             switch metadata.classFile {
             case NKTypeClassFile.video.rawValue:
@@ -341,10 +325,7 @@ struct NCMediaViewerPageView: View {
     }
 
     @ViewBuilder
-    private func failedStateView(
-        previewURL: URL?,
-        _ message: String
-    ) -> some View {
+    private func failedStateView(previewURL: URL?, _ message: String) -> some View {
         if let previewURL {
             previewOnlyView(previewURL: previewURL)
         } else if page.metadata?.classFile == NKTypeClassFile.audio.rawValue {
@@ -410,12 +391,7 @@ struct NCMediaViewerPageView: View {
     }
 
     @ViewBuilder
-    private func imageContentView(
-        previewURL: URL?,
-        localURL: URL?,
-        livePhotoURL: URL?,
-        backgroundStyle: NCViewerBackgroundStyle
-    ) -> some View {
+    private func imageContentView(previewURL: URL?, localURL: URL?, livePhotoURL: URL?, backgroundStyle: NCViewerBackgroundStyle) -> some View {
         if page.metadata?.isLivePhoto == true {
             NCLivePhotoViewerContentView(
                 identifier: page.ocId,

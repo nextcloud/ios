@@ -96,10 +96,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         player.timeControlStatus != .playing && !isPlaybackRequested
     }
 
-    internal func setNavigationBarVisible(
-        _ isVisible: Bool,
-        animated: Bool
-    ) {
+    internal func setNavigationBarVisible(_ isVisible: Bool, animated: Bool) {
         navigationController?.setNavigationBarHidden(
             !isVisible,
             animated: animated
@@ -229,10 +226,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         updateControlsNavigationBar()
     }
 
-    override func viewWillTransition(
-        to size: CGSize,
-        with coordinator: UIViewControllerTransitionCoordinator
-    ) {
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(
             to: size,
             with: coordinator
@@ -987,30 +981,22 @@ final class NCVideoAVPlayerViewController: UIViewController {
 // MARK: - Picture in Picture Delegate
 
 extension NCVideoAVPlayerViewController: AVPictureInPictureControllerDelegate {
-    func pictureInPictureControllerWillStartPictureInPicture(
-        _ pictureInPictureController: AVPictureInPictureController
-    ) {
+    func pictureInPictureControllerWillStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
 
         stopControlsHideTimer()
         hideControls(animated: false)
     }
 
-    func pictureInPictureControllerDidStartPictureInPicture(
-        _ pictureInPictureController: AVPictureInPictureController
-    ) {
+    func pictureInPictureControllerDidStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
 
         stopControlsHideTimer()
         hideControls(animated: false)
     }
 
-    func pictureInPictureControllerWillStopPictureInPicture(
-        _ pictureInPictureController: AVPictureInPictureController
-    ) {
+    func pictureInPictureControllerWillStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
     }
 
-    func pictureInPictureControllerDidStopPictureInPicture(
-        _ pictureInPictureController: AVPictureInPictureController
-    ) {
+    func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
         updatePlayPauseButton()
         updateProgressControls()
         updateSeekingState()
@@ -1023,10 +1009,7 @@ extension NCVideoAVPlayerViewController: AVPictureInPictureControllerDelegate {
         }
     }
 
-    func pictureInPictureController(
-        _ pictureInPictureController: AVPictureInPictureController,
-        failedToStartPictureInPictureWithError error: Error
-    ) {
+    func pictureInPictureController(_ pictureInPictureController: AVPictureInPictureController, failedToStartPictureInPictureWithError error: Error) {
         nkLog(
             tag: NCGlobal.shared.logTagViewer,
             emoji: .error,
@@ -1045,10 +1028,7 @@ extension NCVideoAVPlayerViewController: AVPictureInPictureControllerDelegate {
 
 extension NCVideoAVPlayerViewController: UIGestureRecognizerDelegate {
     // Keep AVPlayer touches compatible with viewer gestures, but isolate visible controls from global gestures.
-    func gestureRecognizer(
-        _ gestureRecognizer: UIGestureRecognizer,
-        shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
-    ) -> Bool {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         guard controlsVisible else {
             return true
         }
@@ -1064,10 +1044,7 @@ extension NCVideoAVPlayerViewController: UIGestureRecognizerDelegate {
     }
 
     // Keep global viewer gestures disabled while Picture in Picture is active or when visible controls receive the touch.
-    func gestureRecognizer(
-        _ gestureRecognizer: UIGestureRecognizer,
-        shouldReceive touch: UITouch
-    ) -> Bool {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         guard !isPictureInPictureActive else {
             return false
         }

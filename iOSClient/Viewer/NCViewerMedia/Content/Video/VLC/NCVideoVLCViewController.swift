@@ -69,10 +69,7 @@ final class NCVideoVLCViewController: UIViewController {
         mediaPlayer.state != .playing && !mediaPlayer.isPlaying && !isPlaybackRequested
     }
 
-    internal func setNavigationBarVisible(
-        _ isVisible: Bool,
-        animated: Bool
-    ) {
+    internal func setNavigationBarVisible(_ isVisible: Bool, animated: Bool) {
         navigationController?.setNavigationBarHidden(
             !isVisible,
             animated: animated
@@ -195,10 +192,7 @@ final class NCVideoVLCViewController: UIViewController {
         updateControlsNavigationBar()
     }
 
-    override func viewWillTransition(
-        to size: CGSize,
-        with coordinator: UIViewControllerTransitionCoordinator
-    ) {
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(
             to: size,
             with: coordinator
@@ -930,12 +924,7 @@ final class NCVideoVLCViewController: UIViewController {
         return navigationController
     }
 
-    private func configureExternalSubtitlePicker(
-        _ viewController: NCSelect,
-        serverUrl: String,
-        homeServerUrl: String,
-        session: NCSession.Session
-    ) {
+    private func configureExternalSubtitlePicker(_ viewController: NCSelect, serverUrl: String, homeServerUrl: String, session: NCSession.Session) {
         let folderName = (serverUrl as NSString).lastPathComponent.removingPercentEncoding
 
         viewController.delegate = self
@@ -1072,11 +1061,7 @@ final class NCVideoVLCViewController: UIViewController {
         return NCManageDatabase.shared.getVideo(metadata: metadata)?.currentAudioTrackIndex
     }
 
-    private func makeTrackMenuItems(
-        titles: [Any],
-        indexes: [Any],
-        currentIndex: Int?
-    ) -> [NCVideoTrackMenuItem] {
+    private func makeTrackMenuItems(titles: [Any], indexes: [Any], currentIndex: Int?) -> [NCVideoTrackMenuItem] {
         titles.indices.compactMap { index in
             guard let title = titles[index] as? String,
                   let trackIndex = normalizedTrackIndex(indexes, at: index) else {
@@ -1092,10 +1077,7 @@ final class NCVideoVLCViewController: UIViewController {
         }
     }
 
-    private func normalizedTrackIndex(
-        _ indexes: [Any],
-        at index: Int
-    ) -> Int32? {
+    private func normalizedTrackIndex(_ indexes: [Any], at index: Int) -> Int32? {
         guard indexes.indices.contains(index) else {
             return nil
         }
@@ -1182,10 +1164,7 @@ extension NCVideoVLCViewController: VLCMediaPlayerDelegate {
 
 extension NCVideoVLCViewController: UIGestureRecognizerDelegate {
     // Keep VLC drawable touches compatible with viewer gestures, but isolate visible controls from global gestures.
-    func gestureRecognizer(
-        _ gestureRecognizer: UIGestureRecognizer,
-        shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
-    ) -> Bool {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         guard controlsVisible else {
             return true
         }
@@ -1201,10 +1180,7 @@ extension NCVideoVLCViewController: UIGestureRecognizerDelegate {
     }
 
     // Keep global viewer gestures disabled when visible controls receive the touch.
-    func gestureRecognizer(
-        _ gestureRecognizer: UIGestureRecognizer,
-        shouldReceive touch: UITouch
-    ) -> Bool {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         guard controlsVisible else {
             return true
         }

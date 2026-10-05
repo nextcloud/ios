@@ -5,16 +5,12 @@
 import Foundation
 
 extension NCVideoViewerContentView {
-    @MainActor
-    @discardableResult
-    func requestVLCPresentation(preparedPlayback: NCVideoVLCPreparedPlayback) -> Bool {
+    @MainActor @discardableResult func requestVLCPresentation(preparedPlayback: NCVideoVLCPreparedPlayback) -> Bool {
         hasRequestedPlayback = true
         return presentVLCIfSelected(preparedPlayback: preparedPlayback)
     }
 
-    @MainActor
-    @discardableResult
-    func presentVLCIfSelected(preparedPlayback: NCVideoVLCPreparedPlayback) -> Bool {
+    @MainActor @discardableResult func presentVLCIfSelected(preparedPlayback: NCVideoVLCPreparedPlayback) -> Bool {
         guard isSelected else {
             return false
         }

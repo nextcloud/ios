@@ -117,11 +117,7 @@ final class NCVideoControlsView: UIView {
         state.isPlaying = isPlaying
     }
 
-    func updateProgress(
-        progress: Float,
-        elapsedText: String,
-        remainingText: String
-    ) {
+    func updateProgress(progress: Float, elapsedText: String, remainingText: String) {
         let progress = max(0, min(1, progress))
 
         guard state.progress != progress ||
@@ -143,10 +139,7 @@ final class NCVideoControlsView: UIView {
         state.isSeekingEnabled = isEnabled
     }
 
-    func updatePlaybackOptions(
-        isRepeatEnabled: Bool,
-        isAutoAdvanceEnabled: Bool
-    ) {
+    func updatePlaybackOptions(isRepeatEnabled: Bool, isAutoAdvanceEnabled: Bool) {
         if state.isRepeatEnabled != isRepeatEnabled {
             state.isRepeatEnabled = isRepeatEnabled
         }
@@ -658,10 +651,7 @@ private struct NCVideoControlsSwiftUIView: View {
         .buttonStyle(.plain)
     }
 
-    private func topActionIcon(
-        systemName: String,
-        pointSize: CGFloat
-    ) -> some View {
+    private func topActionIcon(systemName: String, pointSize: CGFloat) -> some View {
         Image(systemName: systemName)
             .font(.system(size: pointSize, weight: .regular))
             .foregroundStyle(.primary)
@@ -672,13 +662,7 @@ private struct NCVideoControlsSwiftUIView: View {
             .controlGlassBackground(shape: Circle())
     }
 
-    private func circleButton(
-        systemName: String,
-        size: CGFloat,
-        pointSize: CGFloat,
-        isEnabled: Bool,
-        action: @escaping () -> Void
-    ) -> some View {
+    private func circleButton(systemName: String, size: CGFloat, pointSize: CGFloat, isEnabled: Bool, action: @escaping () -> Void) -> some View {
         Button {
             guard isEnabled else {
                 return
@@ -719,18 +703,12 @@ private struct NCVideoAirPlayRoutePickerView: UIViewRepresentable {
         return routePickerView
     }
 
-    func updateUIView(
-        _ uiView: AVRoutePickerView,
-        context: Context
-    ) { }
+    func updateUIView(_ uiView: AVRoutePickerView, context: Context) { }
 }
 
 private extension View {
     @ViewBuilder
-    func controlGlassBackground<BackgroundShape: Shape>(
-        shape: BackgroundShape,
-        isInteractive: Bool = true
-    ) -> some View {
+    func controlGlassBackground<BackgroundShape: Shape>(shape: BackgroundShape, isInteractive: Bool = true) -> some View {
         if #available(iOS 26.0, *) {
             self
                 .glassEffect(.regular.interactive(isInteractive), in: shape)
@@ -798,8 +776,5 @@ private struct NCVideoControlsPreviewView: UIViewRepresentable {
         return containerView
     }
 
-    func updateUIView(
-        _ uiView: UIView,
-        context: Context
-    ) { }
+    func updateUIView(_ uiView: UIView, context: Context) { }
 }

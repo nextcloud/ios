@@ -389,10 +389,7 @@ struct NCMediaViewerDetailView: View {
 
     // MARK: - Actions
 
-    private func openMaps(
-        coordinate: CLLocationCoordinate2D,
-        name: String?
-    ) {
+    private func openMaps(coordinate: CLLocationCoordinate2D, name: String?) {
         let placemark = MKPlacemark(
             coordinate: coordinate,
             addressDictionary: nil

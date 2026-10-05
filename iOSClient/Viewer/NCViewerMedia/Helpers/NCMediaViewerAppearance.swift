@@ -58,10 +58,7 @@ func ncViewerBackgroundStyle(for metadata: tableMetadata?) -> NCViewerBackground
 }
 
 // MARK: - Viewer Chrome-Aware Background Resolution
-func ncViewerBackgroundStyle(
-    for metadata: tableMetadata?,
-    isChromeHidden: Bool
-) -> NCViewerBackgroundStyle {
+func ncViewerBackgroundStyle(for metadata: tableMetadata?, isChromeHidden: Bool) -> NCViewerBackgroundStyle {
     if isChromeHidden {
         return .black
     }
