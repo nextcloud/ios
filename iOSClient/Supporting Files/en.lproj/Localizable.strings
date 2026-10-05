@@ -850,17 +850,17 @@
 "_want_remove_from_album_"                          = "Do you really want to remove from Album?";
 
 
-"_autoupload_whole_library_" = "Whole photo library";
-"_autoupload_whole_library_description_" = "Checks the entire selected library. Files already uploaded to %@ are skipped.";
+"_autoupload_whole_library_" = "All photos and videos";
+"_autoupload_whole_library_description_" = "Checks all photos and videos in the selected library. Photos and videos already uploaded to %@ are skipped.";
 "_autoupload_from_date_" = "From a date";
 "_autoupload_start_date_" = "Upload starting from";
-"_autoupload_completed_until_" = "Upload completed up to";
-"_autoupload_waiting_for_uploads_" = "Waiting for the first uploads";
+"_autoupload_completed_until_" = "Photos and videos uploaded up to";
+"_autoupload_waiting_for_uploads_" = "Waiting for the first photos and videos to upload";
 "_autoupload_set_to_now_" = "Set to now";
-"_autoupload_date_range_footer_" = "Files already uploaded to %@ are skipped. The date advances through confirmed uploads and is preserved when auto upload is stopped.";
+"_autoupload_date_range_footer_" = "Photos and videos already uploaded to %@ are skipped. The date advances as uploads are confirmed and is preserved when automatic upload is stopped.";
 
-"_autoupload_ignore_history_" = "Ignore previous upload records";
-"_autoupload_ignore_history_description_" = "The app uses a local record to remember uploaded photos and videos, without checking whether they are still on the server. Enable this option to upload them again, for example if you deleted them from the server. Existing files may be overwritten.";
-"_autoupload_force_reupload_footer_" = "Previous upload records are ignored for the selected library or date range. New completed uploads are still recorded. This option stays enabled until you turn it off.";
+"_autoupload_ignore_history_" = "Upload previously uploaded photos and videos again";
+"_autoupload_ignore_history_description_" = "The app keeps a local record of uploaded photos and videos, without checking whether they are still on the server. Enable this option to upload them again, for example if you deleted them from the server. Existing photos and videos may be overwritten.";
+"_autoupload_force_reupload_footer_" = "Previous upload records are ignored for photos and videos in the selected library or date range. New completed uploads are still recorded. This option stays enabled until you turn it off.";
 
-"_auto_upload_active_" = "Automatic upload active";
+"_auto_upload_active_" = "Automatic photo and video upload active";
