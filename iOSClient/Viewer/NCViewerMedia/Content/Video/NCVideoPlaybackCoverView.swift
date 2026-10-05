@@ -58,19 +58,20 @@ struct NCVideoPlaybackCoverView: View {
                         if isLoading || isLaunchingPlayback {
                             ProgressView()
                                 .controlSize(.large)
-                                .tint(.primary.opacity(0.6))
+                                .tint(.primary)
                                 .transition(.opacity)
                         } else {
+                            // Color.primary, not .primary: the default button style resolves .primary against the accent tint.
+                            // The default style stays because .plain fades disabled content, like the loading spinner.
                             Image(systemName: "play.fill")
                                 .font(.system(size: 36, weight: .regular))
-                                .foregroundStyle(isPlayEnabled ? .primary : .tertiary)
+                                .foregroundStyle(Color.primary.opacity(isPlayEnabled ? 1 : 0.35))
                                 .transition(.opacity)
                         }
                     }
                     .frame(width: 62, height: 62)
                     .coverPlayButtonBackground()
                 }
-                .buttonStyle(.plain)
                 .disabled(!isPlayEnabled || isLoading || isLaunchingPlayback)
                 .scaleEffect(isLaunchingPlayback ? 1.06 : 1)
                 .animation(.easeInOut(duration: 0.18), value: isLoading)
