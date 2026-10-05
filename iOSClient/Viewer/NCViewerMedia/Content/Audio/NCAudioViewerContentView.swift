@@ -159,9 +159,9 @@ struct NCAudioViewerContentView: View {
                         Button {
                             model.restart()
                         } label: {
-                            Image(systemName: "backward.end.circle")
+                            Image(systemName: "backward.end.circle.fill")
                                 .font(.system(size: sideButtonSize, weight: .regular))
-                                .foregroundStyle(mutedForegroundStyle)
+                                .foregroundStyle(primaryForegroundStyle)
                         }
                         .buttonStyle(.plain)
                         .disabled(!isSelected || model.duration <= 0)
@@ -177,8 +177,7 @@ struct NCAudioViewerContentView: View {
                 VStack {
                     HStack(spacing: 8) {
                         audioPlaybackOptionButton(
-                            systemName: "repeat.1",
-                            isActive: playbackOptions.isRepeatEnabled,
+                            systemName: playbackOptions.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1",
                             accessibilityLabel: "_repeat_current_media_"
                         ) {
                             playbackOptions.toggleRepeat()
@@ -186,7 +185,6 @@ struct NCAudioViewerContentView: View {
 
                         audioPlaybackOptionButton(
                             systemName: playbackOptions.isAutoAdvanceEnabled ? "forward.end.fill" : "forward.end",
-                            isActive: playbackOptions.isAutoAdvanceEnabled,
                             accessibilityLabel: "_play_next_media_automatically_"
                         ) {
                             playbackOptions.toggleAutoAdvance()
@@ -270,20 +268,13 @@ struct NCAudioViewerContentView: View {
 
     private func audioPlaybackOptionButton(
         systemName: String,
-        isActive: Bool,
         accessibilityLabel: String,
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
             Image(systemName: systemName)
                 .font(.system(size: 17, weight: .regular))
-                .foregroundStyle(isActive ? Color.accentColor : primaryForegroundStyle)
-                .shadow(
-                    color: .black.opacity(0.35),
-                    radius: 2,
-                    x: 0,
-                    y: 1
-                )
+                .foregroundStyle(.primary)
                 .frame(width: 38, height: 38)
                 .audioControlGlassBackground(shape: Circle())
         }
@@ -329,22 +320,6 @@ struct NCAudioViewerContentView: View {
 
         case .custom:
             return .white.opacity(0.65)
-        }
-    }
-
-    private var mutedForegroundStyle: Color {
-        switch backgroundStyle {
-        case .black:
-            return .white.opacity(0.45)
-
-        case .white:
-            return .black.opacity(0.40)
-
-        case .system:
-            return .secondary.opacity(0.70)
-
-        case .custom:
-            return .white.opacity(0.45)
         }
     }
 
@@ -418,24 +393,10 @@ private extension View {
     ) -> some View {
         if #available(iOS 26.0, *) {
             self
-                .glassEffect(.regular, in: shape)
-                .overlay {
-                    shape
-                        .stroke(.white.opacity(0.58), lineWidth: 1.2)
-                }
-                .shadow(
-                    color: .black.opacity(0.18),
-                    radius: 14,
-                    x: 0,
-                    y: 4
-                )
+                .glassEffect(.regular.interactive(), in: shape)
         } else {
             self
-                .background(.ultraThinMaterial, in: shape)
-                .overlay {
-                    shape
-                        .stroke(.primary.opacity(0.12), lineWidth: 1)
-                }
+                .background(.regularMaterial)
                 .clipShape(shape)
         }
     }
