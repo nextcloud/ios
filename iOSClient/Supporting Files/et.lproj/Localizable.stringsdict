@@ -34,22 +34,6 @@
 			<string>%d files in queue</string>
 		</dict>
 	</dict>
-	<key>_focused_auto_upload_items_left_</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@items@</string>
-		<key>items</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Jäänud on %d objekt</string>
-			<key>other</key>
-			<string>Jäänud on %d objekti</string>
-		</dict>
-	</dict>
 	<key>_focused_auto_upload_photos_to_back_up_</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

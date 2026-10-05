@@ -46,28 +46,6 @@
 			<string>%d comhad sa scuaine</string>
 		</dict>
 	</dict>
-	<key>_focused_auto_upload_items_left_</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@items@</string>
-		<key>items</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%d mír fágtha</string>
-			<key>two</key>
-			<string>%d míreanna fágtha</string>
-			<key>few</key>
-			<string>%d míreanna fágtha</string>
-			<key>many</key>
-			<string>%d míreanna fágtha</string>
-			<key>other</key>
-			<string>%d míreanna fágtha</string>
-		</dict>
-	</dict>
 	<key>_focused_auto_upload_photos_to_back_up_</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
