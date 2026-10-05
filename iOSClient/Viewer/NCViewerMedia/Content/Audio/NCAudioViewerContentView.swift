@@ -25,6 +25,7 @@ struct NCAudioViewerContentView: View {
     let onAutoPlayConsumed: () -> Void
     let onToggleChrome: () -> Void
 
+    @Environment(\.layoutDirection) private var layoutDirection
     @StateObject private var model: NCAudioViewerModel
 
     init(
@@ -71,32 +72,17 @@ struct NCAudioViewerContentView: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let isLandscape = proxy.size.width > proxy.size.height
-            let artworkSize: CGFloat = isLandscape ? 110 : 180
-            let mainSpacing: CGFloat = isLandscape ? 18 : 28
-            let titleHorizontalPadding: CGFloat = 24
-            let sliderHorizontalPadding: CGFloat = isLandscape ? 90 : 32
-            let topPadding: CGFloat = isLandscape ? 72 : 0
-            let buttonSpacing: CGFloat = isLandscape ? 24 : 28
-            let sideButtonSize: CGFloat = isLandscape ? 30 : 34
-            let playButtonSize: CGFloat = isLandscape ? 64 : 72
-            let navigationBarHeight: CGFloat = isLandscape ? 32 : 44
-            let minimumNavigationBarBottom: CGFloat = isLandscape ? 32 : 64
-            // The navigation bar frame moves while hidden. Its safe area and
-            // bounds keep this inset stable when the bar becomes visible again.
-            let safeAreaTop = max(
-                proxy.safeAreaInsets.top,
-                navigationBar?.window?.safeAreaInsets.top ?? 0
-            )
-            let effectiveNavigationBarHeight = max(
-                navigationBar?.bounds.height ?? 0,
-                navigationBarHeight
-            )
-            let navigationBarBottom = max(
-                safeAreaTop + effectiveNavigationBarHeight,
-                minimumNavigationBarBottom
-            )
-            let topActionsPadding = navigationBarBottom + 4
+            let mainSpacing: CGFloat = 18
+            let sliderHorizontalPadding: CGFloat = 32
+            let buttonSpacing: CGFloat = 24
+            let sideButtonSize: CGFloat = 30
+            let playButtonSize: CGFloat = 64
+            let safeAreaTop = max(proxy.safeAreaInsets.top, navigationBar?.window?.safeAreaInsets.top ?? 0)
+            let windowInsets = navigationBar?.window?.safeAreaInsets ?? .zero
+            let leadingSafeArea = max(proxy.safeAreaInsets.leading, layoutDirection == .leftToRight ? windowInsets.left : windowInsets.right)
+            let trailingSafeArea = max(proxy.safeAreaInsets.trailing, layoutDirection == .leftToRight ? windowInsets.right : windowInsets.left)
+            let navigationBarBottom = self.navigationBarBottom(in: proxy) ?? (safeAreaTop + 44)
+            let thumbnailReservedHeight = NCMediaViewerThumbnail.preferredHeight + 40
 
             ZStack {
                 Color.ncViewerBackground(backgroundStyle)
@@ -105,76 +91,10 @@ struct NCAudioViewerContentView: View {
                         onToggleChrome()
                     }
 
-                VStack(spacing: mainSpacing) {
-                    artworkView(size: artworkSize)
-                    if !isLandscape {
-                        VStack(spacing: 8) {
-                            Text(displayFileName)
-                                .font(.headline)
-                                .foregroundStyle(primaryForegroundStyle)
-                                .lineLimit(2)
-                                .multilineTextAlignment(.center)
+                VStack(spacing: 0) {
+                    Color.clear
+                        .frame(height: navigationBarBottom + 12)
 
-                            Text(metadata.contentType.isEmpty ? "Audio" : metadata.contentType)
-                                .font(.footnote)
-                                .foregroundStyle(secondaryForegroundStyle)
-                                .lineLimit(1)
-                        }
-                        .padding(.horizontal, titleHorizontalPadding)
-                    }
-
-                    VStack(spacing: 10) {
-                        Slider(
-                            value: Binding(
-                                get: { model.currentTime },
-                                set: { model.seek(to: $0) }
-                            ),
-                            in: 0...max(model.duration, 1)
-                        )
-                        .disabled(!isSelected || model.duration <= 0)
-
-                        HStack {
-                            Text(formatTime(model.currentTime))
-
-                            Spacer()
-
-                            Text(formatTime(model.duration))
-                        }
-                        .font(.caption.monospacedDigit())
-                        .foregroundStyle(secondaryForegroundStyle)
-                    }
-                    .padding(.horizontal, sliderHorizontalPadding)
-
-                    ZStack {
-                        Button {
-                            model.togglePlayback()
-                        } label: {
-                            Image(systemName: model.isPlaying ? "pause.circle.fill" : "play.circle.fill")
-                                .font(.system(size: playButtonSize, weight: .regular))
-                                .foregroundStyle(primaryForegroundStyle)
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(!isSelected)
-
-                        Button {
-                            model.restart()
-                        } label: {
-                            Image(systemName: "backward.end.circle.fill")
-                                .font(.system(size: sideButtonSize, weight: .regular))
-                                .foregroundStyle(primaryForegroundStyle)
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(!isSelected || model.duration <= 0)
-                        .offset(
-                            x: -(playButtonSize / 2 + buttonSpacing + sideButtonSize / 2)
-                        )
-                    }
-                    .frame(height: playButtonSize)
-                    .frame(maxWidth: .infinity)
-                }
-                .padding(.top, topPadding)
-
-                VStack {
                     HStack(spacing: 8) {
                         audioPlaybackOptionButton(
                             systemName: playbackOptions.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1",
@@ -193,10 +113,76 @@ struct NCAudioViewerContentView: View {
                         Spacer()
                     }
                     .padding(.leading, 28)
-                    .padding(.top, topActionsPadding)
+                    .padding(.bottom, mainSpacing)
 
-                    Spacer()
+                    VStack(spacing: mainSpacing) {
+                        GeometryReader { artworkProxy in
+                            let size = min(180, min(artworkProxy.size.width, artworkProxy.size.height))
+                            if size >= 72 {
+                                artworkView(size: size)
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            }
+                        }
+                        .frame(minHeight: 0, maxHeight: .infinity)
+
+                        VStack(spacing: 10) {
+                            Slider(
+                                value: Binding(
+                                    get: { model.currentTime },
+                                    set: { model.seek(to: $0) }
+                                ),
+                                in: 0...max(model.duration, 1)
+                            )
+                            .disabled(!isSelected || model.duration <= 0)
+
+                            HStack {
+                                Text(formatTime(model.currentTime))
+
+                                Spacer()
+
+                                Text(formatTime(model.duration))
+                            }
+                            .font(.caption.monospacedDigit())
+                            .foregroundStyle(secondaryForegroundStyle)
+                        }
+                        .padding(.horizontal, sliderHorizontalPadding)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                        ZStack {
+                            Button {
+                                model.togglePlayback()
+                            } label: {
+                                Image(systemName: model.isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                                    .font(.system(size: playButtonSize, weight: .regular))
+                                    .foregroundStyle(primaryForegroundStyle)
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(!isSelected)
+
+                            Button {
+                                model.restart()
+                            } label: {
+                                Image(systemName: "backward.end.circle.fill")
+                                    .font(.system(size: sideButtonSize, weight: .regular))
+                                    .foregroundStyle(primaryForegroundStyle)
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(!isSelected || model.duration <= 0)
+                            .offset(
+                                x: -(playButtonSize / 2 + buttonSpacing + sideButtonSize / 2)
+                            )
+                        }
+                        .frame(height: playButtonSize)
+                        .frame(maxWidth: .infinity)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.bottom, 10)
+
+                    Color.clear
+                        .frame(height: thumbnailReservedHeight)
                 }
+                .padding(.leading, leadingSafeArea)
+                .padding(.trailing, trailingSafeArea)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -246,6 +232,16 @@ struct NCAudioViewerContentView: View {
 
     // MARK: - Views
 
+    private func navigationBarBottom(in proxy: GeometryProxy) -> CGFloat? {
+        guard let navigationBar, let window = navigationBar.window, !navigationBar.isHidden else {
+            return nil
+        }
+
+        let navigationContent = navigationBar.topItem?.titleView ?? navigationBar
+        let frame = navigationContent.convert(navigationContent.bounds, to: window)
+        return max(0, frame.maxY - proxy.frame(in: .global).minY)
+    }
+
     private func artworkView(size: CGFloat) -> some View {
         ZStack {
             if let previewImage {
@@ -260,7 +256,7 @@ struct NCAudioViewerContentView: View {
                     .frame(width: size, height: size)
 
                 Image(systemName: "waveform")
-                    .font(.system(size: 76, weight: .regular))
+                    .font(.system(size: size * 76 / 180, weight: .regular))
                     .foregroundStyle(primaryForegroundStyle.opacity(0.9))
             }
         }
@@ -340,14 +336,6 @@ struct NCAudioViewerContentView: View {
     }
 
     // MARK: - Private
-
-    private var displayFileName: String {
-        if !metadata.fileNameView.isEmpty {
-            return metadata.fileNameView
-        }
-
-        return metadata.fileName
-    }
 
     @MainActor
     private func consumeAutoPlayIfNeeded() async {
