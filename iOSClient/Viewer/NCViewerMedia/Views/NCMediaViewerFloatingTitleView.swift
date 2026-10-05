@@ -61,8 +61,7 @@ final class NCMediaViewerFloatingTitleView: UIView {
         setContentHuggingPriority(.defaultLow, for: .horizontal)
     }
 
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
+    @available(*, unavailable) required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -123,10 +122,7 @@ final class NCMediaViewerFloatingTitleView: UIView {
         )
     }
 
-    func update(
-        primaryText: String?,
-        secondaryText: String?
-    ) {
+    func update(primaryText: String?, secondaryText: String?) {
         var configuration = titleButton.configuration
         configuration?.title = primaryText ?? ""
         configuration?.titleTextAttributesTransformer =

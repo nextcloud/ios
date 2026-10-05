@@ -327,10 +327,7 @@ struct NCLivePhotoViewerContentView: View {
     }
 
     @MainActor
-    private func loadLivePhoto(
-        imageURL: URL,
-        videoURL: URL
-    ) async {
+    private func loadLivePhoto(imageURL: URL, videoURL: URL) async {
         let expectedIdentifier = resourceIdentifier(
             imageURL: imageURL,
             videoURL: videoURL
@@ -384,10 +381,7 @@ struct NCLivePhotoViewerContentView: View {
         }
     }
 
-    private func resourceIdentifier(
-        imageURL: URL?,
-        videoURL: URL?
-    ) -> String {
+    private func resourceIdentifier(imageURL: URL?, videoURL: URL?) -> String {
         "\(identifier)|\(imageURL?.absoluteString ?? "")|\(videoURL?.absoluteString ?? "")"
     }
 
@@ -429,10 +423,7 @@ struct NCLivePhotoViewerContentView: View {
                 private var didResume = false
                 private let lock = NSLock()
 
-                func resumeOnce(
-                    _ continuation: CheckedContinuation<PHLivePhoto?, Never>,
-                    returning livePhoto: PHLivePhoto?
-                ) {
+                func resumeOnce(_ continuation: CheckedContinuation<PHLivePhoto?, Never>, returning livePhoto: PHLivePhoto?) {
                     lock.lock()
                     defer { lock.unlock() }
 
@@ -494,11 +485,7 @@ struct NCLivePhotoViewerContentView: View {
 struct NCLivePhotoPlaybackLayout {
     let frame: CGRect
 
-    init(
-        containerSize: CGSize,
-        photoSize: CGSize,
-        zoomState: NCImageZoomView.ZoomState?
-    ) {
+    init(containerSize: CGSize, photoSize: CGSize, zoomState: NCImageZoomView.ZoomState?) {
         guard containerSize.width > 0,
               containerSize.height > 0,
               photoSize.width > 0,
@@ -541,11 +528,7 @@ struct NCLivePhotoPlaybackLayout {
         )
     }
 
-    private static func contentOrigin(
-        containerLength: CGFloat,
-        contentLength: CGFloat,
-        normalizedCenter: CGFloat
-    ) -> CGFloat {
+    private static func contentOrigin(containerLength: CGFloat, contentLength: CGFloat, normalizedCenter: CGFloat) -> CGFloat {
         guard contentLength > containerLength else {
             return (containerLength - contentLength) * 0.5
         }
@@ -611,10 +594,7 @@ private struct NCLivePhotoViewRepresentable: UIViewRepresentable {
         }
     }
 
-    static func dismantleUIView(
-        _ view: PHLivePhotoView,
-        coordinator: Coordinator
-    ) {
+    static func dismantleUIView(_ view: PHLivePhotoView, coordinator: Coordinator) {
         view.stopPlayback()
         view.delegate = nil
         view.livePhoto = nil
@@ -634,10 +614,7 @@ private struct NCLivePhotoViewRepresentable: UIViewRepresentable {
             self.isPlaying = isPlaying
         }
 
-        func livePhotoView(
-            _ livePhotoView: PHLivePhotoView,
-            didEndPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle
-        ) {
+        func livePhotoView(_ livePhotoView: PHLivePhotoView, didEndPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
             isPlaying.wrappedValue = false
         }
     }

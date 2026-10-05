@@ -88,10 +88,7 @@ extension NCVideoAVPlayerViewController {
         )
     }
 
-    private func setControlsVisible(
-        _ visible: Bool,
-        animated: Bool
-    ) {
+    private func setControlsVisible(_ visible: Bool, animated: Bool) {
         stopControlsHideTimer()
 
         controlsVisible = visible
@@ -215,10 +212,7 @@ extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
         stopControlsHideTimer()
     }
 
-    func videoControls(
-        _ controlsView: NCVideoControlsView,
-        didScrubTo progress: Float
-    ) {
+    func videoControls(_ controlsView: NCVideoControlsView, didScrubTo progress: Float) {
         guard let duration = player.currentItem?.duration.seconds,
               duration.isFinite,
               duration > 0 else {
@@ -234,10 +228,7 @@ extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
         )
     }
 
-    func videoControlsDidEndScrubbing(
-        _ controlsView: NCVideoControlsView,
-        progress: Float
-    ) {
+    func videoControlsDidEndScrubbing(_ controlsView: NCVideoControlsView, progress: Float) {
         guard let duration = player.currentItem?.duration.seconds,
               duration.isFinite,
               duration > 0 else {

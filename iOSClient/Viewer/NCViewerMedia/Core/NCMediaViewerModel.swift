@@ -33,12 +33,7 @@ final class NCMediaViewerPageModel: ObservableObject, Identifiable {
     @Published var state: NCMediaViewerPageState
     var imageZoomState: NCImageZoomView.ZoomState?
 
-    init(
-        index: Int,
-        ocId: String,
-        metadata: tableMetadata? = nil,
-        state: NCMediaViewerPageState = .idle
-    ) {
+    init(index: Int, ocId: String, metadata: tableMetadata? = nil, state: NCMediaViewerPageState = .idle) {
         self.id = ocId
         self.index = index
         self.ocId = ocId
@@ -53,10 +48,7 @@ struct NCMediaViewerInitialModel {
     let currentMetadata: tableMetadata
     let ocIds: [String]
 
-    init(
-        currentMetadata: tableMetadata,
-        ocIds: [String]
-    ) {
+    init(currentMetadata: tableMetadata, ocIds: [String]) {
         self.currentMetadata = currentMetadata
         self.ocIds = ocIds
     }
@@ -218,10 +210,7 @@ final class NCMediaViewerModel: ObservableObject {
 
     /// Deactivates media content while the collection view moves between pages.
     /// The target becomes active only after the paging animation settles.
-    func beginPageTransition(
-        to targetIndex: Int?,
-        shouldAutoPlay: Bool
-    ) {
+    func beginPageTransition(to targetIndex: Int?, shouldAutoPlay: Bool) {
         if let targetIndex,
            !ocIds.indices.contains(targetIndex) {
             return
@@ -551,10 +540,7 @@ final class NCMediaViewerModel: ObservableObject {
     }
 
     @discardableResult
-    func downloadOriginalImage(
-        for metadata: tableMetadata,
-        onDownloadStarted: (@MainActor @Sendable () -> Void)? = nil
-    ) async throws -> URL {
+    func downloadOriginalImage(for metadata: tableMetadata, onDownloadStarted: (@MainActor @Sendable () -> Void)? = nil) async throws -> URL {
         let localURL = try await loader.downloadMedia(
             for: metadata,
             onDownloadStarted: {
@@ -587,9 +573,7 @@ final class NCMediaViewerModel: ObservableObject {
         return localURL
     }
 
-    func downloadLivePhotoResources(
-        for metadata: tableMetadata
-    ) async -> (imageURL: URL, videoURL: URL)? {
+    func downloadLivePhotoResources(for metadata: tableMetadata) async -> (imageURL: URL, videoURL: URL)? {
         guard metadata.isLivePhoto else {
             return nil
         }
@@ -651,20 +635,14 @@ final class NCMediaViewerModel: ObservableObject {
         isChromeHidden = isHidden
     }
 
-    func previewURL(
-        for metadata: tableMetadata,
-        ext: String
-    ) async -> URL? {
+    func previewURL(for metadata: tableMetadata, ext: String) async -> URL? {
         await loader.previewURL(
             for: metadata,
             ext: ext
         )
     }
 
-    func localPreviewURL(
-        for metadata: tableMetadata,
-        ext: String
-    ) -> URL? {
+    func localPreviewURL(for metadata: tableMetadata, ext: String) -> URL? {
         let localPath = utilityFileSystem.getDirectoryProviderStorageImageOcId(
             metadata.ocId,
             etag: metadata.etag,
@@ -680,9 +658,7 @@ final class NCMediaViewerModel: ObservableObject {
         return URL(fileURLWithPath: localPath)
     }
 
-    func resolveMetadataForThumbnail(
-        at index: Int
-    ) async -> tableMetadata? {
+    func resolveMetadataForThumbnail(at index: Int) async -> tableMetadata? {
         guard let ocId = ocId(at: index) else {
             return nil
         }
@@ -700,10 +676,7 @@ final class NCMediaViewerModel: ObservableObject {
         return metadata
     }
 
-    func nextMediaIndex(
-        after index: Int,
-        matchingClassFile classFile: String
-    ) async -> Int? {
+    func nextMediaIndex(after index: Int, matchingClassFile classFile: String) async -> Int? {
         guard ocIds.indices.contains(index),
               index < ocIds.index(before: ocIds.endIndex) else {
             return nil
@@ -745,10 +718,7 @@ final class NCMediaViewerModel: ObservableObject {
 
     // MARK: - Selected Page Loading
 
-    private func loadPage(
-        index: Int,
-        forceMetadataReload: Bool = false
-    ) async {
+    private func loadPage(index: Int, forceMetadataReload: Bool = false) async {
         guard ocIds.indices.contains(index) else {
             return
         }
@@ -799,13 +769,7 @@ final class NCMediaViewerModel: ObservableObject {
         )
     }
 
-    private func loadLocalPage(
-        metadata: tableMetadata,
-        previewURL: URL?,
-        localURL: URL,
-        for ocId: String,
-        index: Int
-    ) async {
+    private func loadLocalPage(metadata: tableMetadata, previewURL: URL?, localURL: URL, for ocId: String, index: Int) async {
         switch metadata.classFile {
         case NKTypeClassFile.video.rawValue:
             var videoPreviewURL = previewURL
@@ -879,12 +843,7 @@ final class NCMediaViewerModel: ObservableObject {
         }
     }
 
-    private func loadRemotePage(
-        metadata: tableMetadata,
-        previewURL: URL?,
-        for ocId: String,
-        index: Int
-    ) async {
+    private func loadRemotePage(metadata: tableMetadata, previewURL: URL?, for ocId: String, index: Int) async {
         var previewURL = previewURL
 
         if previewURL == nil,
@@ -1163,10 +1122,7 @@ final class NCMediaViewerModel: ObservableObject {
 
     // MARK: - Page Updates
 
-    private func resolvedMetadata(
-        for ocId: String,
-        allowCached: Bool = true
-    ) async -> tableMetadata? {
+    private func resolvedMetadata(for ocId: String, allowCached: Bool = true) async -> tableMetadata? {
         if allowCached,
            let existingMetadata = cachedPagesByOcId[ocId]?.metadata {
             return existingMetadata
@@ -1178,9 +1134,7 @@ final class NCMediaViewerModel: ObservableObject {
         )
     }
 
-    private func pageState(
-        for ocId: String
-    ) -> NCMediaViewerPageState {
+    private func pageState(for ocId: String) -> NCMediaViewerPageState {
         cachedPagesByOcId[ocId]?.state ?? .idle
     }
 
@@ -1245,9 +1199,7 @@ final class NCMediaViewerModel: ObservableObject {
         }
     }
 
-    private func shouldLoadPreview(
-        for metadata: tableMetadata
-    ) -> Bool {
+    private func shouldLoadPreview(for metadata: tableMetadata) -> Bool {
         switch metadata.classFile {
         case NKTypeClassFile.image.rawValue,
              NKTypeClassFile.audio.rawValue,
@@ -1259,31 +1211,19 @@ final class NCMediaViewerModel: ObservableObject {
         }
     }
 
-    private func setMetadata(
-        _ metadata: tableMetadata,
-        for ocId: String
-    ) {
+    private func setMetadata(_ metadata: tableMetadata, for ocId: String) {
         updatePage(ocId: ocId) { page in
             page.metadata = metadata
         }
     }
 
-    private func setState(
-        _ state: NCMediaViewerPageState,
-        for ocId: String
-    ) {
+    private func setState(_ state: NCMediaViewerPageState, for ocId: String) {
         updatePage(ocId: ocId) { page in
             page.state = state
         }
     }
 
-    private func setReadyState(
-        metadata: tableMetadata,
-        previewURL: URL?,
-        localURL: URL,
-        for ocId: String,
-        index: Int
-    ) async {
+    private func setReadyState(metadata: tableMetadata, previewURL: URL?, localURL: URL, for ocId: String, index: Int) async {
         if metadata.classFile == NKTypeClassFile.image.rawValue {
             var livePhotoURL: URL?
 
@@ -1336,13 +1276,7 @@ final class NCMediaViewerModel: ObservableObject {
         }
     }
 
-    private func loadAudioPreviewIfNeeded(
-        metadata: tableMetadata,
-        localURL: URL,
-        currentPreviewURL: URL?,
-        for ocId: String,
-        index: Int
-    ) async {
+    private func loadAudioPreviewIfNeeded(metadata: tableMetadata, localURL: URL, currentPreviewURL: URL?, for ocId: String, index: Int) async {
         guard currentPreviewURL == nil else {
             return
         }
@@ -1371,11 +1305,7 @@ final class NCMediaViewerModel: ObservableObject {
         )
     }
 
-    private func updatePage(
-        ocId: String,
-        publishRevision: Bool = true,
-        mutation: (NCMediaViewerPageModel) -> Void
-    ) {
+    private func updatePage(ocId: String, publishRevision: Bool = true, mutation: (NCMediaViewerPageModel) -> Void) {
         guard let index = ocIds.firstIndex(of: ocId) else {
             return
         }
@@ -1402,10 +1332,7 @@ final class NCMediaViewerModel: ObservableObject {
         }
     }
 
-    private func setThumbnailMetadata(
-        _ metadata: tableMetadata,
-        for ocId: String
-    ) {
+    private func setThumbnailMetadata(_ metadata: tableMetadata, for ocId: String) {
         updatePage(
             ocId: ocId,
             publishRevision: false
@@ -1414,10 +1341,7 @@ final class NCMediaViewerModel: ObservableObject {
         }
     }
 
-    private func clearLoadingTaskIfCurrent(
-        ocId: String,
-        identifier: UUID
-    ) {
+    private func clearLoadingTaskIfCurrent(ocId: String, identifier: UUID) {
         guard loadingTasksByOcId[ocId]?.identifier == identifier else {
             return
         }

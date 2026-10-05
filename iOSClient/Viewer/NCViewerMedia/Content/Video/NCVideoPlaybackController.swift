@@ -55,32 +55,19 @@ final class NCVideoPlaybackController: ObservableObject {
 
     // MARK: - Public API
 
-    func isCurrentVideo(
-        ocId: String,
-        etag: String,
-        url: URL
-    ) -> Bool {
+    func isCurrentVideo(ocId: String, etag: String, url: URL) -> Bool {
         currentOcId == ocId &&
         currentEtag == etag &&
         currentURL == url
     }
     // Used for remote videos before the final playback URL is known.
-    func isCurrentVideo(
-        ocId: String,
-        etag: String
-    ) -> Bool {
+    func isCurrentVideo(ocId: String, etag: String) -> Bool {
         currentOcId == ocId &&
         currentEtag == etag &&
         currentURL != nil
     }
     // Reuses the current player when the requested video is already loaded.
-    func loadVideo(
-        metadata: tableMetadata,
-        url: URL,
-        fileName: String,
-        userAgent: String?,
-        httpHeaders: [String: String]
-    ) {
+    func loadVideo(metadata: tableMetadata, url: URL, fileName: String, userAgent: String?, httpHeaders: [String: String]) {
         if isSameLoadedVideo(
             metadata: metadata,
             url: url
@@ -207,12 +194,7 @@ final class NCVideoPlaybackController: ObservableObject {
 
     // MARK: - AVFoundation
 
-    private func prepareAVFoundation(
-        url: URL,
-        userAgent: String?,
-        httpHeaders: [String: String],
-        token: UUID
-    ) {
+    private func prepareAVFoundation(url: URL, userAgent: String?, httpHeaders: [String: String], token: UUID) {
         cancelAVProbeTasks()
 
         let assetOptions: [String: Any]? = httpHeaders.isEmpty
@@ -303,12 +285,7 @@ final class NCVideoPlaybackController: ObservableObject {
         }
     }
 
-    private func resolveWithAVFoundation(
-        url: URL,
-        player: AVPlayer,
-        item: AVPlayerItem,
-        token: UUID
-    ) {
+    private func resolveWithAVFoundation(url: URL, player: AVPlayer, item: AVPlayerItem, token: UUID) {
         guard loadToken == token,
               avProbePlayer === player,
               avProbeItem === item else {
@@ -328,11 +305,7 @@ final class NCVideoPlaybackController: ObservableObject {
 
     // MARK: - VLC
 
-    private func resolveWithVLC(
-        url: URL,
-        userAgent: String?,
-        token: UUID
-    ) {
+    private func resolveWithVLC(url: URL, userAgent: String?, token: UUID) {
         guard isCurrentLoad(
             url: url,
             token: token
@@ -372,19 +345,13 @@ final class NCVideoPlaybackController: ObservableObject {
         avProbeTimeoutTask = nil
     }
 
-    private func isSameLoadedVideo(
-        metadata: tableMetadata,
-        url: URL
-    ) -> Bool {
+    private func isSameLoadedVideo(metadata: tableMetadata, url: URL) -> Bool {
         currentOcId == metadata.ocId &&
         currentEtag == metadata.etag &&
         currentURL == url
     }
 
-    private func isCurrentLoad(
-        url: URL,
-        token: UUID
-    ) -> Bool {
+    private func isCurrentLoad(url: URL, token: UUID) -> Bool {
         loadToken == token && currentURL == url
     }
 
@@ -410,10 +377,7 @@ final class NCVideoPlaybackController: ObservableObject {
     }
 
     // Legacy formats go directly to VLC.
-    private func shouldUseVLCWithoutAVFoundation(
-        url: URL,
-        fileName: String
-    ) -> Bool {
+    private func shouldUseVLCWithoutAVFoundation(url: URL, fileName: String) -> Bool {
         let pathExtension = resolvedVideoExtension(
             url: url,
             fileName: fileName
@@ -432,10 +396,7 @@ final class NCVideoPlaybackController: ObservableObject {
         return legacyVideoExtensions.contains(pathExtension)
     }
 
-    private func resolvedVideoExtension(
-        url: URL,
-        fileName: String
-    ) -> String {
+    private func resolvedVideoExtension(url: URL, fileName: String) -> String {
         let metadataExtension = URL(fileURLWithPath: fileName)
             .pathExtension
             .lowercased()

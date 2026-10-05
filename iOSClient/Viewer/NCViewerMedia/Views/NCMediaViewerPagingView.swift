@@ -62,10 +62,7 @@ struct NCMediaViewerPagingView: UIViewRepresentable {
         return collectionView
     }
 
-    func updateUIView(
-        _ collectionView: NCMediaViewerCollectionView,
-        context: Context
-    ) {
+    func updateUIView(_ collectionView: NCMediaViewerCollectionView, context: Context) {
         context.coordinator.model = model
         context.coordinator.navigationBar = navigationBar
         context.coordinator.onVisibleMetadataChanged = onVisibleMetadataChanged
@@ -329,10 +326,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     }
 
     @discardableResult
-    private func scrollToIndex(
-        _ index: Int,
-        animated: Bool
-    ) -> Bool {
+    private func scrollToIndex(_ index: Int, animated: Bool) -> Bool {
         guard model.numberOfPages > 0 else {
             return false
         }
@@ -385,10 +379,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     }
 
     @discardableResult
-    private func jumpToIndex(
-        _ index: Int,
-        animated: Bool
-    ) -> Bool {
+    private func jumpToIndex(_ index: Int, animated: Bool) -> Bool {
         guard let collectionView else {
             return false
         }
@@ -446,10 +437,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     // MARK: - Page Navigation
 
     @discardableResult
-    private func moveToPage(
-        offset: Int,
-        shouldAutoPlay: Bool
-    ) -> Bool {
+    private func moveToPage(offset: Int, shouldAutoPlay: Bool) -> Bool {
         let targetIndex = model.selectedIndex + offset
 
         return moveToPage(
@@ -459,10 +447,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     }
 
     @discardableResult
-    private func moveToPage(
-        at targetIndex: Int,
-        shouldAutoPlay: Bool
-    ) -> Bool {
+    private func moveToPage(at targetIndex: Int, shouldAutoPlay: Bool) -> Bool {
         guard model.pageTransition.isIdle else {
             return false
         }
@@ -525,11 +510,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         return true
     }
 
-    private func moveToNextMediaOfSameType(
-        classFile: String,
-        after sourceIndex: Int,
-        completion: @escaping NCMediaPlaybackAdvanceCompletion
-    ) {
+    private func moveToNextMediaOfSameType(classFile: String, after sourceIndex: Int, completion: @escaping NCMediaPlaybackAdvanceCompletion) {
         Task { @MainActor [weak self] in
             guard let model = self?.model,
                   self?.collectionView != nil else {
@@ -669,17 +650,11 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
     // MARK: - UICollectionViewDataSource
 
-    func collectionView(
-        _ collectionView: UICollectionView,
-        numberOfItemsInSection section: Int
-    ) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         model.numberOfPages
     }
 
-    func collectionView(
-        _ collectionView: UICollectionView,
-        cellForItemAt indexPath: IndexPath
-    ) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: NCMediaViewerPagingCell.reuseIdentifier,
             for: indexPath
@@ -705,11 +680,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
     // MARK: - UICollectionViewDelegateFlowLayout
 
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath
-    ) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         collectionView.bounds.size
     }
 
@@ -734,11 +705,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         refreshVisibleCells()
     }
 
-    func scrollViewWillEndDragging(
-        _ scrollView: UIScrollView,
-        withVelocity velocity: CGPoint,
-        targetContentOffset: UnsafeMutablePointer<CGPoint>
-    ) {
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         guard isScrollGeometryStable(scrollView) else {
             return
         }
@@ -784,10 +751,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         )
     }
 
-    private func pageIndex(
-        forContentOffsetX contentOffsetX: CGFloat,
-        width: CGFloat
-    ) -> Int? {
+    private func pageIndex(forContentOffsetX contentOffsetX: CGFloat, width: CGFloat) -> Int? {
         guard width > 0 else {
             return nil
         }
@@ -842,10 +806,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         updateSelectedIndexFromScrollView(scrollView)
     }
 
-    func scrollViewDidEndDragging(
-        _ scrollView: UIScrollView,
-        willDecelerate decelerate: Bool
-    ) {
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
             updateSelectedIndexFromScrollView(scrollView)
         }

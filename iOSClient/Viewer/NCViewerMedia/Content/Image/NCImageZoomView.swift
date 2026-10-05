@@ -102,10 +102,7 @@ struct NCImageZoomView: UIViewRepresentable {
         return scrollView
     }
 
-    func updateUIView(
-        _ scrollView: NCZoomScrollView,
-        context: Context
-    ) {
+    func updateUIView(_ scrollView: NCZoomScrollView, context: Context) {
         guard let imageView = context.coordinator.imageView else {
             return
         }
@@ -213,11 +210,7 @@ struct NCImageZoomView: UIViewRepresentable {
             recordCurrentZoomState()
         }
 
-        func scrollViewDidEndZooming(
-            _ scrollView: UIScrollView,
-            with _: UIView?,
-            atScale _: CGFloat
-        ) {
+        func scrollViewDidEndZooming(_ scrollView: UIScrollView, with _: UIView?, atScale _: CGFloat) {
             guard !isRestoringZoomState else {
                 return
             }
@@ -333,10 +326,7 @@ struct NCImageZoomView: UIViewRepresentable {
             )
         }
 
-        private func layoutImageViewAtMinimumZoom(
-            imageSize: CGSize,
-            boundsSize: CGSize
-        ) {
+        private func layoutImageViewAtMinimumZoom(imageSize: CGSize, boundsSize: CGSize) {
             guard let scrollView,
                   let imageView else {
                 return
@@ -431,20 +421,14 @@ struct NCImageZoomView: UIViewRepresentable {
             }
         }
 
-        private func isValidLayout(
-            imageSize: CGSize,
-            boundsSize: CGSize
-        ) -> Bool {
+        private func isValidLayout(imageSize: CGSize, boundsSize: CGSize) -> Bool {
             imageSize.width > 0 &&
             imageSize.height > 0 &&
             boundsSize.width > 0 &&
             boundsSize.height > 0
         }
 
-        private func fittedImageSize(
-            imageSize: CGSize,
-            containerSize: CGSize
-        ) -> CGSize {
+        private func fittedImageSize(imageSize: CGSize, containerSize: CGSize) -> CGSize {
             let widthRatio = containerSize.width / imageSize.width
             let heightRatio = containerSize.height / imageSize.height
             let ratio = min(widthRatio, heightRatio)
@@ -455,10 +439,7 @@ struct NCImageZoomView: UIViewRepresentable {
             )
         }
 
-        private func clampedContentOffset(
-            _ proposedContentOffset: CGPoint,
-            in scrollView: UIScrollView
-        ) -> CGPoint {
+        private func clampedContentOffset(_ proposedContentOffset: CGPoint, in scrollView: UIScrollView) -> CGPoint {
             let minimumX = -scrollView.contentInset.left
             let minimumY = -scrollView.contentInset.top
             let maximumX = max(
@@ -531,11 +512,7 @@ struct NCImageZoomView: UIViewRepresentable {
     // MARK: - Image Analysis
     // Rebuild analysis to avoid stale VisionKit results after image changes.
     @MainActor
-    private func analyzeImageIfAvailable(
-        image: UIImage,
-        imageView: UIImageView,
-        coordinator: Coordinator
-    ) {
+    private func analyzeImageIfAvailable(image: UIImage, imageView: UIImageView, coordinator: Coordinator) {
         guard ImageAnalyzer.isSupported else {
             return
         }

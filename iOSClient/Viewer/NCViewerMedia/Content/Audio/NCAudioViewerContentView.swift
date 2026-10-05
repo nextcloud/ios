@@ -262,11 +262,7 @@ struct NCAudioViewerContentView: View {
         }
     }
 
-    private func audioPlaybackOptionButton(
-        systemName: String,
-        accessibilityLabel: String,
-        action: @escaping () -> Void
-    ) -> some View {
+    private func audioPlaybackOptionButton(systemName: String, accessibilityLabel: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: systemName)
                 .font(.system(size: 17, weight: .regular))
@@ -376,16 +372,11 @@ struct NCAudioViewerContentView: View {
 
 private extension View {
     @ViewBuilder
-    func audioControlGlassBackground<BackgroundShape: SwiftUI.Shape>(
-        shape: BackgroundShape
-    ) -> some View {
+    func audioControlGlassBackground<BackgroundShape: SwiftUI.Shape>(shape: BackgroundShape) -> some View {
         if #available(iOS 26.0, *) {
-            self
-                .glassEffect(.regular.interactive(), in: shape)
+            self.glassEffect(.regular.interactive(), in: shape)
         } else {
-            self
-                .background(.regularMaterial)
-                .clipShape(shape)
+            self.background(.regularMaterial).clipShape(shape)
         }
     }
 }
@@ -431,6 +422,7 @@ final class NCAudioViewerModel: ObservableObject {
     // MARK: - Private State
 
     private var player: AVPlayer?
+    private var playbackTask: Task<Void, Never>?
     private var timeObserver: Any?
     private var endObserver: NSObjectProtocol?
     private var currentURL: URL?
@@ -440,10 +432,7 @@ final class NCAudioViewerModel: ObservableObject {
 
     // MARK: - Public API
 
-    func configurePlaybackCompletion(
-        options: NCMediaPlaybackOptions,
-        onPlayNextMedia: @escaping NCMediaPlaybackAdvanceRequest
-    ) {
+    func configurePlaybackCompletion(options: NCMediaPlaybackOptions, onPlayNextMedia: @escaping NCMediaPlaybackAdvanceRequest) {
         playbackOptions = options
         self.onPlayNextMedia = onPlayNextMedia
     }
@@ -458,8 +447,6 @@ final class NCAudioViewerModel: ObservableObject {
         currentURL = url
         loadedURL = url
 
-        configureAudioSession()
-
         let asset = AVURLAsset(url: url)
         let item = AVPlayerItem(asset: asset)
         let player = AVPlayer(playerItem: item)
@@ -470,6 +457,11 @@ final class NCAudioViewerModel: ObservableObject {
 
         addTimeObserver(to: player)
         addEndObserver(for: item, player: player)
+
+        _ = await configureAudioSession()
+        guard self.player === player else {
+            return
+        }
 
         Task { [weak self] in
             let loadedDuration: Double
@@ -511,10 +503,25 @@ final class NCAudioViewerModel: ObservableObject {
             seek(to: 0)
         }
 
-        configureAudioSession()
-
-        player.play()
+        playbackTask?.cancel()
         isPlaying = true
+        playbackTask = Task { [weak self] in
+            guard let self else {
+                return
+            }
+
+            let activated = await configureAudioSession()
+            guard !Task.isCancelled, self.player === player, isPlaying else {
+                return
+            }
+
+            guard activated else {
+                isPlaying = false
+                return
+            }
+
+            player.play()
+        }
     }
 
     func togglePlayback() {
@@ -529,7 +536,7 @@ final class NCAudioViewerModel: ObservableObject {
         seek(to: 0)
 
         if isPlaying {
-            player?.play()
+            play()
         }
     }
 
@@ -558,11 +565,16 @@ final class NCAudioViewerModel: ObservableObject {
     }
 
     func pause() {
+        playbackTask?.cancel()
+        playbackTask = nil
         player?.pause()
         isPlaying = false
     }
 
     func stop() {
+        playbackTask?.cancel()
+        playbackTask = nil
+
         if let player {
             player.pause()
         }
@@ -588,15 +600,28 @@ final class NCAudioViewerModel: ObservableObject {
 
     // MARK: - Private
 
-    private func configureAudioSession() {
+    private func configureAudioSession() async -> Bool {
         do {
-            try AVAudioSession.sharedInstance().setCategory(
-                .playback,
-                mode: .default,
-                options: []
-            )
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                DispatchQueue.global(qos: .userInitiated).async {
+                    do {
+                        let session = AVAudioSession.sharedInstance()
+                        try session.setCategory(.playback, mode: .default, options: [])
+                        if #unavailable(iOS 27.0) {
+                            try session.setActive(true)
+                        }
+                        continuation.resume()
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+                }
+            }
 
-            try AVAudioSession.sharedInstance().setActive(true)
+            if #available(iOS 27.0, *) {
+                return try await AVAudioSession.sharedInstance().activate(options: [])
+            }
+
+            return true
         } catch {
             nkLog(
                 tag: NCGlobal.shared.logTagViewer,
@@ -604,6 +629,7 @@ final class NCAudioViewerModel: ObservableObject {
                 message: "AUDIO session error: \(error.localizedDescription)",
                 consoleOnly: true
             )
+            return false
         }
     }
 
@@ -631,10 +657,7 @@ final class NCAudioViewerModel: ObservableObject {
         }
     }
 
-    private func addEndObserver(
-        for item: AVPlayerItem,
-        player: AVPlayer
-    ) {
+    private func addEndObserver(for item: AVPlayerItem, player: AVPlayer) {
         endObserver = NotificationCenter.default.addObserver(
             forName: AVPlayerItem.didPlayToEndTimeNotification,
             object: item,
