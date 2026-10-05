@@ -30,20 +30,6 @@
 			<string>佇列中有 %d 個檔案</string>
 		</dict>
 	</dict>
-	<key>_focused_auto_upload_items_left_</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@items@</string>
-		<key>items</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>剩餘 %d 個項目</string>
-		</dict>
-	</dict>
 	<key>_focused_auto_upload_photos_to_back_up_</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
