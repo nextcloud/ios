@@ -26,10 +26,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>%d file in queue</string>
 			<key>other</key>
-			<string>%d files in queue</string>
+			<string>佇列中有 %d 個檔案</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_items_left_</key>
