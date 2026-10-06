@@ -168,8 +168,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/marinofaggiana/LucidBanner",
       "state" : {
-        "revision" : "d7ea11cac476f32f63e0ad60f393bc7937b1d019",
-        "version" : "0.7.1"
+        "revision" : "408af8b2ff2451f055ff17042d8b9fb5c822d5fd",
+        "version" : "0.8.0"
       }
     },
     {
