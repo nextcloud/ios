@@ -91,8 +91,6 @@ final class NCVideoPlaybackController: ObservableObject {
             return
         }
 
-        configureAudioSession()
-
         if NCPreferences().alwaysUseVLCForVideo(account: metadata.account, ocId: metadata.ocId) {
             resolveWithVLC(
                 url: url,
@@ -357,22 +355,31 @@ final class NCVideoPlaybackController: ObservableObject {
 
     // MARK: - Private Helpers
 
-    private func configureAudioSession() {
+    static func configureAudioSession() async -> Bool {
         do {
-            try AVAudioSession.sharedInstance().setCategory(
-                .playback,
-                mode: .moviePlayback,
-                options: []
-            )
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                DispatchQueue.global(qos: .userInitiated).async {
+                    do {
+                        let session = AVAudioSession.sharedInstance()
+                        try session.setCategory(.playback, mode: .moviePlayback, options: [])
+                        if #unavailable(iOS 27.0) {
+                            try session.setActive(true)
+                        }
+                        continuation.resume()
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+                }
+            }
 
-            try AVAudioSession.sharedInstance().setActive(true)
+            guard !Task.isCancelled else { return false }
+            if #available(iOS 27.0, *) {
+                return try await AVAudioSession.sharedInstance().activate(options: [])
+            }
+            return true
         } catch {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .error,
-                message: "VIDEO audio session error: \(error.localizedDescription)",
-                consoleOnly: true
-            )
+            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO audio session error: \(error.localizedDescription)", consoleOnly: true)
+            return false
         }
     }
 

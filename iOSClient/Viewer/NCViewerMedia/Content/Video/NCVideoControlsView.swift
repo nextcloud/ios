@@ -264,7 +264,7 @@ final class NCVideoControlsView: UIView {
                 navigationBar.bounds,
                 to: self
             )
-            topOffset = navigationFrame.maxY
+            topOffset = max(safeAreaInsets.top, navigationFrame.maxY)
         } else {
             topOffset = safeAreaInsets.top
         }

@@ -165,8 +165,17 @@ extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
     }
 
     func videoControlsDidTapPlayPause(_ controlsView: NCVideoControlsView) {
+        if isPlaybackRequested {
+            isPlaybackRequested = false
+            player.pause()
+            updatePlayPauseButton()
+            stopControlsHideTimer()
+            return
+        }
+
         switch player.timeControlStatus {
         case .playing:
+            isPlaybackRequested = false
             player.pause()
 
         case .paused,
@@ -177,10 +186,10 @@ extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
                 player.seek(to: .zero)
             }
 
-            player.play()
+            playWhenAudioSessionIsReady()
 
         @unknown default:
-            player.play()
+            playWhenAudioSessionIsReady()
         }
 
         updatePlayPauseButton()
