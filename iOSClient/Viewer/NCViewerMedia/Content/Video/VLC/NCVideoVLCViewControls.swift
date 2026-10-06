@@ -201,7 +201,7 @@ extension NCVideoVLCViewController: NCVideoControlsViewDelegate {
     func videoControlsDidTapPlayPause(_ controlsView: NCVideoControlsView) {
         showControls(animated: true)
 
-        if mediaPlayer.isPlaying || mediaPlayer.state == .playing {
+        if mediaPlayer.isPlaying || mediaPlayer.state == .playing || isPlaybackRequested {
             isPlaybackRequested = false
             mediaPlayer.pause()
             updatePlayPauseButton()
@@ -213,7 +213,7 @@ extension NCVideoVLCViewController: NCVideoControlsViewDelegate {
         } else {
             isPlaybackRequested = true
             updatePlayPauseButton()
-            mediaPlayer.play()
+            playWhenAudioSessionIsReady()
             startProgressTimer()
             scheduleControlsHide()
         }

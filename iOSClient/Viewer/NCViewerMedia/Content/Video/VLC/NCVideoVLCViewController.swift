@@ -41,6 +41,12 @@ final class NCVideoVLCViewController: UIViewController {
 
     private let floatingTitleView = NCMediaViewerFloatingTitleView()
 
+    private lazy var moreNavigationItem = NCContextMenuViewer.mediaNavigationItem(
+        viewController: self,
+        metadataProvider: { [weak self] in self?.metadata },
+        controllerProvider: { [weak self] in self?.contextMenuController }
+    )
+
     private lazy var floatingTitleDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = .current
@@ -57,6 +63,7 @@ final class NCVideoVLCViewController: UIViewController {
     private var hasEnteredPlaybackPipeline = false
     private var hasReportedPlaybackError = false
     private var playbackStartupTimeoutTask: Task<Void, Never>?
+    private var audioSessionTask: Task<Void, Never>?
     private var stopCompletions: [() -> Void] = []
 
     internal var progressTimer: Timer?
@@ -113,6 +120,7 @@ final class NCVideoVLCViewController: UIViewController {
     }
 
     deinit {
+        audioSessionTask?.cancel()
         playbackStartupTimeoutTask?.cancel()
         stopControlsHideTimer()
         stopProgressTimer()
@@ -173,7 +181,6 @@ final class NCVideoVLCViewController: UIViewController {
 
         configureNavigationItem()
         updateTitleLabel(metadata: metadata)
-        configureAudioSession()
         mediaPlayer.delegate = self
         configureSwipeGestures()
         configureTapGesture()
@@ -283,6 +290,15 @@ final class NCVideoVLCViewController: UIViewController {
             target: self,
             action: #selector(closeTapped)
         )
+
+        navigationItem.rightBarButtonItem = moreNavigationItem
+    }
+
+    func updateMetadata(_ metadata: tableMetadata) {
+        guard self.metadata.ocId == metadata.ocId, self.metadata.account == metadata.account else { return }
+
+        self.metadata = metadata
+        updateTitleLabel(metadata: metadata)
     }
 
     private func updateTitleLabel(metadata: tableMetadata) {
@@ -453,8 +469,7 @@ final class NCVideoVLCViewController: UIViewController {
 
         if shouldAutoPlayOnStart {
             logPlaybackRequest()
-            mediaPlayer.play()
-            startPlaybackStartupTimeout()
+            playWhenAudioSessionIsReady()
         }
 
         updatePlayPauseButton()
@@ -479,6 +494,10 @@ final class NCVideoVLCViewController: UIViewController {
 
         guard !isStopInFlight else { return }
 
+        let wasActivatingAudioSession = audioSessionTask != nil
+        audioSessionTask?.cancel()
+        audioSessionTask = nil
+
         let hadPendingPlaybackRequest = isPlaybackRequested
         stopControlsHideTimer()
         stopProgressTimer()
@@ -488,7 +507,7 @@ final class NCVideoVLCViewController: UIViewController {
         playbackPresentationContext.reset()
 
         if mediaPlayer.media == nil ||
-            (mediaPlayer.state == .stopped && !hadPendingPlaybackRequest) {
+            (mediaPlayer.state == .stopped && (!hadPendingPlaybackRequest || wasActivatingAudioSession)) {
             finishStop()
             return
         }
@@ -547,8 +566,7 @@ final class NCVideoVLCViewController: UIViewController {
         }
 
         mediaPlayer.media = media
-        mediaPlayer.play()
-        startPlaybackStartupTimeout()
+        playWhenAudioSessionIsReady()
 
         startProgressTimer()
         scheduleControlsHide()
@@ -672,6 +690,11 @@ final class NCVideoVLCViewController: UIViewController {
             return
         }
 
+        // Setting the media can report stopped or paused while audio activation is still pending.
+        if audioSessionTask != nil, mediaPlayer.state == .stopped || mediaPlayer.state == .paused {
+            return
+        }
+
         switch mediaPlayer.state {
         case .opening,
              .buffering,
@@ -726,6 +749,10 @@ final class NCVideoVLCViewController: UIViewController {
         case .stopped:
             if isReplayFromBeginningRequested {
                 startReplayAfterStop()
+                return
+            }
+
+            if isPlaybackRequested, !hasEnteredPlaybackPipeline {
                 return
             }
 
@@ -1119,22 +1146,26 @@ final class NCVideoVLCViewController: UIViewController {
             || bottomControlsFrame.contains(location)
     }
 
-    private func configureAudioSession() {
-        do {
-            try AVAudioSession.sharedInstance().setCategory(
-                .playback,
-                mode: .moviePlayback,
-                options: []
-            )
+    func playWhenAudioSessionIsReady() {
+        guard mediaPlayer.media != nil else { return }
+        let playbackURL = url
 
-            try AVAudioSession.sharedInstance().setActive(true)
-        } catch {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .error,
-                message: "VIDEO VLC audio session error: \(error.localizedDescription)",
-                consoleOnly: true
-            )
+        audioSessionTask?.cancel()
+        isPlaybackRequested = true
+        startPlaybackStartupTimeout()
+        audioSessionTask = Task { @MainActor [weak self] in
+            let activated = await NCVideoPlaybackController.configureAudioSession()
+            guard !Task.isCancelled, let self else { return }
+            audioSessionTask = nil
+            guard isPlaybackRequested, url == playbackURL, mediaPlayer.media != nil else { return }
+            guard activated else {
+                reportPlaybackErrorIfNeeded()
+                return
+            }
+
+            mediaPlayer.play()
+            startPlaybackStartupTimeout()
+            updatePlayPauseButton()
         }
     }
 }

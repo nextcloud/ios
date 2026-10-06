@@ -129,7 +129,16 @@ struct NCVideoViewerContentView: View {
 
             scheduleAutoPlayIfNeeded()
         }
-        .onReceive(playback.$engine) { _ in
+        .onReceive(playback.$engine) { engine in
+            switch engine {
+            case .avFoundation:
+                presentedVLCURL = nil
+            case .vlc:
+                presentedAVPlayerURL = nil
+            case .loading, .failed:
+                presentedAVPlayerURL = nil
+                presentedVLCURL = nil
+            }
             scheduleAutoPlayIfNeeded()
         }
         .onReceive(NotificationCenter.default.publisher(for: .ncMediaViewerStopPlayback)) { _ in

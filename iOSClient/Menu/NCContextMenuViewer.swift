@@ -88,7 +88,14 @@ class NCContextMenuViewer: NSObject {
 
         if !webView,
            metadata.isRenameable {
-            menuElements.append(NCContextMenuActions.rename(metadata: metadata, presenter: viewController ?? controller, windowScene: windowScene))
+            menuElements.append(NCContextMenuActions.rename(
+                metadata: metadata,
+                presenter: viewController ?? controller,
+                windowScene: windowScene
+            ) { [weak viewController = self.viewController] renamedMetadata in
+                (viewController as? NCVideoAVPlayerViewController)?.updateMetadata(renamedMetadata)
+                (viewController as? NCVideoVLCViewController)?.updateMetadata(renamedMetadata)
+            })
         }
 
         if !webView,
@@ -116,7 +123,7 @@ class NCContextMenuViewer: NSObject {
         if !webView,
            metadata.isDeletable {
             menuElements.append(UIMenu(options: .displayInline, children: [
-                NCContextMenuActions.delete(metadatas: [metadata], controller: controller)
+                NCContextMenuActions.delete(metadatas: [metadata], controller: controller, presentViewController: viewController)
             ]))
         }
 
@@ -131,6 +138,103 @@ class NCContextMenuViewer: NSObject {
         }
 
         return UIMenu(title: "", children: finalMenuElements)
+    }
+
+    static func mediaNavigationItem(
+        viewController: UIViewController,
+        metadataProvider: @escaping () -> tableMetadata?,
+        controllerProvider: @escaping () -> NCMainTabBarController?
+    ) -> UIBarButtonItem {
+        let item = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), primaryAction: nil, menu: nil)
+        item.menu = UIMenu(children: [
+            UIDeferredMenuElement.uncached { [weak viewController, weak item] completion in
+                guard let viewController, let metadata = metadataProvider() else {
+                    completion([])
+                    return
+                }
+
+                let contextMenu = NCContextMenuViewer(metadata: metadata, controller: controllerProvider(), viewController: viewController, webView: false, sender: item)
+                completion(contextMenu.mediaMenu().children)
+            }
+        ])
+        return item
+    }
+
+    private func mediaMenu() -> UIMenu {
+        var children = viewMenu()?.children ?? []
+        if let videoPlayerMenu = makeVideoPlayerMenu() {
+            children.append(videoPlayerMenu)
+        }
+        return UIMenu(children: children)
+    }
+
+    private func makeVideoPlayerMenu() -> UIMenu? {
+        let metadata = self.metadata
+        guard metadata.classFile == NKTypeClassFile.video.rawValue else {
+            return nil
+        }
+
+        let playback = NCVideoPlaybackController.shared
+
+        guard playback.isCurrentVideo(
+            ocId: metadata.ocId,
+            etag: metadata.etag
+        ) else {
+            return nil
+        }
+
+        let alwaysUseVLC = NCPreferences().alwaysUseVLCForVideo(
+            account: metadata.account,
+            ocId: metadata.ocId
+        )
+
+        switch playback.engine {
+        case .avFoundation, .vlc:
+            break
+        case .loading, .failed:
+            return nil
+        }
+
+        let alwaysUseVLCAction = UIAction(
+            title: NSLocalizedString("_always_play_with_vlc_", comment: ""),
+            image: UIImage(named: "Vlc-Logo")?.withRenderingMode(.alwaysTemplate),
+            state: alwaysUseVLC ? .on : .off
+        ) { [weak viewController = self.viewController] _ in
+            NCPreferences().setAlwaysUseVLCForVideo(
+                !alwaysUseVLC,
+                account: metadata.account,
+                ocId: metadata.ocId
+            )
+
+            if !alwaysUseVLC, case .vlc = playback.engine {
+                return
+            }
+
+            let changePlayer = {
+                guard playback.isCurrentVideo(ocId: metadata.ocId, etag: metadata.etag) else { return }
+                if alwaysUseVLC {
+                    playback.retryAVFoundation()
+                } else {
+                    playback.switchToVLC()
+                }
+            }
+
+            if viewController is NCVideoAVPlayerViewController {
+                NCVideoAVPlayerPresenter.dismissCurrent(completion: changePlayer)
+            } else if viewController is NCVideoVLCViewController {
+                NCVideoVLCPresenter.dismissCurrent(completion: changePlayer)
+            } else {
+                changePlayer()
+            }
+        }
+
+        return UIMenu(
+            title: "",
+            options: .displayInline,
+            children: [
+                alwaysUseVLCAction
+            ]
+        )
     }
 
     // MARK: - Private Action Makers
