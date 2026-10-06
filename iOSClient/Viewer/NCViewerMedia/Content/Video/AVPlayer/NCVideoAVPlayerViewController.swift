@@ -104,10 +104,16 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     internal func setNavigationBarVisible(_ isVisible: Bool, animated: Bool) {
-        navigationController?.setNavigationBarHidden(
+        guard let navigationController else { return }
+        navigationController.setNavigationBarHidden(
             !isVisible,
             animated: animated
         )
+        navigationController.view.layoutIfNeeded()
+        updateControlsNavigationBar()
+        navigationController.transitionCoordinator?.animate(alongsideTransition: nil) { [weak self] _ in
+            self?.updateControlsNavigationBar()
+        }
     }
 
     // MARK: - Init
