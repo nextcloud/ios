@@ -38,4 +38,31 @@ struct NCAutoUploadDateTests {
         let decoded = try JSONDecoder().decode(tableAccountCodable.self, from: oldData)
         #expect(tableAccount(codableObject: decoded).autoUploadSinceDate == account.autoUploadSinceDate)
     }
+
+    @Test("Whole-library selection survives backup with a nonempty progress date")
+    func wholeLibrarySelectionWithProgress() throws {
+        let account = tableAccount()
+        account.autoUploadAllPhotos = true
+        account.autoUploadSinceDate = Date(timeIntervalSince1970: 100)
+        let data = try JSONEncoder().encode(account.tableAccountToCodable())
+        let decoded = try JSONDecoder().decode(tableAccountCodable.self, from: data)
+        let restored = tableAccount(codableObject: decoded)
+        #expect(restored.autoUploadAllPhotos)
+        #expect(restored.autoUploadSinceDate == account.autoUploadSinceDate)
+    }
+
+    @Test("Older backups infer the library selection from their existing date")
+    func previousBackupSelectionCompatibility() throws {
+        let dates: [Date?] = [nil, Date(timeIntervalSince1970: 100)]
+        for date in dates {
+            let account = tableAccount()
+            account.autoUploadSinceDate = date
+            let data = try JSONEncoder().encode(account.tableAccountToCodable())
+            var json = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
+            json.removeValue(forKey: "autoUploadAllPhotos")
+            let oldData = try JSONSerialization.data(withJSONObject: json)
+            let decoded = try JSONDecoder().decode(tableAccountCodable.self, from: oldData)
+            #expect(tableAccount(codableObject: decoded).autoUploadAllPhotos == (date == nil))
+        }
+    }
 }

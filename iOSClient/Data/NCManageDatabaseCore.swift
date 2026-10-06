@@ -72,6 +72,14 @@ final class NCManageDatabaseCore {
             }
         }
 
+        if oldSchemaVersion < 423 {
+            migration.enumerateObjects(ofType: tableAccount.className()) { _, newObject in
+                guard let newObject else { return }
+                let sinceDate = newObject.value("autoUploadSinceDate", as: Date.self)
+                newObject.setValueSafely(sinceDate == nil, for: "autoUploadAllPhotos")
+            }
+        }
+
         //
         // AUTOMATIC / DEFENSIVE MIGRATIONS
         //

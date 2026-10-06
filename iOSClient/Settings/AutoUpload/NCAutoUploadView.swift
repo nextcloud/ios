@@ -539,7 +539,7 @@ struct NCAutoUploadView: View {
             .accessibilityAddTraits(model.autoUploadTimespan == timespan ? .isSelected : [])
         }
 
-        if model.autoUploadSinceDate != nil {
+        if model.autoUploadTimespan == .fromDate {
             VStack(alignment: .leading, spacing: 4) {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("_autoupload_start_date_")
@@ -582,7 +582,7 @@ struct NCAutoUploadView: View {
             return NSLocalizedString("_autoupload_force_reupload_footer_", comment: "")
         }
         let destination = model.returnPath()
-        if model.autoUploadSinceDate != nil {
+        if model.autoUploadTimespan == .fromDate {
             return String(format: NSLocalizedString("_autoupload_date_range_footer_", comment: ""), destination)
         }
         return String(format: NSLocalizedString("_autoupload_whole_library_description_", comment: ""), destination)

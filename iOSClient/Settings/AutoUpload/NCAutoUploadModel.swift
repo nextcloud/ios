@@ -36,7 +36,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// The incremental restart date, editable while Auto Upload is stopped.
     @Published var autoUploadSinceDate: Date?
     @Published var autoUploadForceReupload = false
-    var autoUploadTimespan: AutoUploadTimespan { autoUploadSinceDate == nil ? .allPhotos : .fromDate }
+    @Published var autoUploadAllPhotos = false
+    var autoUploadTimespan: AutoUploadTimespan { autoUploadAllPhotos ? .allPhotos : .fromDate }
     /// Whether Photos permissions have been granted or not.
     @Published var photosPermissionsGranted = true
     /// Whether `Always` location authorization has been granted, enabling background location-based auto upload.
@@ -96,6 +97,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             autoUploadCreateSubfolder = tableAccount.autoUploadCreateSubfolder
             autoUploadSubfolderGranularity = Granularity(rawValue: tableAccount.autoUploadSubfolderGranularity) ?? .monthly
             autoUploadSinceDate = tableAccount.autoUploadSinceDate
+            autoUploadAllPhotos = tableAccount.autoUploadAllPhotos
             autoUploadForceReupload = tableAccount.autoUploadForceReupload
         }
 
@@ -154,10 +156,22 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         }
     }
 
-    /// Starts from the whole library or the current incremental restart date.
+    /// Changes the selection without discarding progress before Start is pressed.
     @MainActor
     func handleAutoUploadTimespan(_ timespan: AutoUploadTimespan) {
-        handleAutoUploadSinceDate(timespan == .allPhotos ? nil : autoUploadSinceDate ?? Date.now)
+        guard !isChangingAutoUpload, !autoUploadStart else { return }
+        isChangingAutoUpload = true
+        let accountIdentifier = session.account
+        autoUploadAllPhotos = timespan == .allPhotos
+        let allPhotos = autoUploadAllPhotos
+        Task {
+            defer { isChangingAutoUpload = false }
+            await database.setAutoUploadAllPhotosAsync(allPhotos, account: accountIdentifier)
+            if let account = await database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", accountIdentifier)) {
+                autoUploadSinceDate = account.autoUploadSinceDate
+                autoUploadAllPhotos = account.autoUploadAllPhotos
+            }
+        }
     }
 
     /// Saves a new incremental restart date only while Auto Upload is stopped.
@@ -167,6 +181,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         isChangingAutoUpload = true
         let accountIdentifier = session.account
         autoUploadSinceDate = date
+        autoUploadAllPhotos = date == nil
         Task {
             defer { isChangingAutoUpload = false }
             await database.setAutoUploadSinceDateAsync(date, account: accountIdentifier)
@@ -245,6 +260,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
                     return
                 }
 
+                autoUploadSinceDate = updatedAccount.autoUploadSinceDate
                 // Stop remains available during the legacy initial scan.
                 isChangingAutoUpload = false
                 _ = await NCAutoUpload.shared.startManualAutoUploadForAlbums(
