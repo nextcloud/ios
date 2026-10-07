@@ -29,15 +29,6 @@
       }
     },
     {
-      "identity" : "codescanner",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/twostraws/CodeScanner.git",
-      "state" : {
-        "revision" : "5e886430238944c7200fc9e10dbf2d9550dba865",
-        "version" : "2.5.2"
-      }
-    },
-    {
       "identity" : "dropdown",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/AssistoLab/DropDown",
@@ -204,8 +195,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nextcloud/NextcloudKit",
       "state" : {
-        "branch" : "main",
-        "revision" : "053d6eb161a7024e00e1064ab2825cad3e9317a2"
+        "revision" : "e6650c7c5c40b2ac6f87571cb793cfe16279d6d0",
+        "version" : "1.0.0"
       }
     },
     {
