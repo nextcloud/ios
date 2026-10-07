@@ -13,9 +13,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d zostávajúce umožnené sťahovanie</string>
+			<string>%d zostávajúce umožnené stiahnutie</string>
 			<key>few</key>
-			<string>%d zostávajúce umožnené sťahovania</string>
+			<string>%d zostávajúcich umožnených sťahovaní</string>
 			<key>many</key>
 			<string>%d zostávajúcich umožnených sťahovaní</string>
 			<key>other</key>
@@ -35,7 +35,7 @@
 			<key>one</key>
 			<string>%d súbor v poradí</string>
 			<key>few</key>
-			<string>%d súbory v poradí</string>
+			<string>%d súborov v poradí</string>
 			<key>many</key>
 			<string>%d súborov v poradí</string>
 			<key>other</key>
