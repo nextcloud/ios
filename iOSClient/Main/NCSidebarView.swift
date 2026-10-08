@@ -7,8 +7,14 @@ import SwiftUI
 /// A leading overlay with glass buttons kept inside the panel.
 @MainActor
 struct NCSidebarView: View {
+    let account: String
+    let showsNotifications: Bool
     let onClose: () -> Void
     let openSettings: () -> Void
+    let openAssistant: () -> Void
+    let openNotifications: () -> Void
+    let openTransfers: () -> Void
+    @State private var showsAssistant = false
     @State private var isVisible = false
     @State private var isClosing = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -26,6 +32,22 @@ struct NCSidebarView: View {
                 VStack {
                     sidebarHeader
                         .padding()
+                    Button {
+                        close(then: openTransfers)
+                    } label: {
+                        Label {
+                            Text("_transfers_")
+                        } icon: {
+                            Image(systemName: "arrow.left.arrow.right.circle.fill")
+                                .font(.title)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal)
+                    .accessibilityIdentifier("sidebarTransfers")
                     Spacer()
                 }
                 .frame(width: width)
@@ -55,6 +77,11 @@ struct NCSidebarView: View {
                     isVisible = true
                 }
             }
+        }
+        .task(id: account) {
+            let capabilities = await NCManageDatabase.shared.getCapabilities(account: account)
+            guard !Task.isCancelled else { return }
+            showsAssistant = capabilities?.assistantEnabled ?? false
         }
     }
 
@@ -90,6 +117,30 @@ struct NCSidebarView: View {
             .accessibilityIdentifier("sidebarSettings")
 
             Spacer()
+
+            if showsAssistant {
+                Button {
+                    close(then: openAssistant)
+                } label: {
+                    Label("_assistant_", systemImage: "sparkles")
+                        .labelStyle(.iconOnly)
+                        .font(.title2)
+                        .frame(width: 32, height: 32)
+                }
+                .accessibilityIdentifier("sidebarAssistant")
+            }
+
+            if showsNotifications {
+                Button {
+                    close(then: openNotifications)
+                } label: {
+                    Label("_notifications_", systemImage: "bell.fill")
+                        .labelStyle(.iconOnly)
+                        .font(.title2)
+                        .frame(width: 32, height: 32)
+                }
+                .accessibilityIdentifier("sidebarNotifications")
+            }
 
             Button {
                 close(then: onClose)

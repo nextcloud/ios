@@ -32,18 +32,7 @@ class NCMediaNavigationController: NCMainNavigationController {
     }
 
     private func mediaTrailingItemGroups() async {
-        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         var desiredItems: [UIBarButtonItem] = []
-
-        if controller?.availableNotifications ?? false {
-            desiredItems.append(notificationsButtonItem)
-        }
-
-        if capabilities.assistantEnabled {
-            desiredItems.append(assistantButtonItem)
-        }
-
-        desiredItems.append(transfersButtonItem)
 
         if let optionMenu = await self.createOptionMenu() {
             setOptionMenu(optionMenu)

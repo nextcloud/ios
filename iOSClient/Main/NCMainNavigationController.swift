@@ -39,9 +39,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     var menuPlus: NCContextMenuPlus?
 
     let optionButtonTag = 100
-    let assistantButtonTag = 101
-    let notificationsButtonTag = 102
-    let transfersButtonTag = 103
 
     lazy var sidebarButtonItem: UIBarButtonItem = {
         let action = UIAction { [weak self] _ in
@@ -61,21 +58,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         item.tag = optionButtonTag
         return item
     }()
-    lazy var assistantButtonItem: UIBarButtonItem = {
-        let item = UIBarButtonItem()
-        item.tag = assistantButtonTag
-        return item
-    }()
-    lazy var notificationsButtonItem: UIBarButtonItem = {
-        let item = UIBarButtonItem()
-        item.tag = notificationsButtonTag
-        return item
-    }()
-    lazy var transfersButtonItem: UIBarButtonItem = {
-        let item = UIBarButtonItem()
-        item.tag = transfersButtonTag
-        return item
-    }()
 
     // MARK: - View Life Cycle
 
@@ -91,41 +73,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             optionButtonItem.tintColor = NCBrandColor.shared.iconImageColor
             setOptionMenu(await createOptionMenu())
         }
-
-        assistantButtonItem.primaryAction = UIAction(handler: { _ in
-            let inputModel = NCAssistantInputModel()
-            let assistant = NCAssistant(assistantModel: NCAssistantModel(controller: self.controller, inputModel: inputModel), chatModel: NCAssistantChatModel(controller: self.controller, inputModel: inputModel), conversationsModel: NCAssistantChatConversationsModel(controller: self.controller))
-            let hostingController = UIHostingController(rootView: assistant)
-            self.present(hostingController, animated: true, completion: nil)
-        })
-        assistantButtonItem.image = UIImage(systemName: "sparkles")
-        assistantButtonItem.title = NSLocalizedString("_assistant_", comment: "")
-        assistantButtonItem.tintColor = NCBrandColor.shared.iconImageColor
-
-        notificationsButtonItem.primaryAction = UIAction(handler: { _ in
-            if let navigationController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? UINavigationController,
-               let viewController = navigationController.topViewController as? NCNotification {
-                viewController.modalPresentationStyle = .pageSheet
-                viewController.session = self.session
-                self.present(navigationController, animated: true, completion: nil)
-            }
-        })
-        notificationsButtonItem.image = UIImage(systemName: "bell.fill")
-        notificationsButtonItem.title = NSLocalizedString("_notifications_", comment: "")
-        notificationsButtonItem.tintColor = NCBrandColor.shared.iconImageColor
-
-        transfersButtonItem.primaryAction = UIAction(handler: { _ in
-            let rootView = TransfersView(session: self.session, onClose: { [weak self = self] in
-                self?.dismiss(animated: true)
-            })
-            let hosting = UIHostingController(rootView: rootView)
-            hosting.modalPresentationStyle = .pageSheet
-
-            self.present(hosting, animated: true)
-        })
-        transfersButtonItem.image = UIImage(systemName: "arrow.left.arrow.right.circle.fill")
-        transfersButtonItem.title = NSLocalizedString("_transfers_", comment: "")
-        transfersButtonItem.tintColor = NCBrandColor.shared.iconImageColor
 
         // PLUS BUTTON MENU
         let buttonSize: CGFloat = 44
@@ -316,23 +263,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             return
         }
 
-        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
-
-        // ---------------------------------------------------------
-        // Build desired items
-        // ---------------------------------------------------------
-
+        // Keep screen-specific options in the navigation bar.
         var desiredItems: [UIBarButtonItem] = []
-
-        if controller?.availableNotifications ?? false {
-            desiredItems.append(notificationsButtonItem)
-        }
-
-        if capabilities.assistantEnabled {
-            desiredItems.append(assistantButtonItem)
-        }
-
-        desiredItems.append(transfersButtonItem)
 
         if let optionMenu = await createOptionMenu() {
             setOptionMenu(optionMenu)
@@ -480,16 +412,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     /// - Parameter color: The UIColor to be applied to all right bar button items.
     @MainActor
     func updateRightBarButtonsTint(to color: UIColor) {
-        let rightItems: [UIBarButtonItem] = [
-            optionButtonItem,
-            assistantButtonItem,
-            notificationsButtonItem,
-            transfersButtonItem
-        ]
-
-        for item in rightItems {
-            applyTint(item, color: color)
-        }
+        applyTint(optionButtonItem, color: color)
 
         if let visibleItems = topViewController?.navigationItem.rightBarButtonItems {
             for item in visibleItems {
