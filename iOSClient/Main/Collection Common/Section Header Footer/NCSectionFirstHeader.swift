@@ -106,7 +106,10 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
     private func updateRecommendationsLayout() {
         guard let viewController else { return }
 
-        let safeAreaInsets = viewController.view.safeAreaInsets
+        // In an expanded split, extending into the leading unsafe area can put the
+        // carousel underneath the sidebar. Keep it within the parent collection instead.
+        let isExpandedSplit = viewController.splitViewController.map { !$0.isCollapsed } ?? false
+        let safeAreaInsets = isExpandedSplit ? UIEdgeInsets.zero : viewController.view.safeAreaInsets
         viewRecommendationsLeadingConstraint.constant = -safeAreaInsets.left
         viewRecommendationsTrailingConstraint.constant = -safeAreaInsets.right
 

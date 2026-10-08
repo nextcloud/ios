@@ -70,7 +70,7 @@ class NCAccount: NSObject {
             controller.modalPresentationStyle = .fullScreen
             controller.view.alpha = 0
 
-            UIApplication.shared.mainAppWindow?.rootViewController = controller
+            UIApplication.shared.mainAppWindow?.rootViewController = SceneManager.shared.rootController(for: controller)
             UIApplication.shared.mainAppWindow?.makeKeyAndVisible()
 
             if let scene = UIApplication.shared.mainAppWindow?.windowScene {

@@ -484,7 +484,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     @MainActor
     private func createAccount(urlBase: String, user: String, password: String) async {
         if self.controller == nil {
-            self.controller = UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
+            self.controller = SceneManager.shared.getController(window: UIApplication.shared.mainAppWindow)
         }
 
         if let host = URL(string: urlBase)?.host {

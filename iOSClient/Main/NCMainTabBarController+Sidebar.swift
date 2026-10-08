@@ -7,23 +7,18 @@ import UIKit
 
 extension NCMainTabBarController {
     func presentSidebar() {
-        guard sidebarHostingController == nil, presentedViewController == nil else { return }
+        guard presentedViewController == nil else { return }
+        if let split = splitViewController as? NCMainSplitViewController, !split.isCollapsed {
+            if split.displayMode == .secondaryOnly {
+                split.showSidebar()
+            } else {
+                split.hideSidebar()
+            }
+            return
+        }
+        guard sidebarHostingController == nil else { return }
 
-        let sidebarView = NCSidebarView(account: account, showsNotifications: availableNotifications, onClose: { [weak self] in
-            self?.removeSidebar()
-        }, openSettings: { [weak self] in
-            self?.removeSidebar()
-            self?.openSidebarSettings()
-        }, openAssistant: { [weak self] in
-            self?.removeSidebar()
-            self?.openSidebarAssistant()
-        }, openNotifications: { [weak self] in
-            self?.removeSidebar()
-            self?.openSidebarNotifications()
-        }, openTransfers: { [weak self] in
-            self?.removeSidebar()
-            self?.openSidebarTransfers()
-        })
+        let sidebarView = makeSidebarView()
         let hostingController = UIHostingController(rootView: sidebarView)
         hostingController.view.backgroundColor = .clear
         hostingController.view.accessibilityViewIsModal = true
@@ -40,7 +35,44 @@ extension NCMainTabBarController {
         hostingController.didMove(toParent: self)
     }
 
+    /// Builds the same sidebar for a native split column or our compact overlay.
+    func makeSidebarView(isDocked: Bool = false) -> NCSidebarView {
+        NCSidebarView(account: account, controllerIdentifier: ObjectIdentifier(self), onClose: { [weak self] in
+            self?.removeSidebar()
+        }, openSettings: { [weak self] in
+            self?.closeSidebarForAction()
+            self?.openSidebarSettings()
+        }, openAssistant: { [weak self] in
+            self?.closeSidebarForAction()
+            self?.openSidebarAssistant()
+        }, openNotifications: { [weak self] in
+            self?.closeSidebarForAction()
+            self?.openSidebarNotifications()
+        }, openTransfers: { [weak self] in
+            self?.closeSidebarForAction()
+            self?.openSidebarTransfers()
+        }, isDocked: isDocked)
+    }
+
+    private func closeSidebarForAction() {
+        if let split = splitViewController as? NCMainSplitViewController, !split.isCollapsed {
+            if split.displayMode != .oneBesideSecondary {
+                split.hideSidebar()
+            }
+        } else {
+            removeSidebarOverlay()
+        }
+    }
+
     private func removeSidebar() {
+        if let split = splitViewController as? NCMainSplitViewController, !split.isCollapsed {
+            split.hideSidebar()
+        } else {
+            removeSidebarOverlay()
+        }
+    }
+
+    func removeSidebarOverlay() {
         guard let hostingController = sidebarHostingController else { return }
         hostingController.willMove(toParent: nil)
         hostingController.view.removeFromSuperview()
