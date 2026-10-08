@@ -16,7 +16,10 @@ extension NCMainTabBarController {
             }
             return
         }
-        guard sidebarHostingController == nil else { return }
+        if sidebarHostingController != nil {
+            NotificationCenter.default.post(name: NCSidebarView.closeRequested, object: self)
+            return
+        }
 
         let sidebarView = makeSidebarView()
         let hostingController = UIHostingController(rootView: sidebarView)
@@ -26,10 +29,13 @@ extension NCMainTabBarController {
         addChild(hostingController)
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(hostingController.view)
+        // iPad overlays cover the whole column, including the window's top edge.
+        // Phones keep the controls below the status bar and Dynamic Island.
+        let topAnchor = UIDevice.current.userInterfaceIdiom == .pad ? view.topAnchor : view.safeAreaLayoutGuide.topAnchor
         NSLayoutConstraint.activate([
             hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            hostingController.view.topAnchor.constraint(equalTo: topAnchor),
             hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         hostingController.didMove(toParent: self)
@@ -51,7 +57,45 @@ extension NCMainTabBarController {
         }, openTransfers: { [weak self] in
             self?.closeSidebarForAction()
             self?.openSidebarTransfers()
+        }, hasVisibleSidebarButton: { [weak self] in
+            self?.hasUncoveredSidebarButton() ?? false
+        }, navigationBarCenterY: { [weak self] in
+            self?.sidebarNavigationBarCenterY(isDocked: isDocked)
         }, isDocked: isDocked)
+    }
+
+    /// Express the navigation bar's center in the sidebar's safe content coordinates.
+    private func sidebarNavigationBarCenterY(isDocked: Bool) -> CGFloat? {
+        guard let navigationController = currentNavigationController(),
+              !navigationController.isNavigationBarHidden else { return nil }
+        let hostingView: UIView?
+        if isDocked {
+            let primary = splitViewController?.viewController(for: .primary) as? UINavigationController
+            hostingView = primary?.topViewController?.viewIfLoaded
+        } else {
+            hostingView = sidebarHostingController?.viewIfLoaded
+        }
+        let bar = navigationController.navigationBar
+        guard let hostingView, let window = hostingView.window,
+              bar.window === window, !bar.isHidden, !bar.bounds.isEmpty else { return nil }
+        return bar.convert(bar.bounds, to: hostingView).midY - hostingView.safeAreaInsets.top
+    }
+
+    /// Only omit the panel's close button when the navigation opener is available
+    /// and its entire bar is outside the overlay. Partial overlap keeps the fallback.
+    private func hasUncoveredSidebarButton() -> Bool {
+        guard let navigationController = currentNavigationController() as? NCMainNavigationController,
+              !navigationController.isNavigationBarHidden,
+              let overlay = sidebarHostingController?.view,
+              let window = overlay.window else { return false }
+        let bar = navigationController.navigationBar
+        let button = navigationController.sidebarButtonItem
+        guard bar.window === window, !bar.isHidden, bar.alpha > 0,
+              button.isEnabled,
+              navigationController.topViewController?.navigationItem.leftBarButtonItems?.contains(where: { $0 === button }) == true else { return false }
+        let barFrame = bar.convert(bar.bounds, to: window)
+        let overlayFrame = overlay.convert(overlay.bounds, to: window)
+        return !barFrame.isEmpty && window.bounds.contains(barFrame) && !barFrame.intersects(overlayFrame)
     }
 
     private func closeSidebarForAction() {

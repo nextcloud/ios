@@ -7,6 +7,7 @@ import SwiftUI
 /// A leading overlay with glass buttons kept inside the panel.
 @MainActor
 struct NCSidebarView: View {
+    static let closeRequested = Notification.Name("NCSidebarCloseRequested")
     let account: String
     let controllerIdentifier: ObjectIdentifier
     let onClose: () -> Void
@@ -14,7 +15,12 @@ struct NCSidebarView: View {
     let openAssistant: () -> Void
     let openNotifications: () -> Void
     let openTransfers: () -> Void
+    var hasVisibleSidebarButton: () -> Bool = { false }
+    var navigationBarCenterY: () -> CGFloat? = { nil }
     var isDocked = false
+    @State private var headerHeight: CGFloat = 0
+    @State private var navigationCenterY: CGFloat?
+    @State private var showsCloseButton = true
     @State private var updatedAccount: String?
     @State private var capabilitiesRevision = UUID()
     @State private var showsAssistant = false
@@ -22,6 +28,7 @@ struct NCSidebarView: View {
     @State private var isVisible = false
     @State private var isClosing = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
 
     private var activeAccount: String {
         updatedAccount ?? account
@@ -32,16 +39,18 @@ struct NCSidebarView: View {
             // Keep a strip of the underlying screen visible on compact displays.
             let width = isDocked ? geometry.size.width : max(0, min(320, geometry.size.width - 56))
             ZStack(alignment: .leading) {
-                if !isDocked {
-                    Color.black.opacity(isVisible ? 0.25 : 0)
-                        .ignoresSafeArea()
-                        .onTapGesture { close(then: onClose) }
-                        .accessibilityHidden(true)
-                }
-
                 VStack {
                     sidebarHeader
-                        .padding()
+                        .onGeometryChange(for: CGFloat.self) { geometry in
+                            geometry.size.height
+                        } action: { height in
+                            headerHeight = height
+                            navigationCenterY = navigationBarCenterY()
+                        }
+                        .padding(.leading, headerLeadingInset(geometry: geometry))
+                        .padding(.horizontal)
+                        .padding(.top, headerTopInset)
+                        .padding(.bottom, 16)
                     Button {
                         close(then: openTransfers)
                     } label: {
@@ -83,10 +92,34 @@ struct NCSidebarView: View {
                     }
                 }
                 guard !isClosing, !Task.isCancelled else { return }
+                showsCloseButton = !hasVisibleSidebarButton()
+                navigationCenterY = navigationBarCenterY()
                 withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
                     isVisible = true
                 }
             }
+        }
+        .onGeometryChange(for: CGRect.self) { geometry in
+            geometry.frame(in: .global)
+        } action: { _ in
+            // Reevaluate after insertion and whenever the window or orientation changes.
+            showsCloseButton = !hasVisibleSidebarButton()
+            navigationCenterY = navigationBarCenterY()
+        }
+        .background {
+            // Only the backdrop extends beyond the safe area, not the panel's controls.
+            if !isDocked {
+                Color.black.opacity(isVisible ? 0.25 : 0)
+                    .ignoresSafeArea()
+                    .onTapGesture { close(then: onClose) }
+                    .accessibilityHidden(true)
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: Self.closeRequested)
+            .receive(on: DispatchQueue.main)) { notification in
+            guard let controller = notification.object as? NCMainTabBarController,
+                  ObjectIdentifier(controller) == controllerIdentifier else { return }
+            close(then: onClose)
         }
         .onReceive(NotificationCenter.default.publisher(for: Notification.Name(NCGlobal.shared.notificationCenterChangeUser))
             .receive(on: DispatchQueue.main)) { notification in
@@ -114,6 +147,25 @@ struct NCSidebarView: View {
             showsAssistant = capabilities?.assistantEnabled ?? false
             showsNotifications = !(capabilities?.notification.isEmpty ?? true)
         }
+    }
+
+    private var headerTopInset: CGFloat {
+        // Align centers when the navigation bar is beside the panel. When its
+        // center is above the overlay, give the separate header normal breathing room.
+        guard let navigationCenterY else { return 0 }
+        if !isDocked && navigationCenterY < 0 {
+            return 16
+        }
+        return max(0, navigationCenterY - headerHeight / 2)
+    }
+
+    private func headerLeadingInset(geometry: GeometryProxy) -> CGFloat {
+        guard UIDevice.current.userInterfaceIdiom == .pad else { return 0 }
+        if #available(iOS 26.0, *) {
+            // Keep the custom header clear of system UI occupying the window's leading corner.
+            return geometry.containerCornerInsets.topLeading.width
+        }
+        return 0
     }
 
     @ViewBuilder
@@ -173,7 +225,8 @@ struct NCSidebarView: View {
                 .accessibilityIdentifier("sidebarNotifications")
             }
 
-            if !isDocked {
+            // VoiceOver remains inside the modal overlay, so retain its close action there.
+            if !isDocked && (showsCloseButton || voiceOverEnabled) {
                 Button {
                     close(then: onClose)
                 } label: {
