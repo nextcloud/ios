@@ -49,7 +49,7 @@ extension NCMedia {
 
         if lastVisibleDateRange?.first == firstIndexPath,
            lastVisibleDateRange?.last == lastIndexPath,
-           navigationItem.leftBarButtonItems?.contains(where: { $0 === buttonDateBarItem }) == true {
+           isDateBarButtonVisible {
             return
         }
 
@@ -107,11 +107,9 @@ extension NCMedia {
             title = "\(firstDateTitle) – \(lastDateTitle)"
         }
 
-        if buttonDateBarItem.title != title {
-            buttonDateBarItem.title = title
-        }
+        buttonDateBarItem.accessibilityValue = title
 
-        if navigationItem.leftBarButtonItems?.contains(where: { $0 === buttonDateBarItem }) != true {
+        if !isDateBarButtonVisible {
             updateLeftBarButtonItems(date: buttonDateBarItem)
         }
     }
@@ -200,6 +198,7 @@ extension NCMedia {
     @MainActor
     func updateLeftBarButtonItems(date: UIBarButtonItem?, activity: Bool? = nil) {
         let isActivityVisible = activity ?? searchActivityIndicator.isAnimating
+        isDateBarButtonVisible = date != nil
 
         var items: [UIBarButtonItem] = []
 

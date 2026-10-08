@@ -16,6 +16,17 @@ class NCMediaNavigationController: NCMainNavigationController {
         NotificationCenter.default.addObserver(self, selector: #selector(handlePhotosAddedToAlbumNotification(_:)), name: Self.photosAddedToAlbumNotification, object: nil)
     }
 
+    override func configureSidebarButton() {
+        super.configureSidebarButton()
+        guard let media = topViewController as? NCMedia else { return }
+
+        // Keep the sidebar, calendar and loading indicator in separate groups.
+        let items = media.navigationItem.leftBarButtonItems ?? []
+        media.navigationItem.leadingItemGroups = items.map { item in
+            UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)
+        }
+    }
+
     override func setNavigationRightItems() async {
         guard let media = topViewController as? NCMedia else {
             return
