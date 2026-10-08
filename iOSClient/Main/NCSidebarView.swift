@@ -4,7 +4,7 @@
 
 import SwiftUI
 
-/// A leading overlay with glass buttons kept inside the panel.
+/// A glass sidebar shared by the compact overlay and the native split column.
 @MainActor
 struct NCSidebarView: View {
     static let closeRequested = Notification.Name("NCSidebarCloseRequested")
@@ -92,8 +92,7 @@ struct NCSidebarView: View {
                     }
                 }
                 guard !isClosing, !Task.isCancelled else { return }
-                showsCloseButton = !hasVisibleSidebarButton()
-                navigationCenterY = navigationBarCenterY()
+                updateHeaderLayout()
                 withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
                     isVisible = true
                 }
@@ -103,8 +102,7 @@ struct NCSidebarView: View {
             geometry.frame(in: .global)
         } action: { _ in
             // Reevaluate after insertion and whenever the window or orientation changes.
-            showsCloseButton = !hasVisibleSidebarButton()
-            navigationCenterY = navigationBarCenterY()
+            updateHeaderLayout()
         }
         .background {
             // Only the backdrop extends beyond the safe area, not the panel's controls.
@@ -159,6 +157,11 @@ struct NCSidebarView: View {
         return max(0, navigationCenterY - headerHeight / 2)
     }
 
+    private func updateHeaderLayout() {
+        showsCloseButton = !hasVisibleSidebarButton()
+        navigationCenterY = navigationBarCenterY()
+    }
+
     private func headerLeadingInset(geometry: GeometryProxy) -> CGFloat {
         guard UIDevice.current.userInterfaceIdiom == .pad else { return 0 }
         if #available(iOS 26.0, *) {
@@ -189,56 +192,39 @@ struct NCSidebarView: View {
 
     private var headerButtons: some View {
         HStack {
-            Button {
-                close(then: openSettings)
-            } label: {
-                Label("_settings_", systemImage: "gearshape")
-                    .labelStyle(.iconOnly)
-                    .font(.title2)
-                    .frame(width: 32, height: 32)
-            }
-            .accessibilityIdentifier("sidebarSettings")
+            headerButton("_settings_", systemImage: "gearshape", action: openSettings)
+                .accessibilityIdentifier("sidebarSettings")
 
             Spacer()
 
             if showsAssistant {
-                Button {
-                    close(then: openAssistant)
-                } label: {
-                    Label("_assistant_", systemImage: "sparkles")
-                        .labelStyle(.iconOnly)
-                        .font(.title2)
-                        .frame(width: 32, height: 32)
-                }
-                .accessibilityIdentifier("sidebarAssistant")
+                headerButton("_assistant_", systemImage: "sparkles", action: openAssistant)
+                    .accessibilityIdentifier("sidebarAssistant")
             }
 
             if showsNotifications {
-                Button {
-                    close(then: openNotifications)
-                } label: {
-                    Label("_notifications_", systemImage: "bell.fill")
-                        .labelStyle(.iconOnly)
-                        .font(.title2)
-                        .frame(width: 32, height: 32)
-                }
-                .accessibilityIdentifier("sidebarNotifications")
+                headerButton("_notifications_", systemImage: "bell.fill", action: openNotifications)
+                    .accessibilityIdentifier("sidebarNotifications")
             }
 
             // VoiceOver remains inside the modal overlay, so retain its close action there.
             if !isDocked && (showsCloseButton || voiceOverEnabled) {
-                Button {
-                    close(then: onClose)
-                } label: {
-                    Label("_close_", systemImage: "sidebar.left")
-                        .labelStyle(.iconOnly)
-                        .font(.title2)
-                        .frame(width: 32, height: 32)
-                }
+                headerButton("_close_", systemImage: "sidebar.left", action: onClose)
             }
         }
         .buttonBorderShape(.circle)
         .controlSize(.regular)
+    }
+
+    private func headerButton(_ title: LocalizedStringKey, systemImage: String, action: @escaping () -> Void) -> some View {
+        Button {
+            close(then: action)
+        } label: {
+            Label(title, systemImage: systemImage)
+                .labelStyle(.iconOnly)
+                .font(.title2)
+                .frame(width: 32, height: 32)
+        }
     }
 
     private func close(then action: @escaping () -> Void) {

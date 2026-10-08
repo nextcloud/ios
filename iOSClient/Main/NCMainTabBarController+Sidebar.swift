@@ -6,9 +6,15 @@ import SwiftUI
 import UIKit
 
 extension NCMainTabBarController {
+    private var activeSidebarSplit: NCMainSplitViewController? {
+        guard let split = splitViewController as? NCMainSplitViewController,
+              !split.isCollapsed else { return nil }
+        return split
+    }
+
     func presentSidebar() {
         guard presentedViewController == nil else { return }
-        if let split = splitViewController as? NCMainSplitViewController, !split.isCollapsed {
+        if let split = activeSidebarSplit {
             if split.displayMode == .secondaryOnly {
                 split.showSidebar()
             } else {
@@ -120,7 +126,9 @@ extension NCMainTabBarController {
     }
 
     private func closeSidebarForAction() {
-        if let split = splitViewController as? NCMainSplitViewController, !split.isCollapsed {
+        // Keep the adjacent sidebar available while opening a destination.
+        // An overlaid sidebar closes so it does not cover that destination.
+        if let split = activeSidebarSplit {
             if split.displayMode != .oneBesideSecondary {
                 split.hideSidebar()
             }
@@ -130,7 +138,8 @@ extension NCMainTabBarController {
     }
 
     private func removeSidebar() {
-        if let split = splitViewController as? NCMainSplitViewController, !split.isCollapsed {
+        // Explicit dismissal hides the sidebar even when it is beside the content.
+        if let split = activeSidebarSplit {
             split.hideSidebar()
         } else {
             removeSidebarOverlay()

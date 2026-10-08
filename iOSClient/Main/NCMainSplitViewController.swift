@@ -12,20 +12,29 @@ final class NCMainSplitViewController: UISplitViewController, UISplitViewControl
     private var sidebarController: UIHostingController<NCSidebarView>?
 
     init(mainController: NCMainTabBarController) {
+        // Reuse the existing tabs, account and navigation stacks inside the split.
         self.mainController = mainController
         super.init(style: .doubleColumn)
         delegate = self
+
+        // Prefer an open sidebar beside the content; UIKit adapts to smaller windows.
         preferredSplitBehavior = .tile
         preferredDisplayMode = .oneBesideSecondary
+
+        // Our sidebar button handles opening and closing, avoiding duplicate system buttons.
         displayModeButtonVisibility = .never
         showsSecondaryOnlyButton = false
 
+        // The docked sidebar uses its SwiftUI glass background without overlay dismissal.
         let hostingController = UIHostingController(rootView: mainController.makeSidebarView(isDocked: true))
         hostingController.view.backgroundColor = .clear
         sidebarController = hostingController
+
         // Keep our SwiftUI header in the sidebar instead of using a navigation toolbar.
         let navigationController = UINavigationController(rootViewController: hostingController)
         navigationController.setNavigationBarHidden(true, animated: false)
+
+        // The primary column contains the menu; the secondary contains the app's tabs.
         setViewController(navigationController, for: .primary)
         setViewController(mainController, for: .secondary)
     }
@@ -47,10 +56,7 @@ final class NCMainSplitViewController: UISplitViewController, UISplitViewControl
         hide(.primary)
     }
 
-    func splitViewController(
-        _ splitViewController: UISplitViewController,
-        topColumnForCollapsingToProposedTopColumn proposedTopColumn: UISplitViewController.Column
-    ) -> UISplitViewController.Column {
+    func splitViewController(_ splitViewController: UISplitViewController, topColumnForCollapsingToProposedTopColumn proposedTopColumn: UISplitViewController.Column) -> UISplitViewController.Column {
         // Compact windows keep the tabs visible; their opener presents our existing overlay.
         .secondary
     }
