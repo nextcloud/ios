@@ -83,10 +83,7 @@ class NCMedia: UIViewController {
                 return
             }
 
-            updateLeftBarButtonItems(
-                date: isDateBarButtonVisible ? buttonDateBarItem : nil,
-                activity: searchMediaInProgress
-            )
+            updateLeftBarButtonItems(activity: searchMediaInProgress)
         }
     }
 
@@ -104,8 +101,6 @@ class NCMedia: UIViewController {
         return item
     }()
     internal var lastVisibleDateRange: (first: IndexPath, last: IndexPath)?
-    // Track availability independently of UIKit's bar button groups.
-    internal var isDateBarButtonVisible = false
 
     internal lazy var searchActivityIndicator: UIActivityIndicatorView = {
         let activityIndicator = UIActivityIndicatorView(style: .medium)

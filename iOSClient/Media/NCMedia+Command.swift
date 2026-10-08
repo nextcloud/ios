@@ -41,15 +41,14 @@ extension NCMedia {
               let lastMetadata = dataSource.getCompactMetadata(indexPath: lastIndexPath) else {
             if dataSource.isEmpty() {
                 lastVisibleDateRange = nil
-                updateLeftBarButtonItems(date: nil)
+                buttonDateBarItem.accessibilityValue = nil
             }
 
             return
         }
 
         if lastVisibleDateRange?.first == firstIndexPath,
-           lastVisibleDateRange?.last == lastIndexPath,
-           isDateBarButtonVisible {
+           lastVisibleDateRange?.last == lastIndexPath {
             return
         }
 
@@ -109,9 +108,6 @@ extension NCMedia {
 
         buttonDateBarItem.accessibilityValue = title
 
-        if !isDateBarButtonVisible {
-            updateLeftBarButtonItems(date: buttonDateBarItem)
-        }
     }
 
     @objc func presentMediaDatePicker() {
@@ -196,15 +192,9 @@ extension NCMedia {
     }
 
     @MainActor
-    func updateLeftBarButtonItems(date: UIBarButtonItem?, activity: Bool? = nil) {
+    func updateLeftBarButtonItems(activity: Bool? = nil) {
         let isActivityVisible = activity ?? searchActivityIndicator.isAnimating
-        isDateBarButtonVisible = date != nil
-
-        var items: [UIBarButtonItem] = []
-
-        if let date {
-            items.append(date)
-        }
+        var items: [UIBarButtonItem] = [buttonDateBarItem]
 
         if isActivityVisible {
             searchActivityIndicator.startAnimating()
@@ -213,11 +203,8 @@ extension NCMedia {
             searchActivityIndicator.stopAnimating()
         }
 
-        navigationItem.leftBarButtonItems = items.isEmpty ? nil : items
+        navigationItem.leftBarButtonItems = items
         (navigationController as? NCMainNavigationController)?.configureSidebarButton()
-        if items.isEmpty {
-            collectionViewReloadData()
-        }
     }
 }
 

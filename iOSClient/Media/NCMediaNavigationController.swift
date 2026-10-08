@@ -17,11 +17,21 @@ class NCMediaNavigationController: NCMainNavigationController {
     }
 
     override func configureSidebarButton() {
+        guard let media = topViewController as? NCMedia else {
+            super.configureSidebarButton()
+            return
+        }
         super.configureSidebarButton()
-        guard let media = topViewController as? NCMedia else { return }
 
-        // Keep the sidebar, calendar and loading indicator in separate groups.
-        let items = media.navigationItem.leftBarButtonItems ?? []
+        // Rebuild from Media's state, not UIKit's derived leftBarButtonItems.
+        // Moving items into groups can change that getter during Select/Cancel.
+        var items: [UIBarButtonItem] = [media.buttonDateBarItem]
+        if media === viewControllers.first, controller != nil, !media.isEditMode {
+            items.insert(sidebarButtonItem, at: 0)
+        }
+        if media.searchActivityIndicator.isAnimating {
+            items.append(media.searchActivityBarButtonItem)
+        }
         media.navigationItem.leadingItemGroups = items.map { item in
             UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)
         }
@@ -40,6 +50,7 @@ class NCMediaNavigationController: NCMainNavigationController {
             await mediaTrailingItemGroups()
             await collectionViewCommonTrailingItemGroups()
         }
+        configureSidebarButton()
     }
 
     private func mediaTrailingItemGroups() async {
