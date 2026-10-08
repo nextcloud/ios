@@ -108,6 +108,7 @@ final class NCMediaNetwork {
                 <d:prop>
                     <id xmlns="http://owncloud.org/ns"/>
                     <fileid xmlns="http://owncloud.org/ns"/>
+                    <permissions xmlns="http://owncloud.org/ns"/>
                     <d:getetag/>
                     <d:getlastmodified />
                     <upload_time xmlns="http://nextcloud.org/ns"/>

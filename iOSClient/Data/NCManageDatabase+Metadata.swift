@@ -918,14 +918,15 @@ extension NCManageDatabase {
             metadatasByOcId[ocId]
         }
 
-        // UPDATE: Existing placeholder metadata entries whose etag changed.
+        // UPDATE: Refresh lightweight fields and permissions, even when the etag is unchanged.
         let toUpdateOcIds: [String] = Array(fileOcIds.intersection(metadataOcIds)).filter { ocId in
             guard let file = filesByOcId[ocId],
                   let metadata = metadatasByOcId[ocId] else {
                 return false
             }
 
-            return file.etag != metadata.etag
+            return file.etag != metadata.etag ||
+                (!file.permissions.isEmpty && file.permissions != metadata.permissions)
         }
 
         let hasChanges = !toInsertOcIds.isEmpty ||
@@ -954,6 +955,11 @@ extension NCManageDatabase {
 
                     metadata.etag = file.etag
                     metadata.date = file.date as NSDate
+
+                    // Preserve known permissions if the response omits this property.
+                    if !file.permissions.isEmpty {
+                        metadata.permissions = file.permissions
+                    }
 
                     if let date = file.creationDate as? NSDate {
                         metadata.creationDate = date
