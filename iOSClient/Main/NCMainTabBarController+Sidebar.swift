@@ -39,6 +39,7 @@ extension NCMainTabBarController {
             hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         hostingController.didMove(toParent: self)
+        view.layoutIfNeeded()
     }
 
     /// Builds the same sidebar for a native split column or our compact overlay.
@@ -64,7 +65,9 @@ extension NCMainTabBarController {
         }, isDocked: isDocked)
     }
 
-    /// Express the navigation bar's center in the sidebar's safe content coordinates.
+    /// Measure the visible button row in the panel's safe content coordinates.
+    /// Bar-item identifiers are not necessarily forwarded to their rendered views.
+    /// Use public control types and accessibility traits, with the bar as fallback.
     private func sidebarNavigationBarCenterY(isDocked: Bool) -> CGFloat? {
         guard let navigationController = currentNavigationController(),
               !navigationController.isNavigationBarHidden else { return nil }
@@ -78,7 +81,26 @@ extension NCMainTabBarController {
         let bar = navigationController.navigationBar
         guard let hostingView, let window = hostingView.window,
               bar.window === window, !bar.isHidden, !bar.bounds.isEmpty else { return nil }
-        return bar.convert(bar.bounds, to: hostingView).midY - hostingView.safeAreaInsets.top
+        let buttonFrames = sidebarNavigationButtonFrames(in: bar, navigationBar: bar)
+        let centers = buttonFrames.map(\.midY).sorted()
+        // The median avoids favoring either the leading or trailing button group.
+        let barCenterY = centers.isEmpty ? bar.bounds.midY : centers[centers.count / 2]
+        let centerY = bar.convert(CGPoint(x: bar.bounds.midX, y: barCenterY), to: hostingView).y - hostingView.safeAreaInsets.top
+
+        return centerY
+    }
+
+    private func sidebarNavigationButtonFrames(in view: UIView, navigationBar: UINavigationBar) -> [CGRect] {
+        guard !view.isHidden, view.alpha > 0 else { return [] }
+        if view is UIControl, view is UIButton || view.accessibilityTraits.contains(.button) {
+            let frame = view.convert(view.bounds, to: navigationBar)
+            if !frame.isEmpty, navigationBar.bounds.contains(frame) {
+                return [frame]
+            }
+        }
+        return view.subviews.flatMap { subview in
+            sidebarNavigationButtonFrames(in: subview, navigationBar: navigationBar)
+        }
     }
 
     /// Only omit the panel's close button when the navigation opener is available
