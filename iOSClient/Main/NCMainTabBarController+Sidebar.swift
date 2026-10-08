@@ -29,13 +29,12 @@ extension NCMainTabBarController {
         addChild(hostingController)
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(hostingController.view)
-        // iPad overlays cover the whole column, including the window's top edge.
-        // Phones keep the controls below the status bar and Dynamic Island.
-        let topAnchor = UIDevice.current.userInterfaceIdiom == .pad ? view.topAnchor : view.safeAreaLayoutGuide.topAnchor
+        // Cover the full screen with glass. NCSidebarView positions its controls
+        // within the safe area and aligns them with the measured navigation buttons.
         NSLayoutConstraint.activate([
             hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            hostingController.view.topAnchor.constraint(equalTo: topAnchor),
+            hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
             hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         hostingController.didMove(toParent: self)
