@@ -25,6 +25,11 @@ struct AlbumsListScreen: View {
         .navigationTitle(NSLocalizedString("_albums_list_nav_title_", comment: ""))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            if #available(iOS 27.1, *) {
+                sidebarToolbarItem.axisBehavior(.horizontalOnly)
+            } else {
+                sidebarToolbarItem
+            }
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Button(action: { viewModel.onNewAlbumClick() }) {
                     HStack(spacing: 6) {
@@ -57,6 +62,17 @@ struct AlbumsListScreen: View {
                 viewModel.onNewAlbumPopupCancel()
             }
         )
+    }
+
+    private var sidebarToolbarItem: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button {
+                controller.presentSidebar()
+            } label: {
+                Label("_sidebar_navigation_", systemImage: "sidebar.left")
+            }
+            .accessibilityIdentifier("openSidebar")
+        }
     }
 
     @ViewBuilder

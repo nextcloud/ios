@@ -43,6 +43,19 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let notificationsButtonTag = 102
     let transfersButtonTag = 103
 
+    lazy var sidebarButtonItem: UIBarButtonItem = {
+        let action = UIAction { [weak self] _ in
+            self?.controller?.presentSidebar()
+        }
+        let item = UIBarButtonItem(image: UIImage(systemName: "sidebar.left"), primaryAction: action)
+        if #available(iOS 27.1, *) {
+            item.axisBehavior = .horizontalOnly
+        }
+        item.accessibilityLabel = NSLocalizedString("_sidebar_navigation_", comment: "")
+        item.accessibilityIdentifier = "openSidebar"
+        return item
+    }()
+
     lazy var optionButtonItem: UIBarButtonItem = {
         let item = UIBarButtonItem()
         item.tag = optionButtonTag
@@ -216,6 +229,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             // MENU
             setNavigationBarAppearance()
             await collectionViewCommonTrailingItemGroups()
+            configureSidebarButton()
         }
     }
 
@@ -385,7 +399,27 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     // MARK: - Left
 
-    func setNavigationLeftItems() async { }
+    func setNavigationLeftItems() async {
+        configureSidebarButton()
+    }
+
+    func configureSidebarButton() {
+        guard let navigationItem = topViewController?.navigationItem else { return }
+        var items = navigationItem.leftBarButtonItems ?? []
+        items.removeAll { $0 === sidebarButtonItem }
+        let isFiles = topViewController is NCFiles
+        if isFiles || topViewController === viewControllers.first,
+           controller != nil,
+           !(collectionViewCommon?.isEditMode ?? false),
+           !(mediaViewController?.isEditMode ?? false),
+           !(trashViewController?.isEditMode ?? false) {
+            items.insert(sidebarButtonItem, at: 0)
+            if isFiles {
+                navigationItem.leftItemsSupplementBackButton = true
+            }
+        }
+        navigationItem.leftBarButtonItems = items.isEmpty ? nil : items
+    }
 
     /// Changes the tint color of a specific left bar button item identified by tag.
     /// - Parameters:

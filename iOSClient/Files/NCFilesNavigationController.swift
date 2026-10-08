@@ -59,6 +59,7 @@ class NCFilesNavigationController: NCMainNavigationController {
     // MARK: - Left
 
     override func setNavigationLeftItems() async {
+        defer { configureSidebarButton() }
         guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", self.session.account))
         else {
             self.collectionViewCommon?.navigationItem.leftBarButtonItems = nil
@@ -151,7 +152,9 @@ class NCFilesNavigationController: NCMainNavigationController {
             return
         }
 
-        if self.collectionViewCommon?.navigationItem.leftBarButtonItems == nil {
+        let leftItems = self.collectionViewCommon?.navigationItem.leftBarButtonItems ?? []
+        let accountItem = leftItems.first { $0.customView?.accessibilityIdentifier == "accountSwitcher" }
+        if accountItem == nil {
             let accountButton = AccountSwitcherButton(type: .custom)
 
             accountButton.accessibilityIdentifier = "accountSwitcher"
@@ -166,11 +169,11 @@ class NCFilesNavigationController: NCMainNavigationController {
                 self.collectionViewCommon?.dismissTip()
             }
 
-            self.collectionViewCommon?.navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)], animated: true)
+            self.collectionViewCommon?.navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)] + leftItems, animated: true)
 
         } else {
 
-            let accountButton = self.collectionViewCommon?.navigationItem.leftBarButtonItems?.first?.customView as? UIButton
+            let accountButton = accountItem?.customView as? UIButton
             accountButton?.setImage(image, for: .normal)
             accountButton?.menu = await createLeftMenu()
         }

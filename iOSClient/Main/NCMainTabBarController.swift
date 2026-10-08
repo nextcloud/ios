@@ -22,6 +22,7 @@ class NCMainTabBarController: UITabBarController {
     var availableNotifications: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
     let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
+    var sidebarHostingController: UIHostingController<NCSidebarView>?
     private var previousIndex: Int?
     private var checkUserDelaultErrorInProgress: Bool = false
     private var timerTask: Task<Void, Never>?
@@ -50,6 +51,7 @@ class NCMainTabBarController: UITabBarController {
         configureMoreController()
         configureTabBarItems()
         configureTabBarAppearance()
+        configureSidebar()
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
             if let userInfo = notification.userInfo as? NSDictionary,

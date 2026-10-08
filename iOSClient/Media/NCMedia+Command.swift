@@ -111,7 +111,7 @@ extension NCMedia {
             buttonDateBarItem.title = title
         }
 
-        if navigationItem.leftBarButtonItem !== buttonDateBarItem {
+        if navigationItem.leftBarButtonItems?.contains(where: { $0 === buttonDateBarItem }) != true {
             updateLeftBarButtonItems(date: buttonDateBarItem)
         }
     }
@@ -215,6 +215,7 @@ extension NCMedia {
         }
 
         navigationItem.leftBarButtonItems = items.isEmpty ? nil : items
+        (navigationController as? NCMainNavigationController)?.configureSidebarButton()
         if items.isEmpty {
             collectionViewReloadData()
         }

@@ -54,6 +54,7 @@
 "_create_folder_"           = "Create folder";
 "_create_folder_e2ee_"      = "Create encrypted folder";
 "_close_"                   = "Close";
+"_sidebar_navigation_"      = "Open navigation";
 "_remove_"                  = "Remove";
 "_file_not_found_"          = "File not found";
 "_continue_"                = "Continue";

@@ -84,7 +84,7 @@ class NCMedia: UIViewController {
             }
 
             updateLeftBarButtonItems(
-                date: navigationItem.leftBarButtonItems?.first === buttonDateBarItem ? buttonDateBarItem : nil,
+                date: navigationItem.leftBarButtonItems?.contains(where: { $0 === buttonDateBarItem }) == true ? buttonDateBarItem : nil,
                 activity: searchMediaInProgress
             )
         }
