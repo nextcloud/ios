@@ -51,7 +51,6 @@ class NCMainTabBarController: UITabBarController {
         configureMoreController()
         configureTabBarItems()
         configureTabBarAppearance()
-        configureSidebar()
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
             if let userInfo = notification.userInfo as? NSDictionary,

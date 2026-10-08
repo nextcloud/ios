@@ -6,10 +6,6 @@ import SwiftUI
 import UIKit
 
 extension NCMainTabBarController {
-    func configureSidebar() {
-        mode = .tabBar
-    }
-
     func presentSidebar() {
         guard sidebarHostingController == nil, presentedViewController == nil else { return }
 
