@@ -58,7 +58,7 @@ class NCMainTabBarController: UITabBarController {
 
         tabBar.tintColor = NCBrandColor.shared.getElement(account: account)
 
-        configureActivityController()
+        filesNavigationController = viewControllers?.first as? NCFilesNavigationController
         configureTabBarItems()
         configureTabBarAppearance()
 
@@ -111,15 +111,6 @@ class NCMainTabBarController: UITabBarController {
 
         tabBar.standardAppearance = appearance
         tabBar.scrollEdgeAppearance = appearance
-    }
-
-    private func configureActivityController() {
-        guard var controllers = viewControllers,
-              let files = controllers.first as? NCFilesNavigationController,
-              let activity = UIStoryboard(name: "NCActivity", bundle: nil).instantiateInitialViewController() else { return }
-        filesNavigationController = files
-        controllers.append(NCMainNavigationController(rootViewController: activity))
-        viewControllers = controllers
     }
 
     /// Browse keeps a fixed identity while displaying the selected sidebar section.

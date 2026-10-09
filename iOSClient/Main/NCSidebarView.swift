@@ -29,6 +29,7 @@ struct NCSidebarView: View {
     let openApp: (String, String?) -> Void
     var hasVisibleSidebarButton: () -> Bool = { false }
     var navigationBarCenterY: () -> CGFloat? = { nil }
+    var windowSafeAreaLeadingInset: () -> CGFloat = { 0 }
     var currentSelection: () -> String? = { nil }
     var isDocked = false
     @State private var selectedDestination: String?
@@ -58,8 +59,10 @@ struct NCSidebarView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            // Keep a strip of the underlying screen visible on compact displays.
-            let width = isDocked ? geometry.size.width : max(0, min(300, geometry.size.width - 56))
+            // Keep the content clear of the landscape camera area, while glass reaches the edge.
+            let leadingInset = contentLeadingInset(geometry: geometry)
+            // Preserve the content width and a visible strip of the underlying screen.
+            let width = isDocked ? geometry.size.width : max(0, min(320 + leadingInset, geometry.size.width - 56))
             ZStack(alignment: .leading) {
                 VStack {
                     sidebarHeader
@@ -112,7 +115,7 @@ struct NCSidebarView: View {
                                 .padding(.horizontal, 32)
                                 .padding(.top, 20)
                                 .padding(.bottom, 8)
-                            sidebarItem("_auto_upload_folder_", systemImage: "arrow.triangle.2.circlepath", isSelected: selectedDestination == "sidebarAutoUpload", subtitle: autoUploadSubtitle, action: openAutoUpload)
+                            sidebarItem("_auto_upload_folder_", systemImage: "arrow.triangle.2.circlepath", isSelected: false, subtitle: autoUploadSubtitle, action: openAutoUpload)
                                 .accessibilityIdentifier("sidebarAutoUpload")
                             sidebarItem("_scanned_images_", systemImage: "doc.text.viewfinder", isSelected: false, action: openScannedImages)
                                 .accessibilityIdentifier("sidebarScannedImages")
@@ -156,6 +159,7 @@ struct NCSidebarView: View {
                     }
                     quotaFooter
                 }
+                .padding(.leading, leadingInset)
                 .frame(width: width)
                 .frame(maxHeight: .infinity)
                 .background {
@@ -365,6 +369,12 @@ struct NCSidebarView: View {
         selectedDestination = currentSelection()
         showsCloseButton = !hasVisibleSidebarButton()
         navigationCenterY = navigationBarCenterY()
+    }
+
+    private func contentLeadingInset(geometry: GeometryProxy) -> CGFloat {
+        guard !isDocked, UIDevice.current.userInterfaceIdiom == .phone else { return 0 }
+        // Subtract the safe margin SwiftUI already applied to avoid counting it twice.
+        return max(0, windowSafeAreaLeadingInset() - geometry.frame(in: .global).minX)
     }
 
     private func headerLeadingInset(geometry: GeometryProxy) -> CGFloat {

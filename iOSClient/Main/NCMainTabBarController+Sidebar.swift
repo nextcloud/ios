@@ -100,6 +100,8 @@ extension NCMainTabBarController {
             self?.hasUncoveredSidebarButton() ?? false
         }, navigationBarCenterY: { [weak self] in
             self?.sidebarNavigationBarCenterY(isDocked: isDocked)
+        }, windowSafeAreaLeadingInset: { [weak self] in
+            self?.view.window?.safeAreaInsets.left ?? 0
         }, currentSelection: { [weak self] in
             self?.sidebarSelectionIdentifier()
         }, isDocked: isDocked)
@@ -109,7 +111,6 @@ extension NCMainTabBarController {
     private func sidebarSelectionIdentifier() -> String? {
         guard selectedIndex == 0,
               let root = currentNavigationController()?.viewControllers.first else { return nil }
-        if root.restorationIdentifier == "sidebarAutoUpload" { return "sidebarAutoUpload" }
         if let identifier = root.restorationIdentifier, identifier.hasPrefix("sidebarExternalSite-") { return identifier }
         switch root {
         case let files as NCFiles:
@@ -282,8 +283,17 @@ extension NCMainTabBarController {
         let hostingController = UIHostingController(rootView: autoUploadView)
         hostingController.title = NSLocalizedString("_auto_upload_folder_", comment: "")
         hostingController.navigationItem.largeTitleDisplayMode = .never
-        hostingController.restorationIdentifier = "sidebarAutoUpload"
-        selectSidebarDestination(NCMainNavigationController(rootViewController: hostingController))
+        let navigationController = UINavigationController(rootViewController: hostingController)
+        navigationController.setNavigationBarAppearance()
+        hostingController.navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "xmark"),
+            primaryAction: UIAction { [weak navigationController] _ in
+                navigationController?.dismiss(animated: true)
+            }
+        )
+        hostingController.navigationItem.rightBarButtonItem?.accessibilityLabel = NSLocalizedString("_close_", comment: "")
+        navigationController.modalPresentationStyle = .pageSheet
+        present(navigationController, animated: true)
     }
 
     private func openSidebarScannedImages() {
