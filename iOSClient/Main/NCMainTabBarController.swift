@@ -110,6 +110,17 @@ class NCMainTabBarController: UITabBarController {
         viewControllers = controllers
     }
 
+    /// The first four tabs retain their navigation stacks. The fifth represents
+    /// the latest sidebar destination, with its own navigation controller.
+    func selectSidebarDestination(_ navigationController: NCMainNavigationController) {
+        guard var controllers = viewControllers, controllers.count == 5 else { return }
+        navigationController.tabBarItem.tag = 104
+        controllers[4] = navigationController
+        setViewControllers(controllers, animated: false)
+        selectedViewController = navigationController
+        previousIndex = selectedIndex
+    }
+
     private func makeMoreNavigationController() -> UIViewController {
         let moreView = NCMoreView(account: account, controller: self)
         let hostingController = UIHostingController(rootView: moreView)

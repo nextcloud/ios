@@ -359,7 +359,7 @@ final class NCMoreModel: ObservableObject {
             openUrl(url)
 
         case .settings:
-            openSettings()
+            controller?.openSidebarSettings()
 
         case .none:
             break
@@ -506,26 +506,6 @@ final class NCMoreModel: ObservableObject {
 
         navigationController.pushViewController(browserWebController, animated: true)
         navigationController.navigationBar.isHidden = false
-    }
-
-    /// Opens the SwiftUI settings screen.
-    ///
-    /// The settings view is created with `NCSettingsModel` and pushed on the current
-    /// navigation controller.
-    private func openSettings() {
-        guard let controller,
-              let navigationController = controller.currentNavigationController() else {
-            return
-        }
-
-        let settingsView = NCSettingsView(
-            model: NCSettingsModel(controller: controller)
-        )
-
-        let settingsController = UIHostingController(rootView: settingsView)
-        settingsController.title = NSLocalizedString("_settings_", comment: "")
-
-        navigationController.pushViewController(settingsController, animated: true)
     }
 
     /// Opens the SwiftUI auto-upload screen, injecting the shared counter so the row and the
