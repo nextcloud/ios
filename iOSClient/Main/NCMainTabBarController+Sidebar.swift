@@ -69,10 +69,6 @@ extension NCMainTabBarController {
         }, openRecent: { [weak self] in
             self?.closeSidebarForAction()
             self?.openSidebarCollection(storyboard: "NCRecent")
-        }, openFavorites: { [weak self] in
-            guard let self, let favorites = viewControllers?.first(where: { $0.tabBarItem.tag == 101 }) else { return }
-            closeSidebarForAction()
-            selectedViewController = favorites
         }, openShares: { [weak self] in
             self?.closeSidebarForAction()
             self?.openSidebarCollection(storyboard: "NCShares")
@@ -82,16 +78,15 @@ extension NCMainTabBarController {
         }, openTransfers: { [weak self] in
             self?.closeSidebarForAction()
             self?.openSidebarTransfers()
-        }, openActivity: { [weak self] in
-            guard let self, let activity = viewControllers?.first(where: { $0.tabBarItem.tag == 104 }) else { return }
-            closeSidebarForAction()
-            selectedViewController = activity
         }, openOffline: { [weak self] in
             self?.closeSidebarForAction()
             self?.openSidebarCollection(storyboard: "NCOffline")
         }, openTrash: { [weak self] in
             self?.closeSidebarForAction()
             self?.openSidebarCollection(storyboard: "NCTrash")
+        }, openScannedImages: { [weak self] in
+            self?.closeSidebarForAction()
+            self?.openSidebarScannedImages()
         }, openApp: { [weak self] url, fallbackUrl in
             self?.closeSidebarForAction()
             self?.openSidebarApp(url: url, fallbackUrl: fallbackUrl)
@@ -106,8 +101,6 @@ extension NCMainTabBarController {
 
     /// Identify the visible section, including Files' current personal filter.
     private func sidebarSelectionIdentifier() -> String? {
-        if selectedIndex == 1 { return "sidebarFavorites" }
-        if selectedIndex == 4 { return "sidebarActivity" }
         guard selectedIndex == 0,
               let root = currentNavigationController()?.viewControllers.first else { return nil }
         switch root {
@@ -261,6 +254,14 @@ extension NCMainTabBarController {
         } else {
             UIApplication.shared.open(appUrl)
         }
+    }
+
+    private func openSidebarScannedImages() {
+        guard let navigationController = UIStoryboard(name: "NCScan", bundle: nil).instantiateInitialViewController(),
+              let scanController = navigationController.topMostViewController() as? NCScan else { return }
+        scanController.controller = self
+        navigationController.modalPresentationStyle = .pageSheet
+        present(navigationController, animated: true)
     }
 
     private func openSidebarCollection(storyboard: String) {

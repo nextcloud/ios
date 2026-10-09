@@ -18,13 +18,12 @@ struct NCSidebarView: View {
     let openFiles: () -> Void
     let openPersonalFiles: () -> Void
     let openRecent: () -> Void
-    let openFavorites: () -> Void
     let openShares: () -> Void
     let openGroupfolders: () -> Void
     let openTransfers: () -> Void
-    let openActivity: () -> Void
     let openOffline: () -> Void
     let openTrash: () -> Void
+    let openScannedImages: () -> Void
     let openApp: (String, String?) -> Void
     var hasVisibleSidebarButton: () -> Bool = { false }
     var navigationBarCenterY: () -> CGFloat? = { nil }
@@ -82,8 +81,6 @@ struct NCSidebarView: View {
                                 .accessibilityIdentifier("sidebarPersonalFiles")
                             sidebarItem("_recent_", systemImage: "clock.arrow.circlepath", isSelected: selectedDestination == "sidebarRecent", action: openRecent)
                                 .accessibilityIdentifier("sidebarRecent")
-                            sidebarItem("_favorites_", systemImage: "star", isSelected: selectedDestination == "sidebarFavorites", action: openFavorites)
-                                .accessibilityIdentifier("sidebarFavorites")
                             if showsShares {
                                 sidebarItem("_list_shares_", systemImage: "person.badge.plus", isSelected: selectedDestination == "sidebarShares", action: openShares)
                                     .accessibilityIdentifier("sidebarShares")
@@ -100,12 +97,18 @@ struct NCSidebarView: View {
                                 .padding(.bottom, 8)
                             sidebarItem("_transfers_", systemImage: "arrow.left.arrow.right", isSelected: selectedDestination == "sidebarTransfers", action: openTransfers)
                                 .accessibilityIdentifier("sidebarTransfers")
-                            sidebarItem("_activity_", systemImage: "bolt", isSelected: selectedDestination == "sidebarActivity", action: openActivity)
-                                .accessibilityIdentifier("sidebarActivity")
                             sidebarItem("_offline_files_", systemImage: "arrow.down.circle.dotted", isSelected: selectedDestination == "sidebarOffline", action: openOffline)
                                 .accessibilityIdentifier("sidebarOffline")
                             sidebarItem("_trash_view_", systemImage: "trash", isSelected: selectedDestination == "sidebarTrash", action: openTrash)
                                 .accessibilityIdentifier("sidebarTrash")
+                            Text("_media_")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 32)
+                                .padding(.top, 20)
+                                .padding(.bottom, 8)
+                            sidebarItem("_scanned_images_", systemImage: "doc.text.viewfinder", isSelected: false, action: openScannedImages)
+                                .accessibilityIdentifier("sidebarScannedImages")
                             if !NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
                                 Text("_apps_")
                                     .font(.subheadline.weight(.semibold))
