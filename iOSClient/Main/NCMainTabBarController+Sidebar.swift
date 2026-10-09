@@ -84,9 +84,15 @@ extension NCMainTabBarController {
         }, openTrash: { [weak self] in
             self?.closeSidebarForAction()
             self?.openSidebarCollection(storyboard: "NCTrash")
+        }, openAutoUpload: { [weak self] in
+            self?.closeSidebarForAction()
+            self?.openSidebarAutoUpload()
         }, openScannedImages: { [weak self] in
             self?.closeSidebarForAction()
             self?.openSidebarScannedImages()
+        }, openExternalSite: { [weak self] url, title, identifier in
+            self?.closeSidebarForAction()
+            self?.openSidebarExternalSite(url: url, title: title, identifier: identifier)
         }, openApp: { [weak self] url, fallbackUrl in
             self?.closeSidebarForAction()
             self?.openSidebarApp(url: url, fallbackUrl: fallbackUrl)
@@ -103,6 +109,8 @@ extension NCMainTabBarController {
     private func sidebarSelectionIdentifier() -> String? {
         guard selectedIndex == 0,
               let root = currentNavigationController()?.viewControllers.first else { return nil }
+        if root.restorationIdentifier == "sidebarAutoUpload" { return "sidebarAutoUpload" }
+        if let identifier = root.restorationIdentifier, identifier.hasPrefix("sidebarExternalSite-") { return identifier }
         switch root {
         case let files as NCFiles:
             return files.personalFilesOnly ? "sidebarPersonalFiles" : "sidebarFiles"
@@ -254,6 +262,28 @@ extension NCMainTabBarController {
         } else {
             UIApplication.shared.open(appUrl)
         }
+    }
+
+    private func openSidebarExternalSite(url: String, title: String, identifier: Int) {
+        guard url.contains("//"),
+              let encodedUrl = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let browserController = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as? NCBrowserWeb else { return }
+        browserController.urlBase = encodedUrl
+        browserController.titleBrowser = title
+        browserController.isHiddenButtonExit = true
+        browserController.restorationIdentifier = "sidebarExternalSite-\(identifier)"
+        selectSidebarDestination(NCMainNavigationController(rootViewController: browserController))
+    }
+
+    private func openSidebarAutoUpload() {
+        let autoUploadView = NCAutoUploadView(model: NCAutoUploadModel(controller: self),
+                                              albumModel: AlbumModel(controller: self))
+            .environment(NCAutoUploadCounter())
+        let hostingController = UIHostingController(rootView: autoUploadView)
+        hostingController.title = NSLocalizedString("_auto_upload_folder_", comment: "")
+        hostingController.navigationItem.largeTitleDisplayMode = .never
+        hostingController.restorationIdentifier = "sidebarAutoUpload"
+        selectSidebarDestination(NCMainNavigationController(rootViewController: hostingController))
     }
 
     private func openSidebarScannedImages() {

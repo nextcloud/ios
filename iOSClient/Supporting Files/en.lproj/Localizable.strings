@@ -66,6 +66,7 @@
 "_unknown_"                 = "Unknown";
 "_success_"                 = "Success";
 "_status_"                  = "Status";
+"_external_sites_"          = "External sites";
 "_apps_"                    = "Apps";
 "_more_apps_"               = "More apps";
 "_offline_files_"           = "Offline Files";
@@ -109,6 +110,7 @@
 "_wait_"                    = "Please wait …";
 "_recent_"                  = "Recent";
 "_view_in_folder_"          = "View in folder";
+"_active_"                  = "Active";
 "_disabled_"                = "Disabled";
 "_compact_"                 = "Compact";
 "_normal_"                  = "Normal";

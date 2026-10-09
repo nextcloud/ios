@@ -23,7 +23,9 @@ struct NCSidebarView: View {
     let openTransfers: () -> Void
     let openOffline: () -> Void
     let openTrash: () -> Void
+    let openAutoUpload: () -> Void
     let openScannedImages: () -> Void
+    let openExternalSite: (String, String, Int) -> Void
     let openApp: (String, String?) -> Void
     var hasVisibleSidebarButton: () -> Bool = { false }
     var navigationBarCenterY: () -> CGFloat? = { nil }
@@ -35,9 +37,12 @@ struct NCSidebarView: View {
     @State private var showsCloseButton = true
     @State private var updatedAccount: String?
     @State private var capabilitiesRevision = UUID()
+    @State private var autoUploadCounter = NCAutoUploadCounter()
+    @State private var autoUploadEnabled: Bool?
     @State private var quotaDescription = ""
     @State private var quotaProgress: Double = 0
     @State private var quotaHasLimit = false
+    @State private var externalSites: [tableExternalSites] = []
     @State private var showsShares = false
     @State private var showsGroupfolders = false
     @State private var showsAssistant = false
@@ -107,8 +112,26 @@ struct NCSidebarView: View {
                                 .padding(.horizontal, 32)
                                 .padding(.top, 20)
                                 .padding(.bottom, 8)
+                            sidebarItem("_auto_upload_folder_", systemImage: "arrow.triangle.2.circlepath", isSelected: selectedDestination == "sidebarAutoUpload", subtitle: autoUploadSubtitle, action: openAutoUpload)
+                                .accessibilityIdentifier("sidebarAutoUpload")
                             sidebarItem("_scanned_images_", systemImage: "doc.text.viewfinder", isSelected: false, action: openScannedImages)
                                 .accessibilityIdentifier("sidebarScannedImages")
+                            if !externalSites.isEmpty {
+                                Text("_external_sites_")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                                    .padding(.horizontal, 32)
+                                    .padding(.top, 20)
+                                    .padding(.bottom, 8)
+                                ForEach(externalSites, id: \.idExternalSite) { site in
+                                    sidebarItem(LocalizedStringKey(site.name),
+                                                systemImage: site.type == "settings" ? "gear" : "network",
+                                                isSelected: selectedDestination == "sidebarExternalSite-\(site.idExternalSite)") {
+                                        openExternalSite(site.url, site.name, site.idExternalSite)
+                                    }
+                                    .accessibilityIdentifier("sidebarExternalSite-\(site.idExternalSite)")
+                                }
+                            }
                             if !NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
                                 Text("_apps_")
                                     .font(.subheadline.weight(.semibold))
@@ -198,6 +221,9 @@ struct NCSidebarView: View {
 
             // Hide the previous account's actions while loading the new cached capabilities.
             updatedAccount = account
+            externalSites = []
+            autoUploadEnabled = nil
+            autoUploadCounter.stop(reset: true)
             quotaDescription = ""
             quotaProgress = 0
             quotaHasLimit = false
@@ -213,11 +239,37 @@ struct NCSidebarView: View {
                   account == activeAccount else { return }
             capabilitiesRevision = UUID()
         }
+        .task(id: activeAccount) {
+            let account = activeAccount
+            autoUploadEnabled = nil
+            autoUploadCounter.stop(reset: true)
+            defer { autoUploadCounter.stop() }
+            // The docked sidebar stays visible while Auto upload settings can change.
+            while !Task.isCancelled {
+                let tableAccount = await NCManageDatabase.shared.getTableAccountAsync(account: account)
+                guard !Task.isCancelled else { return }
+                if let tableAccount, autoUploadEnabled != tableAccount.autoUploadStart {
+                    autoUploadCounter.stop(reset: true)
+                    autoUploadEnabled = tableAccount.autoUploadStart
+                    autoUploadCounter.start(account: account,
+                                            urlBase: tableAccount.urlBase,
+                                            userId: tableAccount.userId,
+                                            autoUploadStart: tableAccount.autoUploadStart)
+                }
+                do { try await Task.sleep(for: .seconds(2)) } catch { return }
+            }
+        }
         .task(id: "\(activeAccount)-\(capabilitiesRevision)") {
             // Account changes and server updates cancel the previous read automatically.
             let capabilities = await NCManageDatabase.shared.getCapabilities(account: activeAccount)
             let tableAccount = await NCManageDatabase.shared.getTableAccountAsync(account: activeAccount)
             guard !Task.isCancelled else { return }
+            if !NCBrandOptions.shared.disable_more_external_site, capabilities?.externalSites == true {
+                externalSites = (NCManageDatabase.shared.getAllExternalSites(account: activeAccount) ?? [])
+                    .filter { !$0.name.isEmpty && !$0.url.isEmpty }
+            } else {
+                externalSites = []
+            }
             showsShares = capabilities?.fileSharingApiEnabled ?? false
             showsGroupfolders = capabilities?.groupfoldersEnabled ?? false
             showsAssistant = capabilities?.assistantEnabled ?? false
@@ -228,6 +280,16 @@ struct NCSidebarView: View {
                 quotaDescription = ""
             }
         }
+    }
+
+    private var autoUploadSubtitle: String? {
+        guard let autoUploadEnabled else { return nil }
+        guard autoUploadEnabled else { return NSLocalizedString("_disabled_", comment: "") }
+        if autoUploadCounter.isLoaded,
+           autoUploadCounter.count > 0 || autoUploadCounter.failedCount > 0 || autoUploadCounter.isSuspended {
+            return autoUploadCounter.itemsLeftSummary
+        }
+        return NSLocalizedString("_active_", comment: "")
     }
 
     private func updateQuota(_ tableAccount: tableAccount) {
@@ -360,23 +422,31 @@ struct NCSidebarView: View {
     }
 
     /// A fixed icon column keeps every destination's title aligned.
-    private func sidebarItem(_ title: LocalizedStringKey, systemImage: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
-        sidebarItem(title, icon: Image(systemName: systemImage).font(.system(size: 20, weight: .regular)), isSelected: isSelected, action: action)
+    private func sidebarItem(_ title: LocalizedStringKey, systemImage: String, isSelected: Bool, subtitle: String? = nil, action: @escaping () -> Void) -> some View {
+        sidebarItem(title, icon: Image(systemName: systemImage).font(.system(size: 20, weight: .regular)), isSelected: isSelected, subtitle: subtitle, action: action)
     }
 
     private func sidebarApp(_ title: LocalizedStringKey, image: String, action: @escaping () -> Void) -> some View {
         sidebarItem(title, icon: Image(image).resizable().scaledToFit().frame(width: 20, height: 20), action: action)
     }
 
-    private func sidebarItem<Icon: View>(_ title: LocalizedStringKey, icon: Icon, isSelected: Bool = false, action: @escaping () -> Void) -> some View {
+    private func sidebarItem<Icon: View>(_ title: LocalizedStringKey, icon: Icon, isSelected: Bool = false, subtitle: String? = nil, action: @escaping () -> Void) -> some View {
         Button {
             close(then: action)
         } label: {
             HStack(spacing: 12) {
                 icon.frame(width: 28, height: 28)
-                Text(title)
-                    .font(.callout)
-                    .fontWeight(isSelected ? .semibold : .regular)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.callout)
+                        .fontWeight(isSelected ? .semibold : .regular)
+                    if let subtitle {
+                        Text(subtitle)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 16)
