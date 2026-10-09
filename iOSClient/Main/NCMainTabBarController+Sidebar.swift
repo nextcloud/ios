@@ -82,6 +82,16 @@ extension NCMainTabBarController {
         }, openTransfers: { [weak self] in
             self?.closeSidebarForAction()
             self?.openSidebarTransfers()
+        }, openActivity: { [weak self] in
+            guard let self, let activity = viewControllers?.first(where: { $0.tabBarItem.tag == 104 }) else { return }
+            closeSidebarForAction()
+            selectedViewController = activity
+        }, openOffline: { [weak self] in
+            self?.closeSidebarForAction()
+            self?.openSidebarCollection(storyboard: "NCOffline")
+        }, openTrash: { [weak self] in
+            self?.closeSidebarForAction()
+            self?.openSidebarCollection(storyboard: "NCTrash")
         }, hasVisibleSidebarButton: { [weak self] in
             self?.hasUncoveredSidebarButton() ?? false
         }, navigationBarCenterY: { [weak self] in
@@ -94,6 +104,7 @@ extension NCMainTabBarController {
     /// Identify the visible section, including Files' current personal filter.
     private func sidebarSelectionIdentifier() -> String? {
         if selectedIndex == 1 { return "sidebarFavorites" }
+        if selectedIndex == 4 { return "sidebarActivity" }
         guard selectedIndex == 0,
               let root = currentNavigationController()?.viewControllers.first else { return nil }
         switch root {
@@ -105,6 +116,10 @@ extension NCMainTabBarController {
             return "sidebarShares"
         case is NCGroupfolders:
             return "sidebarGroupfolders"
+        case is NCOffline:
+            return "sidebarOffline"
+        case is NCTrash:
+            return "sidebarTrash"
         case is UIHostingController<TransfersView>:
             return "sidebarTransfers"
         default:

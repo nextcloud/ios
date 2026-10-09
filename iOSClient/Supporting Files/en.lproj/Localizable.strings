@@ -65,6 +65,8 @@
 "_audio_"                   = "Audio";
 "_unknown_"                 = "Unknown";
 "_success_"                 = "Success";
+"_status_"                  = "Status";
+"_offline_files_"           = "Offline Files";
 "_mode_filename_"           = "Filename mode";
 "_warning_owncloud_"        = "You are connected to an ownCloud server. This is untested and unsupported, use at your own risk. To upgrade to Nextcloud, see https://nextcloud.com/migration.";
 "_warning_unsupported_"     = "You are using an unsupported version of Nextcloud. For the safety of your data we strongly recommend updating to the latest stable Nextcloud.";
@@ -865,5 +867,3 @@
 "_autoupload_force_reupload_footer_" = "Previous upload records are ignored for photos and videos in the selected library or date range. New completed uploads are still recorded. This option stays enabled until you turn it off.";
 
 "_auto_upload_active_" = "Automatic photo and video upload active";
-
-"_status_" = "Status";

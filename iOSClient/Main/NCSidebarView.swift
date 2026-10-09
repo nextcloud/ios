@@ -22,6 +22,9 @@ struct NCSidebarView: View {
     let openShares: () -> Void
     let openGroupfolders: () -> Void
     let openTransfers: () -> Void
+    let openActivity: () -> Void
+    let openOffline: () -> Void
+    let openTrash: () -> Void
     var hasVisibleSidebarButton: () -> Bool = { false }
     var navigationBarCenterY: () -> CGFloat? = { nil }
     var currentSelection: () -> String? = { nil }
@@ -48,7 +51,7 @@ struct NCSidebarView: View {
     var body: some View {
         GeometryReader { geometry in
             // Keep a strip of the underlying screen visible on compact displays.
-            let width = isDocked ? geometry.size.width : max(0, min(320, geometry.size.width - 56))
+            let width = isDocked ? geometry.size.width : max(0, min(300, geometry.size.width - 56))
             ZStack(alignment: .leading) {
                 VStack {
                     sidebarHeader
@@ -82,7 +85,7 @@ struct NCSidebarView: View {
                                     .accessibilityIdentifier("sidebarShares")
                             }
                             if showsGroupfolders {
-                                sidebarItem("_group_folders_", systemImage: "person.2", isSelected: selectedDestination == "sidebarGroupfolders", action: openGroupfolders)
+                                sidebarItem("_group_folders_", systemImage: "folder.badge.person.crop", isSelected: selectedDestination == "sidebarGroupfolders", action: openGroupfolders)
                                     .accessibilityIdentifier("sidebarGroupfolders")
                             }
                             Text("_status_")
@@ -93,6 +96,12 @@ struct NCSidebarView: View {
                                 .padding(.bottom, 8)
                             sidebarItem("_transfers_", systemImage: "arrow.left.arrow.right", isSelected: selectedDestination == "sidebarTransfers", action: openTransfers)
                                 .accessibilityIdentifier("sidebarTransfers")
+                            sidebarItem("_activity_", systemImage: "bolt", isSelected: selectedDestination == "sidebarActivity", action: openActivity)
+                                .accessibilityIdentifier("sidebarActivity")
+                            sidebarItem("_offline_files_", systemImage: "arrow.down.circle.dotted", isSelected: selectedDestination == "sidebarOffline", action: openOffline)
+                                .accessibilityIdentifier("sidebarOffline")
+                            sidebarItem("_trash_view_", systemImage: "trash", isSelected: selectedDestination == "sidebarTrash", action: openTrash)
+                                .accessibilityIdentifier("sidebarTrash")
                         }
                     }
                     Spacer()
@@ -262,10 +271,10 @@ struct NCSidebarView: View {
         } label: {
             HStack(spacing: 12) {
                 Image(systemName: systemImage)
-                    .font(.system(size: 22, weight: .regular))
+                    .font(.system(size: 20, weight: .regular))
                     .frame(width: 28, height: 28)
                 Text(title)
-                    .font(.body)
+                    .font(.callout)
                     .fontWeight(isSelected ? .semibold : .regular)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
