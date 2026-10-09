@@ -155,12 +155,18 @@ extension NCMainTabBarController {
     }
 
     func openSidebarSettings() {
-        guard let navigationController = currentNavigationController() else { return }
-
         let settingsView = NCSettingsView(model: NCSettingsModel(controller: self))
-        let settingsController = UIHostingController(rootView: settingsView)
-        settingsController.title = NSLocalizedString("_settings_", comment: "")
-        navigationController.pushViewController(settingsController, animated: true)
+        let hostingController = UIHostingController(rootView: settingsView)
+        hostingController.title = NSLocalizedString("_settings_", comment: "")
+        hostingController.navigationItem.largeTitleDisplayMode = .never
+        let navigationController = NCMainNavigationController(rootViewController: hostingController)
+        let image = UIImage(systemName: "gearshape")
+        navigationController.tabBarItem = UITabBarItem(
+            title: hostingController.title,
+            image: image,
+            selectedImage: image
+        )
+        selectSidebarDestination(navigationController)
     }
 
     private func openSidebarAssistant() {
@@ -184,12 +190,17 @@ extension NCMainTabBarController {
     }
 
     private func openSidebarTransfers() {
-        guard let navigationController = currentNavigationController() else { return }
-        let transfersView = TransfersView(session: NCSession.shared.getSession(controller: self), onClose: { [weak navigationController] in
-            navigationController?.dismiss(animated: true)
-        })
+        let transfersView = TransfersView(session: NCSession.shared.getSession(controller: self))
         let hostingController = UIHostingController(rootView: transfersView)
-        hostingController.modalPresentationStyle = .pageSheet
-        navigationController.present(hostingController, animated: true)
+        hostingController.title = NSLocalizedString("_transfers_", comment: "")
+        hostingController.navigationItem.largeTitleDisplayMode = .never
+        let navigationController = NCMainNavigationController(rootViewController: hostingController)
+        let image = UIImage(systemName: "arrow.left.arrow.right.circle.fill")
+        navigationController.tabBarItem = UITabBarItem(
+            title: hostingController.title,
+            image: image,
+            selectedImage: image
+        )
+        selectSidebarDestination(navigationController)
     }
 }
