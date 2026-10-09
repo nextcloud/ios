@@ -5,7 +5,6 @@
 
 import Foundation
 import UIKit
-import SwiftUI
 import NextcloudKit
 
 enum DeepLink: String {
@@ -24,14 +23,12 @@ enum DeepLink: String {
 }
 
 enum ControllerConstants {
-    static let filesIndex = 0
     static let favouriteIndex = 1
     static let mediaIndex = 2
-    static let activityIndex = 3
-    static let moreIndex = 4
     static let notification = "NCNotification"
 }
 
+@MainActor
 class NCDeepLinkHandler {
     func parseDeepLink(_ url: URL, controller: NCMainTabBarController) {
         guard let action = url.host, let deepLink = DeepLink(rawValue: action) else { return }
@@ -51,29 +48,23 @@ class NCDeepLinkHandler {
     func handleDeepLink(_ deepLink: DeepLink, controller: NCMainTabBarController, params: [String: Any]? = nil) {
         switch deepLink {
         case .openFiles:
-            navigateTo(index: ControllerConstants.filesIndex, controller: controller)
+            controller.openSidebarFiles()
         case .openFavorites:
             navigateTo(index: ControllerConstants.favouriteIndex, controller: controller)
         case .openMedia:
             navigateTo(index: ControllerConstants.mediaIndex, controller: controller)
         case .openShared:
-            Task { @MainActor in
-                navigateToMore(destination: .storyboard(name: "NCShares", presentation: .push), controller: controller)
-            }
+            controller.openSidebarCollection(storyboard: "NCShares")
         case .openOffline:
-            Task { @MainActor in
-                navigateToMore(destination: .storyboard(name: "NCOffline", presentation: .push), controller: controller)
-            }
+            controller.openSidebarCollection(storyboard: "NCOffline")
         case .openDeleted:
-            Task { @MainActor in
-                navigateToMore(destination: .storyboard(name: "NCTrash", presentation: .push), controller: controller)
-            }
+            controller.openSidebarCollection(storyboard: "NCTrash")
         case .openNotifications:
             navigateToNotification(controller: controller)
         case .openSettings:
-            navigateToSettings(controller: controller)
+            controller.openSidebarSettings()
         case .openAutoUpload:
-            navigateToAutoUpload(controller: controller)
+            controller.openSidebarAutoUpload()
         case .openUrl:
             openUrl(params: params)
         case .createNew:
@@ -88,7 +79,7 @@ class NCDeepLinkHandler {
     }
 
     private func navigateToNotification(controller: NCMainTabBarController) {
-        controller.selectedIndex = ControllerConstants.filesIndex
+        controller.openSidebarFiles()
         if let navigationController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? UINavigationController,
            let viewController = navigationController.topViewController as? NCNotification {
             viewController.modalPresentationStyle = .pageSheet
@@ -100,7 +91,7 @@ class NCDeepLinkHandler {
     }
 
     private func navigateToCreateNew(controller: NCMainTabBarController) {
-        controller.selectedIndex = ControllerConstants.filesIndex
+        controller.openSidebarFiles()
         DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
             let serverUrl = controller.currentServerUrl()
             let session = NCSession.shared.getSession(controller: controller)
@@ -114,48 +105,6 @@ class NCDeepLinkHandler {
                 return
             }
             // appDelegate.toggleMenu(controller: controller, sender: nil)
-        }
-    }
-
-    @MainActor
-    private func navigateToMore(destination: NCMoreModel.Destination, controller: NCMainTabBarController) {
-        controller.selectedIndex = ControllerConstants.moreIndex
-        guard let navigationController = controller.viewControllers?[controller.selectedIndex] as? UINavigationController else {
-            return
-        }
-
-        navigationController.popToRootViewController(animated: false)
-
-        let model = NCMoreModel(controller: controller)
-
-        model.perform(destination)
-    }
-
-    private func navigateToSettings(controller: NCMainTabBarController) {
-        controller.selectedIndex = ControllerConstants.moreIndex
-        guard let navigationController = controller.viewControllers?[controller.selectedIndex] as? UINavigationController else { return }
-
-        Task { @MainActor in
-            navigationController.popToRootViewController(animated: false)
-
-            let settingsView = NCSettingsView(model: NCSettingsModel(controller: controller))
-            let settingsController = UIHostingController(rootView: settingsView)
-            settingsController.title = NSLocalizedString("_settings_", comment: "")
-            navigationController.pushViewController(settingsController, animated: true)
-        }
-    }
-
-    private func navigateToAutoUpload(controller: NCMainTabBarController) {
-        controller.selectedIndex = ControllerConstants.moreIndex
-        guard let navigationController = controller.viewControllers?[controller.selectedIndex] as? UINavigationController else { return }
-
-        Task { @MainActor in
-            navigationController.popToRootViewController(animated: false)
-
-            let autoUploadView = NCAutoUploadView(model: NCAutoUploadModel(controller: controller), albumModel: AlbumModel(controller: controller))
-                .environment(NCAutoUploadCounter())
-            let autoUploadController = UIHostingController(rootView: autoUploadView)
-            navigationController.pushViewController(autoUploadController, animated: true)
         }
     }
 

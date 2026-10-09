@@ -275,7 +275,7 @@ extension NCMainTabBarController {
         selectSidebarDestination(NCMainNavigationController(rootViewController: browserController))
     }
 
-    private func openSidebarAutoUpload() {
+    func openSidebarAutoUpload() {
         let autoUploadView = NCAutoUploadView(model: NCAutoUploadModel(controller: self),
                                               albumModel: AlbumModel(controller: self))
             .environment(NCAutoUploadCounter())
@@ -294,10 +294,23 @@ extension NCMainTabBarController {
         present(navigationController, animated: true)
     }
 
-    private func openSidebarCollection(storyboard: String) {
+    func openSidebarCollection(storyboard: String) {
         guard let viewController = UIStoryboard(name: storyboard, bundle: nil).instantiateInitialViewController() else { return }
-        // Reuse the collection menus previously provided by More (selection, layout and sorting).
-        let navigationController = NCMoreNavigationController(rootViewController: viewController)
+        let navigationController: NCMainNavigationController
+        switch viewController {
+        case is NCRecent:
+            navigationController = NCRecentNavigationController(rootViewController: viewController)
+        case is NCShares:
+            navigationController = NCSharesNavigationController(rootViewController: viewController)
+        case is NCGroupfolders:
+            navigationController = NCGroupfoldersNavigationController(rootViewController: viewController)
+        case is NCOffline:
+            navigationController = NCOfflineNavigationController(rootViewController: viewController)
+        case is NCTrash:
+            navigationController = NCTrashNavigationController(rootViewController: viewController)
+        default:
+            return
+        }
         selectSidebarDestination(navigationController)
     }
 
