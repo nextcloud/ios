@@ -383,16 +383,17 @@ class NCMediaNavigationController: NCMainNavigationController {
     private static func showAlbumAndNotify(_ album: Album, controller: NCMainTabBarController) {
         DispatchQueue.main.async {
             guard controller.viewIfLoaded?.window != nil,
-                  let navigationController = controller.viewControllers?.compactMap({ $0 as? NCMoreNavigationController }).first,
+                  album.account == controller.account,
+                  let navigationController = controller.viewControllers?.compactMap({ $0 as? NCAlbumsNavigationController }).first,
+                  let albumsListController = navigationController.viewControllers.first,
                   let albumsController = UIStoryboard(name: "NCAlbums", bundle: nil)
                     .instantiateInitialViewController() as? AlbumsViewController else {
                 return
             }
 
             albumsController.initialAlbum = album
+            navigationController.setViewControllers([albumsListController, albumsController], animated: false)
             controller.selectedViewController = navigationController
-            guard let moreController = navigationController.viewControllers.first else { return }
-            navigationController.setViewControllers([moreController, albumsController], animated: true)
             NotificationCenter.default.post(name: photosAddedToAlbumNotification, object: controller)
         }
     }

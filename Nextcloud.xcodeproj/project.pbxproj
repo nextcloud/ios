@@ -258,7 +258,6 @@
 		F708B44B304EC5F9009D013A /* AlbumGridItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B424304EC5F9009D013A /* AlbumGridItemView.swift */; };
 		F708B44C304EC5F9009D013A /* AlbumsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B425304EC5F9009D013A /* AlbumsGridView.swift */; };
 		F708B44D304EC5F9009D013A /* AlbumPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B416304EC5F9009D013A /* AlbumPhoto.swift */; };
-		F708B44F304EC5F9009D013A /* AlbumsRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B430304EC5F9009D013A /* AlbumsRootView.swift */; };
 		F708B450304EC5F9009D013A /* AddToAlbumsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B423304EC5F9009D013A /* AddToAlbumsListView.swift */; };
 		F708B451304EC5F9009D013A /* NCInputAlbumNameAlertModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B419304EC5F9009D013A /* NCInputAlbumNameAlertModifier.swift */; };
 		F708B452304EC5F9009D013A /* AlbumsRoutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B42B304EC5F9009D013A /* AlbumsRoutes.swift */; };
@@ -956,7 +955,7 @@
 		F7CF06872E1127460063AD04 /* NCManageDatabase+CreateMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF06822E11273F0063AD04 /* NCManageDatabase+CreateMetadata.swift */; };
 		F7CF06882E1127460063AD04 /* NCManageDatabase+CreateMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF06822E11273F0063AD04 /* NCManageDatabase+CreateMetadata.swift */; };
 		F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */; };
-		F7D368DF2DAFE19E0037E7C6 /* NCActivityNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D368DE2DAFE19E0037E7C6 /* NCActivityNavigationController.swift */; };
+		F7D368DF2DAFE19E0037E7C6 /* NCAlbumsNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D368DE2DAFE19E0037E7C6 /* NCAlbumsNavigationController.swift */; };
 		F7D496FC2EBFA541004F9823 /* NCRecommendationsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75D90202D2BE26C003E740B /* NCRecommendationsCell.swift */; };
 		F7D496FD2EBFA6D9004F9823 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F7D497082EBFAFD6004F9823 /* NCImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B649B2ADFFAED00014640 /* NCImageCache.swift */; };
@@ -1558,7 +1557,6 @@
 		F708B42B304EC5F9009D013A /* AlbumsRoutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsRoutes.swift; sourceTree = "<group>"; };
 		F708B42D304EC5F9009D013A /* NCMediaViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewRepresentable.swift; sourceTree = "<group>"; };
 		F708B42E304EC5F9009D013A /* PhotoSelectionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoSelectionSheet.swift; sourceTree = "<group>"; };
-		F708B430304EC5F9009D013A /* AlbumsRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsRootView.swift; sourceTree = "<group>"; };
 		F708B433304EC5F9009D013A /* AlbumsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsViewController.swift; sourceTree = "<group>"; };
 		F708B434304EC5F9009D013A /* NCAlbums.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCAlbums.storyboard; sourceTree = "<group>"; };
 		F70A07C8205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -2040,7 +2038,7 @@
 		F7CF067A2E0FF38F0063AD04 /* NCAppStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAppStateManager.swift; sourceTree = "<group>"; };
 		F7CF06822E11273F0063AD04 /* NCManageDatabase+CreateMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+CreateMetadata.swift"; sourceTree = "<group>"; };
 		F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerRichWorkspace.storyboard; sourceTree = "<group>"; };
-		F7D368DE2DAFE19E0037E7C6 /* NCActivityNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityNavigationController.swift; sourceTree = "<group>"; };
+		F7D368DE2DAFE19E0037E7C6 /* NCAlbumsNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAlbumsNavigationController.swift; sourceTree = "<group>"; };
 		F7D4BF002CA1831600A5E746 /* NCCollectionViewCommonPinchGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectionViewCommonPinchGesture.swift; sourceTree = "<group>"; };
 		F7D4BF022CA2E8D800A5E746 /* TOPasscodeCircleImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOPasscodeCircleImage.h; sourceTree = "<group>"; };
 		F7D4BF032CA2E8D800A5E746 /* TOPasscodeCircleImage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeCircleImage.m; sourceTree = "<group>"; };
@@ -2675,14 +2673,6 @@
 			path = PhotoSelection;
 			sourceTree = "<group>";
 		};
-		F708B431304EC5F9009D013A /* Root */ = {
-			isa = PBXGroup;
-			children = (
-				F708B430304EC5F9009D013A /* AlbumsRootView.swift */,
-			);
-			path = Root;
-			sourceTree = "<group>";
-		};
 		F708B432304EC5F9009D013A /* Presentation */ = {
 			isa = PBXGroup;
 			children = (
@@ -2691,7 +2681,6 @@
 				F708B429304EC5F9009D013A /* List */,
 				F708B42C304EC5F9009D013A /* Navigation */,
 				F708B42F304EC5F9009D013A /* PhotoSelection */,
-				F708B431304EC5F9009D013A /* Root */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -2703,6 +2692,7 @@
 				F708B417304EC5F9009D013A /* Models */,
 				F708B432304EC5F9009D013A /* Presentation */,
 				F708B433304EC5F9009D013A /* AlbumsViewController.swift */,
+				F7D368DE2DAFE19E0037E7C6 /* NCAlbumsNavigationController.swift */,
 				F708B434304EC5F9009D013A /* NCAlbums.storyboard */,
 			);
 			path = Albums;
@@ -3413,7 +3403,6 @@
 				AF56C1DB2784856200D8BAE2 /* NCActivityCommentView.xib */,
 				AFA2AC8427849604008E1EA7 /* NCActivityCommentView.swift */,
 				D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */,
-				F7D368DE2DAFE19E0037E7C6 /* NCActivityNavigationController.swift */,
 			);
 			path = Activity;
 			sourceTree = "<group>";
@@ -5463,7 +5452,7 @@
 				F760A48D2FE95D06001B212E /* NCTransferDelegateDispatcher.swift in Sources */,
 				F77BC3ED293E528A005F2B08 /* NCConfigServer.swift in Sources */,
 				F7A560422AE1593700BE8FD6 /* NCSaveLivePhoto.swift in Sources */,
-				F7D368DF2DAFE19E0037E7C6 /* NCActivityNavigationController.swift in Sources */,
+				F7D368DF2DAFE19E0037E7C6 /* NCAlbumsNavigationController.swift in Sources */,
 				F7A03E332D426115007AA677 /* NCMoreNavigationController.swift in Sources */,
 				F7E402312BA891EB007E5609 /* NCTrash+SelectTabBarDelegate.swift in Sources */,
 				F7817CF829801A3500FFBC65 /* Data+Extension.swift in Sources */,
@@ -5531,7 +5520,6 @@
 				F708B44B304EC5F9009D013A /* AlbumGridItemView.swift in Sources */,
 				F708B44C304EC5F9009D013A /* AlbumsGridView.swift in Sources */,
 				F708B44D304EC5F9009D013A /* AlbumPhoto.swift in Sources */,
-				F708B44F304EC5F9009D013A /* AlbumsRootView.swift in Sources */,
 				F708B450304EC5F9009D013A /* AddToAlbumsListView.swift in Sources */,
 				F708B451304EC5F9009D013A /* NCInputAlbumNameAlertModifier.swift in Sources */,
 				F708B452304EC5F9009D013A /* AlbumsRoutes.swift in Sources */,

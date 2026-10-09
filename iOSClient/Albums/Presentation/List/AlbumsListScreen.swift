@@ -22,24 +22,6 @@ struct AlbumsListScreen: View {
                 NCLoadingAlert()
             }
         }
-        .navigationTitle(NSLocalizedString("_albums_list_nav_title_", comment: ""))
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            if #available(iOS 27.1, *) {
-                sidebarToolbarItem.axisBehavior(.horizontalOnly)
-            } else {
-                sidebarToolbarItem
-            }
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                Button(action: { viewModel.onNewAlbumClick() }) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "plus")
-                        Text(NSLocalizedString("_albums_list_new_album_btn_", comment: ""))
-                    }
-                    .fixedSize()
-                }
-            }
-        }
         .sheet(
             isPresented: $viewModel.isPhotoSelectionSheetVisible,
             onDismiss: {
@@ -62,17 +44,6 @@ struct AlbumsListScreen: View {
                 viewModel.onNewAlbumPopupCancel()
             }
         )
-    }
-
-    private var sidebarToolbarItem: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
-            Button {
-                controller.presentSidebar()
-            } label: {
-                Label("_sidebar_navigation_", systemImage: "sidebar.left")
-            }
-            .accessibilityIdentifier("openSidebar")
-        }
     }
 
     @ViewBuilder
