@@ -7,6 +7,7 @@ import SwiftUI
 /// A glass sidebar shared by the compact overlay and the native split column.
 @MainActor
 struct NCSidebarView: View {
+    static let selectionChanged = Notification.Name("NCSidebarSelectionChanged")
     static let closeRequested = Notification.Name("NCSidebarCloseRequested")
     let account: String
     let controllerIdentifier: ObjectIdentifier
@@ -14,15 +15,25 @@ struct NCSidebarView: View {
     let openSettings: () -> Void
     let openAssistant: () -> Void
     let openNotifications: () -> Void
+    let openFiles: () -> Void
+    let openPersonalFiles: () -> Void
+    let openRecent: () -> Void
+    let openFavorites: () -> Void
+    let openShares: () -> Void
+    let openGroupfolders: () -> Void
     let openTransfers: () -> Void
     var hasVisibleSidebarButton: () -> Bool = { false }
     var navigationBarCenterY: () -> CGFloat? = { nil }
+    var currentSelection: () -> String? = { nil }
     var isDocked = false
+    @State private var selectedDestination: String?
     @State private var headerHeight: CGFloat = 0
     @State private var navigationCenterY: CGFloat?
     @State private var showsCloseButton = true
     @State private var updatedAccount: String?
     @State private var capabilitiesRevision = UUID()
+    @State private var showsShares = false
+    @State private var showsGroupfolders = false
     @State private var showsAssistant = false
     @State private var showsNotifications = false
     @State private var isVisible = false
@@ -51,22 +62,39 @@ struct NCSidebarView: View {
                         .padding(.horizontal)
                         .padding(.top, headerTopInset)
                         .padding(.bottom, 16)
-                    Button {
-                        close(then: openTransfers)
-                    } label: {
-                        Label {
-                            Text("_transfers_")
-                        } icon: {
-                            Image(systemName: "arrow.left.arrow.right.circle.fill")
-                                .font(.title)
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("_home_")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 32)
+                                .padding(.bottom, 8)
+                            sidebarItem("_all_files_", systemImage: "folder", isSelected: selectedDestination == "sidebarFiles", action: openFiles)
+                                .accessibilityIdentifier("sidebarFiles")
+                            sidebarItem("_personal_files_", systemImage: "person", isSelected: selectedDestination == "sidebarPersonalFiles", action: openPersonalFiles)
+                                .accessibilityIdentifier("sidebarPersonalFiles")
+                            sidebarItem("_recent_", systemImage: "clock.arrow.circlepath", isSelected: selectedDestination == "sidebarRecent", action: openRecent)
+                                .accessibilityIdentifier("sidebarRecent")
+                            sidebarItem("_favorites_", systemImage: "star", isSelected: selectedDestination == "sidebarFavorites", action: openFavorites)
+                                .accessibilityIdentifier("sidebarFavorites")
+                            if showsShares {
+                                sidebarItem("_list_shares_", systemImage: "person.badge.plus", isSelected: selectedDestination == "sidebarShares", action: openShares)
+                                    .accessibilityIdentifier("sidebarShares")
+                            }
+                            if showsGroupfolders {
+                                sidebarItem("_group_folders_", systemImage: "person.2", isSelected: selectedDestination == "sidebarGroupfolders", action: openGroupfolders)
+                                    .accessibilityIdentifier("sidebarGroupfolders")
+                            }
+                            Text("_status_")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 32)
+                                .padding(.top, 20)
+                                .padding(.bottom, 8)
+                            sidebarItem("_transfers_", systemImage: "arrow.left.arrow.right", isSelected: selectedDestination == "sidebarTransfers", action: openTransfers)
+                                .accessibilityIdentifier("sidebarTransfers")
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding()
-                        .contentShape(Rectangle())
                     }
-                    .buttonStyle(.plain)
-                    .padding(.horizontal)
-                    .accessibilityIdentifier("sidebarTransfers")
                     Spacer()
                 }
                 .frame(width: width)
@@ -113,6 +141,12 @@ struct NCSidebarView: View {
                     .accessibilityHidden(true)
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: Self.selectionChanged)
+            .receive(on: DispatchQueue.main)) { notification in
+            guard let controller = notification.object as? NCMainTabBarController,
+                  ObjectIdentifier(controller) == controllerIdentifier else { return }
+            selectedDestination = currentSelection()
+        }
         .onReceive(NotificationCenter.default.publisher(for: Self.closeRequested)
             .receive(on: DispatchQueue.main)) { notification in
             guard let controller = notification.object as? NCMainTabBarController,
@@ -130,6 +164,8 @@ struct NCSidebarView: View {
             updatedAccount = account
             showsAssistant = false
             showsNotifications = false
+            showsShares = false
+            showsGroupfolders = false
             capabilitiesRevision = UUID()
         }
         .onReceive(NotificationCenter.default.publisher(for: Notification.Name(NCGlobal.shared.notificationCenterServerDidUpdate))
@@ -142,6 +178,8 @@ struct NCSidebarView: View {
             // Account changes and server updates cancel the previous read automatically.
             let capabilities = await NCManageDatabase.shared.getCapabilities(account: activeAccount)
             guard !Task.isCancelled else { return }
+            showsShares = capabilities?.fileSharingApiEnabled ?? false
+            showsGroupfolders = capabilities?.groupfoldersEnabled ?? false
             showsAssistant = capabilities?.assistantEnabled ?? false
             showsNotifications = !(capabilities?.notification.isEmpty ?? true)
         }
@@ -158,6 +196,7 @@ struct NCSidebarView: View {
     }
 
     private func updateHeaderLayout() {
+        selectedDestination = currentSelection()
         showsCloseButton = !hasVisibleSidebarButton()
         navigationCenterY = navigationBarCenterY()
     }
@@ -214,6 +253,36 @@ struct NCSidebarView: View {
         }
         .buttonBorderShape(.circle)
         .controlSize(.regular)
+    }
+
+    /// A fixed icon column keeps every destination's title aligned.
+    private func sidebarItem(_ title: LocalizedStringKey, systemImage: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button {
+            close(then: action)
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 22, weight: .regular))
+                    .frame(width: 28, height: 28)
+                Text(title)
+                    .font(.body)
+                    .fontWeight(isSelected ? .semibold : .regular)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background {
+                if isSelected {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.primary.opacity(0.08))
+                }
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .padding(.leading, 28)
+        .padding(.trailing, 16)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     private func headerButton(_ title: LocalizedStringKey, systemImage: String, action: @escaping () -> Void) -> some View {

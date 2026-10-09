@@ -7,6 +7,9 @@ import SwiftUI
 import NextcloudKit
 
 class NCFilesNavigationController: NCMainNavigationController {
+    /// The current Files destination; shared by its root and subfolders, not persisted.
+    var personalFilesOnly = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -40,7 +43,7 @@ class NCFilesNavigationController: NCMainNavigationController {
         }
 
         if collectionViewCommon.serverUrl == utilityFileSystem.getHomeServer(session: session) {
-            let fileSettings = UIMenu(title: "", options: .displayInline, children: [items.personalFilesOnly, items.favoriteOnTop, items.directoryOnTop, items.hiddenFiles])
+            let fileSettings = UIMenu(title: "", options: .displayInline, children: [items.favoriteOnTop, items.directoryOnTop, items.hiddenFiles])
             var children: [UIMenuElement] = [items.showDescription]
             if let showRecommendedFiles = items.showRecommendedFiles {
                 children.insert(showRecommendedFiles, at: 0)

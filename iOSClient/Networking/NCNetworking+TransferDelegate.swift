@@ -292,8 +292,9 @@ extension NCNetworking: NCTransferDelegate {
     func openFileView(serverUrl: String,
                       metadata: tableMetadata? = nil,
                       sceneIdentifier: String) async {
-        guard let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
-              let navigationController = controller.viewControllers?.first as? UINavigationController
+        guard let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) else { return }
+        controller.openSidebarFiles()
+        guard let navigationController = controller.viewControllers?.first as? UINavigationController
         else { return }
         controller.selectedIndex = 0
 
@@ -304,8 +305,9 @@ extension NCNetworking: NCTransferDelegate {
 
     @MainActor
     func moveInFolder(serverUrl: String, sceneIdentifier: String) async -> NCFiles? {
-        guard let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
-              let navigationController = controller.viewControllers?.first as? UINavigationController
+        guard let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) else { return nil }
+        controller.openSidebarFiles()
+        guard let navigationController = controller.viewControllers?.first as? UINavigationController
         else {
             return nil
         }

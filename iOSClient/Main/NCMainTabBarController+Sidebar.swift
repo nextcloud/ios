@@ -60,6 +60,25 @@ extension NCMainTabBarController {
         }, openNotifications: { [weak self] in
             self?.closeSidebarForAction()
             self?.openSidebarNotifications()
+        }, openFiles: { [weak self] in
+            self?.closeSidebarForAction()
+            self?.openSidebarFiles(personalFilesOnly: false)
+        }, openPersonalFiles: { [weak self] in
+            self?.closeSidebarForAction()
+            self?.openSidebarFiles(personalFilesOnly: true)
+        }, openRecent: { [weak self] in
+            self?.closeSidebarForAction()
+            self?.openSidebarCollection(storyboard: "NCRecent")
+        }, openFavorites: { [weak self] in
+            guard let self, let favorites = viewControllers?.first(where: { $0.tabBarItem.tag == 101 }) else { return }
+            closeSidebarForAction()
+            selectedViewController = favorites
+        }, openShares: { [weak self] in
+            self?.closeSidebarForAction()
+            self?.openSidebarCollection(storyboard: "NCShares")
+        }, openGroupfolders: { [weak self] in
+            self?.closeSidebarForAction()
+            self?.openSidebarCollection(storyboard: "NCGroupfolders")
         }, openTransfers: { [weak self] in
             self?.closeSidebarForAction()
             self?.openSidebarTransfers()
@@ -67,7 +86,30 @@ extension NCMainTabBarController {
             self?.hasUncoveredSidebarButton() ?? false
         }, navigationBarCenterY: { [weak self] in
             self?.sidebarNavigationBarCenterY(isDocked: isDocked)
+        }, currentSelection: { [weak self] in
+            self?.sidebarSelectionIdentifier()
         }, isDocked: isDocked)
+    }
+
+    /// Identify the visible section, including Files' current personal filter.
+    private func sidebarSelectionIdentifier() -> String? {
+        if selectedIndex == 1 { return "sidebarFavorites" }
+        guard selectedIndex == 0,
+              let root = currentNavigationController()?.viewControllers.first else { return nil }
+        switch root {
+        case let files as NCFiles:
+            return files.personalFilesOnly ? "sidebarPersonalFiles" : "sidebarFiles"
+        case is NCRecent:
+            return "sidebarRecent"
+        case is NCShares:
+            return "sidebarShares"
+        case is NCGroupfolders:
+            return "sidebarGroupfolders"
+        case is UIHostingController<TransfersView>:
+            return "sidebarTransfers"
+        default:
+            return nil
+        }
     }
 
     /// Measure the visible button row in the panel's safe content coordinates.
@@ -159,14 +201,17 @@ extension NCMainTabBarController {
         let hostingController = UIHostingController(rootView: settingsView)
         hostingController.title = NSLocalizedString("_settings_", comment: "")
         hostingController.navigationItem.largeTitleDisplayMode = .never
-        let navigationController = NCMainNavigationController(rootViewController: hostingController)
-        let image = UIImage(systemName: "gearshape")
-        navigationController.tabBarItem = UITabBarItem(
-            title: hostingController.title,
-            image: image,
-            selectedImage: image
+        let navigationController = UINavigationController(rootViewController: hostingController)
+        navigationController.setNavigationBarAppearance()
+        hostingController.navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "xmark"),
+            primaryAction: UIAction { [weak navigationController] _ in
+                navigationController?.dismiss(animated: true)
+            }
         )
-        selectSidebarDestination(navigationController)
+        hostingController.navigationItem.rightBarButtonItem?.accessibilityLabel = NSLocalizedString("_close_", comment: "")
+        navigationController.modalPresentationStyle = .pageSheet
+        present(navigationController, animated: true)
     }
 
     private func openSidebarAssistant() {
@@ -189,18 +234,19 @@ extension NCMainTabBarController {
         presenter.present(navigationController, animated: true)
     }
 
+    private func openSidebarCollection(storyboard: String) {
+        guard let viewController = UIStoryboard(name: storyboard, bundle: nil).instantiateInitialViewController() else { return }
+        // Reuse the collection menus previously provided by More (selection, layout and sorting).
+        let navigationController = NCMoreNavigationController(rootViewController: viewController)
+        selectSidebarDestination(navigationController)
+    }
+
     private func openSidebarTransfers() {
         let transfersView = TransfersView(session: NCSession.shared.getSession(controller: self))
         let hostingController = UIHostingController(rootView: transfersView)
         hostingController.title = NSLocalizedString("_transfers_", comment: "")
         hostingController.navigationItem.largeTitleDisplayMode = .never
         let navigationController = NCMainNavigationController(rootViewController: hostingController)
-        let image = UIImage(systemName: "arrow.left.arrow.right.circle.fill")
-        navigationController.tabBarItem = UITabBarItem(
-            title: hostingController.title,
-            image: image,
-            selectedImage: image
-        )
         selectSidebarDestination(navigationController)
     }
 }

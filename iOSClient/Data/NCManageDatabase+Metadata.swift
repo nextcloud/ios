@@ -1444,10 +1444,11 @@ extension NCManageDatabase {
                                      withUserId userId: String,
                                      withAccount account: String,
                                      withLayout layoutForView: NCDBLayoutForView?,
+                                     personalFilesOnly: Bool = false,
                                      withPreficate predicateSource: NSPredicate? = nil) async -> [tableMetadata] {
         var predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName != %@ AND NOT (status IN %@)", account, serverUrl, NextcloudKit.shared.nkCommonInstance.rootFileName, NCGlobal.shared.metadataStatusHideInView)
 
-        if NCPreferences().getPersonalFilesOnly(account: account) {
+        if personalFilesOnly {
             predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName != %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@)", account, serverUrl, NextcloudKit.shared.nkCommonInstance.rootFileName, userId, NCGlobal.shared.metadataStatusHideInView)
         }
 

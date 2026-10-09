@@ -41,6 +41,7 @@
 "_upload_"                  = "Upload";
 "_home_"                    = "Files";
 "_files_"                   = "Files";
+"_browse_"                  = "Browse";
 "_ok_"                      = "OK";
 "_done_"                    = "Done";
 "_clear_"                   = "Clear";
@@ -330,7 +331,6 @@
 "_files_no_files_"              = "No files in here";
 "_files_no_folders_"            = "No folders in here";
 "_request_in_progress_"         = "Request to server in progress …";
-"_personal_files_only_"         = "Personal files only";
 
 "audio"                         = "AUDIO";
 "directory"                     = "FOLDERS";
@@ -865,3 +865,5 @@
 "_autoupload_force_reupload_footer_" = "Previous upload records are ignored for photos and videos in the selected library or date range. New completed uploads are still recorded. This option stays enabled until you turn it off.";
 
 "_auto_upload_active_" = "Automatic photo and video upload active";
+
+"_status_" = "Status";
