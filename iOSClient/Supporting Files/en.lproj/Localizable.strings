@@ -66,6 +66,8 @@
 "_unknown_"                 = "Unknown";
 "_success_"                 = "Success";
 "_status_"                  = "Status";
+"_apps_"                    = "Apps";
+"_more_apps_"               = "More apps";
 "_offline_files_"           = "Offline Files";
 "_mode_filename_"           = "Filename mode";
 "_warning_owncloud_"        = "You are connected to an ownCloud server. This is untested and unsupported, use at your own risk. To upgrade to Nextcloud, see https://nextcloud.com/migration.";

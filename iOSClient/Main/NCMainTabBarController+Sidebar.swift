@@ -92,6 +92,9 @@ extension NCMainTabBarController {
         }, openTrash: { [weak self] in
             self?.closeSidebarForAction()
             self?.openSidebarCollection(storyboard: "NCTrash")
+        }, openApp: { [weak self] url, fallbackUrl in
+            self?.closeSidebarForAction()
+            self?.openSidebarApp(url: url, fallbackUrl: fallbackUrl)
         }, hasVisibleSidebarButton: { [weak self] in
             self?.hasUncoveredSidebarButton() ?? false
         }, navigationBarCenterY: { [weak self] in
@@ -247,6 +250,17 @@ extension NCMainTabBarController {
         notificationsController.modalPresentationStyle = .pageSheet
         notificationsController.session = NCSession.shared.getSession(controller: self)
         presenter.present(navigationController, animated: true)
+    }
+
+    /// Opens installed companion apps, falling back to their App Store page.
+    private func openSidebarApp(url: String, fallbackUrl: String?) {
+        guard let appUrl = URL(string: url) else { return }
+        if let fallbackUrl, !UIApplication.shared.canOpenURL(appUrl) {
+            guard let storeUrl = URL(string: fallbackUrl) else { return }
+            UIApplication.shared.open(storeUrl)
+        } else {
+            UIApplication.shared.open(appUrl)
+        }
     }
 
     private func openSidebarCollection(storyboard: String) {

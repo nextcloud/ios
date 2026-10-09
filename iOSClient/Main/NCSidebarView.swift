@@ -25,6 +25,7 @@ struct NCSidebarView: View {
     let openActivity: () -> Void
     let openOffline: () -> Void
     let openTrash: () -> Void
+    let openApp: (String, String?) -> Void
     var hasVisibleSidebarButton: () -> Bool = { false }
     var navigationBarCenterY: () -> CGFloat? = { nil }
     var currentSelection: () -> String? = { nil }
@@ -35,6 +36,9 @@ struct NCSidebarView: View {
     @State private var showsCloseButton = true
     @State private var updatedAccount: String?
     @State private var capabilitiesRevision = UUID()
+    @State private var quotaDescription = ""
+    @State private var quotaProgress: Double = 0
+    @State private var quotaHasLimit = false
     @State private var showsShares = false
     @State private var showsGroupfolders = false
     @State private var showsAssistant = false
@@ -102,9 +106,29 @@ struct NCSidebarView: View {
                                 .accessibilityIdentifier("sidebarOffline")
                             sidebarItem("_trash_view_", systemImage: "trash", isSelected: selectedDestination == "sidebarTrash", action: openTrash)
                                 .accessibilityIdentifier("sidebarTrash")
+                            if !NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
+                                Text("_apps_")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                                    .padding(.horizontal, 32)
+                                    .padding(.top, 20)
+                                    .padding(.bottom, 8)
+                                sidebarApp("Talk", image: "talk-template") {
+                                    openApp(NCGlobal.shared.talkSchemeUrl, NCGlobal.shared.talkAppStoreUrl)
+                                }
+                                .accessibilityIdentifier("sidebarTalk")
+                                sidebarApp("Notes", image: "notes-template") {
+                                    openApp(NCGlobal.shared.notesSchemeUrl, NCGlobal.shared.notesAppStoreUrl)
+                                }
+                                .accessibilityIdentifier("sidebarNotes")
+                                sidebarApp("_more_apps_", image: "more-apps-template") {
+                                    openApp(NCGlobal.shared.moreAppsUrl, nil)
+                                }
+                                .accessibilityIdentifier("sidebarMoreApps")
+                            }
                         }
                     }
-                    Spacer()
+                    quotaFooter
                 }
                 .frame(width: width)
                 .frame(maxHeight: .infinity)
@@ -171,6 +195,9 @@ struct NCSidebarView: View {
 
             // Hide the previous account's actions while loading the new cached capabilities.
             updatedAccount = account
+            quotaDescription = ""
+            quotaProgress = 0
+            quotaHasLimit = false
             showsAssistant = false
             showsNotifications = false
             showsShares = false
@@ -186,11 +213,76 @@ struct NCSidebarView: View {
         .task(id: "\(activeAccount)-\(capabilitiesRevision)") {
             // Account changes and server updates cancel the previous read automatically.
             let capabilities = await NCManageDatabase.shared.getCapabilities(account: activeAccount)
+            let tableAccount = await NCManageDatabase.shared.getTableAccountAsync(account: activeAccount)
             guard !Task.isCancelled else { return }
             showsShares = capabilities?.fileSharingApiEnabled ?? false
             showsGroupfolders = capabilities?.groupfoldersEnabled ?? false
             showsAssistant = capabilities?.assistantEnabled ?? false
             showsNotifications = !(capabilities?.notification.isEmpty ?? true)
+            if let tableAccount {
+                updateQuota(tableAccount)
+            } else {
+                quotaDescription = ""
+            }
+        }
+    }
+
+    private func updateQuota(_ tableAccount: tableAccount) {
+        let utility = NCUtilityFileSystem()
+        let total: String
+        switch tableAccount.quotaTotal {
+        case -1:
+            total = "0"
+        case -2:
+            total = NSLocalizedString("_quota_space_unknown_", comment: "")
+        case -3:
+            total = NSLocalizedString("_quota_space_unlimited_", comment: "")
+        default:
+            total = utility.transformedSize(tableAccount.quotaTotal)
+        }
+        quotaDescription = String.localizedStringWithFormat(
+            NSLocalizedString("_quota_using_", comment: ""),
+            utility.transformedSize(tableAccount.quotaUsed),
+            total
+        )
+        quotaHasLimit = tableAccount.quotaTotal > 0
+        quotaProgress = min(max(tableAccount.quotaRelative / 100, 0), 1)
+    }
+
+    /// A noninteractive footer, separate from the scrollable navigation destinations.
+    @ViewBuilder
+    private var quotaFooter: some View {
+        if !quotaDescription.isEmpty {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .stroke(Color.secondary, lineWidth: 1.5)
+                    if quotaHasLimit && quotaProgress > 0 {
+                        Path { path in
+                            let center = CGPoint(x: 14, y: 14)
+                            path.move(to: center)
+                            path.addArc(center: center, radius: 13,
+                                        startAngle: .degrees(-90),
+                                        endAngle: .degrees(-90 + 360 * quotaProgress),
+                                        clockwise: false)
+                            path.closeSubpath()
+                        }
+                        .fill(quotaProgress >= 0.9 ? Color.red : Color.secondary)
+                    }
+                }
+                .frame(width: 28, height: 28)
+                .accessibilityHidden(true)
+                Text(quotaDescription)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.leading, 44)
+            .padding(.trailing, 32)
+            .padding(.top, 12)
+            .padding(.bottom, 16)
+            .accessibilityElement(children: .combine)
         }
     }
 
@@ -266,13 +358,19 @@ struct NCSidebarView: View {
 
     /// A fixed icon column keeps every destination's title aligned.
     private func sidebarItem(_ title: LocalizedStringKey, systemImage: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        sidebarItem(title, icon: Image(systemName: systemImage).font(.system(size: 20, weight: .regular)), isSelected: isSelected, action: action)
+    }
+
+    private func sidebarApp(_ title: LocalizedStringKey, image: String, action: @escaping () -> Void) -> some View {
+        sidebarItem(title, icon: Image(image).resizable().scaledToFit().frame(width: 20, height: 20), action: action)
+    }
+
+    private func sidebarItem<Icon: View>(_ title: LocalizedStringKey, icon: Icon, isSelected: Bool = false, action: @escaping () -> Void) -> some View {
         Button {
             close(then: action)
         } label: {
             HStack(spacing: 12) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 20, weight: .regular))
-                    .frame(width: 28, height: 28)
+                icon.frame(width: 28, height: 28)
                 Text(title)
                     .font(.callout)
                     .fontWeight(isSelected ? .semibold : .regular)
