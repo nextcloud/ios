@@ -18,8 +18,6 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
 
     @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewRecommendationsHeightConstraint: NSLayoutConstraint!
-    @IBOutlet private weak var viewRecommendationsLeadingConstraint: NSLayoutConstraint!
-    @IBOutlet private weak var viewRecommendationsTrailingConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
 
     @IBOutlet weak var textViewRichWorkspace: UITextView!
@@ -35,7 +33,6 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
     private let richWorkspaceGradient: CAGradientLayer = CAGradientLayer()
     private var recommendations: [tableRecommendedFiles] = []
     private var viewController: UIViewController?
-    private weak var parentCollectionView: UICollectionView?
     private var sceneIdentifier: String = ""
     private var recommendationsIdentity: [String] = []
     private var contentRequestID = UUID()
@@ -50,9 +47,8 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        // The recommendations carousel is intentionally allowed to extend beyond
-        // the safe-area-sized parent collection view.
-        clipsToBounds = false
+        // The carousel shares the list's safe-area width, including in split layouts.
+        clipsToBounds = true
 
         //
         // RichWorkspace
@@ -98,40 +94,6 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         setRichWorkspaceColor()
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        updateRecommendationsLayout()
-    }
-
-    private func updateRecommendationsLayout() {
-        guard let viewController else { return }
-
-        // In an expanded split, extending into the leading unsafe area can put the
-        // carousel underneath the sidebar. Keep it within the parent collection instead.
-        let isExpandedSplit = viewController.splitViewController.map { !$0.isCollapsed } ?? false
-        let safeAreaInsets = isExpandedSplit ? UIEdgeInsets.zero : viewController.view.safeAreaInsets
-        viewRecommendationsLeadingConstraint.constant = -safeAreaInsets.left
-        viewRecommendationsTrailingConstraint.constant = -safeAreaInsets.right
-
-        // Keep the final recommendation clear of the safe-area overlay when
-        // scrolled all the way to the end of the carousel.
-        if collectionViewRecommendations.contentInset.right != safeAreaInsets.right {
-            var contentInset = collectionViewRecommendations.contentInset
-            contentInset.right = safeAreaInsets.right
-            collectionViewRecommendations.contentInset = contentInset
-        }
-
-        if collectionViewRecommendations.horizontalScrollIndicatorInsets.right != safeAreaInsets.right {
-            var horizontalScrollIndicatorInsets = collectionViewRecommendations.horizontalScrollIndicatorInsets
-            horizontalScrollIndicatorInsets.right = safeAreaInsets.right
-            collectionViewRecommendations.horizontalScrollIndicatorInsets = horizontalScrollIndicatorInsets
-        }
-    }
-
-    private func setParentCollectionViewClipping(_ clipsToBounds: Bool) {
-        parentCollectionView?.clipsToBounds = clipsToBounds
-    }
-
     func setContent(heightHeaderRichWorkspace: CGFloat,
                     richWorkspaceText: String?,
                     heightHeaderRecommendations: CGFloat,
@@ -157,13 +119,11 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         self.recommendations = recommendations
         self.labelSection.text = sectionText
         self.viewController = viewController
-        self.parentCollectionView = parentCollectionView
         self.sceneIdentifier = sceneItentifier
         self.delegate = delegate
 
         let recommendationsVisible = heightHeaderRecommendations != 0 && !recommendations.isEmpty
-        setParentCollectionViewClipping(!recommendationsVisible)
-        updateRecommendationsLayout()
+        parentCollectionView?.clipsToBounds = true
 
         if heightHeaderRichWorkspace != 0, let richWorkspaceText, !richWorkspaceText.isEmpty {
             viewRichWorkspace.isHidden = false

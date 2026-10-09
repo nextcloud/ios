@@ -103,9 +103,7 @@
                 <outlet property="labelSection" destination="mB5-5n-AL9" id="uxf-bN-nZA"/>
                 <outlet property="textViewRichWorkspace" destination="pYo-pF-MGv" id="2h4-LP-T1z"/>
                 <outlet property="viewRecommendations" destination="eYW-bR-S5m" id="xj7-Rm-pad"/>
-                <outlet property="viewRecommendationsLeadingConstraint" destination="EMM-Nm-m0n" id="J7v-YA-7qf"/>
                 <outlet property="viewRecommendationsHeightConstraint" destination="XCr-rB-tJu" id="DNH-n4-o3p"/>
-                <outlet property="viewRecommendationsTrailingConstraint" destination="xBN-OH-wjf" id="M6a-4Q-y6P"/>
                 <outlet property="viewRichWorkspace" destination="NC1-5C-E5z" id="NyN-tr-sJl"/>
                 <outlet property="viewRichWorkspaceHeightConstraint" destination="eT3-4m-mJ6" id="agb-tE-jhw"/>
                 <outlet property="viewSection" destination="f9U-NY-4OS" id="idM-C9-2nP"/>
