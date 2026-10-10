@@ -22,7 +22,7 @@ env:
   PROJECT: Nextcloud.xcodeproj
   DESTINATION: platform=iOS Simulator,name=iPhone 17,OS=27.0
   SCHEME: Nextcloud
-  XCODE_VERSION: '27.0'
+  XCODE_VERSION: '27.1'
   SERVER_BRANCH: stable30
   PHP_VERSION: 8.3
 

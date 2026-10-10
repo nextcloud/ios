@@ -56,9 +56,31 @@ final class NCVideoAVPlayerViewController: UIViewController {
     // MARK: - Views
 
     internal let playerContainerView = NCVideoAVPlayerLayerView()
-    internal let controlsView = NCVideoControlsView()
+    private let normalControlsView = NCVideoControlsView()
+    private lazy var adaptiveControlsView: NCVideoAdaptiveControlsView = {
+        let controlsView = NCVideoAdaptiveControlsView(state: normalControlsView.state)
+        controlsView.delegate = self
+        controlsView.configureFoldedNavigation(
+            titleView: foldedTitleView,
+            closeAction: UIAction { [weak self] _ in self?.close() },
+            moreItem: NCContextMenuViewer.mediaNavigationItem(
+                viewController: self,
+                metadataProvider: { [weak self] in self?.metadata },
+                controllerProvider: { [weak self] in self?.contextMenuController }
+            )
+        )
+        return controlsView
+    }()
+
+    internal var controlsView: any NCVideoPlaybackControls {
+        if (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true {
+            return adaptiveControlsView
+        }
+        return normalControlsView
+    }
 
     private let floatingTitleView = NCMediaViewerFloatingTitleView()
+    private let foldedTitleView = NCMediaViewerFloatingTitleView()
 
     private lazy var moreNavigationItem = NCContextMenuViewer.mediaNavigationItem(
         viewController: self,
@@ -100,13 +122,14 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     internal var shouldKeepControlsVisible: Bool {
-        player.timeControlStatus != .playing && !isPlaybackRequested
+        (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true ||
+            player.timeControlStatus != .playing && !isPlaybackRequested
     }
 
     internal func setNavigationBarVisible(_ isVisible: Bool, animated: Bool) {
         guard let navigationController else { return }
         navigationController.setNavigationBarHidden(
-            !isVisible,
+            !isVisible || (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true,
             animated: animated
         )
         navigationController.view.layoutIfNeeded()
@@ -165,7 +188,24 @@ final class NCVideoAVPlayerViewController: UIViewController {
     override func loadView() {
         let initialBackgroundColor = viewerBackgroundColor
 
-        let rootView = UIView()
+        let rootView = NCVideoAdaptiveLayoutView(
+            videoView: playerContainerView,
+            normalControlsView: normalControlsView,
+            adaptiveControlsView: { [weak self] in self?.adaptiveControlsView }
+        )
+        rootView.onLayoutModeChanged = { [weak self] isFolded in
+            guard let self else {
+                return
+            }
+
+            showControls(animated: false)
+
+            if isFolded {
+                stopControlsHideTimer()
+            } else {
+                scheduleControlsHide()
+            }
+        }
         rootView.backgroundColor = initialBackgroundColor
         rootView.isOpaque = true
         rootView.clipsToBounds = true
@@ -173,29 +213,12 @@ final class NCVideoAVPlayerViewController: UIViewController {
         playerContainerView.backgroundColor = initialBackgroundColor
         playerContainerView.isOpaque = true
         playerContainerView.clipsToBounds = true
-        playerContainerView.translatesAutoresizingMaskIntoConstraints = false
         playerContainerView.playerLayer.videoGravity = .resizeAspect
 
-        controlsView.delegate = self
+        normalControlsView.delegate = self
         updatePlaybackOptionsControls()
         controlsView.alpha = 0
         controlsView.isHidden = true
-        controlsView.translatesAutoresizingMaskIntoConstraints = false
-
-        rootView.addSubview(playerContainerView)
-        rootView.addSubview(controlsView)
-
-        NSLayoutConstraint.activate([
-            playerContainerView.leadingAnchor.constraint(equalTo: rootView.leadingAnchor),
-            playerContainerView.trailingAnchor.constraint(equalTo: rootView.trailingAnchor),
-            playerContainerView.topAnchor.constraint(equalTo: rootView.topAnchor),
-            playerContainerView.bottomAnchor.constraint(equalTo: rootView.bottomAnchor),
-
-            controlsView.leadingAnchor.constraint(equalTo: rootView.leadingAnchor),
-            controlsView.trailingAnchor.constraint(equalTo: rootView.trailingAnchor),
-            controlsView.topAnchor.constraint(equalTo: rootView.topAnchor),
-            controlsView.bottomAnchor.constraint(equalTo: rootView.bottomAnchor)
-        ])
 
         updateControlsNavigationBar()
 
@@ -324,6 +347,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         )
 
         navigationItem.rightBarButtonItem = moreNavigationItem
+
     }
 
     func updateMetadata(_ metadata: tableMetadata) {
@@ -338,10 +362,12 @@ final class NCVideoAVPlayerViewController: UIViewController {
             ? metadata.fileName
             : metadata.fileNameView
 
-        floatingTitleView.update(
-            primaryText: primaryTitle,
-            secondaryText: floatingTitleDateFormatter.string(from: metadata.date as Date)
-        )
+        for titleView in [floatingTitleView, foldedTitleView] {
+            titleView.update(
+                primaryText: primaryTitle,
+                secondaryText: floatingTitleDateFormatter.string(from: metadata.date as Date)
+            )
+        }
     }
 
     @objc
@@ -928,6 +954,16 @@ final class NCVideoAVPlayerViewController: UIViewController {
             controlsView.bottomControlsView.bounds,
             to: view
         )
+
+        if (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true {
+            let foldedNavigationFrame = adaptiveControlsView.foldedNavigationBar.convert(
+                adaptiveControlsView.foldedNavigationBar.bounds,
+                to: view
+            )
+            if !adaptiveControlsView.isHidden && foldedNavigationFrame.contains(location) {
+                return true
+            }
+        }
 
         return topActionsFrame.contains(location)
             || centerControlsFrame.contains(location)
