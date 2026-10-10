@@ -7,30 +7,20 @@ import UIKit
 
 extension NCMainTabBarController {
     func presentSidebar() {
-        guard presentedViewController == nil else { return }
         if sidebarHostingController != nil {
             NotificationCenter.default.post(name: NCSidebarView.closeRequested, object: self)
             return
         }
+        guard presentedViewController == nil else { return }
 
-        let sidebarView = makeSidebarView()
-        let hostingController = UIHostingController(rootView: sidebarView)
+        let hostingController = UIHostingController(rootView: makeSidebarView())
         hostingController.view.backgroundColor = .clear
         hostingController.view.accessibilityViewIsModal = true
+        // Keep the overlay outside UITabBarController's child controllers.
+        // SwiftUI handles the panel animation; UIKit only presents the transparent layer.
+        hostingController.modalPresentationStyle = .overFullScreen
         sidebarHostingController = hostingController
-        addChild(hostingController)
-        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(hostingController.view)
-        // Cover the full screen with glass. NCSidebarView positions its controls
-        // within the safe area and aligns them with the measured navigation buttons.
-        NSLayoutConstraint.activate([
-            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
-            hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-        hostingController.didMove(toParent: self)
-        view.layoutIfNeeded()
+        present(hostingController, animated: false)
     }
 
     /// Builds the overlay sidebar shared by all devices.
@@ -82,8 +72,6 @@ extension NCMainTabBarController {
         }, openApp: { [weak self] url, fallbackUrl in
             self?.removeSidebar()
             self?.openSidebarApp(url: url, fallbackUrl: fallbackUrl)
-        }, hasVisibleSidebarButton: { [weak self] in
-            self?.hasUncoveredSidebarButton() ?? false
         }, navigationBarCenterY: { [weak self] in
             self?.sidebarNavigationBarCenterY()
         }, windowSafeAreaLeadingInset: { [weak self] in
@@ -150,29 +138,9 @@ extension NCMainTabBarController {
         }
     }
 
-    /// Only omit the panel's close button when the navigation opener is available
-    /// and its entire bar is outside the overlay. Partial overlap keeps the fallback.
-    private func hasUncoveredSidebarButton() -> Bool {
-        guard let navigationController = currentNavigationController() as? NCMainNavigationController,
-              !navigationController.isNavigationBarHidden,
-              let overlay = sidebarHostingController?.view,
-              let window = overlay.window else { return false }
-        let bar = navigationController.navigationBar
-        let button = navigationController.sidebarButtonItem
-        guard bar.window === window, !bar.isHidden, bar.alpha > 0,
-              button.isEnabled,
-              navigationController.topViewController?.navigationItem.leadingItemGroups
-                .flatMap({ $0.barButtonItems }).contains(where: { $0 === button }) == true else { return false }
-        let barFrame = bar.convert(bar.bounds, to: window)
-        let overlayFrame = overlay.convert(overlay.bounds, to: window)
-        return !barFrame.isEmpty && window.bounds.contains(barFrame) && !barFrame.intersects(overlayFrame)
-    }
-
     private func removeSidebar() {
         guard let hostingController = sidebarHostingController else { return }
-        hostingController.willMove(toParent: nil)
-        hostingController.view.removeFromSuperview()
-        hostingController.removeFromParent()
+        hostingController.dismiss(animated: false)
         sidebarHostingController = nil
     }
 

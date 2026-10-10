@@ -27,14 +27,12 @@ struct NCSidebarView: View {
     let openScannedImages: () -> Void
     let openExternalSite: (String, String, Int) -> Void
     let openApp: (String, String?) -> Void
-    var hasVisibleSidebarButton: () -> Bool = { false }
     var navigationBarCenterY: () -> CGFloat? = { nil }
     var windowSafeAreaLeadingInset: () -> CGFloat = { 0 }
     var currentSelection: () -> String? = { nil }
     @State private var selectedDestination: String?
     @State private var headerHeight: CGFloat = 0
     @State private var navigationCenterY: CGFloat?
-    @State private var showsCloseButton = true
     @State private var updatedAccount: String?
     @State private var capabilitiesRevision = UUID()
     @State private var autoUploadCounter = NCAutoUploadCounter()
@@ -50,7 +48,6 @@ struct NCSidebarView: View {
     @State private var isVisible = false
     @State private var isClosing = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
 
     private var activeAccount: String {
         updatedAccount ?? account
@@ -375,7 +372,6 @@ struct NCSidebarView: View {
 
     private func updateHeaderLayout() {
         selectedDestination = currentSelection()
-        showsCloseButton = !hasVisibleSidebarButton()
         navigationCenterY = navigationBarCenterY()
     }
 
@@ -428,11 +424,6 @@ struct NCSidebarView: View {
             if showsNotifications {
                 headerButton("_notifications_", systemImage: "bell.fill", action: openNotifications)
                     .accessibilityIdentifier("sidebarNotifications")
-            }
-
-            // VoiceOver remains inside the modal overlay, so retain its close action there.
-            if showsCloseButton || voiceOverEnabled {
-                headerButton("_close_", systemImage: "sidebar.left", action: onClose)
             }
         }
         .buttonBorderShape(.circle)
