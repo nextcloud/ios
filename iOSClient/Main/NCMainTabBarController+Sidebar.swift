@@ -293,3 +293,46 @@ extension NCMainTabBarController {
         selectSidebarDestination(navigationController)
     }
 }
+
+// Reserve a narrow leading strip for sidebar opening at the navigation root.
+// Nested screens retain their standard interactive back gesture.
+extension NCMainTabBarController: UIGestureRecognizerDelegate {
+    func configureSidebarGesture() {
+        sidebarOpeningGesture.addTarget(self, action: #selector(handleSidebarPan(_:)))
+        sidebarOpeningGesture.maximumNumberOfTouches = 1
+        sidebarOpeningGesture.delaysTouchesBegan = true
+        sidebarOpeningGesture.cancelsTouchesInView = true
+        sidebarOpeningGesture.delegate = self
+        view.addGestureRecognizer(sidebarOpeningGesture)
+    }
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        guard gestureRecognizer === sidebarOpeningGesture else { return true }
+        guard sidebarHostingController == nil,
+              presentedViewController == nil,
+              let navigationController = currentNavigationController() as? NCMainNavigationController,
+              navigationController.viewControllers.count == 1,
+              let topViewController = navigationController.topViewController,
+              topViewController.presentedViewController == nil,
+              topViewController.navigationItem.leadingItemGroups.flatMap({ $0.barButtonItems })
+                .contains(where: { $0 === navigationController.sidebarButtonItem }) else { return false }
+        // Include the safe margin on phones with a landscape camera area.
+        return touch.location(in: view).x <= view.safeAreaInsets.left + 32
+    }
+
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard gestureRecognizer === sidebarOpeningGesture else { return true }
+        let velocity = sidebarOpeningGesture.velocity(in: view)
+        return velocity.x > abs(velocity.y)
+    }
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        // Cell selection and scrolling must wait until the opening swipe is ruled out.
+        gestureRecognizer === sidebarOpeningGesture
+    }
+
+    @objc private func handleSidebarPan(_ gesture: UIPanGestureRecognizer) {
+        guard gesture.state == .began else { return }
+        presentSidebar()
+    }
+}

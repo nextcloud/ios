@@ -201,6 +201,17 @@ struct NCSidebarView: View {
                 .onTapGesture { close(then: onClose) }
                 .accessibilityHidden(true)
         }
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 20)
+                .onEnded { value in
+                    // Ignore vertical scrolling and short accidental movements.
+                    let translation = value.translation
+                    guard translation.width < 0,
+                          abs(translation.width) > abs(translation.height) * 1.5,
+                          translation.width < -60 || value.predictedEndTranslation.width < -100 else { return }
+                    close(then: onClose)
+                }
+        )
         .onReceive(NotificationCenter.default.publisher(for: Self.selectionChanged)
             .receive(on: DispatchQueue.main)) { notification in
             guard let controller = notification.object as? NCMainTabBarController,

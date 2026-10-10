@@ -25,6 +25,7 @@ class NCMainTabBarController: UITabBarController {
     var availableNotifications: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
     let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
+    let sidebarOpeningGesture = UIPanGestureRecognizer()
     var sidebarHostingController: UIHostingController<NCSidebarView>?
     private var filesNavigationController: NCFilesNavigationController?
     private var previousIndex: Int?
@@ -61,6 +62,7 @@ class NCMainTabBarController: UITabBarController {
         filesNavigationController = viewControllers?.first as? NCFilesNavigationController
         configureTabBarItems()
         configureTabBarAppearance()
+        configureSidebarGesture()
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
             if let userInfo = notification.userInfo as? NSDictionary,
