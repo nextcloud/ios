@@ -207,6 +207,7 @@ class NCDragDrop: NSObject {
         }
         var uploadRequest: UploadRequest?
         var downloadRequest: DownloadRequest?
+        var uploadedServerUrls: Set<String> = []
         let payload = LucidBannerPayload(blocksTouches: false,
                                          draggable: false)
         (banner, token) = showUploadBanner(windowScene: windowScene,
@@ -254,18 +255,16 @@ class NCDragDrop: NSObject {
                                                                                       fileName: metadata.fileName,
                                                                                       userId: metadata.userId,
                                                                                       urlBase: metadata.urlBase)
-            var serverUrlFileName = ""
-
+            let targetServerUrl: String
             if let destination {
-                let fileName = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: session.account, serverUrl: destination)
-                serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: fileName)
+                targetServerUrl = destination
             } else {
-                let home = NCUtilityFileSystem().getHomeServer(session: session)
+                let home = utilityFileSystem.getHomeServer(session: session)
                 let (path, _) = database.relativeDavComponents(for: metadata)
-                let serverUrl = home + path
-                let fileName = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: session.account, serverUrl: serverUrl)
-                serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileName)
+                targetServerUrl = home + path
             }
+            let fileName = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: session.account, serverUrl: targetServerUrl)
+            let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: targetServerUrl, fileName: fileName)
 
             let results = await NCNetworking.shared.uploadFile(account: session.account,
                                                                fileNameLocalPath: fileNameLocalPath,
@@ -280,13 +279,18 @@ class NCDragDrop: NSObject {
                 break
             }
 
+            uploadedServerUrls.insert(targetServerUrl)
             banner?.update(
                 payload: LucidBannerPayload.Update(progress: Double(index + 1) / Double(metadatas.count)),
                 for: token)
         }
 
-        await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferReloadData(serverUrl: nil)
+        // Cross-account uploads do not insert destination metadata in the local database.
+        // Fetch each affected folder so every window can discover the new files.
+        for serverUrl in uploadedServerUrls {
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: true, status: nil)
+            }
         }
     }
 }
