@@ -36,14 +36,17 @@ class NCMediaSelectTabBar: ObservableObject {
         hostingController.view.backgroundColor = .clear
         hostingController.view.isHidden = true
 
+        viewController.addChild(hostingController)
         viewController.view.addSubview(hostingController.view)
 
         NSLayoutConstraint.activate([
-            hostingController.view.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
-            hostingController.view.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
+            // Match Media's visible column when the split sidebar is open.
+            hostingController.view.leadingAnchor.constraint(equalTo: viewController.view.safeAreaLayoutGuide.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: viewController.view.safeAreaLayoutGuide.trailingAnchor),
             hostingController.view.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor),
             hostingController.view.heightAnchor.constraint(equalToConstant: height)
         ])
+        hostingController.didMove(toParent: viewController)
     }
 
     func show() {

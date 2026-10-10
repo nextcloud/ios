@@ -612,6 +612,12 @@ final class SceneManager {
         sceneController[rootViewController] = scene
     }
 
+    /// Returns the main tab controller, or nil when the window displays another root,
+    /// such as the login screen.
+    func getController(window: UIWindow?) -> NCMainTabBarController? {
+        window?.rootViewController as? NCMainTabBarController
+    }
+
     func getController(scene: UIScene?) -> NCMainTabBarController? {
         for controller in sceneController.keys {
             if sceneController[controller] == scene {

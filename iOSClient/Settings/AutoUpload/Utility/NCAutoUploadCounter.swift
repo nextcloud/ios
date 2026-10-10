@@ -88,6 +88,9 @@ final class NCAutoUploadCounter {
                urlBase: String,
                userId: String,
                autoUploadStart: Bool) {
+        // A view can restart its subscription on appearance or after a settings change.
+        // Remove the previous observer as well as cancelling its refresh task.
+        stop()
         guard autoUploadStart else {
             stop(reset: true)
             return

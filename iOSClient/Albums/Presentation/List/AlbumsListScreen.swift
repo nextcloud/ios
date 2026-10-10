@@ -22,19 +22,6 @@ struct AlbumsListScreen: View {
                 NCLoadingAlert()
             }
         }
-        .navigationTitle(NSLocalizedString("_albums_list_nav_title_", comment: ""))
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                Button(action: { viewModel.onNewAlbumClick() }) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "plus")
-                        Text(NSLocalizedString("_albums_list_new_album_btn_", comment: ""))
-                    }
-                    .fixedSize()
-                }
-            }
-        }
         .sheet(
             isPresented: $viewModel.isPhotoSelectionSheetVisible,
             onDismiss: {

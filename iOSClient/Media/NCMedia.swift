@@ -83,19 +83,23 @@ class NCMedia: UIViewController {
                 return
             }
 
-            updateLeftBarButtonItems(
-                date: navigationItem.leftBarButtonItems?.first === buttonDateBarItem ? buttonDateBarItem : nil,
-                activity: searchMediaInProgress
-            )
+            updateLeftBarButtonItems(activity: searchMediaInProgress)
         }
     }
 
-    internal lazy var buttonDateBarItem = UIBarButtonItem(
-        title: nil,
-        style: .plain,
-        target: self,
-        action: #selector(presentMediaDatePicker)
-    )
+    internal lazy var buttonDateBarItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(
+            image: UIImage(systemName: "calendar"),
+            style: .plain,
+            target: self,
+            action: #selector(presentMediaDatePicker)
+        )
+        item.accessibilityLabel = NSLocalizedString("_select_date_", comment: "")
+        if #available(iOS 27.1, *) {
+            item.axisBehavior = .horizontalOnly
+        }
+        return item
+    }()
     internal var lastVisibleDateRange: (first: IndexPath, last: IndexPath)?
 
     internal lazy var searchActivityIndicator: UIActivityIndicatorView = {

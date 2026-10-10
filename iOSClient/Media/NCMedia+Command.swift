@@ -41,15 +41,14 @@ extension NCMedia {
               let lastMetadata = dataSource.getCompactMetadata(indexPath: lastIndexPath) else {
             if dataSource.isEmpty() {
                 lastVisibleDateRange = nil
-                updateLeftBarButtonItems(date: nil)
+                buttonDateBarItem.accessibilityValue = nil
             }
 
             return
         }
 
         if lastVisibleDateRange?.first == firstIndexPath,
-           lastVisibleDateRange?.last == lastIndexPath,
-           navigationItem.leftBarButtonItems?.contains(where: { $0 === buttonDateBarItem }) == true {
+           lastVisibleDateRange?.last == lastIndexPath {
             return
         }
 
@@ -107,13 +106,8 @@ extension NCMedia {
             title = "\(firstDateTitle) – \(lastDateTitle)"
         }
 
-        if buttonDateBarItem.title != title {
-            buttonDateBarItem.title = title
-        }
+        buttonDateBarItem.accessibilityValue = title
 
-        if navigationItem.leftBarButtonItem !== buttonDateBarItem {
-            updateLeftBarButtonItems(date: buttonDateBarItem)
-        }
     }
 
     @objc func presentMediaDatePicker() {
@@ -198,14 +192,9 @@ extension NCMedia {
     }
 
     @MainActor
-    func updateLeftBarButtonItems(date: UIBarButtonItem?, activity: Bool? = nil) {
+    func updateLeftBarButtonItems(activity: Bool? = nil) {
         let isActivityVisible = activity ?? searchActivityIndicator.isAnimating
-
-        var items: [UIBarButtonItem] = []
-
-        if let date {
-            items.append(date)
-        }
+        var items: [UIBarButtonItem] = [buttonDateBarItem]
 
         if isActivityVisible {
             searchActivityIndicator.startAnimating()
@@ -214,10 +203,8 @@ extension NCMedia {
             searchActivityIndicator.stopAnimating()
         }
 
-        navigationItem.leftBarButtonItems = items.isEmpty ? nil : items
-        if items.isEmpty {
-            collectionViewReloadData()
-        }
+        navigationItem.leftBarButtonItems = items
+        (navigationController as? NCMainNavigationController)?.configureSidebarButton()
     }
 }
 

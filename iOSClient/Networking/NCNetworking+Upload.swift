@@ -541,11 +541,12 @@ extension NCNetworking {
                                                          error: self.global.diagnosticProblemsForbidden)
     }
 
+    @MainActor
     private func getViewController(metadata: tableMetadata) -> UIViewController? {
         var controller = UIApplication.shared.mainAppWindow?.rootViewController
         let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
         for windowScene in windowScenes {
-            if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
+            if let rootViewController = SceneManager.shared.getController(window: windowScene.keyWindow),
                rootViewController.currentServerUrl() == metadata.serverUrl {
                 controller = rootViewController
                 break

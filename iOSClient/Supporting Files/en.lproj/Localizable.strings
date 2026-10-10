@@ -41,6 +41,7 @@
 "_upload_"                  = "Upload";
 "_home_"                    = "Files";
 "_files_"                   = "Files";
+"_browse_"                  = "Browse";
 "_ok_"                      = "OK";
 "_done_"                    = "Done";
 "_clear_"                   = "Clear";
@@ -54,6 +55,7 @@
 "_create_folder_"           = "Create folder";
 "_create_folder_e2ee_"      = "Create encrypted folder";
 "_close_"                   = "Close";
+"_sidebar_navigation_"      = "Open navigation";
 "_remove_"                  = "Remove";
 "_file_not_found_"          = "File not found";
 "_continue_"                = "Continue";
@@ -63,6 +65,11 @@
 "_audio_"                   = "Audio";
 "_unknown_"                 = "Unknown";
 "_success_"                 = "Success";
+"_status_"                  = "Status";
+"_external_sites_"          = "External sites";
+"_apps_"                    = "Apps";
+"_more_apps_"               = "More apps";
+"_offline_files_"           = "Offline Files";
 "_mode_filename_"           = "Filename mode";
 "_warning_owncloud_"        = "You are connected to an ownCloud server. This is untested and unsupported, use at your own risk. To upgrade to Nextcloud, see https://nextcloud.com/migration.";
 "_warning_unsupported_"     = "You are using an unsupported version of Nextcloud. For the safety of your data we strongly recommend updating to the latest stable Nextcloud.";
@@ -103,6 +110,7 @@
 "_wait_"                    = "Please wait …";
 "_recent_"                  = "Recent";
 "_view_in_folder_"          = "View in folder";
+"_active_"                  = "Active";
 "_disabled_"                = "Disabled";
 "_compact_"                 = "Compact";
 "_normal_"                  = "Normal";
@@ -329,7 +337,6 @@
 "_files_no_files_"              = "No files in here";
 "_files_no_folders_"            = "No folders in here";
 "_request_in_progress_"         = "Request to server in progress …";
-"_personal_files_only_"         = "Personal files only";
 
 "audio"                         = "AUDIO";
 "directory"                     = "FOLDERS";

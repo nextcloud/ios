@@ -92,6 +92,7 @@ extension NCVideoAVPlayerViewController {
         stopControlsHideTimer()
 
         controlsVisible = visible
+        let controlsView = self.controlsView
         controlsView.isUserInteractionEnabled = visible
 
         if visible {
@@ -99,12 +100,12 @@ extension NCVideoAVPlayerViewController {
         }
 
         let updates = {
-            self.controlsView.alpha = visible ? 1 : 0
+            controlsView.alpha = visible ? 1 : 0
         }
 
         let completion: (Bool) -> Void = { _ in
-            if !visible {
-                self.controlsView.isHidden = true
+            if !self.controlsVisible {
+                controlsView.isHidden = true
             }
         }
 
@@ -160,11 +161,11 @@ extension NCVideoAVPlayerViewController {
 
 extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
 
-    func videoControlsDidTapSeekBackward(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidTapSeekBackward(_ controlsView: any NCVideoPlaybackControls) {
         seek(bySeconds: -10)
     }
 
-    func videoControlsDidTapPlayPause(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidTapPlayPause(_ controlsView: any NCVideoPlaybackControls) {
         if isPlaybackRequested {
             isPlaybackRequested = false
             player.pause()
@@ -196,32 +197,32 @@ extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
         scheduleControlsHide()
     }
 
-    func videoControlsDidTapSeekForward(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidTapSeekForward(_ controlsView: any NCVideoPlaybackControls) {
         seek(bySeconds: 10)
     }
 
-    func videoControlsDidToggleRepeat(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidToggleRepeat(_ controlsView: any NCVideoPlaybackControls) {
         playbackOptions.toggleRepeat()
         updatePlaybackOptionsControls()
         scheduleControlsHide()
     }
 
-    func videoControlsDidToggleAutoAdvance(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidToggleAutoAdvance(_ controlsView: any NCVideoPlaybackControls) {
         playbackOptions.toggleAutoAdvance()
         updatePlaybackOptionsControls()
         scheduleControlsHide()
     }
 
-    func videoControlsDidTapPictureInPicture(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidTapPictureInPicture(_ controlsView: any NCVideoPlaybackControls) {
         togglePictureInPicture()
     }
 
-    func videoControlsDidBeginScrubbing(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidBeginScrubbing(_ controlsView: any NCVideoPlaybackControls) {
         playbackPresentationContext.beginSeeking()
         stopControlsHideTimer()
     }
 
-    func videoControls(_ controlsView: NCVideoControlsView, didScrubTo progress: Float) {
+    func videoControls(_ controlsView: any NCVideoPlaybackControls, didScrubTo progress: Float) {
         guard let duration = player.currentItem?.duration.seconds,
               duration.isFinite,
               duration > 0 else {
@@ -237,7 +238,7 @@ extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
         )
     }
 
-    func videoControlsDidEndScrubbing(_ controlsView: NCVideoControlsView, progress: Float) {
+    func videoControlsDidEndScrubbing(_ controlsView: any NCVideoPlaybackControls, progress: Float) {
         guard let duration = player.currentItem?.duration.seconds,
               duration.isFinite,
               duration > 0 else {

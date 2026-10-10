@@ -37,9 +37,31 @@ final class NCVideoVLCViewController: UIViewController {
     // MARK: - Views
 
     internal let drawableView = UIView()
-    internal let controlsView = NCVideoControlsView()
+    private let normalControlsView = NCVideoControlsView()
+    private lazy var adaptiveControlsView: NCVideoAdaptiveControlsView = {
+        let controlsView = NCVideoAdaptiveControlsView(state: normalControlsView.state)
+        controlsView.delegate = self
+        controlsView.configureFoldedNavigation(
+            titleView: foldedTitleView,
+            closeAction: UIAction { [weak self] _ in self?.close() },
+            moreItem: NCContextMenuViewer.mediaNavigationItem(
+                viewController: self,
+                metadataProvider: { [weak self] in self?.metadata },
+                controllerProvider: { [weak self] in self?.contextMenuController }
+            )
+        )
+        return controlsView
+    }()
+
+    internal var controlsView: any NCVideoPlaybackControls {
+        if (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true {
+            return adaptiveControlsView
+        }
+        return normalControlsView
+    }
 
     private let floatingTitleView = NCMediaViewerFloatingTitleView()
+    private let foldedTitleView = NCMediaViewerFloatingTitleView()
 
     private lazy var moreNavigationItem = NCContextMenuViewer.mediaNavigationItem(
         viewController: self,
@@ -73,13 +95,14 @@ final class NCVideoVLCViewController: UIViewController {
     private weak var closePanGesture: UIPanGestureRecognizer?
 
     internal var shouldKeepControlsVisible: Bool {
-        mediaPlayer.state != .playing && !mediaPlayer.isPlaying && !isPlaybackRequested
+        (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true ||
+            mediaPlayer.state != .playing && !mediaPlayer.isPlaying && !isPlaybackRequested
     }
 
     internal func setNavigationBarVisible(_ isVisible: Bool, animated: Bool) {
         guard let navigationController else { return }
         navigationController.setNavigationBarHidden(
-            !isVisible,
+            !isVisible || (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true,
             animated: animated
         )
         navigationController.view.layoutIfNeeded()
@@ -138,7 +161,24 @@ final class NCVideoVLCViewController: UIViewController {
     override func loadView() {
         let backgroundColor = viewerBackgroundColor
 
-        let rootView = UIView()
+        let rootView = NCVideoAdaptiveLayoutView(
+            videoView: drawableView,
+            normalControlsView: normalControlsView,
+            adaptiveControlsView: { [weak self] in self?.adaptiveControlsView }
+        )
+        rootView.onLayoutModeChanged = { [weak self] isFolded in
+            guard let self else {
+                return
+            }
+
+            showControls(animated: false)
+
+            if isFolded {
+                stopControlsHideTimer()
+            } else {
+                scheduleControlsHide()
+            }
+        }
         rootView.backgroundColor = backgroundColor
         rootView.isOpaque = true
         rootView.clipsToBounds = true
@@ -146,29 +186,12 @@ final class NCVideoVLCViewController: UIViewController {
         drawableView.backgroundColor = backgroundColor
         drawableView.isOpaque = true
         drawableView.clipsToBounds = true
-        drawableView.translatesAutoresizingMaskIntoConstraints = false
 
-        controlsView.delegate = self
+        normalControlsView.delegate = self
         controlsView.setTopActionsMode(.vlcTracks)
         updatePlaybackOptionsControls()
         controlsView.alpha = 0
         controlsView.isHidden = true
-        controlsView.translatesAutoresizingMaskIntoConstraints = false
-
-        rootView.addSubview(drawableView)
-        rootView.addSubview(controlsView)
-
-        NSLayoutConstraint.activate([
-            drawableView.leadingAnchor.constraint(equalTo: rootView.leadingAnchor),
-            drawableView.trailingAnchor.constraint(equalTo: rootView.trailingAnchor),
-            drawableView.topAnchor.constraint(equalTo: rootView.topAnchor),
-            drawableView.bottomAnchor.constraint(equalTo: rootView.bottomAnchor),
-
-            controlsView.leadingAnchor.constraint(equalTo: rootView.leadingAnchor),
-            controlsView.trailingAnchor.constraint(equalTo: rootView.trailingAnchor),
-            controlsView.topAnchor.constraint(equalTo: rootView.topAnchor),
-            controlsView.bottomAnchor.constraint(equalTo: rootView.bottomAnchor)
-        ])
 
         controlsView.setTopActionsNavigationBar(navigationController?.navigationBar)
 
@@ -298,6 +321,7 @@ final class NCVideoVLCViewController: UIViewController {
         )
 
         navigationItem.rightBarButtonItem = moreNavigationItem
+
     }
 
     func updateMetadata(_ metadata: tableMetadata) {
@@ -312,10 +336,12 @@ final class NCVideoVLCViewController: UIViewController {
             ? metadata.fileName
             : metadata.fileNameView
 
-        floatingTitleView.update(
-            primaryText: primaryTitle,
-            secondaryText: floatingTitleDateFormatter.string(from: metadata.date as Date)
-        )
+        for titleView in [floatingTitleView, foldedTitleView] {
+            titleView.update(
+                primaryText: primaryTitle,
+                secondaryText: floatingTitleDateFormatter.string(from: metadata.date as Date)
+            )
+        }
     }
 
     @objc
@@ -1146,6 +1172,16 @@ final class NCVideoVLCViewController: UIViewController {
             controlsView.bottomControlsView.bounds,
             to: view
         )
+
+        if (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true {
+            let foldedNavigationFrame = adaptiveControlsView.foldedNavigationBar.convert(
+                adaptiveControlsView.foldedNavigationBar.bounds,
+                to: view
+            )
+            if !adaptiveControlsView.isHidden && foldedNavigationFrame.contains(location) {
+                return true
+            }
+        }
 
         return topActionsFrame.contains(location)
             || centerControlsFrame.contains(location)

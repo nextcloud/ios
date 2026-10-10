@@ -16,16 +16,28 @@ class NCMainTabBarController: UITabBarController {
     var sceneIdentifier: String = UUID().uuidString
     var account: String = "" {
         didSet {
-            // NCImageCache.shared.controller = self
+            // Restore Files before account-change notifications reach its controllers.
+            if isViewLoaded, account != oldValue {
+                openSidebarFiles(personalFilesOnly: false)
+            }
         }
     }
     var availableNotifications: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
     let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
+    let sidebarOpeningGesture = UIPanGestureRecognizer()
+    var sidebarHostingController: UIHostingController<NCSidebarView>?
+    private var filesNavigationController: NCFilesNavigationController?
     private var previousIndex: Int?
     private var checkUserDelaultErrorInProgress: Bool = false
     private var timerTask: Task<Void, Never>?
     private let global = NCGlobal.shared
+
+    override var selectedViewController: UIViewController? {
+        didSet {
+            NotificationCenter.default.post(name: NCSidebarView.selectionChanged, object: self)
+        }
+    }
 
     var window: UIWindow? {
         return SceneManager.shared.getWindow(controller: self)
@@ -47,9 +59,10 @@ class NCMainTabBarController: UITabBarController {
 
         tabBar.tintColor = NCBrandColor.shared.getElement(account: account)
 
-        configureMoreController()
+        filesNavigationController = viewControllers?.first as? NCFilesNavigationController
         configureTabBarItems()
         configureTabBarAppearance()
+        configureSidebarGesture()
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
             if let userInfo = notification.userInfo as? NSDictionary,
@@ -102,36 +115,53 @@ class NCMainTabBarController: UITabBarController {
         tabBar.scrollEdgeAppearance = appearance
     }
 
-    private func configureMoreController() {
-        guard var controllers = viewControllers else { return }
-
-        controllers.append(makeMoreNavigationController())
-        viewControllers = controllers
+    /// Browse keeps a fixed identity while displaying the selected sidebar section.
+    /// Files retains its navigation stack when another destination occupies Browse.
+    func selectSidebarDestination(_ navigationController: NCMainNavigationController) {
+        guard var controllers = viewControllers, !controllers.isEmpty else { return }
+        if controllers.first !== navigationController {
+            let image = UIImage(systemName: "square.grid.2x2.fill")
+            navigationController.tabBarItem = UITabBarItem(
+                title: NSLocalizedString("_browse_", comment: ""),
+                image: image,
+                selectedImage: image
+            )
+            navigationController.tabBarItem.tag = 100
+            controllers[0] = navigationController
+            setViewControllers(controllers, animated: false)
+        }
+        selectedViewController = navigationController
+        previousIndex = selectedIndex
     }
 
-    private func makeMoreNavigationController() -> UIViewController {
-        let moreView = NCMoreView(account: account, controller: self)
-        let hostingController = UIHostingController(rootView: moreView)
-
-        hostingController.navigationItem.title = NSLocalizedString("_more_", comment: "")
-
-        let navigationController = NCMoreNavigationController(rootViewController: hostingController)
-
-        navigationController.tabBarItem = UITabBarItem(
-            title: NSLocalizedString("_more_", comment: ""),
-            image: UIImage(systemName: "ellipsis.circle.fill"),
-            selectedImage: UIImage(systemName: "ellipsis.circle.fill")
-        )
-        navigationController.tabBarItem.tag = 104
-
-        return navigationController
+    func openSidebarFiles(personalFilesOnly: Bool? = nil) {
+        guard let filesNavigationController else { return }
+        if let personalFilesOnly {
+            filesNavigationController.personalFilesOnly = personalFilesOnly
+            filesNavigationController.popToRootViewController(animated: false)
+        }
+        selectSidebarDestination(filesNavigationController)
+        if personalFilesOnly != nil {
+            let selectedAccount = account
+            Task { @MainActor [weak self] in
+                guard self?.account == selectedAccount,
+                      let files = filesNavigationController.topViewController as? NCFiles else { return }
+                files.titleCurrentFolder = files.getNavigationTitle()
+                files.navigationItem.title = files.titleCurrentFolder
+                let serverUrl = files.serverUrl
+                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: nil)
+                }
+                await filesNavigationController.updateMenuOption()
+            }
+        }
     }
 
     private func configureTabBarItems() {
         configureTabBarItem(
             at: 0,
-            title: "_home_",
-            imageName: "folder.fill",
+            title: "_browse_",
+            imageName: "square.grid.2x2.fill",
             tag: 100
         )
 
@@ -154,6 +184,13 @@ class NCMainTabBarController: UITabBarController {
             title: "_albums_",
             imageName: "photo.stack.fill",
             tag: 103
+        )
+
+        configureTabBarItem(
+            at: 4,
+            title: "_activity_",
+            imageName: "bolt.fill",
+            tag: 104
         )
     }
 
@@ -224,6 +261,7 @@ extension NCMainTabBarController: UITabBarControllerDelegate {
             scrollToTop(viewController: viewController)
         }
         previousIndex = tabBarController.selectedIndex
+        NotificationCenter.default.post(name: NCSidebarView.selectionChanged, object: self)
     }
 
     private func scrollToTop(viewController: UIViewController) {

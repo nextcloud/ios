@@ -408,15 +408,6 @@ final class NCPreferences: NSObject {
         keychain[key] = password
     }
 
-    func setPersonalFilesOnly(account: String, value: Bool) {
-        let userDefaultsKey = "personalfilesonly" + "_\(account)"
-        setUserDefaults(value, forKey: userDefaultsKey)
-    }
-
-    func getPersonalFilesOnly(account: String) -> Bool {
-        return getBoolPreference(key: "personalfilesonly", account: account, defaultValue: false)
-    }
-
     func setFavoriteOnTop(account: String, value: Bool) {
         let userDefaultsKey = "favoriteOnTop" + "_\(account)"
         setUserDefaults(value, forKey: userDefaultsKey)

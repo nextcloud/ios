@@ -55,14 +55,17 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
         hostingController.view.backgroundColor = .clear
         hostingController.view.isHidden = true
 
+        viewController.addChild(hostingController)
         viewController.view.addSubview(hostingController.view)
 
         NSLayoutConstraint.activate([
-            hostingController.view.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
-            hostingController.view.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
+            // Distribute selection actions across the visible content column.
+            hostingController.view.leadingAnchor.constraint(equalTo: viewController.view.safeAreaLayoutGuide.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: viewController.view.safeAreaLayoutGuide.trailingAnchor),
             hostingController.view.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor),
             hostingController.view.heightAnchor.constraint(equalToConstant: Self.height)
         ])
+        hostingController.didMove(toParent: viewController)
     }
 
     func show() {

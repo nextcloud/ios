@@ -246,7 +246,8 @@ enum NCVideoVLCPresenter {
             .first { $0.isKeyWindow }?
             .rootViewController
 
-        return visibleViewController(from: rootViewController)
+        let mainController: UIViewController? = SceneManager.shared.getController(window: windowScene?.keyWindow)
+        return visibleViewController(from: rootViewController?.presentedViewController ?? mainController ?? rootViewController)
     }
 
     private static func visibleViewController(from viewController: UIViewController?) -> UIViewController? {
