@@ -122,7 +122,6 @@
 		C39B7BE437DF4F2FAA4D269C /* NCRecentNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2037819FADE849029C3445CE /* NCRecentNavigationController.swift */; };
 		C5D1D72763B8434296F73FBF /* NCSharesNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F98CB335A74BC78E2629D1 /* NCSharesNavigationController.swift */; };
 		CB3666201AF7550816B5CD6A /* NCContextMenuComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8932E90EC4278026D86CCCC9 /* NCContextMenuComment.swift */; };
-		CC0123AABB44556677889902 /* NCMainSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0123AABB44556677889901 /* NCMainSplitViewController.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
 		F0A1B2C430B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A1B2C330B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift */; };
 		F0A1B2C630B6000100D4E5F6 /* NCImageZoomViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A1B2C530B6000100D4E5F6 /* NCImageZoomViewTests.swift */; };
@@ -1471,7 +1470,6 @@
 		C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCameraRollTests.swift; sourceTree = "<group>"; };
 		C0DEDA7E30C1000100A00001 /* NCAutoUploadDateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAutoUploadDateTests.swift; sourceTree = "<group>"; };
-		CC0123AABB44556677889901 /* NCMainSplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainSplitViewController.swift; sourceTree = "<group>"; };
 		CE7247FC01DF49E3A031DA53 /* NCMainTabBarController+Sidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMainTabBarController+Sidebar.swift"; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
 		DAD992D9399E430C923D6D1F /* NCSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSidebarView.swift; sourceTree = "<group>"; };
@@ -2555,7 +2553,6 @@
 				F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */,
 				CE7247FC01DF49E3A031DA53 /* NCMainTabBarController+Sidebar.swift */,
 				DAD992D9399E430C923D6D1F /* NCSidebarView.swift */,
-				CC0123AABB44556677889901 /* NCMainSplitViewController.swift */,
 				F737DA9C2B7B893C0063BAFC /* NCPasscode.swift */,
 				F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */,
 				F7A03E342D427308007AA677 /* NCMainNavigationController.swift */,
@@ -5283,7 +5280,6 @@
 				F794E13D2BBBFF2E003693D7 /* NCMainTabBarController.swift in Sources */,
 				C0262AC876BF4851BAEE09F1 /* NCMainTabBarController+Sidebar.swift in Sources */,
 				AE2067384E2640918752EAA5 /* NCSidebarView.swift in Sources */,
-				CC0123AABB44556677889902 /* NCMainSplitViewController.swift in Sources */,
 				F7CBC1252BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift in Sources */,
 				F7D4BF3D2CA2E8D800A5E746 /* TOPasscodeKeypadView.m in Sources */,
 				F7D4BF3E2CA2E8D800A5E746 /* TOPasscodeSettingsKeypadView.m in Sources */,

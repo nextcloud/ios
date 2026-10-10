@@ -41,10 +41,14 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let optionButtonTag = 100
 
     lazy var sidebarButtonItem: UIBarButtonItem = {
-        let action = UIAction { [weak self] _ in
+        let action = UIAction(title: NSLocalizedString("_sidebar_navigation_", comment: ""), image: UIImage(systemName: "sidebar.left")) { [weak self] _ in
             self?.controller?.presentSidebar()
         }
         let item = UIBarButtonItem(image: UIImage(systemName: "sidebar.left"), primaryAction: action)
+        item.menuRepresentation = action
+        if #available(iOS 27.0, *) {
+            item.visibilityPriority = .high
+        }
         if #available(iOS 27.1, *) {
             item.axisBehavior = .horizontalOnly
         }
@@ -337,7 +341,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     func configureSidebarButton() {
         guard let navigationItem = topViewController?.navigationItem else { return }
-        var items = navigationItem.leftBarButtonItems ?? []
+        let groupedItems = navigationItem.leadingItemGroups.flatMap { $0.barButtonItems }
+        var items = groupedItems.isEmpty ? navigationItem.leftBarButtonItems ?? [] : groupedItems
         items.removeAll { $0 === sidebarButtonItem }
         let isFiles = topViewController is NCFiles
         if isFiles || topViewController === viewControllers.first,
@@ -350,7 +355,14 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 navigationItem.leftItemsSupplementBackButton = true
             }
         }
-        navigationItem.leftBarButtonItems = items.isEmpty ? nil : items
+        guard !items.isEmpty else {
+            navigationItem.leadingItemGroups = []
+            return
+        }
+        let representative = items.count > 1 ? UIBarButtonItem(image: UIImage(systemName: "ellipsis")) : nil
+        let group = UIBarButtonItemGroup(barButtonItems: items, representativeItem: representative)
+        group.alwaysAvailable = true
+        navigationItem.leadingItemGroups = [group]
     }
 
     /// Changes the tint color of a specific left bar button item identified by tag.
@@ -359,10 +371,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     ///   - color: The UIColor to be applied.
     @MainActor
     func setLeftItemColor(tag: Int, to color: UIColor) {
-        guard
-            let items = topViewController?.navigationItem.leftBarButtonItems,
-            let item = items.first(where: { $0.tag == tag })
-        else { return }
+        guard let navigationItem = topViewController?.navigationItem else { return }
+        let groupedItems = navigationItem.leadingItemGroups.flatMap { $0.barButtonItems }
+        let items = groupedItems.isEmpty ? navigationItem.leftBarButtonItems ?? [] : groupedItems
+        guard let item = items.first(where: { $0.tag == tag }) else { return }
 
         applyTint(item, color: color)
     }
@@ -372,7 +384,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     /// - Parameter color: The UIColor to be applied.
     @MainActor
     func setAllLeftItemsColor(_ color: UIColor) {
-        guard let items = topViewController?.navigationItem.leftBarButtonItems else { return }
+        guard let navigationItem = topViewController?.navigationItem else { return }
+        let groupedItems = navigationItem.leadingItemGroups.flatMap { $0.barButtonItems }
+        let items = groupedItems.isEmpty ? navigationItem.leftBarButtonItems ?? [] : groupedItems
 
         for item in items {
             applyTint(item, color: color)

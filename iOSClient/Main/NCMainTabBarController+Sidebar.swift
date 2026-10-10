@@ -6,22 +6,8 @@ import SwiftUI
 import UIKit
 
 extension NCMainTabBarController {
-    private var activeSidebarSplit: NCMainSplitViewController? {
-        guard let split = splitViewController as? NCMainSplitViewController,
-              !split.isCollapsed else { return nil }
-        return split
-    }
-
     func presentSidebar() {
         guard presentedViewController == nil else { return }
-        if let split = activeSidebarSplit {
-            if split.displayMode == .secondaryOnly {
-                split.showSidebar()
-            } else {
-                split.hideSidebar()
-            }
-            return
-        }
         if sidebarHostingController != nil {
             NotificationCenter.default.post(name: NCSidebarView.closeRequested, object: self)
             return
@@ -47,64 +33,64 @@ extension NCMainTabBarController {
         view.layoutIfNeeded()
     }
 
-    /// Builds the same sidebar for a native split column or our compact overlay.
-    func makeSidebarView(isDocked: Bool = false) -> NCSidebarView {
+    /// Builds the overlay sidebar shared by all devices.
+    func makeSidebarView() -> NCSidebarView {
         NCSidebarView(account: account, controllerIdentifier: ObjectIdentifier(self), onClose: { [weak self] in
             self?.removeSidebar()
         }, openSettings: { [weak self] in
-            self?.closeSidebarForAction()
+            self?.removeSidebar()
             self?.openSidebarSettings()
         }, openAssistant: { [weak self] in
-            self?.closeSidebarForAction()
+            self?.removeSidebar()
             self?.openSidebarAssistant()
         }, openNotifications: { [weak self] in
-            self?.closeSidebarForAction()
+            self?.removeSidebar()
             self?.openSidebarNotifications()
         }, openFiles: { [weak self] in
-            self?.closeSidebarForAction()
+            self?.removeSidebar()
             self?.openSidebarFiles(personalFilesOnly: false)
         }, openPersonalFiles: { [weak self] in
-            self?.closeSidebarForAction()
+            self?.removeSidebar()
             self?.openSidebarFiles(personalFilesOnly: true)
         }, openRecent: { [weak self] in
-            self?.closeSidebarForAction()
+            self?.removeSidebar()
             self?.openSidebarCollection(storyboard: "NCRecent")
         }, openShares: { [weak self] in
-            self?.closeSidebarForAction()
+            self?.removeSidebar()
             self?.openSidebarCollection(storyboard: "NCShares")
         }, openGroupfolders: { [weak self] in
-            self?.closeSidebarForAction()
+            self?.removeSidebar()
             self?.openSidebarCollection(storyboard: "NCGroupfolders")
         }, openTransfers: { [weak self] in
-            self?.closeSidebarForAction()
+            self?.removeSidebar()
             self?.openSidebarTransfers()
         }, openOffline: { [weak self] in
-            self?.closeSidebarForAction()
+            self?.removeSidebar()
             self?.openSidebarCollection(storyboard: "NCOffline")
         }, openTrash: { [weak self] in
-            self?.closeSidebarForAction()
+            self?.removeSidebar()
             self?.openSidebarCollection(storyboard: "NCTrash")
         }, openAutoUpload: { [weak self] in
-            self?.closeSidebarForAction()
+            self?.removeSidebar()
             self?.openSidebarAutoUpload()
         }, openScannedImages: { [weak self] in
-            self?.closeSidebarForAction()
+            self?.removeSidebar()
             self?.openSidebarScannedImages()
         }, openExternalSite: { [weak self] url, title, identifier in
-            self?.closeSidebarForAction()
+            self?.removeSidebar()
             self?.openSidebarExternalSite(url: url, title: title, identifier: identifier)
         }, openApp: { [weak self] url, fallbackUrl in
-            self?.closeSidebarForAction()
+            self?.removeSidebar()
             self?.openSidebarApp(url: url, fallbackUrl: fallbackUrl)
         }, hasVisibleSidebarButton: { [weak self] in
             self?.hasUncoveredSidebarButton() ?? false
         }, navigationBarCenterY: { [weak self] in
-            self?.sidebarNavigationBarCenterY(isDocked: isDocked)
+            self?.sidebarNavigationBarCenterY()
         }, windowSafeAreaLeadingInset: { [weak self] in
             self?.view.window?.safeAreaInsets.left ?? 0
         }, currentSelection: { [weak self] in
             self?.sidebarSelectionIdentifier()
-        }, isDocked: isDocked)
+        })
     }
 
     /// Identify the visible section, including Files' current personal filter.
@@ -135,16 +121,10 @@ extension NCMainTabBarController {
     /// Measure the visible button row in the panel's safe content coordinates.
     /// Bar-item identifiers are not necessarily forwarded to their rendered views.
     /// Use public control types and accessibility traits, with the bar as fallback.
-    private func sidebarNavigationBarCenterY(isDocked: Bool) -> CGFloat? {
+    private func sidebarNavigationBarCenterY() -> CGFloat? {
         guard let navigationController = currentNavigationController(),
               !navigationController.isNavigationBarHidden else { return nil }
-        let hostingView: UIView?
-        if isDocked {
-            let primary = splitViewController?.viewController(for: .primary) as? UINavigationController
-            hostingView = primary?.topViewController?.viewIfLoaded
-        } else {
-            hostingView = sidebarHostingController?.viewIfLoaded
-        }
+        let hostingView = sidebarHostingController?.viewIfLoaded
         let bar = navigationController.navigationBar
         guard let hostingView, let window = hostingView.window,
               bar.window === window, !bar.isHidden, !bar.bounds.isEmpty else { return nil }
@@ -181,34 +161,14 @@ extension NCMainTabBarController {
         let button = navigationController.sidebarButtonItem
         guard bar.window === window, !bar.isHidden, bar.alpha > 0,
               button.isEnabled,
-              navigationController.topViewController?.navigationItem.leftBarButtonItems?.contains(where: { $0 === button }) == true else { return false }
+              navigationController.topViewController?.navigationItem.leadingItemGroups
+                .flatMap({ $0.barButtonItems }).contains(where: { $0 === button }) == true else { return false }
         let barFrame = bar.convert(bar.bounds, to: window)
         let overlayFrame = overlay.convert(overlay.bounds, to: window)
         return !barFrame.isEmpty && window.bounds.contains(barFrame) && !barFrame.intersects(overlayFrame)
     }
 
-    private func closeSidebarForAction() {
-        // Keep the adjacent sidebar available while opening a destination.
-        // An overlaid sidebar closes so it does not cover that destination.
-        if let split = activeSidebarSplit {
-            if split.displayMode != .oneBesideSecondary {
-                split.hideSidebar()
-            }
-        } else {
-            removeSidebarOverlay()
-        }
-    }
-
     private func removeSidebar() {
-        // Explicit dismissal hides the sidebar even when it is beside the content.
-        if let split = activeSidebarSplit {
-            split.hideSidebar()
-        } else {
-            removeSidebarOverlay()
-        }
-    }
-
-    func removeSidebarOverlay() {
         guard let hostingController = sidebarHostingController else { return }
         hostingController.willMove(toParent: nil)
         hostingController.view.removeFromSuperview()

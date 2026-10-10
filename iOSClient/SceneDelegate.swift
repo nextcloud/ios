@@ -182,7 +182,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             // Set the ACCOUNT
             controller.account = activeTblAccount.account
             //
-            window?.rootViewController = SceneManager.shared.rootController(for: controller)
+            window?.rootViewController = controller
             window?.makeKeyAndVisible()
             //
             if activateSceneForAccount {
@@ -533,7 +533,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         if let window = SceneManager.shared.getWindow(scene: scene),
            let controller = SceneManager.shared.getController(scene: scene) {
-            window.rootViewController = SceneManager.shared.rootController(for: controller)
+            window.rootViewController = controller
             if NCPreferences().presentPasscode {
                 NCPasscode.shared.presentPasscode(viewController: controller, delegate: self) {
                     NCPasscode.shared.enableTouchFaceID()
@@ -612,39 +612,10 @@ final class SceneManager {
         sceneController[rootViewController] = scene
     }
 
-    /// Returns the main tab controller displayed in a window.
-    ///
-    /// With the sidebar layout, the window's root is an NCMainSplitViewController,
-    /// which hosts the tab controller in its `mainController` property. Read that property
-    /// instead of casting the window's root directly to NCMainTabBarController.
-    /// Also supports a window whose root is still the tab controller itself.
-    ///
-    /// - Parameter window: The window whose main tab controller should be retrieved.
-    /// - Returns: The main tab controller, or `nil` for a missing window or another root,
-    ///   such as the login screen.
+    /// Returns the main tab controller, or nil when the window displays another root,
+    /// such as the login screen.
     func getController(window: UIWindow?) -> NCMainTabBarController? {
-        if let container = window?.rootViewController as? NCMainSplitViewController {
-            return container.mainController
-        }
-        return window?.rootViewController as? NCMainTabBarController
-    }
-
-    /// Returns the outer layout controller to assign to `window.rootViewController`.
-    ///
-    /// On iPad, reuses the existing split controller or creates one around this same
-    /// tab controller. On phones, returns the tab controller directly.
-    /// This does not create a new tab controller or change its selected tab,
-    /// account, or navigation stacks.
-    ///
-    /// - Parameter controller: The main tab controller to display inside the container.
-    /// - Returns: The iPad split controller, or the original tab controller on phones.
-    func rootController(for controller: NCMainTabBarController) -> UIViewController {
-        if let container = controller.splitViewController as? NCMainSplitViewController {
-            return container
-        }
-        // Limit the native split trial to iPad. Phones retain their existing root and overlay.
-        guard UIDevice.current.userInterfaceIdiom == .pad else { return controller }
-        return NCMainSplitViewController(mainController: controller)
+        window?.rootViewController as? NCMainTabBarController
     }
 
     func getController(scene: UIScene?) -> NCMainTabBarController? {

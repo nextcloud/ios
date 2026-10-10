@@ -155,7 +155,9 @@ class NCFilesNavigationController: NCMainNavigationController {
             return
         }
 
-        let leftItems = self.collectionViewCommon?.navigationItem.leftBarButtonItems ?? []
+        let navigationItem = collectionViewCommon?.navigationItem
+        let groupedItems = navigationItem?.leadingItemGroups.flatMap { $0.barButtonItems } ?? []
+        let leftItems = groupedItems.isEmpty ? navigationItem?.leftBarButtonItems ?? [] : groupedItems
         let accountItem = leftItems.first { $0.customView?.accessibilityIdentifier == "accountSwitcher" }
         if accountItem == nil {
             let accountButton = AccountSwitcherButton(type: .custom)
@@ -179,6 +181,23 @@ class NCFilesNavigationController: NCMainNavigationController {
             let accountButton = accountItem?.customView as? UIButton
             accountButton?.setImage(image, for: .normal)
             accountButton?.menu = await createLeftMenu()
+        }
+
+        // Custom views need an explicit menu representation when UIKit moves them
+        // into overflow, for example when iPad tabs share the top bar.
+        let updatedAccountItem = accountItem ?? collectionViewCommon?.navigationItem.leftBarButtonItems?.first {
+            $0.customView?.accessibilityIdentifier == "accountSwitcher"
+        }
+        if let item = updatedAccountItem, let button = item.customView as? UIButton {
+            let title = NSLocalizedString("_account_select_", comment: "")
+            item.accessibilityLabel = title
+            button.accessibilityLabel = title
+            item.menuRepresentation = button.menu.map {
+                UIMenu(title: title, image: UIImage(systemName: "person.crop.circle"), children: $0.children)
+            }
+            if #available(iOS 27.0, *) {
+                item.visibilityPriority = .high
+            }
         }
     }
 }

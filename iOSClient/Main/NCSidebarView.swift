@@ -4,7 +4,7 @@
 
 import SwiftUI
 
-/// A glass sidebar shared by the compact overlay and the native split column.
+/// A glass overlay sidebar shared by iPad, iPhone and Duo.
 @MainActor
 struct NCSidebarView: View {
     static let selectionChanged = Notification.Name("NCSidebarSelectionChanged")
@@ -31,7 +31,6 @@ struct NCSidebarView: View {
     var navigationBarCenterY: () -> CGFloat? = { nil }
     var windowSafeAreaLeadingInset: () -> CGFloat = { 0 }
     var currentSelection: () -> String? = { nil }
-    var isDocked = false
     @State private var selectedDestination: String?
     @State private var headerHeight: CGFloat = 0
     @State private var navigationCenterY: CGFloat?
@@ -62,7 +61,7 @@ struct NCSidebarView: View {
             // Keep the content clear of the landscape camera area, while glass reaches the edge.
             let leadingInset = contentLeadingInset(geometry: geometry)
             // Preserve the content width and a visible strip of the underlying screen.
-            let width = isDocked ? geometry.size.width : max(0, min(320 + leadingInset, geometry.size.width - 56))
+            let width = max(0, min(320 + leadingInset, geometry.size.width - 56))
             ZStack(alignment: .leading) {
                 VStack {
                     sidebarHeader
@@ -166,8 +165,8 @@ struct NCSidebarView: View {
                     sidebarBackground
                         .ignoresSafeArea(.container, edges: .vertical)
                 }
-                .offset(x: isDocked || isVisible ? 0 : -width)
-                .accessibilityAddTraits(isDocked ? [] : .isModal)
+                .offset(x: isVisible ? 0 : -width)
+                .accessibilityAddTraits(.isModal)
                 .accessibilityAction(.escape) { close(then: onClose) }
             }
             .task {
@@ -175,7 +174,7 @@ struct NCSidebarView: View {
                 // Starting the animation during insertion can skip that first frame and make
                 // the sidebar appear immediately instead of sliding in. This delay only
                 // applies to opening; closing already starts from a rendered position.
-                if !reduceMotion && !isDocked {
+                if !reduceMotion {
                     do {
                         try await Task.sleep(for: .milliseconds(50))
                     } catch {
@@ -197,12 +196,10 @@ struct NCSidebarView: View {
         }
         .background {
             // Only the backdrop extends beyond the safe area, not the panel's controls.
-            if !isDocked {
-                Color.black.opacity(isVisible ? 0.25 : 0)
-                    .ignoresSafeArea()
-                    .onTapGesture { close(then: onClose) }
-                    .accessibilityHidden(true)
-            }
+            Color.black.opacity(isVisible ? 0.25 : 0)
+                .ignoresSafeArea()
+                .onTapGesture { close(then: onClose) }
+                .accessibilityHidden(true)
         }
         .onReceive(NotificationCenter.default.publisher(for: Self.selectionChanged)
             .receive(on: DispatchQueue.main)) { notification in
@@ -359,7 +356,7 @@ struct NCSidebarView: View {
         // Align centers when the navigation bar is beside the panel. When its
         // center is above the overlay, give the separate header normal breathing room.
         guard let navigationCenterY else { return 0 }
-        if !isDocked && navigationCenterY < 0 {
+        if navigationCenterY < 0 {
             return 16
         }
         return max(0, navigationCenterY - headerHeight / 2)
@@ -372,7 +369,7 @@ struct NCSidebarView: View {
     }
 
     private func contentLeadingInset(geometry: GeometryProxy) -> CGFloat {
-        guard !isDocked, UIDevice.current.userInterfaceIdiom == .phone else { return 0 }
+        guard UIDevice.current.userInterfaceIdiom == .phone else { return 0 }
         // Subtract the safe margin SwiftUI already applied to avoid counting it twice.
         return max(0, windowSafeAreaLeadingInset() - geometry.frame(in: .global).minX)
     }
@@ -423,7 +420,7 @@ struct NCSidebarView: View {
             }
 
             // VoiceOver remains inside the modal overlay, so retain its close action there.
-            if !isDocked && (showsCloseButton || voiceOverEnabled) {
+            if showsCloseButton || voiceOverEnabled {
                 headerButton("_close_", systemImage: "sidebar.left", action: onClose)
             }
         }
@@ -487,10 +484,6 @@ struct NCSidebarView: View {
     }
 
     private func close(then action: @escaping () -> Void) {
-        if isDocked {
-            action()
-            return
-        }
         guard !isClosing else { return }
         isClosing = true
         withAnimation(reduceMotion ? nil : .easeIn(duration: 0.2), completionCriteria: .removed) {

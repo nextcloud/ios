@@ -33,7 +33,9 @@ class NCMediaNavigationController: NCMainNavigationController {
             items.append(media.searchActivityBarButtonItem)
         }
         media.navigationItem.leadingItemGroups = items.map { item in
-            UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)
+            let group = UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)
+            group.alwaysAvailable = item === sidebarButtonItem
+            return group
         }
     }
 
