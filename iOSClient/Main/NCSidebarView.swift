@@ -159,8 +159,10 @@ struct NCSidebarView: View {
                 .frame(width: width)
                 .frame(maxHeight: .infinity)
                 .background {
+                    // Extend only the glass beneath the landscape camera margin.
+                    // Controls keep their safe-area positioning and navbar alignment.
                     sidebarBackground
-                        .ignoresSafeArea(.container, edges: .vertical)
+                        .ignoresSafeArea(.container)
                 }
                 .offset(x: isVisible ? 0 : -width)
                 .accessibilityAddTraits(.isModal)
