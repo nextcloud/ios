@@ -4,7 +4,14 @@
 
 import UIKit
 
-// Keeps the media content stable while arranging normal or experimental controls around the fold.
+/// Single experimental switch for images and both video engines. See ../README.md.
+enum NCMediaAdaptiveLayoutConfiguration {
+    /// Keep disabled until the adaptive controls have been verified in Xcode.
+    static let isAdaptiveLayoutEnabled = false
+}
+
+/// Arranges the same media surface above the fold and independent controls below it.
+/// Without an active horizontal division, the normal controls remain visible.
 final class NCMediaAdaptiveLayoutView: UIView {
     private let mediaView: UIView
     private let normalControlsView: UIView
@@ -12,36 +19,45 @@ final class NCMediaAdaptiveLayoutView: UIView {
     private var adaptiveControlsView: UIView?
     private var normalLayoutConstraints: [NSLayoutConstraint] = []
 
-    // Experimental layout, enabled only from code while it is being developed.
-    var isAdaptiveLayoutEnabled = false {
+    /// Container eligibility, inherited from the central switch and selected media type.
+    /// Image paging can disable it for other media types without changing the feature switch.
+    var isLayoutEnabled: Bool {
         didSet {
-            guard isAdaptiveLayoutEnabled != oldValue else {
+            guard isLayoutEnabled != oldValue else {
                 return
             }
-            if isAdaptiveLayoutEnabled {
+            if isLayoutEnabled {
                 NSLayoutConstraint.deactivate(normalLayoutConstraints)
             }
-            mediaView.translatesAutoresizingMaskIntoConstraints = isAdaptiveLayoutEnabled
-            normalControlsView.translatesAutoresizingMaskIntoConstraints = isAdaptiveLayoutEnabled
-            if !isAdaptiveLayoutEnabled {
+            mediaView.translatesAutoresizingMaskIntoConstraints = isLayoutEnabled
+            normalControlsView.translatesAutoresizingMaskIntoConstraints = isLayoutEnabled
+            if !isLayoutEnabled {
                 NSLayoutConstraint.activate(normalLayoutConstraints)
             }
             setNeedsLayout()
         }
     }
 
+    /// Whether this container currently has a suitable active horizontal division.
     private(set) var isFoldedLayout = false
+    /// Called after changing control visibility; owners update navigation and auto-hide behavior.
     var onLayoutModeChanged: ((Bool) -> Void)?
 
-    init(mediaView: UIView, normalControlsView: UIView, adaptiveControlsView: @escaping () -> UIView?) {
+    init(
+        mediaView: UIView,
+        normalControlsView: UIView,
+        isLayoutEnabled: Bool = NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled,
+        adaptiveControlsView: @escaping () -> UIView?
+    ) {
         self.mediaView = mediaView
         self.normalControlsView = normalControlsView
         self.makeAdaptiveControlsView = adaptiveControlsView
+        self.isLayoutEnabled = isLayoutEnabled
 
         super.init(frame: .zero)
 
-        mediaView.translatesAutoresizingMaskIntoConstraints = false
-        normalControlsView.translatesAutoresizingMaskIntoConstraints = false
+        mediaView.translatesAutoresizingMaskIntoConstraints = isLayoutEnabled
+        normalControlsView.translatesAutoresizingMaskIntoConstraints = isLayoutEnabled
         addSubview(mediaView)
         addSubview(normalControlsView)
 
@@ -56,7 +72,9 @@ final class NCMediaAdaptiveLayoutView: UIView {
             normalControlsView.topAnchor.constraint(equalTo: topAnchor),
             normalControlsView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ]
-        NSLayoutConstraint.activate(normalLayoutConstraints)
+        if !isLayoutEnabled {
+            NSLayoutConstraint.activate(normalLayoutConstraints)
+        }
     }
 
     required init?(coder: NSCoder) {
@@ -67,7 +85,7 @@ final class NCMediaAdaptiveLayoutView: UIView {
         super.layoutSubviews()
 
         var divisionFrames: [CGRect] = []
-        if #available(iOS 27.1, *), isAdaptiveLayoutEnabled {
+        if #available(iOS 27.1, *), isLayoutEnabled {
             // Reading here lets UIKit track changes even when the bounds stay the same.
             divisionFrames = reservedRegions(kind: .division)
                 .filter(\.isActive)
@@ -78,7 +96,7 @@ final class NCMediaAdaptiveLayoutView: UIView {
     }
 
     func updateLayout(divisionFrames: [CGRect]) {
-        let activeDivisionFrames = isAdaptiveLayoutEnabled ? divisionFrames : []
+        let activeDivisionFrames = isLayoutEnabled ? divisionFrames : []
         let division = activeDivisionFrames
             .map { bounds.intersection($0) }
             .first { frame in
@@ -90,7 +108,7 @@ final class NCMediaAdaptiveLayoutView: UIView {
                     frame.maxY < bounds.maxY
             }
 
-        if isAdaptiveLayoutEnabled {
+        if isLayoutEnabled {
             if adaptiveControlsView == nil, let controlsView = makeAdaptiveControlsView() {
                 controlsView.translatesAutoresizingMaskIntoConstraints = true
                 controlsView.isHidden = true
@@ -113,7 +131,7 @@ final class NCMediaAdaptiveLayoutView: UIView {
                 width: bounds.width,
                 height: bounds.maxY - division.maxY
             )
-        } else if isAdaptiveLayoutEnabled {
+        } else if isLayoutEnabled {
             mediaView.frame = bounds
             adaptiveControlsView?.frame = bounds
         }

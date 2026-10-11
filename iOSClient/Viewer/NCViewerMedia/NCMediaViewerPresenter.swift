@@ -97,6 +97,13 @@ import UIKit
 ///     -> `NCMediaViewerDetailView`.
 ///     Displays file information, camera/lens metadata, EXIF values, and location.
 ///
+/// 16. Experimental adaptive layout:
+///     `NCMediaAdaptiveLayoutConfiguration` supplies one disabled-by-default switch.
+///     `NCMediaAdaptiveLayoutView` keeps the media surface and arranges independent
+///     normal/adaptive controls. Images bridge through `NCImageAdaptiveLayoutHost`;
+///     fullscreen AVPlayer and VLC use the same container directly.
+///     See README.md in this directory for the component map and verification scope.
+///
 /// High-level rule:
 /// `NCMediaViewerPresenter` starts and closes the viewer, but it does not resolve,
 /// download, classify, or play media. Those responsibilities belong to the model,

@@ -4,6 +4,7 @@
 
 import Testing
 import UIKit
+import NextcloudKit
 @testable import Nextcloud
 
 @Suite("Adaptive media layout")
@@ -36,6 +37,59 @@ struct NCMediaAdaptiveLayoutViewTests {
         #expect(normalControls.state === adaptiveControls.state)
     }
 
+    @Test("Image folding retains the paging host and uses independent controls")
+    func imageFoldingPreservesPagingHost() throws {
+        let metadata = tableMetadata()
+        metadata.ocId = "image"
+        metadata.classFile = NKTypeClassFile.image.rawValue
+        let model = NCMediaViewerModel(
+            currentMetadata: metadata,
+            ocIds: [metadata.ocId],
+            session: NCSession().getSession(account: ""),
+            loader: NCMediaViewerLoader()
+        )
+        let state = NCImageAdaptiveControlsState()
+        let controller = NCImageAdaptiveLayoutController(
+            mediaView: NCMediaViewerPagingView(
+                model: model,
+                contextMenuController: nil,
+                navigationBar: nil,
+                onVisibleMetadataChanged: { _, _ in },
+                onZoomChanged: { _ in },
+                onClose: { _ in }
+            ),
+            normalControlsView: NCImageControlsView(model: model),
+            adaptiveControlsView: NCImageAdaptiveControlsView(
+                model: model,
+                state: state,
+                makeNavigationBar: { UINavigationBar() }
+            ),
+            onLayoutModeChanged: { _ in }
+        )
+        controller.loadViewIfNeeded()
+        let view = controller.layoutView
+        let mediaView = try #require(controller.mediaController.view)
+        view.frame = CGRect(x: 0, y: 0, width: 800, height: 600)
+        view.layoutIfNeeded()
+        #expect(!view.isLayoutEnabled)
+        #expect(controller.adaptiveControlsController == nil)
+
+        view.isLayoutEnabled = true
+        view.updateLayout(divisionFrames: [CGRect(x: 0, y: 280, width: 800, height: 40)])
+        let adaptiveController = try #require(controller.adaptiveControlsController)
+        #expect(adaptiveController.rootView.state === state)
+        #expect(adaptiveController.parent === controller)
+        #expect(mediaView.frame.height == 280)
+        #expect(controller.normalControlsController.view.superview?.isHidden == true)
+
+        view.updateLayout(divisionFrames: [])
+        #expect(controller.mediaController.view === mediaView)
+        #expect(mediaView.frame == view.bounds)
+        #expect(controller.adaptiveControlsController === adaptiveController)
+        #expect(adaptiveController.view.isHidden)
+        #expect(controller.normalControlsController.view.superview?.isHidden == false)
+    }
+
     @Test("The experimental layout is disabled by default and can be turned off again")
     func experimentalLayoutRequiresEnabling() {
         let videoView = UIView()
@@ -51,7 +105,7 @@ struct NCMediaAdaptiveLayoutViewTests {
         var modes: [Bool] = []
         view.onLayoutModeChanged = { modes.append($0) }
 
-        #expect(!view.isAdaptiveLayoutEnabled)
+        #expect(!view.isLayoutEnabled)
         view.layoutIfNeeded()
         view.updateLayout(divisionFrames: [fold])
         #expect(!view.isFoldedLayout)
@@ -65,13 +119,13 @@ struct NCMediaAdaptiveLayoutViewTests {
         #expect(view.constraints.allSatisfy(\.isActive))
         #expect(modes.isEmpty)
 
-        view.isAdaptiveLayoutEnabled = true
+        view.isLayoutEnabled = true
         view.updateLayout(divisionFrames: [fold])
         #expect(view.isFoldedLayout)
         #expect(normalControlsView.isHidden)
         #expect(!adaptiveControlsView.isHidden)
 
-        view.isAdaptiveLayoutEnabled = false
+        view.isLayoutEnabled = false
         view.layoutIfNeeded()
         view.updateLayout(divisionFrames: [fold])
         #expect(!view.isFoldedLayout)
@@ -79,6 +133,35 @@ struct NCMediaAdaptiveLayoutViewTests {
         #expect(!normalControlsView.isHidden)
         #expect(adaptiveControlsView.isHidden)
         #expect(modes == [true, false])
+    }
+
+    @Test("A container can start enabled without activating normal layout constraints")
+    func startsWithAdaptiveLayoutEnabled() {
+        let mediaView = UIView()
+        let normalControlsView = UIView()
+        let adaptiveControlsView = UIView()
+        let view = NCMediaAdaptiveLayoutView(
+            mediaView: mediaView,
+            normalControlsView: normalControlsView,
+            isLayoutEnabled: true,
+            adaptiveControlsView: { adaptiveControlsView }
+        )
+        view.frame = CGRect(x: 0, y: 0, width: 800, height: 600)
+        #expect(mediaView.translatesAutoresizingMaskIntoConstraints)
+        #expect(normalControlsView.translatesAutoresizingMaskIntoConstraints)
+        #expect(view.constraints.isEmpty)
+
+        view.updateLayout(divisionFrames: [CGRect(x: 0, y: 280, width: 800, height: 40)])
+        #expect(view.isFoldedLayout)
+        #expect(mediaView.frame.height == 280)
+        #expect(adaptiveControlsView.frame.minY == 320)
+
+        view.isLayoutEnabled = false
+        view.layoutIfNeeded()
+        #expect(view.constraints.count == 8)
+        #expect(view.constraints.allSatisfy(\.isActive))
+        #expect(!view.isFoldedLayout)
+        #expect(mediaView.frame == view.bounds)
     }
 
     @Test("Disabled mode does not create adaptive controls and preserves normal visibility")
@@ -132,7 +215,7 @@ struct NCMediaAdaptiveLayoutViewTests {
             normalControlsView: controlsView,
             adaptiveControlsView: { adaptiveControlsView }
         )
-        view.isAdaptiveLayoutEnabled = true
+        view.isLayoutEnabled = true
         view.frame = CGRect(x: 0, y: 0, width: 800, height: 600)
         var modes: [Bool] = []
         view.onLayoutModeChanged = { modes.append($0) }
@@ -182,7 +265,7 @@ struct NCMediaAdaptiveLayoutViewTests {
             normalControlsView: controlsView,
             adaptiveControlsView: { adaptiveControlsView }
         )
-        view.isAdaptiveLayoutEnabled = true
+        view.isLayoutEnabled = true
         view.frame = CGRect(x: 0, y: 0, width: 800, height: 600)
 
         view.updateLayout(divisionFrames: [frame])
@@ -202,7 +285,7 @@ struct NCMediaAdaptiveLayoutViewTests {
             normalControlsView: controlsView,
             adaptiveControlsView: { adaptiveControlsView }
         )
-        view.isAdaptiveLayoutEnabled = true
+        view.isLayoutEnabled = true
         view.frame = CGRect(x: 0, y: 0, width: 600, height: 800)
 
         view.updateLayout(divisionFrames: [CGRect(x: 0, y: 370, width: 600, height: 60)])

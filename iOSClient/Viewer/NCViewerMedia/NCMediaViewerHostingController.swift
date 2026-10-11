@@ -25,6 +25,37 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     private weak var currentNavigationBar: UINavigationBar?
     private let floatingTitleView = NCMediaViewerFloatingTitleView()
 
+    private var isFoldedImageLayout = false
+    private lazy var adaptiveControlsState = NCImageAdaptiveControlsState()
+    private lazy var adaptiveTitleView = NCMediaViewerFloatingTitleView()
+    private lazy var adaptiveDetailNavigationItem = UIBarButtonItem(
+        image: NCUtility().loadImage(named: "info.circle", colors: [NCBrandColor.shared.iconImageColor]),
+        style: .plain,
+        target: self,
+        action: #selector(mediaDetailButtonTapped)
+    )
+    private lazy var adaptiveNavigationBar: UINavigationBar = {
+        let bar = UINavigationBar()
+        let item = UINavigationItem()
+        item.titleView = adaptiveTitleView
+        item.leftBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "chevron.left"),
+            style: .plain,
+            target: self,
+            action: #selector(closeButtonTapped)
+        )
+        item.rightBarButtonItems = [
+            NCContextMenuViewer.mediaNavigationItem(
+                viewController: self,
+                metadataProvider: { [weak self] in self?.model.selectedMetadata },
+                controllerProvider: { [weak self] in self?.contextMenuController }
+            ),
+            adaptiveDetailNavigationItem
+        ]
+        bar.setItems([item], animated: false)
+        return bar
+    }()
+
     private lazy var floatingTitleDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = .current
@@ -177,8 +208,27 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             onZoomChanged: onZoomChanged,
             onClose: { [weak self] ocId in
                 self?.close(ocId: ocId)
+            },
+            adaptiveControlsState: NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled ? adaptiveControlsState : nil,
+            makeAdaptiveNavigationBar: NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled ? { [weak self] in
+                self?.adaptiveNavigationBar ?? UINavigationBar()
+            } : nil,
+            onAdaptiveLayoutChanged: { [weak self] isFolded in
+                guard let self, NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled else {
+                    return
+                }
+                self.adaptiveLayoutChanged(isFolded)
             }
         )
+    }
+
+    private func adaptiveLayoutChanged(_ isFolded: Bool) {
+        guard isFoldedImageLayout != isFolded else {
+            return
+        }
+        closeDetail(animated: false)
+        isFoldedImageLayout = isFolded
+        setChromeHidden(model.isChromeHidden, animated: false)
     }
 
     // MARK: - Closing
@@ -243,6 +293,9 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     private func updateTitleLabel(metadata: tableMetadata?, backgroundColor: UIColor) {
         guard let metadata else {
             floatingTitleView.clear()
+            if NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled {
+                adaptiveTitleView.clear()
+            }
             return
         }
 
@@ -254,6 +307,16 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             primaryText: primaryTitle,
             secondaryText: floatingTitleSecondaryText(for: metadata)
         )
+        if NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled {
+            adaptiveTitleView.update(
+                primaryText: primaryTitle,
+                secondaryText: floatingTitleSecondaryText(for: metadata)
+            )
+            if let detailView = adaptiveControlsState.detailView,
+               detailView.metadata.ocId != metadata.ocId, isFoldedImageLayout {
+                closeDetail(animated: false)
+            }
+        }
     }
 
     /// Returns a readable title color for the current background.
@@ -285,7 +348,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     /// Shows or hides the viewer chrome.
     private func setChromeHidden(_ hidden: Bool, animated: Bool) {
         navigationController?.setNavigationBarHidden(
-            hidden,
+            hidden || isFoldedImageLayout,
             animated: animated
         )
 
@@ -400,6 +463,9 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     }
 
     private func setMediaDetailLoading(_ isLoading: Bool) {
+        if NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled {
+            adaptiveDetailNavigationItem.isEnabled = !isLoading
+        }
         if isLoading {
             mediaDetailActivityIndicator.startAnimating()
             mediaDetailNavigationItem.customView = mediaDetailActivityIndicator
@@ -417,6 +483,11 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             metadata: metadata,
             exif: exif
         )
+
+        if isFoldedImageLayout {
+            adaptiveControlsState.detailView = detailView
+            return
+        }
 
         let hostingController = UIHostingController(rootView: detailView)
         hostingController.modalPresentationStyle = .pageSheet
@@ -440,6 +511,10 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         detailLoadingTask?.cancel()
         detailLoadingTask = nil
         setMediaDetailLoading(false)
+
+        if NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled || isFoldedImageLayout {
+            adaptiveControlsState.detailView = nil
+        }
 
         guard let detailHostingController else {
             isShowingDetail = false
