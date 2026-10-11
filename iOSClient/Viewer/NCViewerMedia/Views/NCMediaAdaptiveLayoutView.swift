@@ -4,9 +4,9 @@
 
 import UIKit
 
-// Keeps the video surface and both controls views alive when the device folds or unfolds.
-final class NCVideoAdaptiveLayoutView: UIView {
-    private let videoView: UIView
+// Keeps the media content stable while arranging normal or experimental controls around the fold.
+final class NCMediaAdaptiveLayoutView: UIView {
+    private let mediaView: UIView
     private let normalControlsView: UIView
     private let makeAdaptiveControlsView: () -> UIView?
     private var adaptiveControlsView: UIView?
@@ -21,7 +21,7 @@ final class NCVideoAdaptiveLayoutView: UIView {
             if isAdaptiveLayoutEnabled {
                 NSLayoutConstraint.deactivate(normalLayoutConstraints)
             }
-            videoView.translatesAutoresizingMaskIntoConstraints = isAdaptiveLayoutEnabled
+            mediaView.translatesAutoresizingMaskIntoConstraints = isAdaptiveLayoutEnabled
             normalControlsView.translatesAutoresizingMaskIntoConstraints = isAdaptiveLayoutEnabled
             if !isAdaptiveLayoutEnabled {
                 NSLayoutConstraint.activate(normalLayoutConstraints)
@@ -33,23 +33,23 @@ final class NCVideoAdaptiveLayoutView: UIView {
     private(set) var isFoldedLayout = false
     var onLayoutModeChanged: ((Bool) -> Void)?
 
-    init(videoView: UIView, normalControlsView: UIView, adaptiveControlsView: @escaping () -> UIView?) {
-        self.videoView = videoView
+    init(mediaView: UIView, normalControlsView: UIView, adaptiveControlsView: @escaping () -> UIView?) {
+        self.mediaView = mediaView
         self.normalControlsView = normalControlsView
         self.makeAdaptiveControlsView = adaptiveControlsView
 
         super.init(frame: .zero)
 
-        videoView.translatesAutoresizingMaskIntoConstraints = false
+        mediaView.translatesAutoresizingMaskIntoConstraints = false
         normalControlsView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(videoView)
+        addSubview(mediaView)
         addSubview(normalControlsView)
 
         normalLayoutConstraints = [
-            videoView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            videoView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            videoView.topAnchor.constraint(equalTo: topAnchor),
-            videoView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            mediaView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            mediaView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            mediaView.topAnchor.constraint(equalTo: topAnchor),
+            mediaView.bottomAnchor.constraint(equalTo: bottomAnchor),
 
             normalControlsView.leadingAnchor.constraint(equalTo: leadingAnchor),
             normalControlsView.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -101,7 +101,7 @@ final class NCVideoAdaptiveLayoutView: UIView {
         }
 
         if let division {
-            videoView.frame = CGRect(
+            mediaView.frame = CGRect(
                 x: bounds.minX,
                 y: bounds.minY,
                 width: bounds.width,
@@ -114,7 +114,7 @@ final class NCVideoAdaptiveLayoutView: UIView {
                 height: bounds.maxY - division.maxY
             )
         } else if isAdaptiveLayoutEnabled {
-            videoView.frame = bounds
+            mediaView.frame = bounds
             adaptiveControlsView?.frame = bounds
         }
 

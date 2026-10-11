@@ -73,7 +73,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }()
 
     internal var controlsView: any NCVideoPlaybackControls {
-        if (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true {
+        if (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true {
             return adaptiveControlsView
         }
         return normalControlsView
@@ -122,14 +122,14 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     internal var shouldKeepControlsVisible: Bool {
-        (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true ||
+        (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true ||
             player.timeControlStatus != .playing && !isPlaybackRequested
     }
 
     internal func setNavigationBarVisible(_ isVisible: Bool, animated: Bool) {
         guard let navigationController else { return }
         navigationController.setNavigationBarHidden(
-            !isVisible || (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true,
+            !isVisible || (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true,
             animated: animated
         )
         navigationController.view.layoutIfNeeded()
@@ -188,8 +188,8 @@ final class NCVideoAVPlayerViewController: UIViewController {
     override func loadView() {
         let initialBackgroundColor = viewerBackgroundColor
 
-        let rootView = NCVideoAdaptiveLayoutView(
-            videoView: playerContainerView,
+        let rootView = NCMediaAdaptiveLayoutView(
+            mediaView: playerContainerView,
             normalControlsView: normalControlsView,
             adaptiveControlsView: { [weak self] in self?.adaptiveControlsView }
         )
@@ -955,7 +955,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
             to: view
         )
 
-        if (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true {
+        if (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true {
             let foldedNavigationFrame = adaptiveControlsView.foldedNavigationBar.convert(
                 adaptiveControlsView.foldedNavigationBar.bounds,
                 to: view

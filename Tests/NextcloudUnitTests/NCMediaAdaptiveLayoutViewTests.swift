@@ -6,9 +6,9 @@ import Testing
 import UIKit
 @testable import Nextcloud
 
-@Suite("Adaptive video layout")
+@Suite("Adaptive media layout")
 @MainActor
-struct NCVideoAdaptiveLayoutViewTests {
+struct NCMediaAdaptiveLayoutViewTests {
     @Test("Adaptive navigation belongs to a separate controls view")
     func separateAdaptiveControls() throws {
         let normalControls = NCVideoControlsView()
@@ -41,8 +41,8 @@ struct NCVideoAdaptiveLayoutViewTests {
         let videoView = UIView()
         let normalControlsView = UIView()
         let adaptiveControlsView = UIView()
-        let view = NCVideoAdaptiveLayoutView(
-            videoView: videoView,
+        let view = NCMediaAdaptiveLayoutView(
+            mediaView: videoView,
             normalControlsView: normalControlsView,
             adaptiveControlsView: { adaptiveControlsView }
         )
@@ -87,8 +87,8 @@ struct NCVideoAdaptiveLayoutViewTests {
         let normalControlsView = UIView()
         var creationCount = 0
         var modes: [Bool] = []
-        let view = NCVideoAdaptiveLayoutView(
-            videoView: videoView,
+        let view = NCMediaAdaptiveLayoutView(
+            mediaView: videoView,
             normalControlsView: normalControlsView,
             adaptiveControlsView: {
                 creationCount += 1
@@ -127,8 +127,8 @@ struct NCVideoAdaptiveLayoutViewTests {
         let videoView = UIView()
         let controlsView = UIView()
         let adaptiveControlsView = UIView()
-        let view = NCVideoAdaptiveLayoutView(
-            videoView: videoView,
+        let view = NCMediaAdaptiveLayoutView(
+            mediaView: videoView,
             normalControlsView: controlsView,
             adaptiveControlsView: { adaptiveControlsView }
         )
@@ -177,8 +177,8 @@ struct NCVideoAdaptiveLayoutViewTests {
         let videoView = UIView()
         let controlsView = UIView()
         let adaptiveControlsView = UIView()
-        let view = NCVideoAdaptiveLayoutView(
-            videoView: videoView,
+        let view = NCMediaAdaptiveLayoutView(
+            mediaView: videoView,
             normalControlsView: controlsView,
             adaptiveControlsView: { adaptiveControlsView }
         )
@@ -197,8 +197,8 @@ struct NCVideoAdaptiveLayoutViewTests {
         let videoView = UIView()
         let controlsView = UIView()
         let adaptiveControlsView = UIView()
-        let view = NCVideoAdaptiveLayoutView(
-            videoView: videoView,
+        let view = NCMediaAdaptiveLayoutView(
+            mediaView: videoView,
             normalControlsView: controlsView,
             adaptiveControlsView: { adaptiveControlsView }
         )

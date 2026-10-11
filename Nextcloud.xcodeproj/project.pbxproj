@@ -124,7 +124,7 @@
 		CB3666201AF7550816B5CD6A /* NCContextMenuComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8932E90EC4278026D86CCCC9 /* NCContextMenuComment.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
 		F0A1B2C430B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A1B2C330B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift */; };
-		A126090153B172F0B6C9F004 /* NCVideoAdaptiveLayoutViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A126090153B172F0B6C9F003 /* NCVideoAdaptiveLayoutViewTests.swift */; };
+		A126090153B172F0B6C9F004 /* NCMediaAdaptiveLayoutViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A126090153B172F0B6C9F003 /* NCMediaAdaptiveLayoutViewTests.swift */; };
 		F0A1B2C630B6000100D4E5F6 /* NCImageZoomViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A1B2C530B6000100D4E5F6 /* NCImageZoomViewTests.swift */; };
 		F31165022F9674A1009A1E37 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = F31165012F9674A1009A1E37 /* AppIcon.icon */; };
 		F317C82E2E844C5300761AEA /* ClientIntegrationUIViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F317C82D2E844C5300761AEA /* ClientIntegrationUIViewer.swift */; };
@@ -486,7 +486,7 @@
 		F7547FE32FB742A400E372C3 /* NCVideoVLCViewControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7547FE22FB7429200E372C3 /* NCVideoVLCViewControls.swift */; };
 		F7547FE62FB76C1900E372C3 /* NCVideoControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7547FE52FB76C1800E372C3 /* NCVideoControlsView.swift */; };
 		A126090153B172F0B6C9F00B /* NCVideoAdaptiveControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A126090153B172F0B6C9F00A /* NCVideoAdaptiveControlsView.swift */; };
-		A126090153B172F0B6C9F002 /* NCVideoAdaptiveLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A126090153B172F0B6C9F001 /* NCVideoAdaptiveLayoutView.swift */; };
+		A126090153B172F0B6C9F002 /* NCMediaAdaptiveLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A126090153B172F0B6C9F001 /* NCMediaAdaptiveLayoutView.swift */; };
 		F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755BD9A20594AC7008C5FBB /* NCService.swift */; };
 		F755CB402B8CB13C00CE27E9 /* NCMediaLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755CB3F2B8CB13C00CE27E9 /* NCMediaLayout.swift */; };
 		F757CC8229E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */ = {isa = PBXBuildFile; fileRef = F757CC8129E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift */; };
@@ -1477,7 +1477,7 @@
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
 		DAD992D9399E430C923D6D1F /* NCSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSidebarView.swift; sourceTree = "<group>"; };
 		F0A1B2C330B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerFloatingTitleViewTests.swift; sourceTree = "<group>"; };
-		A126090153B172F0B6C9F003 /* NCVideoAdaptiveLayoutViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoAdaptiveLayoutViewTests.swift; sourceTree = "<group>"; };
+		A126090153B172F0B6C9F003 /* NCMediaAdaptiveLayoutViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaAdaptiveLayoutViewTests.swift; sourceTree = "<group>"; };
 		F0A1B2C530B6000100D4E5F6 /* NCImageZoomViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCImageZoomViewTests.swift; sourceTree = "<group>"; };
 		F31165012F9674A1009A1E37 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		F317C82D2E844C5300761AEA /* ClientIntegrationUIViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientIntegrationUIViewer.swift; sourceTree = "<group>"; };
@@ -1688,7 +1688,7 @@
 		F7547FE22FB7429200E372C3 /* NCVideoVLCViewControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoVLCViewControls.swift; sourceTree = "<group>"; };
 		F7547FE52FB76C1800E372C3 /* NCVideoControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoControlsView.swift; sourceTree = "<group>"; };
 		A126090153B172F0B6C9F00A /* NCVideoAdaptiveControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoAdaptiveControlsView.swift; sourceTree = "<group>"; };
-		A126090153B172F0B6C9F001 /* NCVideoAdaptiveLayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoAdaptiveLayoutView.swift; sourceTree = "<group>"; };
+		A126090153B172F0B6C9F001 /* NCMediaAdaptiveLayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaAdaptiveLayoutView.swift; sourceTree = "<group>"; };
 		F755BD9A20594AC7008C5FBB /* NCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCService.swift; sourceTree = "<group>"; };
 		F755CB3F2B8CB13C00CE27E9 /* NCMediaLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCMediaLayout.swift; sourceTree = "<group>"; };
 		F757CC8129E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Groupfolders.swift"; sourceTree = "<group>"; };
@@ -2374,7 +2374,7 @@
 				AABBCC0730A8000100F0A001 /* NCVideoPlaybackPresentationContextTests.swift */,
 				AABBCC0930A8000100F0A001 /* NCMediaViewerModelTests.swift */,
 				F0A1B2C330B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift */,
-				A126090153B172F0B6C9F003 /* NCVideoAdaptiveLayoutViewTests.swift */,
+				A126090153B172F0B6C9F003 /* NCMediaAdaptiveLayoutViewTests.swift */,
 				F0A1B2C530B6000100D4E5F6 /* NCImageZoomViewTests.swift */,
 				F34BDB3B2F574A58007A222C /* BidiSafeFilenameTests.swift */,
 				439616AAA50F4360A761E5EF /* NCAlbumsPersistenceTests.swift */,
@@ -3244,7 +3244,6 @@
 				F78448A32FB1BE9000F2909A /* NCVideoPlaybackController.swift */,
 				F7A98A4F2FC9744A009E6313 /* NCVideoPlaybackCoverView.swift */,
 				F7A98A4D2FC97414009E6313 /* NCVideoURLResolver.swift */,
-				A126090153B172F0B6C9F001 /* NCVideoAdaptiveLayoutView.swift */,
 				A126090153B172F0B6C9F020 /* Controls */,
 				F78448BF2FB1C78900F2909A /* AVPlayer */,
 				F78448C02FB1C79A00F2909A /* VLC */,
@@ -3667,6 +3666,7 @@
 			children = (
 				F716DA662FA5F019006A6703 /* NCMediaViewerPagingView.swift */,
 				F7CDB5B92FA33CA300F72306 /* NCMediaViewerPageView.swift */,
+				A126090153B172F0B6C9F001 /* NCMediaAdaptiveLayoutView.swift */,
 				F79377042FBD86AE00DE56DE /* NCMediaViewerFloatingTitleView.swift */,
 				F7103F642FD6A8F800C6C8F1 /* NCMediaViewerThumbnail.swift */,
 				F749ED302FADD62400CE8DFA /* NCMediaViewerDetailView.swift */,
@@ -4812,7 +4812,7 @@
 				AABBCC0830A8000100F0A001 /* NCVideoPlaybackPresentationContextTests.swift in Sources */,
 				AABBCC0A30A8000100F0A001 /* NCMediaViewerModelTests.swift in Sources */,
 				F0A1B2C430B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift in Sources */,
-				A126090153B172F0B6C9F004 /* NCVideoAdaptiveLayoutViewTests.swift in Sources */,
+				A126090153B172F0B6C9F004 /* NCMediaAdaptiveLayoutViewTests.swift in Sources */,
 				F0A1B2C630B6000100D4E5F6 /* NCImageZoomViewTests.swift in Sources */,
 				F34BDB3C2F574A58007A222C /* BidiSafeFilenameTests.swift in Sources */,
 				63563FE53573412998852DD3 /* NCAlbumsPersistenceTests.swift in Sources */,
@@ -5492,7 +5492,7 @@
 				F76995F42F9A4AC400291FA7 /* NCCollectionViewCommon+UIEditMenuInteractionDelegate.swift in Sources */,
 				F7547FE62FB76C1900E372C3 /* NCVideoControlsView.swift in Sources */,
 				A126090153B172F0B6C9F00B /* NCVideoAdaptiveControlsView.swift in Sources */,
-				A126090153B172F0B6C9F002 /* NCVideoAdaptiveLayoutView.swift in Sources */,
+				A126090153B172F0B6C9F002 /* NCMediaAdaptiveLayoutView.swift in Sources */,
 				F722133B2D40EF9D002F7438 /* NCFilesNavigationController.swift in Sources */,
 				F7BC288026663F85004D46C5 /* NCViewCertificateDetails.swift in Sources */,
 				D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */,
