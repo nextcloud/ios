@@ -22,8 +22,6 @@ class NCMediaSelectTabBar: ObservableObject {
             return
         }
         let rootView = MediaTabBarSelectView(tabBarSelect: self)
-        let bottomAreaInsets: CGFloat = controller.tabBar.safeAreaInsets.bottom == 0 ? 34 : 0
-        let height = controller.tabBar.frame.height + bottomAreaInsets
         hostingController = UIHostingController(rootView: rootView)
         guard let hostingController else {
             return
@@ -40,11 +38,12 @@ class NCMediaSelectTabBar: ObservableObject {
         viewController.view.addSubview(hostingController.view)
 
         NSLayoutConstraint.activate([
-            // Match Media's visible column when the split sidebar is open.
+            // Use the same bottom action-bar height as Files, independent of
+            // whether UIKit places the main tab bar at the bottom, top or side.
             hostingController.view.leadingAnchor.constraint(equalTo: viewController.view.safeAreaLayoutGuide.leadingAnchor),
             hostingController.view.trailingAnchor.constraint(equalTo: viewController.view.safeAreaLayoutGuide.trailingAnchor),
             hostingController.view.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor),
-            hostingController.view.heightAnchor.constraint(equalToConstant: height)
+            hostingController.view.heightAnchor.constraint(equalToConstant: NCCollectionViewCommonSelectTabBar.height)
         ])
         hostingController.didMove(toParent: viewController)
     }
