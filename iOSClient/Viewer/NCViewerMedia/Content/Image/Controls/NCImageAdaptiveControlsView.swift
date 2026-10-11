@@ -161,6 +161,8 @@ final class NCImageAdaptiveLayoutController: UIViewController {
     }
 
     override func loadView() {
+        // Match the normal pager's ignoresSafeArea: cover the area behind the transparent navbar.
+        mediaController.safeAreaRegions = []
         addChild(mediaController)
         addChild(normalControlsController)
         mediaController.view.backgroundColor = .clear

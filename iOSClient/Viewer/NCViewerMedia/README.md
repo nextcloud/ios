@@ -48,6 +48,11 @@ host passes image gestures through outside the thumbnail strip. The video
 controllers retain their existing AVPlayer/VLC instances and rendering surfaces;
 layout changes do not recreate a player.
 
+The image paging host disables its own safe-area regions to match the normal
+pager's `ignoresSafeArea()`. This lets the media cover the area behind the
+transparent navigation bar even with the experiment enabled and no active fold.
+The controls hosts retain their own safe-area handling.
+
 ## Layout and compatibility
 
 With the switch `false`, images use the normal SwiftUI pager and thumbnail overlay.
