@@ -41,7 +41,8 @@ normal layout when an audio or unsupported page is selected in the pager.
 | `NCMediaViewerHostingController.swift` | Owns paged-media navigation actions, title updates and information loading. Hides the upper navigation bar when folded and routes information into the lower controls. |
 | `Core/NCMediaViewerView.swift` | Selects the normal composition or experimental paging bridge using the central switch. |
 | `Views/NCMediaViewerThumbnail.swift` | Shared thumbnail strip and collection implementation for all media; callers own normal/adaptive visibility and spacing. |
-| `Content/Video/NCVideoPlaybackCoverView.swift` | Preview surface, typed cover presentation data/actions and the cover controls renderer. |
+| `Content/Video/NCVideoPlaybackCoverView.swift` | Preview surface, shared cover presentation data/actions and the normal cover controls renderer. |
+| `Content/Video/Controls/NCVideoAdaptivePlaybackCoverControlsView.swift` | Exclusive adaptive cover controls renderer, with the same playback/download actions as normal mode. |
 | `Content/Video/Controls/NCVideoControlsView.swift` | Normal video controls and shared playback state. |
 | `Content/Video/Controls/NCVideoAdaptiveControlsView.swift` | Independent adaptive video controls and standalone action buttons, observing the same playback state. |
 
@@ -73,6 +74,31 @@ sync. Lower view construction is shared by initial creation and subsequent updat
 its controller forwards updates to the existing host without replacing that host.
 
 ## Editing the layout safely
+
+### Normal/adaptive boundaries
+
+The normal image overlay (`NCImageControlsView`) and the adaptive lower panel
+(`NCMediaAdaptiveControlsView`) own separate compositions. Fullscreen video also
+has separate visual implementations (`NCVideoControlsView` and
+`NCVideoAdaptiveControlsView`). Video cover buttons have independent renderers:
+`NCVideoPlaybackCoverControlsView` for normal mode and
+`NCVideoAdaptivePlaybackCoverControlsView` for adaptive mode. Change adaptive
+spacing, backgrounds and button graphics in those adaptive components.
+
+Share media state and action callbacks, rather than normal/adaptive rendered
+views. Keep the paging and playback hosts stable across layout changes. The
+thumbnail strip and information renderer are still shared: layout-specific
+styling belongs in the adaptive composition; editing their internal graphics
+affects both modes. Add an adaptive visual variant if either needs a distinct
+design, keeping its data/loading bindings shared.
+
+Fullscreen video currently uses fixed proxy frames to exclude control touches
+from player gestures. When repositioning those controls, update the proxy frames
+in `NCVideoAdaptiveControlsView` together with its SwiftUI layout. In the paged
+lower panel, horizontal swipes belong to the middle area: future sliders or
+other horizontal controls need their own gesture area so scrubbing cannot also
+change pages. These are interaction requirements, not dependencies on normal
+mode graphics.
 
 The adaptive paging panel is shared, not an image-specific container. In
 `Views/Controls/NCMediaAdaptiveControlsView.swift`, edit the top-level `VStack`

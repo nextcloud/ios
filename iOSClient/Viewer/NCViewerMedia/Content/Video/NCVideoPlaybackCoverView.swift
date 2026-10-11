@@ -118,7 +118,7 @@ struct NCVideoPlaybackCoverPresentation {
     let onPlay: () -> Void
 }
 
-/// The same cover actions are rendered over the normal preview or below the fold.
+/// Normal cover controls. Adaptive graphics live in NCVideoAdaptivePlaybackCoverControlsView.
 struct NCVideoPlaybackCoverControlsView: View {
     let presentation: NCVideoPlaybackCoverPresentation
 

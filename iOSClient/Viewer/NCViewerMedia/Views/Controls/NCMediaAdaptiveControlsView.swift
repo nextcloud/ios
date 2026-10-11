@@ -69,7 +69,7 @@ struct NCMediaAdaptiveControlsView: View {
             detailView
         } else if let ocId = model.selectedMetadata?.ocId,
                   let controls = state.videoCoverControls(for: ocId) {
-            NCVideoPlaybackCoverControlsView(presentation: controls)
+            NCVideoAdaptivePlaybackCoverControlsView(presentation: controls)
         } else {
             Spacer(minLength: 0)
         }

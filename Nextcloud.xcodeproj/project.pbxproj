@@ -488,6 +488,7 @@
 		F7547FE32FB742A400E372C3 /* NCVideoVLCViewControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7547FE22FB7429200E372C3 /* NCVideoVLCViewControls.swift */; };
 		F7547FE62FB76C1900E372C3 /* NCVideoControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7547FE52FB76C1800E372C3 /* NCVideoControlsView.swift */; };
 		A126090153B172F0B6C9F00B /* NCVideoAdaptiveControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A126090153B172F0B6C9F00A /* NCVideoAdaptiveControlsView.swift */; };
+		AC11ADAF2026101100000002 /* NCVideoAdaptivePlaybackCoverControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC11ADAF2026101100000001 /* NCVideoAdaptivePlaybackCoverControlsView.swift */; };
 		A126090153B172F0B6C9F002 /* NCMediaAdaptiveLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A126090153B172F0B6C9F001 /* NCMediaAdaptiveLayoutView.swift */; };
 		F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755BD9A20594AC7008C5FBB /* NCService.swift */; };
 		F755CB402B8CB13C00CE27E9 /* NCMediaLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755CB3F2B8CB13C00CE27E9 /* NCMediaLayout.swift */; };
@@ -1693,6 +1694,7 @@
 		F7547FE22FB7429200E372C3 /* NCVideoVLCViewControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoVLCViewControls.swift; sourceTree = "<group>"; };
 		F7547FE52FB76C1800E372C3 /* NCVideoControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoControlsView.swift; sourceTree = "<group>"; };
 		A126090153B172F0B6C9F00A /* NCVideoAdaptiveControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoAdaptiveControlsView.swift; sourceTree = "<group>"; };
+		AC11ADAF2026101100000001 /* NCVideoAdaptivePlaybackCoverControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoAdaptivePlaybackCoverControlsView.swift; sourceTree = "<group>"; };
 		A126090153B172F0B6C9F001 /* NCMediaAdaptiveLayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaAdaptiveLayoutView.swift; sourceTree = "<group>"; };
 		F755BD9A20594AC7008C5FBB /* NCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCService.swift; sourceTree = "<group>"; };
 		F755CB3F2B8CB13C00CE27E9 /* NCMediaLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCMediaLayout.swift; sourceTree = "<group>"; };
@@ -3270,6 +3272,7 @@
 			children = (
 				F7547FE52FB76C1800E372C3 /* NCVideoControlsView.swift */,
 				A126090153B172F0B6C9F00A /* NCVideoAdaptiveControlsView.swift */,
+				AC11ADAF2026101100000001 /* NCVideoAdaptivePlaybackCoverControlsView.swift */,
 				F7FAAC212FB773CA00DCA45B /* NCVideoAVPlayerViewControls.swift */,
 				F7547FE22FB7429200E372C3 /* NCVideoVLCViewControls.swift */,
 			);
@@ -5518,6 +5521,7 @@
 				F76995F42F9A4AC400291FA7 /* NCCollectionViewCommon+UIEditMenuInteractionDelegate.swift in Sources */,
 				F7547FE62FB76C1900E372C3 /* NCVideoControlsView.swift in Sources */,
 				A126090153B172F0B6C9F00B /* NCVideoAdaptiveControlsView.swift in Sources */,
+				AC11ADAF2026101100000002 /* NCVideoAdaptivePlaybackCoverControlsView.swift in Sources */,
 				A126090153B172F0B6C9F002 /* NCMediaAdaptiveLayoutView.swift in Sources */,
 				F722133B2D40EF9D002F7438 /* NCFilesNavigationController.swift in Sources */,
 				F7BC288026663F85004D46C5 /* NCViewCertificateDetails.swift in Sources */,
