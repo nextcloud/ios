@@ -277,14 +277,16 @@ final class NCMediaViewerModel: ObservableObject {
     // MARK: - Init
 
     init(initialModel: NCMediaViewerInitialModel, session: NCSession.Session, loader: NCMediaViewerLoading, loadingPolicy: NCMediaViewerLoadingPolicy = .standard) {
+        let normalizedOcIds = initialModel.normalizedOcIds
+        let initialIndex = normalizedOcIds.firstIndex(of: initialModel.currentMetadata.ocId) ?? 0
         self.loader = loader
         self.loadingPolicy = loadingPolicy
         self.session = session
-        self.ocIds = initialModel.normalizedOcIds
-        self.selectedIndex = initialModel.currentSelectedIndex
+        self.ocIds = normalizedOcIds
+        self.selectedIndex = initialIndex
 
         let currentPage = NCMediaViewerPageModel(
-            index: initialModel.currentSelectedIndex,
+            index: initialIndex,
             ocId: initialModel.currentMetadata.ocId,
             metadata: initialModel.currentMetadata,
             state: .idle
@@ -1028,15 +1030,14 @@ final class NCMediaViewerModel: ObservableObject {
     }
 
     private func updatePage(ocId: String, publishRevision: Bool = true, mutation: (NCMediaViewerPageModel) -> Void) {
-        guard let index = ocIds.firstIndex(of: ocId) else {
-            return
-        }
-
         let page: NCMediaViewerPageModel
 
         if let cachedPage = cachedPagesByOcId[ocId] {
             page = cachedPage
         } else {
+            guard let index = ocIds.firstIndex(of: ocId) else {
+                return
+            }
             page = NCMediaViewerPageModel(index: index, ocId: ocId, metadata: nil, state: .idle)
 
             cachedPagesByOcId[ocId] = page

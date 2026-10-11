@@ -759,7 +759,7 @@ extension NCMediaViewerThumbnail {
 
             pendingPrefetchIndexes.insert(index)
 
-            Task { [weak self] in
+            Task { @MainActor [weak self] in
                 guard let self else {
                     return
                 }
@@ -772,58 +772,39 @@ extension NCMediaViewerThumbnail {
 
                 guard let metadata,
                       !metadata.ocId.isEmpty else {
-                    await MainActor.run {
-                        _ = self.pendingPrefetchIndexes.remove(index)
-                    }
+                    self.pendingPrefetchIndexes.remove(index)
                     return
                 }
 
                 guard !self.isDeletedProvider(index) else {
-                    await MainActor.run {
-                        _ = self.pendingPrefetchIndexes.remove(index)
-                    }
+                    self.pendingPrefetchIndexes.remove(index)
                     return
                 }
 
                 guard metadata.classFile != NKTypeClassFile.audio.rawValue else {
-                    await MainActor.run {
-                        _ = self.pendingPrefetchIndexes.remove(index)
-                        self.loadAudioIfNeeded(at: index)
-                        self.refreshThumbnailIfVisible(at: index)
-                    }
-                    return
-                }
-
-                guard let previewURL = await self.previewURLProvider(metadata) else {
-                    await MainActor.run {
-                        self.indexesWithoutPreview.insert(index)
-                        _ = self.pendingPrefetchIndexes.remove(index)
-                        self.refreshThumbnailIfVisible(at: index)
-                    }
-                    return
-                }
-
-                guard let image = await Self.makeImage(from: previewURL) else {
-                    await MainActor.run {
-                        self.indexesWithoutPreview.insert(index)
-                        _ = self.pendingPrefetchIndexes.remove(index)
-                        self.refreshThumbnailIfVisible(at: index)
-                    }
-                    return
-                }
-
-                await MainActor.run {
-                    self.indexesWithoutPreview.remove(index)
-                    _ = self.pendingPrefetchIndexes.remove(index)
-
-                    guard !self.isDeletedProvider(index) else {
-                        return
-                    }
-
-                    self.imageCache.setObject(image, forKey: metadata.ocId as NSString)
-
+                    self.pendingPrefetchIndexes.remove(index)
+                    self.loadAudioIfNeeded(at: index)
                     self.refreshThumbnailIfVisible(at: index)
+                    return
                 }
+
+                guard let previewURL = await self.previewURLProvider(metadata),
+                      let image = await Self.makeImage(from: previewURL) else {
+                    self.indexesWithoutPreview.insert(index)
+                    self.pendingPrefetchIndexes.remove(index)
+                    self.refreshThumbnailIfVisible(at: index)
+                    return
+                }
+
+                self.indexesWithoutPreview.remove(index)
+                self.pendingPrefetchIndexes.remove(index)
+
+                guard !self.isDeletedProvider(index) else {
+                    return
+                }
+
+                self.imageCache.setObject(image, forKey: metadata.ocId as NSString)
+                self.refreshThumbnailIfVisible(at: index)
             }
         }
 

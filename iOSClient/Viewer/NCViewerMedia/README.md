@@ -132,6 +132,14 @@ content; they have not been relocated into the lower controls.
 
 ## Verification
 
+Shared viewer optimizations keep the existing loading and playback policies:
+the viewer model normalizes its source identifiers once during initialization,
+and updates cached pages without searching the full identifier list. Thumbnail
+loading stays explicitly on the main actor for UI/cache updates; only image
+decoding runs in the background. Missing previews and failed image decoding use
+the same placeholder path. Recheck duplicate/missing initial identifiers,
+thumbnail failures, audio artwork and page deletion while previews are loading.
+
 [NCMediaAdaptiveLayoutViewTests.swift](../../../Tests/NextcloudUnitTests/NCMediaAdaptiveLayoutViewTests.swift)
 covers disabled mode, retained image hosting, independent controls, standalone action callbacks, video-cover
 action ownership, fold geometry,
