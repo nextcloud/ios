@@ -804,10 +804,7 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
         onToggleChrome: @escaping () -> Void,
         onPreviousPage: @escaping (_ shouldAutoPlay: Bool) -> Void,
         onNextPage: @escaping (_ shouldAutoPlay: Bool) -> Void,
-        onNextMediaOfSameType: @escaping (
-            _ classFile: String,
-            _ completion: @escaping NCMediaPlaybackAdvanceCompletion
-        ) -> Void,
+        onNextMediaOfSameType: @escaping (_ classFile: String, _ completion: @escaping NCMediaPlaybackAdvanceCompletion) -> Void,
         onAutoPlayConsumed: @escaping () -> Void,
         onZoomChanged: @escaping (Bool) -> Void,
         onClose: @escaping (_ ocId: String?) -> Void,
