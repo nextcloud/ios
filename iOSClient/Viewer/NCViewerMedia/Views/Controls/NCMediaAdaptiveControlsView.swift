@@ -22,6 +22,8 @@ struct NCMediaAdaptiveControlsView: View {
 
             mediaControls
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .contentShape(Rectangle())
+                .simultaneousGesture(pageSwipe)
 
             if model.numberOfPages > 1 {
                 NCMediaViewerThumbnailStrip(model: model)
@@ -32,6 +34,22 @@ struct NCMediaAdaptiveControlsView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(uiColor: .ncViewerBackground(.system)))
+    }
+
+    // Keep page swipes outside the buttons and independently scrolling thumbnail strip.
+    private var pageSwipe: some Gesture {
+        DragGesture(minimumDistance: 30)
+            .onEnded { value in
+                let translation = value.translation
+                guard state.isFoldedLayout,
+                      abs(translation.width) >= 50,
+                      abs(translation.width) > abs(translation.height) else { return }
+
+                let index = model.selectedIndex + (translation.width < 0 ? 1 : -1)
+                guard index >= 0, index < model.numberOfPages else { return }
+
+                Task { await model.displayPreviewPage(at: index) }
+            }
     }
 
     // Add media-specific lower controls here; the buttons and thumbnails stay shared.
