@@ -40,7 +40,7 @@ struct NCMediaAdaptiveControlsView: View {
         if let detailView = state.detailView {
             detailView
         } else if let ocId = model.selectedMetadata?.ocId,
-                  let controls = state.videoCoverControls[ocId] {
+                  let controls = state.videoCoverControls(for: ocId) {
             NCVideoPlaybackCoverControlsView(presentation: controls)
         } else {
             Spacer(minLength: 0)
@@ -56,20 +56,26 @@ struct NCMediaAdaptiveControlsView: View {
 final class NCMediaAdaptiveControlsState: ObservableObject {
     @Published var detailView: NCMediaViewerDetailView?
     @Published var isFoldedLayout = false
-    @Published private(set) var videoCoverControls: [String: NCVideoPlaybackCoverPresentation] = [:]
-    private var videoCoverOwners: [String: UUID] = [:]
+    private struct VideoCoverRegistration {
+        let owner: UUID
+        let controls: NCVideoPlaybackCoverPresentation
+    }
+
+    @Published private var videoCoverRegistrations: [String: VideoCoverRegistration] = [:]
+
+    func videoCoverControls(for ocId: String) -> NCVideoPlaybackCoverPresentation? {
+        videoCoverRegistrations[ocId]?.controls
+    }
 
     func setVideoCoverControls(_ controls: NCVideoPlaybackCoverPresentation, for ocId: String, owner: UUID) {
-        videoCoverOwners[ocId] = owner
-        videoCoverControls[ocId] = controls
+        videoCoverRegistrations[ocId] = VideoCoverRegistration(owner: owner, controls: controls)
     }
 
     func removeVideoCoverControls(for ocId: String, owner: UUID) {
-        guard videoCoverOwners[ocId] == owner else {
+        guard videoCoverRegistrations[ocId]?.owner == owner else {
             return
         }
-        videoCoverOwners.removeValue(forKey: ocId)
-        videoCoverControls.removeValue(forKey: ocId)
+        videoCoverRegistrations.removeValue(forKey: ocId)
     }
 }
 
@@ -155,15 +161,15 @@ struct NCMediaAdaptiveLayoutHost: UIViewControllerRepresentable {
     let supportsAdaptiveLayout: Bool
     let onLayoutModeChanged: (Bool) -> Void
 
+    private var adaptiveControlsView: NCMediaAdaptiveControlsView {
+        NCMediaAdaptiveControlsView(model: model, state: state, makeActionsView: makeActionsView)
+    }
+
     func makeUIViewController(context: Context) -> NCMediaAdaptiveLayoutController {
         NCMediaAdaptiveLayoutController(
             mediaView: mediaView,
             normalControlsView: NCImageControlsView(model: model),
-            adaptiveControlsView: NCMediaAdaptiveControlsView(
-                model: model,
-                state: state,
-                makeActionsView: makeActionsView
-            ),
+            adaptiveControlsView: adaptiveControlsView,
             onLayoutModeChanged: onLayoutModeChanged
         )
     }
@@ -171,12 +177,7 @@ struct NCMediaAdaptiveLayoutHost: UIViewControllerRepresentable {
     func updateUIViewController(_ controller: NCMediaAdaptiveLayoutController, context: Context) {
         controller.mediaController.rootView = mediaView
         controller.normalControlsController.rootView = NCImageControlsView(model: model)
-        controller.adaptiveControlsView = NCMediaAdaptiveControlsView(
-            model: model,
-            state: state,
-            makeActionsView: makeActionsView
-        )
-        controller.adaptiveControlsController?.rootView = controller.adaptiveControlsView
+        controller.adaptiveControlsView = adaptiveControlsView
         controller.onLayoutModeChanged = onLayoutModeChanged
         controller.loadViewIfNeeded()
         controller.layoutView.isLayoutEnabled = NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled && supportsAdaptiveLayout
@@ -188,14 +189,15 @@ final class NCMediaAdaptiveLayoutController: UIViewController {
     let mediaController: UIHostingController<NCMediaViewerPagingView>
     let normalControlsController: UIHostingController<NCImageControlsView>
     private(set) var adaptiveControlsController: UIHostingController<NCMediaAdaptiveControlsView>?
-    var adaptiveControlsView: NCMediaAdaptiveControlsView
+    var adaptiveControlsView: NCMediaAdaptiveControlsView {
+        didSet {
+            adaptiveControlsController?.rootView = adaptiveControlsView
+        }
+    }
     var onLayoutModeChanged: (Bool) -> Void
 
     private var hasAttachedAdaptiveControls = false
-    private lazy var normalControlsContainer = NCMediaNormalControlsContainerView(
-        contentView: normalControlsController.view,
-        model: normalControlsController.rootView.model
-    )
+    private lazy var normalControlsContainer = NCMediaNormalControlsContainerView(contentView: normalControlsController.view, model: normalControlsController.rootView.model)
 
     private(set) lazy var layoutView = NCMediaAdaptiveLayoutView(
         mediaView: mediaController.view,

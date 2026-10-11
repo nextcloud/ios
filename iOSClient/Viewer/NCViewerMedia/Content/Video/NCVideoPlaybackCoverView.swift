@@ -19,25 +19,10 @@ struct NCVideoPlaybackCoverView: View {
 
     var body: some View {
         ZStack {
-            if let previewURL {
-                AsyncImage(url: previewURL) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFit()
-
-                    case .failure,
-                         .empty:
-                        Color.ncViewerBackground(backgroundStyle)
-
-                    @unknown default:
-                        Color.ncViewerBackground(backgroundStyle)
-                    }
-                }
-                .ignoresSafeArea()
+            if let adaptiveContext {
+                NCVideoAdaptiveCoverPreview(state: adaptiveContext.state, previewURL: previewURL, backgroundStyle: backgroundStyle)
             } else {
-                Color.ncViewerBackground(backgroundStyle)
+                NCVideoPlaybackCoverPreview(previewURL: previewURL, backgroundStyle: backgroundStyle)
                     .ignoresSafeArea()
             }
 
@@ -49,12 +34,7 @@ struct NCVideoPlaybackCoverView: View {
                 }
 
             if let adaptiveContext {
-                NCVideoAdaptiveCoverControls(
-                    state: adaptiveContext.state,
-                    ocId: adaptiveContext.ocId,
-                    controls: controlsPresentation,
-                    revision: controlsRevision
-                )
+                NCVideoAdaptiveCoverControls(state: adaptiveContext.state, ocId: adaptiveContext.ocId, controls: controlsPresentation, revision: controlsRevision)
             } else {
                 controlsView
             }
@@ -78,6 +58,53 @@ struct NCVideoPlaybackCoverView: View {
 
     private var controlsRevision: String {
         "\(previewURL?.absoluteString ?? "")|\(isPlayEnabled)|\(isLoading)|\(isLaunchingPlayback)|\(statusMessage ?? "")|\(onCancel != nil)"
+    }
+}
+
+private struct NCVideoPlaybackCoverPreview: View {
+    let previewURL: URL?
+    let backgroundStyle: NCViewerBackgroundStyle
+
+    var body: some View {
+        if let previewURL {
+            AsyncImage(url: previewURL) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFit()
+
+                case .failure,
+                     .empty:
+                    Color.ncViewerBackground(backgroundStyle)
+
+                @unknown default:
+                    Color.ncViewerBackground(backgroundStyle)
+                }
+            }
+        } else {
+            Color.ncViewerBackground(backgroundStyle)
+        }
+    }
+}
+
+private struct NCVideoAdaptiveCoverPreview: View {
+    @ObservedObject var state: NCMediaAdaptiveControlsState
+    let previewURL: URL?
+    let backgroundStyle: NCViewerBackgroundStyle
+
+    var body: some View {
+        if state.isFoldedLayout {
+            // Fit and center within the upper region, without expanding through its safe-area edges.
+            GeometryReader { geometry in
+                NCVideoPlaybackCoverPreview(previewURL: previewURL, backgroundStyle: backgroundStyle)
+                    .frame(width: geometry.size.width, height: geometry.size.height, alignment: .center)
+            }
+            .clipped()
+        } else {
+            NCVideoPlaybackCoverPreview(previewURL: previewURL, backgroundStyle: backgroundStyle)
+                .ignoresSafeArea()
+        }
     }
 }
 
@@ -147,10 +174,7 @@ struct NCVideoPlaybackCoverControlsView: View {
                 }
                 .padding(.horizontal, 14)
                 .padding(.vertical, 10)
-                .background(
-                    .black.opacity(0.46),
-                    in: RoundedRectangle(cornerRadius: 10, style: .continuous)
-                )
+                .background(.black.opacity(0.46), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
         }
     }
@@ -224,7 +248,30 @@ private extension View {
     )
 }
 
+#Preview("Video Playback Cover - Folded Upper Region") {
+    NCVideoPlaybackCoverView(
+        previewURL: NCVideoPlaybackCoverPreviewImage.url,
+        isPlayEnabled: true,
+        isLoading: false,
+        isLaunchingPlayback: false,
+        statusMessage: nil,
+        onCancel: nil,
+        onToggleChrome: {},
+        onPlay: {}
+    )
+    .environment(\.mediaAdaptiveCoverContext, NCVideoPlaybackCoverPreviewImage.foldedContext)
+    .frame(width: 420, height: 240)
+    .border(Color.orange)
+}
+
 private enum NCVideoPlaybackCoverPreviewImage {
+    @MainActor
+    static var foldedContext: NCMediaAdaptiveCoverContext {
+        let state = NCMediaAdaptiveControlsState()
+        state.isFoldedLayout = true
+        return NCMediaAdaptiveCoverContext(state: state, ocId: "preview-video")
+    }
+
     static var url: URL? {
         guard let image = UIImage(named: "testimage"),
               let data = image.jpegData(compressionQuality: 1) else {

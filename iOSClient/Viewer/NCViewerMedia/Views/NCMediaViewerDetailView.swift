@@ -168,31 +168,17 @@ struct NCMediaViewerDetailView: View {
         if let latitude = exif.latitude,
            let longitude = exif.longitude,
            NCNetworking.shared.isOnline {
-            let coordinate = CLLocationCoordinate2D(
-                latitude: latitude,
-                longitude: longitude
-            )
+            let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
 
             VStack(spacing: 0) {
                 ZStack {
-                    Map(
-                        initialPosition: .region(
-                            MKCoordinateRegion(
-                                center: coordinate,
-                                latitudinalMeters: 500,
-                                longitudinalMeters: 500
-                            )
-                        )
-                    ) {
+                    Map(initialPosition: .region(MKCoordinateRegion(center: coordinate, latitudinalMeters: 500, longitudinalMeters: 500))) {
                         Marker("", coordinate: coordinate)
                     }
                     .allowsHitTesting(false)
 
                     Button {
-                        openMaps(
-                            coordinate: coordinate,
-                            name: exif.location
-                        )
+                        openMaps(coordinate: coordinate, name: exif.location)
                     } label: {
                         Color.clear
                             .contentShape(Rectangle())
@@ -203,10 +189,7 @@ struct NCMediaViewerDetailView: View {
 
                 if let location = exif.location, !location.isEmpty {
                     Button {
-                        openMaps(
-                            coordinate: coordinate,
-                            name: location
-                        )
+                        openMaps(coordinate: coordinate, name: location)
                     } label: {
                         HStack(spacing: 6) {
                             Text(location)
@@ -247,10 +230,7 @@ struct NCMediaViewerDetailView: View {
             .lineLimit(1)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .background(
-                .secondary.opacity(0.15),
-                in: RoundedRectangle(cornerRadius: 7, style: .continuous)
-            )
+            .background(.secondary.opacity(0.15), in: RoundedRectangle(cornerRadius: 7, style: .continuous))
     }
 
     // MARK: - Computed Values
@@ -390,10 +370,7 @@ struct NCMediaViewerDetailView: View {
     // MARK: - Actions
 
     private func openMaps(coordinate: CLLocationCoordinate2D, name: String?) {
-        let placemark = MKPlacemark(
-            coordinate: coordinate,
-            addressDictionary: nil
-        )
+        let placemark = MKPlacemark(coordinate: coordinate, addressDictionary: nil)
 
         let mapItem = MKMapItem(placemark: placemark)
         mapItem.name = name

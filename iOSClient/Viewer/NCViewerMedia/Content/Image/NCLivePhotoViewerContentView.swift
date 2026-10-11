@@ -77,25 +77,11 @@ struct NCLivePhotoViewerContentView: View {
 
             if isPlayingLivePhoto, let livePhoto {
                 GeometryReader { proxy in
-                    let layout = NCLivePhotoPlaybackLayout(
-                        containerSize: proxy.size,
-                        photoSize: livePhoto.size,
-                        zoomState: playbackZoomState
-                    )
+                    let layout = NCLivePhotoPlaybackLayout(containerSize: proxy.size, photoSize: livePhoto.size, zoomState: playbackZoomState)
 
-                    NCLivePhotoViewRepresentable(
-                        livePhoto: livePhoto,
-                        backgroundStyle: backgroundStyle,
-                        isPlaying: $isPlayingLivePhoto
-                    )
-                    .frame(
-                        width: layout.frame.width,
-                        height: layout.frame.height
-                    )
-                    .position(
-                        x: layout.frame.midX,
-                        y: layout.frame.midY
-                    )
+                    NCLivePhotoViewRepresentable(livePhoto: livePhoto, backgroundStyle: backgroundStyle, isPlaying: $isPlayingLivePhoto)
+                    .frame(width: layout.frame.width, height: layout.frame.height)
+                    .position(x: layout.frame.midX, y: layout.frame.midY)
                 }
                 .clipped()
                 .id(playbackViewIdentifier)
@@ -216,10 +202,7 @@ struct NCLivePhotoViewerContentView: View {
                     .padding(.horizontal, 9)
                     .padding(.vertical, 5)
                     .background(livePhotoBadgeBackground)
-                    .overlay(
-                        Capsule()
-                            .stroke(livePhotoBadgeStroke, lineWidth: 1)
-                    )
+                    .overlay(Capsule() .stroke(livePhotoBadgeStroke, lineWidth: 1))
                     .clipShape(Capsule())
                     .shadow(color: .black.opacity(0.08), radius: 2, x: 0, y: 1)
                     .padding(.leading, 12)
@@ -237,10 +220,7 @@ struct NCLivePhotoViewerContentView: View {
     // MARK: - Identifiers
 
     private var taskIdentifier: String {
-        resourceIdentifier(
-            imageURL: fullURL,
-            videoURL: videoURL
-        )
+        resourceIdentifier(imageURL: fullURL, videoURL: videoURL)
     }
 
     private var playbackViewIdentifier: String {
@@ -276,10 +256,7 @@ struct NCLivePhotoViewerContentView: View {
             isLoadingResources = false
         }
 
-        await loadLivePhoto(
-            imageURL: fullURL,
-            videoURL: videoURL
-        )
+        await loadLivePhoto(imageURL: fullURL, videoURL: videoURL)
     }
 
     @MainActor
@@ -319,19 +296,13 @@ struct NCLivePhotoViewerContentView: View {
                 return
             }
 
-            await loadLivePhoto(
-                imageURL: resourceURLs.imageURL,
-                videoURL: resourceURLs.videoURL
-            )
+            await loadLivePhoto(imageURL: resourceURLs.imageURL, videoURL: resourceURLs.videoURL)
         }
     }
 
     @MainActor
     private func loadLivePhoto(imageURL: URL, videoURL: URL) async {
-        let expectedIdentifier = resourceIdentifier(
-            imageURL: imageURL,
-            videoURL: videoURL
-        )
+        let expectedIdentifier = resourceIdentifier(imageURL: imageURL, videoURL: videoURL)
 
         if loadedTaskIdentifier != expectedIdentifier {
             livePhoto = nil
@@ -438,26 +409,15 @@ struct NCLivePhotoViewerContentView: View {
 
             let resumeBox = ResumeBox()
 
-            PHLivePhoto.request(
-                withResourceFileURLs: resourceURLs,
-                placeholderImage: nil,
-                targetSize: .zero,
-                contentMode: .aspectFit
-            ) { livePhoto, info in
+            PHLivePhoto.request(withResourceFileURLs: resourceURLs, placeholderImage: nil, targetSize: .zero, contentMode: .aspectFit) { livePhoto, info in
                 if let cancelled = info[PHLivePhotoInfoCancelledKey] as? Bool,
                    cancelled {
-                    resumeBox.resumeOnce(
-                        continuation,
-                        returning: nil
-                    )
+                    resumeBox.resumeOnce(continuation, returning: nil)
                     return
                 }
 
                 if info[PHLivePhotoInfoErrorKey] != nil {
-                    resumeBox.resumeOnce(
-                        continuation,
-                        returning: nil
-                    )
+                    resumeBox.resumeOnce(continuation, returning: nil)
                     return
                 }
 
@@ -471,10 +431,7 @@ struct NCLivePhotoViewerContentView: View {
                     return
                 }
 
-                resumeBox.resumeOnce(
-                    continuation,
-                    returning: livePhoto
-                )
+                resumeBox.resumeOnce(continuation, returning: livePhoto)
             }
         }
     }
@@ -494,35 +451,18 @@ struct NCLivePhotoPlaybackLayout {
             return
         }
 
-        let fitScale = min(
-            containerSize.width / photoSize.width,
-            containerSize.height / photoSize.height
-        )
+        let fitScale = min(containerSize.width / photoSize.width, containerSize.height / photoSize.height)
         let zoomScale = min(
-            max(
-                zoomState?.zoomScale ?? NCImageZoomView.supportedZoomScaleRange.lowerBound,
-                NCImageZoomView.supportedZoomScaleRange.lowerBound
-            ),
+            max(zoomState?.zoomScale ?? NCImageZoomView.supportedZoomScaleRange.lowerBound, NCImageZoomView.supportedZoomScaleRange.lowerBound),
             NCImageZoomView.supportedZoomScaleRange.upperBound
         )
-        let contentSize = CGSize(
-            width: photoSize.width * fitScale * zoomScale,
-            height: photoSize.height * fitScale * zoomScale
-        )
+        let contentSize = CGSize(width: photoSize.width * fitScale * zoomScale, height: photoSize.height * fitScale * zoomScale)
         let normalizedCenter = zoomState?.normalizedCenter ?? CGPoint(x: 0.5, y: 0.5)
 
         self.frame = CGRect(
             origin: CGPoint(
-                x: Self.contentOrigin(
-                    containerLength: containerSize.width,
-                    contentLength: contentSize.width,
-                    normalizedCenter: normalizedCenter.x
-                ),
-                y: Self.contentOrigin(
-                    containerLength: containerSize.height,
-                    contentLength: contentSize.height,
-                    normalizedCenter: normalizedCenter.y
-                )
+                x: Self.contentOrigin(containerLength: containerSize.width, contentLength: contentSize.width, normalizedCenter: normalizedCenter.x),
+                y: Self.contentOrigin(containerLength: containerSize.height, contentLength: contentSize.height, normalizedCenter: normalizedCenter.y)
             ),
             size: contentSize
         )

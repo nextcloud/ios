@@ -122,18 +122,8 @@ final class NCMediaAdaptiveLayoutView: UIView {
         // Keep the normal layout usable if the adaptive controls cannot be supplied.
         let foldedDivision = adaptiveControlsView != nil ? division : nil
         if let division = foldedDivision {
-            mediaView.frame = CGRect(
-                x: bounds.minX,
-                y: bounds.minY,
-                width: bounds.width,
-                height: division.minY - bounds.minY
-            )
-            adaptiveControlsView?.frame = CGRect(
-                x: bounds.minX,
-                y: division.maxY,
-                width: bounds.width,
-                height: bounds.maxY - division.maxY
-            )
+            mediaView.frame = CGRect(x: bounds.minX, y: bounds.minY, width: bounds.width, height: division.minY - bounds.minY)
+            adaptiveControlsView?.frame = CGRect(x: bounds.minX, y: division.maxY, width: bounds.width, height: bounds.maxY - division.maxY)
         } else if isLayoutEnabled {
             mediaView.frame = bounds
             adaptiveControlsView?.frame = bounds

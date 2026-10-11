@@ -54,10 +54,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             return nil
         }
 
-        let resultsFile = await NextcloudKit.shared.getFileFromFileIdAsync(
-            fileId: fileId,
-            account: account
-        )
+        let resultsFile = await NextcloudKit.shared.getFileFromFileIdAsync(fileId: fileId, account: account)
 
         guard resultsFile.error == .success,
               let file = resultsFile.file else {
@@ -71,13 +68,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
     }
 
     func previewURL(for metadata: tableMetadata, ext: String) async -> URL? {
-        let localPath = utilityFileSystem.getDirectoryProviderStorageImageOcId(
-            metadata.ocId,
-            etag: metadata.etag,
-            ext: ext,
-            userId: metadata.userId,
-            urlBase: metadata.urlBase
-        )
+        let localPath = utilityFileSystem.getDirectoryProviderStorageImageOcId(metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase)
 
         if isValidLocalFile(path: localPath, validateAsImage: true) {
             return URL(fileURLWithPath: localPath)
@@ -91,20 +82,13 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             return nil
         }
 
-        let result = await NextcloudKit.shared.downloadPreviewAsync(
-            fileId: metadata.fileId,
-            etag: metadata.etag,
-            account: metadata.account
-        )
+        let result = await NextcloudKit.shared.downloadPreviewAsync(fileId: metadata.fileId, etag: metadata.etag, account: metadata.account)
 
         await NCTransferCoordinator.shared.release()
 
         if result.error == .success,
            let data = result.responseData?.data {
-            NCUtility().createImageFileFrom(
-                data: data,
-                metadata: metadata
-            )
+            NCUtility().createImageFileFrom(data: data, metadata: metadata)
         }
 
         guard isValidLocalFile(path: localPath, validateAsImage: true) else {
@@ -139,11 +123,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             session: NCNetworking.shared.sessionDownload,
             selector: NCGlobal.shared.selectorDownloadFile
         ) else {
-            throw NSError(
-                domain: "Download Media",
-                code: 1,
-                userInfo: [NSLocalizedDescriptionKey: "Unable to prepare media download."]
-            )
+            throw NSError(domain: "Download Media", code: 1, userInfo: [NSLocalizedDescriptionKey: "Unable to prepare media download."])
         }
 
         try await NCTransferCoordinator.shared.acquire(priority: .userInitiated)
@@ -261,12 +241,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
 
     // MARK: - Private Helpers
     private func fullLocalPath(for metadata: tableMetadata) -> String {
-        utilityFileSystem.getDirectoryProviderStorageOcId(
-            metadata.ocId,
-            fileName: metadata.fileNameView,
-            userId: metadata.userId,
-            urlBase: metadata.urlBase
-        )
+        utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
     }
 
     private func isValidLocalFile(path: String, validateAsImage: Bool) -> Bool {
@@ -311,10 +286,7 @@ protocol NCMediaViewerLoading: Sendable {
 
     func previewURL(for metadata: tableMetadata, ext: String) async -> URL?
 
-    func downloadMedia(
-        for metadata: tableMetadata,
-        onDownloadStarted: (@Sendable () async -> Void)?
-    ) async throws -> URL
+    func downloadMedia(for metadata: tableMetadata, onDownloadStarted: (@Sendable () async -> Void)?) async throws -> URL
 
     func localLivePhotoURL(for metadata: tableMetadata) async -> URL?
 

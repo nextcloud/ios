@@ -77,7 +77,7 @@ struct NCMediaAdaptiveLayoutViewTests {
         state.removeVideoCoverControls(for: "selected", owner: oldOwner)
         state.removeVideoCoverControls(for: "neighbor", owner: neighborOwner)
 
-        let controls = try #require(state.videoCoverControls["selected"])
+        let controls = try #require(state.videoCoverControls(for: "selected"))
         #expect(controls.isLoading)
         #expect(!controls.isPlayEnabled)
         #expect(controls.statusMessage == "Downloading")
@@ -85,10 +85,10 @@ struct NCMediaAdaptiveLayoutViewTests {
         controls.onCancel?()
         #expect(played == ["current"])
         #expect(cancelled)
-        #expect(state.videoCoverControls["neighbor"] == nil)
+        #expect(state.videoCoverControls(for: "neighbor") == nil)
 
         state.removeVideoCoverControls(for: "selected", owner: currentOwner)
-        #expect(state.videoCoverControls.isEmpty)
+        #expect(state.videoCoverControls(for: "selected") == nil)
     }
 
     @Test("Image folding retains the paging host and uses independent controls")
@@ -136,6 +136,16 @@ struct NCMediaAdaptiveLayoutViewTests {
         #expect(adaptiveController.parent === controller)
         #expect(mediaView.frame.height == 280)
         #expect(controller.normalControlsController.view.superview?.isHidden == true)
+
+        // Updating the lower presentation must reach the retained host, not create a new one.
+        let updatedState = NCMediaAdaptiveControlsState()
+        controller.adaptiveControlsView = NCMediaAdaptiveControlsView(
+            model: model,
+            state: updatedState,
+            makeActionsView: { UIView() }
+        )
+        #expect(adaptiveController.rootView.state === updatedState)
+        #expect(controller.adaptiveControlsController === adaptiveController)
 
         view.updateLayout(divisionFrames: [])
         #expect(controller.mediaController.view === mediaView)

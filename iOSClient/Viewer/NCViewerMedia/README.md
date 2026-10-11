@@ -60,13 +60,17 @@ remains usable and the next layout pass may retry.
 
 Video covers use the same split as images before fullscreen playback starts.
 `NCVideoPlaybackCoverView` keeps the preview and image tap action in the upper
-area. Its Play button, loading indicator, download message and Cancel action
+area. While folded, its preview is fitted and explicitly centered within the
+upper region, without ignoring that region's safe-area edges. Its Play button, loading indicator, download message and Cancel action
 move into the lower composition while folded and return to the normal overlay
 when unfolded. Paging cells receive the shared adaptive context explicitly,
 because each cell has its own SwiftUI hosting controller. Cover presentation data and actions (not SwiftUI control views) are
 registered by media ID and owner, preventing neighboring or reused pages from
 replacing or removing the selected cover's controls. The existing playback
-and download actions are reused.
+and download actions are reused. Each registration keeps its owner and presentation
+in one entry, so updates and removals cannot leave two separate registries out of
+sync. Lower view construction is shared by initial creation and subsequent updates;
+its controller forwards updates to the existing host without replacing that host.
 
 ## Editing the layout safely
 
@@ -128,6 +132,11 @@ unfolding, initial adaptive constraints, deferred creation of lower controls and
 recovery when lower controls are unavailable. These tests do not establish runtime
 zoom or playback continuity on a folded device.
 
+[NCImageZoomViewTests.swift](../../../Tests/NextcloudUnitTests/NCImageZoomViewTests.swift)
+also covers centering of horizontal, vertical and square images through a full /
+upper-region / full resize, and zoom/focal-point preservation through the same
+transition. Image rendering has not been changed for the video-cover correction.
+
 Static review compares the normal thumbnail composition and media source files
 with the previous implementation. SwiftLint and project-reference checks cover
 source consistency, not runtime behavior.
@@ -153,7 +162,10 @@ Start with the normal layout before testing the fold:
 3. With an active fold, verify images and video covers: upper media only, lower
    actions and thumbnails, information without losing the strip, and selecting
    neighboring pages during a download. Verify Close, Info and More buttons,
-   including share popovers on iPad. Audio currently returns to normal layout.
+   including share popovers on iPad. Check horizontal and vertical video covers
+   for centering in the upper region before/after loading and unfolding. The
+   `Video Playback Cover - Folded Upper Region` canvas preview isolates that area.
+   Audio currently returns to normal layout.
 4. Fold/unfold repeatedly while loading or playing; check position and playback
    continuity with each engine. Fullscreen video thumbnails are still pending.
 5. Repeat on iOS 18 to verify the normal fallback.

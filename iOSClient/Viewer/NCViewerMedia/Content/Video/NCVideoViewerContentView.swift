@@ -338,10 +338,7 @@ private extension NCVideoViewerContentView {
                 Button {
                     retryPlayback()
                 } label: {
-                    Label(
-                        NSLocalizedString("_retry_", comment: ""),
-                        systemImage: "arrow.clockwise"
-                    )
+                    Label(NSLocalizedString("_retry_", comment: ""), systemImage: "arrow.clockwise")
                     .font(.subheadline.weight(.semibold))
                 }
                 .buttonStyle(.borderedProminent)
@@ -471,10 +468,7 @@ private extension NCVideoViewerContentView {
         let expectedTaskIdentifier = taskIdentifier
         let expectedLoadGeneration = loadGeneration
 
-        guard isStableSelection(
-            expectedTaskIdentifier: expectedTaskIdentifier,
-            expectedLoadGeneration: expectedLoadGeneration
-        ) else {
+        guard isStableSelection(expectedTaskIdentifier: expectedTaskIdentifier, expectedLoadGeneration: expectedLoadGeneration) else {
             return
         }
 
@@ -485,10 +479,7 @@ private extension NCVideoViewerContentView {
             return
         }
 
-        await resolveAndLoadVideo(
-            expectedTaskIdentifier: expectedTaskIdentifier,
-            expectedLoadGeneration: expectedLoadGeneration
-        )
+        await resolveAndLoadVideo(expectedTaskIdentifier: expectedTaskIdentifier, expectedLoadGeneration: expectedLoadGeneration)
     }
 
     @MainActor
@@ -517,17 +508,11 @@ private extension NCVideoViewerContentView {
         errorMessage = nil
 
         if let localURL {
-            loadResolvedVideo(
-                url: localURL,
-                expectedTaskIdentifier: expectedTaskIdentifier,
-                expectedLoadGeneration: expectedLoadGeneration
-            )
+            loadResolvedVideo(url: localURL, expectedTaskIdentifier: expectedTaskIdentifier, expectedLoadGeneration: expectedLoadGeneration)
             return
         }
 
-        let result = await resolvedVideoURL(
-            taskIdentifier: expectedTaskIdentifier
-        )
+        let result = await resolvedVideoURL(taskIdentifier: expectedTaskIdentifier)
 
         guard !Task.isCancelled else {
             return
@@ -551,11 +536,7 @@ private extension NCVideoViewerContentView {
             return
         }
 
-        loadResolvedVideo(
-            url: url,
-            expectedTaskIdentifier: expectedTaskIdentifier,
-            expectedLoadGeneration: expectedLoadGeneration
-        )
+        loadResolvedVideo(url: url, expectedTaskIdentifier: expectedTaskIdentifier, expectedLoadGeneration: expectedLoadGeneration)
     }
 
     @MainActor
@@ -580,13 +561,7 @@ private extension NCVideoViewerContentView {
             return
         }
 
-        playback.loadVideo(
-            metadata: metadata,
-            url: url,
-            fileName: resolvedFileName,
-            userAgent: userAgent,
-            httpHeaders: httpHeaders(for: url)
-        )
+        playback.loadVideo(metadata: metadata, url: url, fileName: resolvedFileName, userAgent: userAgent, httpHeaders: httpHeaders(for: url))
     }
 
     func httpHeaders(for url: URL) -> [String: String] {
@@ -658,10 +633,7 @@ private extension NCVideoViewerContentView {
                 let downloadedURL = try await downloadVideo()
                 try Task.checkCancellation()
 
-                guard isStableSelection(
-                    expectedTaskIdentifier: expectedTaskIdentifier,
-                    expectedLoadGeneration: expectedLoadGeneration
-                ) else {
+                guard isStableSelection(expectedTaskIdentifier: expectedTaskIdentifier, expectedLoadGeneration: expectedLoadGeneration) else {
                     return
                 }
 
@@ -670,13 +642,7 @@ private extension NCVideoViewerContentView {
                 resolvedPlaybackURL = downloadedURL
                 hasRequestedPlayback = true
 
-                playback.loadVideo(
-                    metadata: metadata,
-                    url: downloadedURL,
-                    fileName: resolvedFileName,
-                    userAgent: userAgent,
-                    httpHeaders: [:]
-                )
+                playback.loadVideo(metadata: metadata, url: downloadedURL, fileName: resolvedFileName, userAgent: userAgent, httpHeaders: [:])
             } catch is CancellationError {
                 return
             } catch {
@@ -733,17 +699,10 @@ private extension NCVideoViewerContentView {
         }
 
         if let localURL {
-            return playback.isCurrentVideo(
-                ocId: metadata.ocId,
-                etag: metadata.etag,
-                url: localURL
-            )
+            return playback.isCurrentVideo(ocId: metadata.ocId, etag: metadata.etag, url: localURL)
         }
 
-        return playback.isCurrentVideo(
-            ocId: metadata.ocId,
-            etag: metadata.etag
-        )
+        return playback.isCurrentVideo(ocId: metadata.ocId, etag: metadata.etag)
     }
 
     @MainActor

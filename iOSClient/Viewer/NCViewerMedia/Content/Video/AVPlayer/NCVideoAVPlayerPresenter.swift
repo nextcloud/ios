@@ -90,12 +90,7 @@ enum NCVideoAVPlayerPresenter {
         }
 
         guard let presenter = topViewController() else {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .error,
-                message: "VIDEO AVPlayer presenter failed: no top view controller",
-                consoleOnly: true
-            )
+            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO AVPlayer presenter failed: no top view controller", consoleOnly: true)
             return false
         }
 
@@ -131,9 +126,7 @@ enum NCVideoAVPlayerPresenter {
         currentViewController = viewController
         currentURL = url
 
-        let navigationController = UINavigationController(
-            rootViewController: viewController
-        )
+        let navigationController = UINavigationController(rootViewController: viewController)
 
         navigationController.modalPresentationStyle = .fullScreen
         navigationController.navigationBar.prefersLargeTitles = false
@@ -143,16 +136,10 @@ enum NCVideoAVPlayerPresenter {
         ]
 
         if !playbackStartReason.shouldShowControlsOnStart {
-            navigationController.setNavigationBarHidden(
-                true,
-                animated: false
-            )
+            navigationController.setNavigationBarHidden(true, animated: false)
         }
 
-        presenter.present(
-            navigationController,
-            animated: false
-        ) {
+        presenter.present(navigationController, animated: false) {
             isPresenting = false
         }
 
@@ -229,21 +216,15 @@ enum NCVideoAVPlayerPresenter {
 
     private static func visibleViewController(from viewController: UIViewController?) -> UIViewController? {
         if let navigationController = viewController as? UINavigationController {
-            return visibleViewController(
-                from: navigationController.visibleViewController
-            )
+            return visibleViewController(from: navigationController.visibleViewController)
         }
 
         if let tabBarController = viewController as? UITabBarController {
-            return visibleViewController(
-                from: tabBarController.selectedViewController
-            )
+            return visibleViewController(from: tabBarController.selectedViewController)
         }
 
         if let presentedViewController = viewController?.presentedViewController {
-            return visibleViewController(
-                from: presentedViewController
-            )
+            return visibleViewController(from: presentedViewController)
         }
 
         return viewController

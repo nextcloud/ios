@@ -52,10 +52,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     )
 
     private lazy var mediaDetailNavigationItem = UIBarButtonItem(
-        image: NCUtility().loadImage(
-            named: "info.circle",
-            colors: [NCBrandColor.shared.iconImageColor]
-        ),
+        image: NCUtility().loadImage(named: "info.circle", colors: [NCBrandColor.shared.iconImageColor]),
         style: .plain,
         target: self,
         action: #selector(mediaDetailButtonTapped)
@@ -68,12 +65,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     }()
 
     /// Creates a media viewer hosting controller.
-    init(
-        model: NCMediaViewerModel,
-        contextMenuController: NCMainTabBarController?,
-        onZoomChanged: @escaping (Bool) -> Void,
-        onClose: @escaping (_ ocId: String?) -> Void
-    ) {
+    init(model: NCMediaViewerModel, contextMenuController: NCMainTabBarController?, onZoomChanged: @escaping (Bool) -> Void, onClose: @escaping (_ ocId: String?) -> Void) {
         self.model = model
         self.contextMenuController = contextMenuController
         self.onZoomChanged = onZoomChanged
@@ -127,10 +119,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        updateTitleLabel(
-            metadata: model.selectedMetadata,
-            backgroundColor: .ncViewerBackground(.system)
-        )
+        updateTitleLabel(metadata: model.selectedMetadata, backgroundColor: .ncViewerBackground(.system))
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -181,10 +170,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             contextMenuController: contextMenuController,
             navigationBar: navigationBar,
             onVisibleMetadataChanged: { [weak self] metadata, backgroundColor in
-                self?.updateTitleLabel(
-                    metadata: metadata,
-                    backgroundColor: backgroundColor
-                )
+                self?.updateTitleLabel(metadata: metadata, backgroundColor: backgroundColor)
             },
             onZoomChanged: onZoomChanged,
             onClose: { [weak self] ocId in
@@ -224,10 +210,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         // Stop any remaining media playback before releasing the viewer hierarchy.
         // This notification is intentionally global and should only be used for
         // viewer-wide teardown, not for normal page-to-page navigation.
-        NotificationCenter.default.post(
-            name: .ncMediaViewerStopPlayback,
-            object: nil
-        )
+        NotificationCenter.default.post(name: .ncMediaViewerStopPlayback, object: nil)
     }
 
     /// Closes the viewer, forwarding the selected media identifier when no explicit identifier is provided.
@@ -248,12 +231,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         navigationItem.title = nil
         navigationItem.titleView = floatingTitleView
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "chevron.left"),
-            style: .plain,
-            target: self,
-            action: #selector(closeButtonTapped)
-        )
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(closeButtonTapped))
 
         navigationItem.rightBarButtonItems = [
             moreNavigationItem,
@@ -282,15 +260,11 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             ? metadata.fileName
             : metadata.fileNameView
 
-        floatingTitleView.update(
-            primaryText: primaryTitle,
-            secondaryText: floatingTitleSecondaryText(for: metadata)
-        )
-        if NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled {
-            if let detailView = adaptiveControlsState.detailView,
-               detailView.metadata.ocId != metadata.ocId, isFoldedMediaLayout {
-                closeDetail(animated: false)
-            }
+        floatingTitleView.update(primaryText: primaryTitle, secondaryText: floatingTitleSecondaryText(for: metadata))
+        if NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled,
+           let detailView = adaptiveControlsState.detailView,
+           detailView.metadata.ocId != metadata.ocId, isFoldedMediaLayout {
+            closeDetail(animated: false)
         }
     }
 
@@ -302,12 +276,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         var blue: CGFloat = 0
         var alpha: CGFloat = 0
 
-        guard resolvedColor.getRed(
-            &red,
-            green: &green,
-            blue: &blue,
-            alpha: &alpha
-        ) else {
+        guard resolvedColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
             return .white
         }
 
@@ -322,16 +291,9 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     /// Shows or hides the viewer chrome.
     private func setChromeHidden(_ hidden: Bool, animated: Bool) {
-        navigationController?.setNavigationBarHidden(
-            hidden || isFoldedMediaLayout,
-            animated: animated
-        )
+        navigationController?.setNavigationBarHidden(hidden || isFoldedMediaLayout, animated: animated)
 
-        UIView.animate(
-            withDuration: animated ? 0.2 : 0,
-            delay: 0,
-            options: [.curveEaseInOut]
-        ) {
+        UIView.animate(withDuration: animated ? 0.2 : 0, delay: 0, options: [.curveEaseInOut]) {
             self.view.backgroundColor = hidden
                 ? .black
                 : .ncViewerBackground(.system)
@@ -390,9 +352,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                 return
             }
 
-            let metadata = await NCNetworking.shared.updateMetadataPlaceholder(
-                selectedMetadata
-            )
+            let metadata = await NCNetworking.shared.updateMetadataPlaceholder(selectedMetadata)
 
             if downloadsOriginal {
                 _ = try? await self.model.downloadOriginalImage(
@@ -420,12 +380,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                         return
                     }
 
-                    self.presentDetailView(
-                        metadata: metadata,
-                        index: index,
-                        exif: exif,
-                        animated: animated
-                    )
+                    self.presentDetailView(metadata: metadata, index: index, exif: exif, animated: animated)
                 }
             }
         }
@@ -454,10 +409,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     /// Presents the SwiftUI media detail panel.
     private func presentDetailView(metadata: tableMetadata, index: Int, exif: ExifData, animated: Bool) {
-        let detailView = NCMediaViewerDetailView(
-            metadata: metadata,
-            exif: exif
-        )
+        let detailView = NCMediaViewerDetailView(metadata: metadata, exif: exif)
 
         if isFoldedMediaLayout {
             adaptiveControlsState.detailView = detailView
@@ -548,16 +500,7 @@ final class NCMediaViewerTransferDelegate: NSObject, NCTransferDelegate {
 
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
-    func transferChange(
-        networkingStatus: String,
-        account: String,
-        fileName: String,
-        serverUrl: String,
-        selector: String?,
-        ocId: String,
-        destination: String?,
-        error: NKError
-    ) {
+    func transferChange(networkingStatus: String, account: String, fileName: String, serverUrl: String, selector: String?, ocId: String, destination: String?, error: NKError) {
         guard networkingStatus == NCGlobal.shared.networkingStatusDelete,
               error == .success else {
             return

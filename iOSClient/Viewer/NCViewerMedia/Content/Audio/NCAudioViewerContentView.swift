@@ -63,11 +63,7 @@ struct NCAudioViewerContentView: View {
         self.onAutoPlayConsumed = onAutoPlayConsumed
         self.onToggleChrome = onToggleChrome
 
-        _model = StateObject(
-            wrappedValue: NCAudioViewerPlaybackRegistry.shared.model(
-                for: metadata.ocId
-            )
-        )
+        _model = StateObject(wrappedValue: NCAudioViewerPlaybackRegistry.shared.model(for: metadata.ocId))
     }
 
     var body: some View {
@@ -96,10 +92,7 @@ struct NCAudioViewerContentView: View {
                         .frame(height: navigationBarBottom + 12)
 
                     HStack(spacing: 8) {
-                        audioPlaybackOptionButton(
-                            systemName: playbackOptions.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1",
-                            accessibilityLabel: "_repeat_current_media_"
-                        ) {
+                        audioPlaybackOptionButton(systemName: playbackOptions.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1", accessibilityLabel: "_repeat_current_media_") {
                             playbackOptions.toggleRepeat()
                         }
 
@@ -168,9 +161,7 @@ struct NCAudioViewerContentView: View {
                             }
                             .buttonStyle(.plain)
                             .disabled(!isSelected || model.duration <= 0)
-                            .offset(
-                                x: -(playButtonSize / 2 + buttonSpacing + sideButtonSize / 2)
-                            )
+                            .offset(x: -(playButtonSize / 2 + buttonSpacing + sideButtonSize / 2))
                         }
                         .frame(height: playButtonSize)
                         .frame(maxWidth: .infinity)
@@ -191,10 +182,7 @@ struct NCAudioViewerContentView: View {
                 return
             }
 
-            model.configurePlaybackCompletion(
-                options: playbackOptions,
-                onPlayNextMedia: onPlayNextMedia
-            )
+            model.configurePlaybackCompletion(options: playbackOptions, onPlayNextMedia: onPlayNextMedia)
             await model.load(url: localURL)
             await consumeAutoPlayIfNeeded()
         }
@@ -205,10 +193,7 @@ struct NCAudioViewerContentView: View {
             }
 
             Task { @MainActor in
-                model.configurePlaybackCompletion(
-                    options: playbackOptions,
-                    onPlayNextMedia: onPlayNextMedia
-                )
+                model.configurePlaybackCompletion(options: playbackOptions, onPlayNextMedia: onPlayNextMedia)
                 await model.load(url: localURL)
                 await consumeAutoPlayIfNeeded()
             }
@@ -362,11 +347,7 @@ struct NCAudioViewerContentView: View {
         let minutes = totalSeconds / 60
         let remainingSeconds = totalSeconds % 60
 
-        return String(
-            format: "%02d:%02d",
-            minutes,
-            remainingSeconds
-        )
+        return String(format: "%02d:%02d", minutes, remainingSeconds)
     }
 }
 
@@ -545,23 +526,13 @@ final class NCAudioViewerModel: ObservableObject {
             return
         }
 
-        let clampedSeconds = min(
-            max(seconds, 0),
-            max(duration, 0)
-        )
+        let clampedSeconds = min(max(seconds, 0), max(duration, 0))
 
         currentTime = clampedSeconds
 
-        let time = CMTime(
-            seconds: clampedSeconds,
-            preferredTimescale: 600
-        )
+        let time = CMTime(seconds: clampedSeconds, preferredTimescale: 600)
 
-        player.seek(
-            to: time,
-            toleranceBefore: .zero,
-            toleranceAfter: .zero
-        )
+        player.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero)
     }
 
     func pause() {
@@ -623,26 +594,15 @@ final class NCAudioViewerModel: ObservableObject {
 
             return true
         } catch {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .error,
-                message: "AUDIO session error: \(error.localizedDescription)",
-                consoleOnly: true
-            )
+            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "AUDIO session error: \(error.localizedDescription)", consoleOnly: true)
             return false
         }
     }
 
     private func addTimeObserver(to player: AVPlayer) {
-        let interval = CMTime(
-            seconds: 0.25,
-            preferredTimescale: 600
-        )
+        let interval = CMTime(seconds: 0.25, preferredTimescale: 600)
 
-        timeObserver = player.addPeriodicTimeObserver(
-            forInterval: interval,
-            queue: .main
-        ) { [weak self] time in
+        timeObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
             guard let self else {
                 return
             }
@@ -658,11 +618,7 @@ final class NCAudioViewerModel: ObservableObject {
     }
 
     private func addEndObserver(for item: AVPlayerItem, player: AVPlayer) {
-        endObserver = NotificationCenter.default.addObserver(
-            forName: AVPlayerItem.didPlayToEndTimeNotification,
-            object: item,
-            queue: .main
-        ) { [weak self, weak player] _ in
+        endObserver = NotificationCenter.default.addObserver(forName: AVPlayerItem.didPlayToEndTimeNotification, object: item, queue: .main) { [weak self, weak player] _ in
             guard let self,
                   let player else {
                 return
@@ -677,11 +633,7 @@ final class NCAudioViewerModel: ObservableObject {
                 case .repeatCurrentItem:
                     self.currentTime = 0
 
-                    player.seek(
-                        to: .zero,
-                        toleranceBefore: .zero,
-                        toleranceAfter: .zero
-                    ) { _ in
+                    player.seek(to: .zero, toleranceBefore: .zero, toleranceAfter: .zero) { _ in
                         Task { @MainActor in
                             guard self.player === player else {
                                 return

@@ -112,9 +112,7 @@ final class NCVideoControlsView: UIView, NCVideoPlaybackControls {
     private var topActionsTopConstraint: NSLayoutConstraint?
     private weak var navigationBar: UINavigationBar?
 
-    private lazy var hostingController = UIHostingController(
-        rootView: makeRootView()
-    )
+    private lazy var hostingController = UIHostingController(rootView: makeRootView())
 
     // MARK: - Init
 
@@ -289,10 +287,7 @@ final class NCVideoControlsView: UIView, NCVideoPlaybackControls {
         let topOffset: CGFloat
 
         if let navigationBar {
-            let navigationFrame = navigationBar.convert(
-                navigationBar.bounds,
-                to: self
-            )
+            let navigationFrame = navigationBar.convert(navigationBar.bounds, to: self)
             topOffset = max(safeAreaInsets.top, navigationFrame.maxY)
         } else {
             topOffset = safeAreaInsets.top
@@ -435,10 +430,7 @@ private struct NCVideoControlsSwiftUIView: View {
         GeometryReader { proxy in
             ZStack {
                 centerControls
-                    .position(
-                        x: proxy.size.width / 2,
-                        y: proxy.size.height / 2
-                    )
+                    .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
 
                 bottomControls
                     .frame(height: NCVideoControlsView.bottomControlsHeight)
@@ -450,10 +442,7 @@ private struct NCVideoControlsSwiftUIView: View {
 
                 topActions
                     .frame(height: NCVideoControlsView.topActionsHeight)
-                    .position(
-                        x: topActionsCenterX,
-                        y: layoutState.topActionsTopOffset + (NCVideoControlsView.topActionsHeight / 2)
-                    )
+                    .position(x: topActionsCenterX, y: layoutState.topActionsTopOffset + (NCVideoControlsView.topActionsHeight / 2))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -478,34 +467,13 @@ private struct NCVideoControlsSwiftUIView: View {
 
     private var centerControls: some View {
         HStack(spacing: 28) {
-            circleButton(
-                systemName: "gobackward.10",
-                size: 44,
-                pointSize: 22,
-                isEnabled: state.isSeekingEnabled,
-                action: onSeekBackward
-            )
+            circleButton(systemName: "gobackward.10", size: 44, pointSize: 22, isEnabled: state.isSeekingEnabled, action: onSeekBackward)
 
-            circleButton(
-                systemName: state.isPlaying ? "pause.fill" : "play.fill",
-                size: 62,
-                pointSize: 36,
-                isEnabled: true,
-                action: onPlayPause
-            )
+            circleButton(systemName: state.isPlaying ? "pause.fill" : "play.fill", size: 62, pointSize: 36, isEnabled: true, action: onPlayPause)
 
-            circleButton(
-                systemName: "goforward.10",
-                size: 44,
-                pointSize: 22,
-                isEnabled: state.isSeekingEnabled,
-                action: onSeekForward
-            )
+            circleButton(systemName: "goforward.10", size: 44, pointSize: 22, isEnabled: state.isSeekingEnabled, action: onSeekForward)
         }
-        .frame(
-            width: NCVideoControlsView.centerControlsWidth,
-            height: NCVideoControlsView.centerControlsHeight
-        )
+        .frame(width: NCVideoControlsView.centerControlsWidth, height: NCVideoControlsView.centerControlsHeight)
     }
 
     private var bottomControls: some View {
@@ -551,19 +519,13 @@ private struct NCVideoControlsSwiftUIView: View {
     private var topActions: some View {
         HStack(spacing: NCVideoControlsView.topActionsSpacing) {
             Button(action: onToggleRepeat) {
-                topActionIcon(
-                    systemName: state.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1",
-                    pointSize: 17
-                )
+                topActionIcon(systemName: state.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1", pointSize: 17)
             }
             .buttonStyle(.plain)
             .accessibilityLabel(NSLocalizedString("_repeat_current_media_", comment: ""))
 
             Button(action: onToggleAutoAdvance) {
-                topActionIcon(
-                    systemName: state.isAutoAdvanceEnabled ? "forward.end.fill" : "forward.end",
-                    pointSize: 17
-                )
+                topActionIcon(systemName: state.isAutoAdvanceEnabled ? "forward.end.fill" : "forward.end", pointSize: 17)
             }
             .buttonStyle(.plain)
             .accessibilityLabel(NSLocalizedString("_play_next_media_automatically_", comment: ""))
@@ -574,18 +536,12 @@ private struct NCVideoControlsSwiftUIView: View {
 
             case .pictureInPicture:
                 Button(action: onPictureInPicture) {
-                    topActionIcon(
-                        systemName: "pip.enter",
-                        pointSize: 18
-                    )
+                    topActionIcon(systemName: "pip.enter", pointSize: 18)
                 }
                 .buttonStyle(.plain)
 
                 NCVideoAirPlayRoutePickerView()
-                    .frame(
-                        width: NCVideoControlsView.topActionsButtonSize,
-                        height: NCVideoControlsView.topActionsButtonSize
-                    )
+                    .frame(width: NCVideoControlsView.topActionsButtonSize, height: NCVideoControlsView.topActionsButtonSize)
                     .controlGlassBackground(shape: Circle())
 
             case .vlcTracks:
@@ -598,13 +554,7 @@ private struct NCVideoControlsSwiftUIView: View {
                     onAddExternalSubtitle: onAddExternalSubtitle
                 )
 
-                topActionMenu(
-                    systemName: "speaker.wave.2",
-                    pointSize: 17,
-                    items: state.audioTrackItems,
-                    emptyTitle: "_no_audio_tracks_available_",
-                    onSelect: onAudioTrackSelected
-                )
+                topActionMenu(systemName: "speaker.wave.2", pointSize: 17, items: state.audioTrackItems, emptyTitle: "_no_audio_tracks_available_", onSelect: onAudioTrackSelected)
             }
         }
     }
@@ -641,16 +591,10 @@ private struct NCVideoControlsSwiftUIView: View {
             Button {
                 onAddExternalSubtitle()
             } label: {
-                Label(
-                    NSLocalizedString("_add_external_subtitle_", comment: ""),
-                    systemImage: "plus"
-                )
+                Label(NSLocalizedString("_add_external_subtitle_", comment: ""), systemImage: "plus")
             }
         } label: {
-            topActionIcon(
-                systemName: systemName,
-                pointSize: pointSize
-            )
+            topActionIcon(systemName: systemName, pointSize: pointSize)
         }
         .buttonStyle(.plain)
     }
@@ -681,10 +625,7 @@ private struct NCVideoControlsSwiftUIView: View {
                 }
             }
         } label: {
-            topActionIcon(
-                systemName: systemName,
-                pointSize: pointSize
-            )
+            topActionIcon(systemName: systemName, pointSize: pointSize)
         }
         .buttonStyle(.plain)
     }
@@ -693,10 +634,7 @@ private struct NCVideoControlsSwiftUIView: View {
         Image(systemName: systemName)
             .font(.system(size: pointSize, weight: .regular))
             .foregroundStyle(.primary)
-            .frame(
-                width: NCVideoControlsView.topActionsButtonSize,
-                height: NCVideoControlsView.topActionsButtonSize
-            )
+            .frame(width: NCVideoControlsView.topActionsButtonSize, height: NCVideoControlsView.topActionsButtonSize)
             .controlGlassBackground(shape: Circle())
     }
 
@@ -782,11 +720,7 @@ private struct NCVideoControlsPreviewView: UIViewRepresentable {
         controlsView.translatesAutoresizingMaskIntoConstraints = false
         controlsView.setTopActionsMode(.pictureInPicture)
         controlsView.updatePlayPauseButton(isPlaying: true)
-        controlsView.updateProgress(
-            progress: 0.42,
-            elapsedText: "1:24",
-            remainingText: "−2:31"
-        )
+        controlsView.updateProgress(progress: 0.42, elapsedText: "1:24", remainingText: "−2:31")
         controlsView.setSubtitleTrackMenuItems([
             NCVideoTrackMenuItem(index: -1, title: NSLocalizedString("_disable_", comment: ""), isSelected: true),
             NCVideoTrackMenuItem(index: 0, title: "English", isSelected: false)

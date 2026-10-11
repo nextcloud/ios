@@ -92,12 +92,7 @@ enum NCVideoVLCPresenter {
         }
 
         guard let presenter = topViewController() else {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .error,
-                message: "VIDEO VLC presenter failed: no top view controller",
-                consoleOnly: true
-            )
+            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO VLC presenter failed: no top view controller", consoleOnly: true)
             return false
         }
 
@@ -135,9 +130,7 @@ enum NCVideoVLCPresenter {
         currentViewController = viewController
         currentURL = url
 
-        let navigationController = UINavigationController(
-            rootViewController: viewController
-        )
+        let navigationController = UINavigationController(rootViewController: viewController)
 
         navigationController.modalPresentationStyle = .fullScreen
         navigationController.navigationBar.prefersLargeTitles = false
@@ -147,25 +140,14 @@ enum NCVideoVLCPresenter {
         ]
 
         if !playbackStartReason.shouldShowControlsOnStart {
-            navigationController.setNavigationBarHidden(
-                true,
-                animated: false
-            )
+            navigationController.setNavigationBarHidden(true, animated: false)
         }
 
-        presenter.present(
-            navigationController,
-            animated: false
-        ) {
+        presenter.present(navigationController, animated: false) {
             isPresenting = false
         }
 
-        nkLog(
-            tag: NCGlobal.shared.logTagViewer,
-            emoji: .start,
-            message: "VIDEO VLC presentation accepted",
-            consoleOnly: false
-        )
+        nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .start, message: "VIDEO VLC presentation accepted", consoleOnly: false)
 
         return true
     }
@@ -228,12 +210,7 @@ enum NCVideoVLCPresenter {
 
     // MARK: - Private
     private static func logPresentationRejected(_ reason: String) {
-        nkLog(
-            tag: NCGlobal.shared.logTagViewer,
-            emoji: .info,
-            message: "VIDEO VLC presentation rejected: \(reason)",
-            consoleOnly: false
-        )
+        nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .info, message: "VIDEO VLC presentation rejected: \(reason)", consoleOnly: false)
     }
 
     private static func topViewController() -> UIViewController? {
@@ -252,21 +229,15 @@ enum NCVideoVLCPresenter {
 
     private static func visibleViewController(from viewController: UIViewController?) -> UIViewController? {
         if let navigationController = viewController as? UINavigationController {
-            return visibleViewController(
-                from: navigationController.visibleViewController
-            )
+            return visibleViewController(from: navigationController.visibleViewController)
         }
 
         if let tabBarController = viewController as? UITabBarController {
-            return visibleViewController(
-                from: tabBarController.selectedViewController
-            )
+            return visibleViewController(from: tabBarController.selectedViewController)
         }
 
         if let presentedViewController = viewController?.presentedViewController {
-            return visibleViewController(
-                from: presentedViewController
-            )
+            return visibleViewController(from: presentedViewController)
         }
 
         return viewController
