@@ -90,6 +90,13 @@ thumbnail strip outside that content and the information panel: with multiple
 pages it remains visible in adaptive mode, even when the user hides normal
 chrome or opens information. With a single page there is no selection strip.
 
+Page swipes remain available on the upper media surface. In the folded layout,
+horizontal swipes in the middle controls area also select the previous/next page,
+using the same selection flow as the thumbnail strip. This excludes the action
+row and thumbnail strip. When information is open, lower page swipes are ignored
+to preserve vertical scrolling and map gestures. Page swipes are also ignored
+while another page transition is in progress.
+
 `NCMediaViewerThumbnailStrip` holds the same metadata, loading and selection
 bindings for both layouts. The normal overlay retains its existing visibility,
 bottom spacing and gestures. Cover presentation holds playback/download state
@@ -161,6 +168,9 @@ Start with the normal layout before testing the fold:
    navigation bar, tap-to-hide controls and the thumbnail selection gestures.
 3. With an active fold, verify images and video covers: upper media only, lower
    actions and thumbnails, information without losing the strip, and selecting
+   pages by swiping both the upper surface and the middle controls area. Check
+   that vertical drags do not change pages and map gestures in information do
+   not select another page. Also check selecting
    neighboring pages during a download. Verify Close, Info and More buttons,
    including share popovers on iPad. Check horizontal and vertical video covers
    for centering in the upper region before/after loading and unfolding. The

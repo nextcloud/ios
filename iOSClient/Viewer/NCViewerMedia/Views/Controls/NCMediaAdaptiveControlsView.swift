@@ -36,19 +36,24 @@ struct NCMediaAdaptiveControlsView: View {
         .background(Color(uiColor: .ncViewerBackground(.system)))
     }
 
-    // Keep page swipes outside the buttons and independently scrolling thumbnail strip.
+    // Keep page swipes outside the buttons/thumbnail strip and preserve information scrolling/map gestures.
     private var pageSwipe: some Gesture {
         DragGesture(minimumDistance: 30)
             .onEnded { value in
                 let translation = value.translation
                 guard state.isFoldedLayout,
+                      state.detailView == nil,
+                      model.pageTransition.isIdle,
                       abs(translation.width) >= 50,
                       abs(translation.width) > abs(translation.height) else { return }
 
                 let index = model.selectedIndex + (translation.width < 0 ? 1 : -1)
                 guard index >= 0, index < model.numberOfPages else { return }
 
-                Task { await model.displayPreviewPage(at: index) }
+                Task {
+                    guard state.isFoldedLayout, state.detailView == nil, model.pageTransition.isIdle else { return }
+                    await model.displayPreviewPage(at: index)
+                }
             }
     }
 
