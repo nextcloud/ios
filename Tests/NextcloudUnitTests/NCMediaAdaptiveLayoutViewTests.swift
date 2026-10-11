@@ -68,6 +68,7 @@ struct NCMediaAdaptiveLayoutViewTests {
         )
         controller.loadViewIfNeeded()
         let view = controller.layoutView
+        view.isLayoutEnabled = false
         let mediaView = try #require(controller.mediaController.view)
         view.frame = CGRect(x: 0, y: 0, width: 800, height: 600)
         view.layoutIfNeeded()
@@ -90,7 +91,7 @@ struct NCMediaAdaptiveLayoutViewTests {
         #expect(controller.normalControlsController.view.superview?.isHidden == false)
     }
 
-    @Test("The experimental layout is disabled by default and can be turned off again")
+    @Test("A disabled container can be enabled and turned off again")
     func experimentalLayoutRequiresEnabling() {
         let videoView = UIView()
         let normalControlsView = UIView()
@@ -98,6 +99,7 @@ struct NCMediaAdaptiveLayoutViewTests {
         let view = NCMediaAdaptiveLayoutView(
             mediaView: videoView,
             normalControlsView: normalControlsView,
+            isLayoutEnabled: false,
             adaptiveControlsView: { adaptiveControlsView }
         )
         view.frame = CGRect(x: 0, y: 0, width: 800, height: 600)
@@ -173,6 +175,7 @@ struct NCMediaAdaptiveLayoutViewTests {
         let view = NCMediaAdaptiveLayoutView(
             mediaView: videoView,
             normalControlsView: normalControlsView,
+            isLayoutEnabled: false,
             adaptiveControlsView: {
                 creationCount += 1
                 return UIView()

@@ -16,13 +16,14 @@ The only feature switch is in [Views/NCMediaAdaptiveLayoutView.swift](Views/NCMe
 
 ```swift
 enum NCMediaAdaptiveLayoutConfiguration {
-    static let isAdaptiveLayoutEnabled = false
+    static let isAdaptiveLayoutEnabled = true
 }
 ```
 
-Keep this value `false` until the experimental layout is ready. Setting it to
-`true` in source enables the image integration and both fullscreen video engines
-(AVPlayer and VLC). There is no user-facing setting. Audio does not yet have an
+The switch is currently `true` for experimental verification. This enables
+the image integration and both fullscreen video engines
+(AVPlayer and VLC). Set it to `false` to use the normal layout. There is no
+user-facing setting. Audio does not yet have an
 adaptive controls view.
 
 `NCMediaAdaptiveLayoutView.isLayoutEnabled` is the container's operating state,
@@ -80,7 +81,7 @@ Static review compared the normal thumbnail composition and media source files
 with the previous implementation. SwiftLint and project-reference checks passed.
 Local builds and tests have not been run, following the repository instructions.
 
-Before enabling the experiment, verify in Xcode:
+Verify the experiment in Xcode:
 
 - With `false`: image zoom, paging, thumbnails, information sheets and AVPlayer/VLC playback.
 - With `true`: folding/unfolding, retained zoom, playback continuity, lower navigation and information, and selection of other media types.

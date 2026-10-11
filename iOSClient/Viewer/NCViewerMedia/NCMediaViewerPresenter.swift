@@ -98,7 +98,7 @@ import UIKit
 ///     Displays file information, camera/lens metadata, EXIF values, and location.
 ///
 /// 16. Experimental adaptive layout:
-///     `NCMediaAdaptiveLayoutConfiguration` supplies one disabled-by-default switch.
+///     `NCMediaAdaptiveLayoutConfiguration` supplies one shared experimental switch.
 ///     `NCMediaAdaptiveLayoutView` keeps the media surface and arranges independent
 ///     normal/adaptive controls. Images bridge through `NCImageAdaptiveLayoutHost`;
 ///     fullscreen AVPlayer and VLC use the same container directly.
