@@ -10,23 +10,13 @@ import NextcloudKit
 @Suite("Adaptive media layout")
 @MainActor
 struct NCMediaAdaptiveLayoutViewTests {
-    @Test("Adaptive navigation belongs to a separate controls view")
+    @Test("Adaptive controls share playback state without adding a navigation bar")
     func separateAdaptiveControls() throws {
         let normalControls = NCVideoControlsView()
         let adaptiveControls = NCVideoAdaptiveControlsView(state: normalControls.state)
-        let titleView = UIView()
-        let moreItem = UIBarButtonItem(title: "More", primaryAction: UIAction { _ in })
-        adaptiveControls.configureFoldedNavigation(
-            titleView: titleView,
-            closeAction: UIAction { _ in },
-            moreItem: moreItem
-        )
-
-        let item = try #require(adaptiveControls.foldedNavigationBar.topItem)
-        #expect(item.titleView === titleView)
-        #expect(item.leftBarButtonItem != nil)
-        #expect(item.rightBarButtonItem === moreItem)
-        #expect(adaptiveControls.foldedNavigationBar.superview === adaptiveControls)
+        adaptiveControls.configureAdaptiveActions(closeAction: UIAction { _ in }, moreButton: UIButton(type: .system))
+        #expect(adaptiveControls.actionsContainerView.superview === adaptiveControls)
+        #expect(!adaptiveControls.subviews.contains { $0 is UINavigationBar })
         #expect(!normalControls.subviews.contains { $0 is UINavigationBar })
 
         normalControls.updateProgress(progress: 0.5, elapsedText: "1:00", remainingText: "−1:00")
@@ -35,6 +25,70 @@ struct NCMediaAdaptiveLayoutViewTests {
         #expect(normalControls.state.isRepeatEnabled)
         #expect(normalControls.state.isAutoAdvanceEnabled)
         #expect(normalControls.state === adaptiveControls.state)
+    }
+
+    @Test("Standalone adaptive buttons preserve Close and Info actions")
+    func adaptiveButtonsInvokeActions() throws {
+        var closed = false
+        var informationRequested = false
+        let moreButton = UIButton(type: .system)
+        let actions = NCMediaAdaptiveActionsView(
+            closeAction: UIAction { _ in closed = true },
+            moreButton: moreButton,
+            infoAction: UIAction { _ in informationRequested = true }
+        )
+        let closeButton = try #require(actions.arrangedSubviews.first as? UIButton)
+        let informationButton = try #require(actions.informationButton)
+        closeButton.sendActions(for: .touchUpInside)
+        informationButton.sendActions(for: .touchUpInside)
+        #expect(closed)
+        #expect(informationRequested)
+        #expect(actions.arrangedSubviews.last === moreButton)
+        #expect(!actions.arrangedSubviews.contains { $0 is UINavigationBar })
+    }
+
+    @Test("Reused or neighboring video covers cannot remove the selected cover actions")
+    func videoCoverActionsKeepTheirOwner() throws {
+        let state = NCMediaAdaptiveControlsState()
+        let oldOwner = UUID()
+        let currentOwner = UUID()
+        let neighborOwner = UUID()
+        var played: [String] = []
+        var cancelled = false
+        let oldControls = NCVideoPlaybackCoverPresentation(
+            isPlayEnabled: true,
+            isLoading: false,
+            isLaunchingPlayback: false,
+            statusMessage: nil,
+            onCancel: nil,
+            onPlay: { played.append("old") }
+        )
+        let currentControls = NCVideoPlaybackCoverPresentation(
+            isPlayEnabled: false,
+            isLoading: true,
+            isLaunchingPlayback: false,
+            statusMessage: "Downloading",
+            onCancel: { cancelled = true },
+            onPlay: { played.append("current") }
+        )
+        state.setVideoCoverControls(oldControls, for: "selected", owner: oldOwner)
+        state.setVideoCoverControls(currentControls, for: "selected", owner: currentOwner)
+        state.setVideoCoverControls(oldControls, for: "neighbor", owner: neighborOwner)
+        state.removeVideoCoverControls(for: "selected", owner: oldOwner)
+        state.removeVideoCoverControls(for: "neighbor", owner: neighborOwner)
+
+        let controls = try #require(state.videoCoverControls["selected"])
+        #expect(controls.isLoading)
+        #expect(!controls.isPlayEnabled)
+        #expect(controls.statusMessage == "Downloading")
+        controls.onPlay()
+        controls.onCancel?()
+        #expect(played == ["current"])
+        #expect(cancelled)
+        #expect(state.videoCoverControls["neighbor"] == nil)
+
+        state.removeVideoCoverControls(for: "selected", owner: currentOwner)
+        #expect(state.videoCoverControls.isEmpty)
     }
 
     @Test("Image folding retains the paging host and uses independent controls")
@@ -48,8 +102,8 @@ struct NCMediaAdaptiveLayoutViewTests {
             session: NCSession().getSession(account: ""),
             loader: NCMediaViewerLoader()
         )
-        let state = NCImageAdaptiveControlsState()
-        let controller = NCImageAdaptiveLayoutController(
+        let state = NCMediaAdaptiveControlsState()
+        let controller = NCMediaAdaptiveLayoutController(
             mediaView: NCMediaViewerPagingView(
                 model: model,
                 contextMenuController: nil,
@@ -59,10 +113,10 @@ struct NCMediaAdaptiveLayoutViewTests {
                 onClose: { _ in }
             ),
             normalControlsView: NCImageControlsView(model: model),
-            adaptiveControlsView: NCImageAdaptiveControlsView(
+            adaptiveControlsView: NCMediaAdaptiveControlsView(
                 model: model,
                 state: state,
-                makeNavigationBar: { UINavigationBar() }
+                makeActionsView: { UIView() }
             ),
             onLayoutModeChanged: { _ in }
         )
@@ -249,6 +303,66 @@ struct NCMediaAdaptiveLayoutViewTests {
         #expect(view.subviews[0] === videoView)
         #expect(view.subviews[1] === controlsView)
         #expect(view.subviews[2] === adaptiveControlsView)
+    }
+
+    @Test("An enabled experiment creates lower controls only when a fold becomes active")
+    func unfoldedExperimentDoesNotCreateLowerControls() {
+        var creationCount = 0
+        let lowerControls = UIView()
+        let normalControls = UIView()
+        let view = NCMediaAdaptiveLayoutView(
+            mediaView: UIView(),
+            normalControlsView: normalControls,
+            isLayoutEnabled: true,
+            adaptiveControlsView: {
+                creationCount += 1
+                return lowerControls
+            }
+        )
+        view.frame = CGRect(x: 0, y: 0, width: 800, height: 600)
+        view.updateLayout(divisionFrames: [])
+        view.updateLayout(divisionFrames: [CGRect(x: 380, y: 0, width: 40, height: 600)])
+        #expect(creationCount == 0)
+        #expect(!normalControls.isHidden)
+
+        let fold = CGRect(x: 0, y: 280, width: 800, height: 40)
+        view.updateLayout(divisionFrames: [fold])
+        view.updateLayout(divisionFrames: [])
+        view.updateLayout(divisionFrames: [fold])
+        #expect(creationCount == 1)
+        #expect(view.isFoldedLayout)
+        #expect(lowerControls.superview === view)
+    }
+
+    @Test("Unavailable adaptive controls preserve the normal layout and can recover")
+    func unavailableLowerControlsKeepNormalLayout() {
+        let mediaView = UIView()
+        let normalControls = UIView()
+        let lowerControls = UIView()
+        var available = false
+        var modes: [Bool] = []
+        let view = NCMediaAdaptiveLayoutView(
+            mediaView: mediaView,
+            normalControlsView: normalControls,
+            isLayoutEnabled: true,
+            adaptiveControlsView: { available ? lowerControls : nil }
+        )
+        view.onLayoutModeChanged = { modes.append($0) }
+        view.frame = CGRect(x: 0, y: 0, width: 800, height: 600)
+        let fold = CGRect(x: 0, y: 280, width: 800, height: 40)
+        view.updateLayout(divisionFrames: [fold])
+        #expect(!view.isFoldedLayout)
+        #expect(mediaView.frame == view.bounds)
+        #expect(!normalControls.isHidden)
+        #expect(modes.isEmpty)
+
+        available = true
+        view.updateLayout(divisionFrames: [fold])
+        #expect(view.isFoldedLayout)
+        #expect(mediaView.frame.height == 280)
+        #expect(!lowerControls.isHidden)
+        #expect(normalControls.isHidden)
+        #expect(modes == [true])
     }
 
     @Test("Other regions retain the normal layout", arguments: [

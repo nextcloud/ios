@@ -5,6 +5,8 @@
 import SwiftUI
 
 struct NCVideoPlaybackCoverView: View {
+    @Environment(\.mediaAdaptiveCoverContext) private var adaptiveContext
+
     let previewURL: URL?
     let backgroundStyle: NCViewerBackgroundStyle = .system
     let isPlayEnabled: Bool
@@ -46,63 +48,138 @@ struct NCVideoPlaybackCoverView: View {
                     onToggleChrome?()
                 }
 
-            VStack(spacing: 12) {
-                Button {
-                    guard isPlayEnabled else {
-                        return
-                    }
-
-                    onPlay()
-                } label: {
-                    ZStack {
-                        if isLoading || isLaunchingPlayback {
-                            ProgressView()
-                                .controlSize(.large)
-                                .tint(.primary)
-                                .transition(.opacity)
-                        } else {
-                            // Color.primary, not .primary: the default button style resolves .primary against the accent tint.
-                            // The default style stays because .plain fades disabled content, like the loading spinner.
-                            Image(systemName: "play.fill")
-                                .font(.system(size: 36, weight: .regular))
-                                .foregroundStyle(Color.primary.opacity(isPlayEnabled ? 1 : 0.35))
-                                .transition(.opacity)
-                        }
-                    }
-                    .frame(width: 62, height: 62)
-                    .coverPlayButtonBackground()
-                }
-                .disabled(!isPlayEnabled || isLoading || isLaunchingPlayback)
-                .scaleEffect(isLaunchingPlayback ? 1.06 : 1)
-                .animation(.easeInOut(duration: 0.18), value: isLoading)
-                .animation(.easeInOut(duration: 0.14), value: isLaunchingPlayback)
-                .accessibilityLabel(Text(NSLocalizedString("_play_", comment: "")))
-
-                if let statusMessage {
-                    VStack(spacing: 10) {
-                        Text(statusMessage)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.white)
-                            .multilineTextAlignment(.center)
-
-                        if let onCancel {
-                            Button(NSLocalizedString("_cancel_", comment: "")) {
-                                onCancel()
-                            }
-                            .font(.subheadline.weight(.semibold))
-                            .buttonStyle(.borderedProminent)
-                            .tint(.white)
-                            .foregroundStyle(.black)
-                        }
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    .background(
-                        .black.opacity(0.46),
-                        in: RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    )
-                }
+            if let adaptiveContext {
+                NCVideoAdaptiveCoverControls(
+                    state: adaptiveContext.state,
+                    ocId: adaptiveContext.ocId,
+                    controls: controlsPresentation,
+                    revision: controlsRevision
+                )
+            } else {
+                controlsView
             }
+        }
+    }
+
+    private var controlsView: NCVideoPlaybackCoverControlsView {
+        NCVideoPlaybackCoverControlsView(presentation: controlsPresentation)
+    }
+
+    private var controlsPresentation: NCVideoPlaybackCoverPresentation {
+        NCVideoPlaybackCoverPresentation(
+            isPlayEnabled: isPlayEnabled,
+            isLoading: isLoading,
+            isLaunchingPlayback: isLaunchingPlayback,
+            statusMessage: statusMessage,
+            onCancel: onCancel,
+            onPlay: onPlay
+        )
+    }
+
+    private var controlsRevision: String {
+        "\(previewURL?.absoluteString ?? "")|\(isPlayEnabled)|\(isLoading)|\(isLaunchingPlayback)|\(statusMessage ?? "")|\(onCancel != nil)"
+    }
+}
+
+/// Cover state and actions, independent of their normal or adaptive presentation.
+struct NCVideoPlaybackCoverPresentation {
+    let isPlayEnabled: Bool
+    let isLoading: Bool
+    let isLaunchingPlayback: Bool
+    let statusMessage: String?
+    let onCancel: (() -> Void)?
+    let onPlay: () -> Void
+}
+
+/// The same cover actions are rendered over the normal preview or below the fold.
+struct NCVideoPlaybackCoverControlsView: View {
+    let presentation: NCVideoPlaybackCoverPresentation
+
+    var body: some View {
+        VStack(spacing: 12) {
+            Button {
+                guard presentation.isPlayEnabled else {
+                    return
+                }
+
+                presentation.onPlay()
+            } label: {
+                ZStack {
+                    if presentation.isLoading || presentation.isLaunchingPlayback {
+                        ProgressView()
+                            .controlSize(.large)
+                            .tint(.primary)
+                            .transition(.opacity)
+                    } else {
+                        // Color.primary, not .primary: the default button style resolves .primary against the accent tint.
+                        // The default style stays because .plain fades disabled content, like the loading spinner.
+                        Image(systemName: "play.fill")
+                            .font(.system(size: 36, weight: .regular))
+                            .foregroundStyle(Color.primary.opacity(presentation.isPlayEnabled ? 1 : 0.35))
+                            .transition(.opacity)
+                    }
+                }
+                .frame(width: 62, height: 62)
+                .coverPlayButtonBackground()
+            }
+            .disabled(!presentation.isPlayEnabled || presentation.isLoading || presentation.isLaunchingPlayback)
+            .scaleEffect(presentation.isLaunchingPlayback ? 1.06 : 1)
+            .animation(.easeInOut(duration: 0.18), value: presentation.isLoading)
+            .animation(.easeInOut(duration: 0.14), value: presentation.isLaunchingPlayback)
+            .accessibilityLabel(Text(NSLocalizedString("_play_", comment: "")))
+
+            if let statusMessage = presentation.statusMessage {
+                VStack(spacing: 10) {
+                    Text(statusMessage)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+
+                    if let onCancel = presentation.onCancel {
+                        Button(NSLocalizedString("_cancel_", comment: "")) {
+                            onCancel()
+                        }
+                        .font(.subheadline.weight(.semibold))
+                        .buttonStyle(.borderedProminent)
+                        .tint(.white)
+                        .foregroundStyle(.black)
+                    }
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .background(
+                    .black.opacity(0.46),
+                    in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+                )
+            }
+        }
+    }
+}
+
+private struct NCVideoAdaptiveCoverControls: View {
+    @ObservedObject var state: NCMediaAdaptiveControlsState
+    let ocId: String
+    let controls: NCVideoPlaybackCoverPresentation
+    let revision: String
+    @State private var owner = UUID()
+
+    var body: some View {
+        ZStack {
+            Color.clear
+                .allowsHitTesting(false)
+
+            if !state.isFoldedLayout {
+                NCVideoPlaybackCoverControlsView(presentation: controls)
+            }
+        }
+        .task(id: revision) {
+            guard !Task.isCancelled else {
+                return
+            }
+            state.setVideoCoverControls(controls, for: ocId, owner: owner)
+        }
+        .onDisappear {
+            state.removeVideoCoverControls(for: ocId, owner: owner)
         }
     }
 }

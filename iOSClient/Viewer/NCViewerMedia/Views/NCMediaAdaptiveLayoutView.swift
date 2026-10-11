@@ -20,7 +20,7 @@ final class NCMediaAdaptiveLayoutView: UIView {
     private var normalLayoutConstraints: [NSLayoutConstraint] = []
 
     /// Container eligibility, inherited from the central switch and selected media type.
-    /// Image paging can disable it for other media types without changing the feature switch.
+    /// Image/video-cover paging disables it for unsupported media types without changing the feature switch.
     var isLayoutEnabled: Bool {
         didSet {
             guard isLayoutEnabled != oldValue else {
@@ -109,16 +109,19 @@ final class NCMediaAdaptiveLayoutView: UIView {
             }
 
         if isLayoutEnabled {
-            if adaptiveControlsView == nil, let controlsView = makeAdaptiveControlsView() {
+            if division != nil, adaptiveControlsView == nil, let controlsView = makeAdaptiveControlsView() {
                 controlsView.translatesAutoresizingMaskIntoConstraints = true
                 controlsView.isHidden = true
+                controlsView.clipsToBounds = true
                 addSubview(controlsView)
                 adaptiveControlsView = controlsView
             }
             normalControlsView.frame = bounds
         }
 
-        if let division {
+        // Keep the normal layout usable if the adaptive controls cannot be supplied.
+        let foldedDivision = adaptiveControlsView != nil ? division : nil
+        if let division = foldedDivision {
             mediaView.frame = CGRect(
                 x: bounds.minX,
                 y: bounds.minY,
@@ -136,7 +139,7 @@ final class NCMediaAdaptiveLayoutView: UIView {
             adaptiveControlsView?.frame = bounds
         }
 
-        let isFolded = division != nil
+        let isFolded = foldedDivision != nil
         guard isFoldedLayout != isFolded else {
             return
         }

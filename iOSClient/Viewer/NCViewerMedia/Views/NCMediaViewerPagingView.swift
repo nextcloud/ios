@@ -17,6 +17,7 @@ struct NCMediaViewerPagingView: UIViewRepresentable {
     let onVisibleMetadataChanged: (_ metadata: tableMetadata?, _ backgroundColor: UIColor) -> Void
     let onZoomChanged: (Bool) -> Void
     let onClose: (_ ocId: String?) -> Void
+    var adaptiveControlsState: NCMediaAdaptiveControlsState?
 
     // MARK: - UIViewRepresentable
 
@@ -64,6 +65,7 @@ struct NCMediaViewerPagingView: UIViewRepresentable {
 
     func updateUIView(_ collectionView: NCMediaViewerCollectionView, context: Context) {
         context.coordinator.model = model
+        context.coordinator.adaptiveControlsState = adaptiveControlsState
         context.coordinator.navigationBar = navigationBar
         context.coordinator.onVisibleMetadataChanged = onVisibleMetadataChanged
         context.coordinator.onZoomChanged = onZoomChanged
@@ -93,7 +95,8 @@ struct NCMediaViewerPagingView: UIViewRepresentable {
             navigationBar: navigationBar,
             onVisibleMetadataChanged: onVisibleMetadataChanged,
             onZoomChanged: onZoomChanged,
-            onClose: onClose
+            onClose: onClose,
+            adaptiveControlsState: adaptiveControlsState
         )
     }
 }
@@ -122,6 +125,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     var onVisibleMetadataChanged: (_ metadata: tableMetadata?, _ backgroundColor: UIColor) -> Void
     var onZoomChanged: (Bool) -> Void
     var onClose: (_ ocId: String?) -> Void
+    var adaptiveControlsState: NCMediaAdaptiveControlsState?
 
     private var didScrollToInitialIndex = false
     private var lastCollectionViewBoundsSize: CGSize = .zero
@@ -137,7 +141,8 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         navigationBar: UINavigationBar?,
         onVisibleMetadataChanged: @escaping (_ metadata: tableMetadata?, _ backgroundColor: UIColor) -> Void,
         onZoomChanged: @escaping (Bool) -> Void,
-        onClose: @escaping (_ ocId: String?) -> Void
+        onClose: @escaping (_ ocId: String?) -> Void,
+        adaptiveControlsState: NCMediaAdaptiveControlsState? = nil
     ) {
         self.model = model
         self.contextMenuController = contextMenuController
@@ -145,6 +150,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         self.onVisibleMetadataChanged = onVisibleMetadataChanged
         self.onZoomChanged = onZoomChanged
         self.onClose = onClose
+        self.adaptiveControlsState = adaptiveControlsState
 
         super.init()
 
@@ -644,7 +650,8 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                 self?.onClose(ocId)
             },
             contextMenuController: contextMenuController,
-            navigationBar: navigationBar
+            navigationBar: navigationBar,
+            adaptiveControlsState: adaptiveControlsState
         )
     }
 
@@ -898,7 +905,8 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
         onZoomChanged: @escaping (Bool) -> Void,
         onClose: @escaping (_ ocId: String?) -> Void,
         contextMenuController: NCMainTabBarController?,
-        navigationBar: UINavigationBar?
+        navigationBar: UINavigationBar?,
+        adaptiveControlsState: NCMediaAdaptiveControlsState? = nil
     ) {
         self.backgroundColor = backgroundColor
         contentView.backgroundColor = backgroundColor
@@ -919,6 +927,9 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
                 contextMenuController: contextMenuController,
                 navigationBar: navigationBar
             )
+            .environment(\.mediaAdaptiveCoverContext, adaptiveControlsState.map {
+                NCMediaAdaptiveCoverContext(state: $0, ocId: page.ocId)
+            })
             .id(page.ocId)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .ignoresSafeArea()

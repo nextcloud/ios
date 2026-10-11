@@ -10,7 +10,7 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
     // MARK: - Public
 
     weak var delegate: NCVideoControlsViewDelegate?
-    let foldedNavigationBar = UINavigationBar()
+    let actionsContainerView = UIView()
 
     // MARK: - Hit Test Proxies
 
@@ -141,29 +141,31 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
         state.audioTrackItems = items
     }
 
-    func configureFoldedNavigation(titleView: UIView, closeAction: UIAction, moreItem: UIBarButtonItem) {
-        let item = UINavigationItem()
-        item.titleView = titleView
-        item.leftBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "chevron.backward"),
-            primaryAction: closeAction
-        )
-        item.rightBarButtonItem = moreItem
-        foldedNavigationBar.setItems([item], animated: false)
+    func configureAdaptiveActions(closeAction: UIAction, moreButton: UIButton) {
+        actionsContainerView.subviews.forEach { $0.removeFromSuperview() }
+        let actionsView = NCMediaAdaptiveActionsView(closeAction: closeAction, moreButton: moreButton)
+        actionsView.translatesAutoresizingMaskIntoConstraints = false
+        actionsContainerView.addSubview(actionsView)
+        NSLayoutConstraint.activate([
+            actionsView.leadingAnchor.constraint(equalTo: actionsContainerView.leadingAnchor),
+            actionsView.trailingAnchor.constraint(equalTo: actionsContainerView.trailingAnchor),
+            actionsView.topAnchor.constraint(equalTo: actionsContainerView.topAnchor),
+            actionsView.bottomAnchor.constraint(equalTo: actionsContainerView.bottomAnchor)
+        ])
     }
 
-    // Keeps top actions aligned below the real navigation bar.
+    // The adaptive layout positions top actions below standalone buttons.
     func setTopActionsNavigationBar(_ navigationBar: UINavigationBar?) {
         updateTopActionsPosition()
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        foldedNavigationBar.frame = CGRect(
+        actionsContainerView.frame = CGRect(
             x: 0,
             y: safeAreaInsets.top,
             width: bounds.width,
-            height: 44
+            height: NCMediaAdaptiveActionsView.preferredHeight
         )
         updateTopActionsPosition()
     }
@@ -176,8 +178,8 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
 
         configureHostingView()
         configureHitTestProxyViews()
-        foldedNavigationBar.isHidden = false
-        addSubview(foldedNavigationBar)
+        actionsContainerView.isHidden = false
+        addSubview(actionsContainerView)
     }
 
     private func configureHostingView() {
@@ -229,18 +231,7 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
             return
         }
 
-        let topOffset: CGFloat
-
-        let navigationBar = foldedNavigationBar
-        if !navigationBar.isHidden {
-            let navigationFrame = navigationBar.convert(
-                navigationBar.bounds,
-                to: self
-            )
-            topOffset = max(safeAreaInsets.top, navigationFrame.maxY)
-        } else {
-            topOffset = safeAreaInsets.top
-        }
+        let topOffset = max(safeAreaInsets.top, actionsContainerView.frame.maxY)
 
         guard layoutState.topActionsTopOffset != topOffset else {
             return

@@ -16,8 +16,8 @@ struct NCMediaViewerView: View {
     let onVisibleMetadataChanged: (_ metadata: tableMetadata?, _ backgroundColor: UIColor) -> Void
     let onZoomChanged: (Bool) -> Void
     let onClose: (_ ocId: String?) -> Void
-    let adaptiveControlsState: NCImageAdaptiveControlsState?
-    let makeAdaptiveNavigationBar: (() -> UINavigationBar)?
+    let adaptiveControlsState: NCMediaAdaptiveControlsState?
+    let makeAdaptiveActionsView: (() -> UIView)?
     let onAdaptiveLayoutChanged: (Bool) -> Void
 
     /// Creates the media viewer view.
@@ -28,8 +28,8 @@ struct NCMediaViewerView: View {
         onVisibleMetadataChanged: @escaping (_ metadata: tableMetadata?, _ backgroundColor: UIColor) -> Void = { _, _ in },
         onZoomChanged: @escaping (Bool) -> Void = { _ in },
         onClose: @escaping (_ ocId: String?) -> Void = { _ in },
-        adaptiveControlsState: NCImageAdaptiveControlsState? = nil,
-        makeAdaptiveNavigationBar: (() -> UINavigationBar)? = nil,
+        adaptiveControlsState: NCMediaAdaptiveControlsState? = nil,
+        makeAdaptiveActionsView: (() -> UIView)? = nil,
         onAdaptiveLayoutChanged: @escaping (Bool) -> Void = { _ in }
     ) {
         _model = StateObject(wrappedValue: model)
@@ -39,7 +39,7 @@ struct NCMediaViewerView: View {
         self.onZoomChanged = onZoomChanged
         self.onClose = onClose
         self.adaptiveControlsState = adaptiveControlsState
-        self.makeAdaptiveNavigationBar = makeAdaptiveNavigationBar
+        self.makeAdaptiveActionsView = makeAdaptiveActionsView
         self.onAdaptiveLayoutChanged = onAdaptiveLayoutChanged
     }
 
@@ -48,13 +48,14 @@ struct NCMediaViewerView: View {
             Color.black
                 .ignoresSafeArea()
 
-            if let adaptiveControlsState, let makeAdaptiveNavigationBar {
-                NCImageAdaptiveLayoutHost(
+            if let adaptiveControlsState, let makeAdaptiveActionsView {
+                NCMediaAdaptiveLayoutHost(
                     mediaView: pagingView,
                     model: model,
                     state: adaptiveControlsState,
-                    makeNavigationBar: makeAdaptiveNavigationBar,
-                    isImage: model.selectedMetadata?.classFile == NKTypeClassFile.image.rawValue,
+                    makeActionsView: makeAdaptiveActionsView,
+                    supportsAdaptiveLayout: model.selectedMetadata?.classFile == NKTypeClassFile.image.rawValue ||
+                        model.selectedMetadata?.classFile == NKTypeClassFile.video.rawValue,
                     onLayoutModeChanged: onAdaptiveLayoutChanged
                 )
                 .ignoresSafeArea()
@@ -79,7 +80,8 @@ struct NCMediaViewerView: View {
             navigationBar: navigationBar,
             onVisibleMetadataChanged: onVisibleMetadataChanged,
             onZoomChanged: onZoomChanged,
-            onClose: onClose
+            onClose: onClose,
+            adaptiveControlsState: adaptiveControlsState
         )
     }
 }

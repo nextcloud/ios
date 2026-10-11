@@ -25,36 +25,17 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     private weak var currentNavigationBar: UINavigationBar?
     private let floatingTitleView = NCMediaViewerFloatingTitleView()
 
-    private var isFoldedImageLayout = false
-    private lazy var adaptiveControlsState = NCImageAdaptiveControlsState()
-    private lazy var adaptiveTitleView = NCMediaViewerFloatingTitleView()
-    private lazy var adaptiveDetailNavigationItem = UIBarButtonItem(
-        image: NCUtility().loadImage(named: "info.circle", colors: [NCBrandColor.shared.iconImageColor]),
-        style: .plain,
-        target: self,
-        action: #selector(mediaDetailButtonTapped)
+    private var isFoldedMediaLayout = false
+    private lazy var adaptiveControlsState = NCMediaAdaptiveControlsState()
+    private lazy var adaptiveActionsView = NCMediaAdaptiveActionsView(
+        closeAction: UIAction { [weak self] _ in self?.closeButtonTapped() },
+        moreButton: NCContextMenuViewer.mediaActionsButton(
+            viewController: self,
+            metadataProvider: { [weak self] in self?.model.selectedMetadata },
+            controllerProvider: { [weak self] in self?.contextMenuController }
+        ),
+        infoAction: UIAction { [weak self] _ in self?.mediaDetailButtonTapped() }
     )
-    private lazy var adaptiveNavigationBar: UINavigationBar = {
-        let bar = UINavigationBar()
-        let item = UINavigationItem()
-        item.titleView = adaptiveTitleView
-        item.leftBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "chevron.left"),
-            style: .plain,
-            target: self,
-            action: #selector(closeButtonTapped)
-        )
-        item.rightBarButtonItems = [
-            NCContextMenuViewer.mediaNavigationItem(
-                viewController: self,
-                metadataProvider: { [weak self] in self?.model.selectedMetadata },
-                controllerProvider: { [weak self] in self?.contextMenuController }
-            ),
-            adaptiveDetailNavigationItem
-        ]
-        bar.setItems([item], animated: false)
-        return bar
-    }()
 
     private lazy var floatingTitleDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -210,8 +191,8 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                 self?.close(ocId: ocId)
             },
             adaptiveControlsState: NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled ? adaptiveControlsState : nil,
-            makeAdaptiveNavigationBar: NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled ? { [weak self] in
-                self?.adaptiveNavigationBar ?? UINavigationBar()
+            makeAdaptiveActionsView: NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled ? { [weak self] in
+                self?.adaptiveActionsView ?? UIView()
             } : nil,
             onAdaptiveLayoutChanged: { [weak self] isFolded in
                 guard let self, NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled else {
@@ -223,11 +204,12 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     }
 
     private func adaptiveLayoutChanged(_ isFolded: Bool) {
-        guard isFoldedImageLayout != isFolded else {
+        guard isFoldedMediaLayout != isFolded else {
             return
         }
         closeDetail(animated: false)
-        isFoldedImageLayout = isFolded
+        adaptiveControlsState.isFoldedLayout = isFolded
+        isFoldedMediaLayout = isFolded
         setChromeHidden(model.isChromeHidden, animated: false)
     }
 
@@ -293,9 +275,6 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     private func updateTitleLabel(metadata: tableMetadata?, backgroundColor: UIColor) {
         guard let metadata else {
             floatingTitleView.clear()
-            if NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled {
-                adaptiveTitleView.clear()
-            }
             return
         }
 
@@ -308,12 +287,8 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             secondaryText: floatingTitleSecondaryText(for: metadata)
         )
         if NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled {
-            adaptiveTitleView.update(
-                primaryText: primaryTitle,
-                secondaryText: floatingTitleSecondaryText(for: metadata)
-            )
             if let detailView = adaptiveControlsState.detailView,
-               detailView.metadata.ocId != metadata.ocId, isFoldedImageLayout {
+               detailView.metadata.ocId != metadata.ocId, isFoldedMediaLayout {
                 closeDetail(animated: false)
             }
         }
@@ -348,7 +323,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     /// Shows or hides the viewer chrome.
     private func setChromeHidden(_ hidden: Bool, animated: Bool) {
         navigationController?.setNavigationBarHidden(
-            hidden || isFoldedImageLayout,
+            hidden || isFoldedMediaLayout,
             animated: animated
         )
 
@@ -464,7 +439,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     private func setMediaDetailLoading(_ isLoading: Bool) {
         if NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled {
-            adaptiveDetailNavigationItem.isEnabled = !isLoading
+            adaptiveActionsView.informationButton?.isEnabled = !isLoading
         }
         if isLoading {
             mediaDetailActivityIndicator.startAnimating()
@@ -484,7 +459,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             exif: exif
         )
 
-        if isFoldedImageLayout {
+        if isFoldedMediaLayout {
             adaptiveControlsState.detailView = detailView
             return
         }
@@ -512,7 +487,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         detailLoadingTask = nil
         setMediaDetailLoading(false)
 
-        if NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled || isFoldedImageLayout {
+        if NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled || isFoldedMediaLayout {
             adaptiveControlsState.detailView = nil
         }
 

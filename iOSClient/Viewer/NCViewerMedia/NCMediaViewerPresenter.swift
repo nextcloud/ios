@@ -100,7 +100,7 @@ import UIKit
 /// 16. Experimental adaptive layout:
 ///     `NCMediaAdaptiveLayoutConfiguration` supplies one shared experimental switch.
 ///     `NCMediaAdaptiveLayoutView` keeps the media surface and arranges independent
-///     normal/adaptive controls. Images bridge through `NCImageAdaptiveLayoutHost`;
+///     normal/adaptive controls. Images bridge through `NCMediaAdaptiveLayoutHost`;
 ///     fullscreen AVPlayer and VLC use the same container directly.
 ///     See README.md in this directory for the component map and verification scope.
 ///

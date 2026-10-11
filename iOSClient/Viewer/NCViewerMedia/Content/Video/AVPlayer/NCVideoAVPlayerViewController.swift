@@ -60,10 +60,9 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private lazy var adaptiveControlsView: NCVideoAdaptiveControlsView = {
         let controlsView = NCVideoAdaptiveControlsView(state: normalControlsView.state)
         controlsView.delegate = self
-        controlsView.configureFoldedNavigation(
-            titleView: foldedTitleView,
+        controlsView.configureAdaptiveActions(
             closeAction: UIAction { [weak self] _ in self?.close() },
-            moreItem: NCContextMenuViewer.mediaNavigationItem(
+            moreButton: NCContextMenuViewer.mediaActionsButton(
                 viewController: self,
                 metadataProvider: { [weak self] in self?.metadata },
                 controllerProvider: { [weak self] in self?.contextMenuController }
@@ -80,7 +79,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     private let floatingTitleView = NCMediaViewerFloatingTitleView()
-    private let foldedTitleView = NCMediaViewerFloatingTitleView()
 
     private lazy var moreNavigationItem = NCContextMenuViewer.mediaNavigationItem(
         viewController: self,
@@ -362,12 +360,10 @@ final class NCVideoAVPlayerViewController: UIViewController {
             ? metadata.fileName
             : metadata.fileNameView
 
-        for titleView in [floatingTitleView, foldedTitleView] {
-            titleView.update(
-                primaryText: primaryTitle,
-                secondaryText: floatingTitleDateFormatter.string(from: metadata.date as Date)
-            )
-        }
+        floatingTitleView.update(
+            primaryText: primaryTitle,
+            secondaryText: floatingTitleDateFormatter.string(from: metadata.date as Date)
+        )
     }
 
     @objc
@@ -956,11 +952,11 @@ final class NCVideoAVPlayerViewController: UIViewController {
         )
 
         if (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true {
-            let foldedNavigationFrame = adaptiveControlsView.foldedNavigationBar.convert(
-                adaptiveControlsView.foldedNavigationBar.bounds,
+            let adaptiveActionsFrame = adaptiveControlsView.actionsContainerView.convert(
+                adaptiveControlsView.actionsContainerView.bounds,
                 to: view
             )
-            if !adaptiveControlsView.isHidden && foldedNavigationFrame.contains(location) {
+            if !adaptiveControlsView.isHidden && adaptiveActionsFrame.contains(location) {
                 return true
             }
         }
