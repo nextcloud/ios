@@ -13,9 +13,12 @@ public protocol NCMetadataUploadTransfersSuccessDelegate: AnyObject {
 actor NCMetadataUploadTranfersSuccess {
     private struct TransferSuccessItem {
         let metadata: tableMetadata
+        let backgroundAutoUpload: Bool?
     }
 
     private var tranfersSuccess: [TransferSuccessItem] = []
+    private var flushingItems: [TransferSuccessItem] = []
+    private var isFlushing = false
     private let utility = NCUtility()
     private var delegates: [NCMetadataUploadTransfersSuccessDelegate] = []
 
@@ -34,7 +37,9 @@ actor NCMetadataUploadTranfersSuccess {
                 date: Date?,
                 etag: String?,
                 ownerId: String? = nil,
-                permissions: String? = nil) async {
+                permissions: String? = nil,
+                backgroundAutoUpload: Bool? = nil) async {
+        let metadata = metadata.detachedCopy()
         metadata.ocId = ocId
         metadata.uploadDate = (date as? NSDate) ?? NSDate()
         metadata.etag = etag ?? ""
@@ -60,10 +65,13 @@ actor NCMetadataUploadTranfersSuccess {
         metadata.sessionTaskIdentifier = 0
         metadata.status = NCGlobal.shared.metadataStatusNormal
 
-        let item = TransferSuccessItem(metadata: metadata)
+        let item = TransferSuccessItem(metadata: metadata, backgroundAutoUpload: backgroundAutoUpload)
 
-        if let index = tranfersSuccess.firstIndex(where: { $0.metadata.ocId == metadata.ocId }) {
-            tranfersSuccess[index] = item
+        if let index = tranfersSuccess.firstIndex(where: {
+            $0.metadata.account == metadata.account && $0.metadata.ocId == metadata.ocId && $0.metadata.ocIdTransfer == metadata.ocIdTransfer
+        }) {
+            // A repeated callback without a persistence result must not erase an existing confirmation.
+            tranfersSuccess[index] = TransferSuccessItem(metadata: metadata, backgroundAutoUpload: backgroundAutoUpload ?? tranfersSuccess[index].backgroundAutoUpload)
         } else {
             tranfersSuccess.append(item)
         }
@@ -80,33 +88,67 @@ actor NCMetadataUploadTranfersSuccess {
     }
 
     func count() -> Int {
-        tranfersSuccess.count
+        tranfersSuccess.count + flushingItems.count
     }
 
     func getAll() -> [tableMetadata] {
-        tranfersSuccess.map(\.metadata)
+        (tranfersSuccess + flushingItems).map { $0.metadata.detachedCopy() }
     }
 
-    func exists(serverUrlFileName: String) async -> Bool {
-        return tranfersSuccess.contains { $0.metadata.serverUrlFileName == serverUrlFileName }
+    func exists(serverUrlFileName: String, transferIdentifier: String? = nil) async -> Bool {
+        return (tranfersSuccess + flushingItems).contains {
+            $0.metadata.serverUrlFileName == serverUrlFileName && (transferIdentifier == nil || $0.metadata.ocIdTransfer == transferIdentifier)
+        }
     }
 
     func flush() async {
+        guard !isFlushing, !tranfersSuccess.isEmpty else { return }
+        isFlushing = true
         let items = tranfersSuccess
-        let metadatas = items.map(\.metadata)
-        let hasLivePhotos = await NCManageDatabase.shared.hasLivePhotos()
+        flushingItems = items
+        let flushDelegates = delegates
+        var committedItems: [TransferSuccessItem] = []
+        // Detach this batch before awaiting, so arrivals during the flush remain queued.
         tranfersSuccess.removeAll(keepingCapacity: true)
+        let hasLivePhotos = await NCManageDatabase.shared.hasLivePhotos()
+        defer {
+            flushingItems.removeAll(keepingCapacity: true)
+            isFlushing = false
+            for delegate in flushDelegates {
+                delegate.metadataUploadTransferDidFlush(hasLivePhotos: hasLivePhotos)
+            }
+        }
 
         let metadatasLocalFiles: [tableMetadata] = []
         var metadatasLivePhoto: [tableMetadata] = []
         var autoUploads: [tableAutoUploadTransfer] = []
 
-        for delegate in delegates {
+        for delegate in flushDelegates {
             delegate.metadataUploadTransferWillFlush(hasLivePhotos: hasLivePhotos)
         }
 
-        for metadata in metadatas {
-            let results = await NCNetworking.shared.helperMetadataSuccess(metadata: metadata)
+        for item in items {
+            let metadata = item.metadata
+            var backgroundAutoUpload = item.backgroundAutoUpload ?? false
+#if !EXTENSION
+            do {
+                // Retry persistence only when the success callback could not record it.
+                if item.backgroundAutoUpload == nil {
+                    backgroundAutoUpload = try await NCLocalDatabase.shared.recordAutoUploadTransfer(metadata, uploaded: true)
+                    await NCManageDatabase.shared.deleteMetadataAsync(ocId: metadata.ocIdTransfer)
+                }
+            } catch {
+                if !tranfersSuccess.contains(where: {
+                    $0.metadata.account == metadata.account && $0.metadata.ocId == metadata.ocId && $0.metadata.ocIdTransfer == metadata.ocIdTransfer
+                }) {
+                    tranfersSuccess.append(item)
+                }
+                nkLog(error: "Unable to persist cached background upload completion: \(error)")
+                continue
+            }
+#endif
+            committedItems.append(item)
+            let results = await NCNetworking.shared.helperMetadataSuccess(metadata: metadata, backgroundAutoUpload: backgroundAutoUpload)
             if let livePhoto = results.livePhoto {
                 metadatasLivePhoto.append(livePhoto)
             }
@@ -115,6 +157,7 @@ actor NCMetadataUploadTranfersSuccess {
             }
         }
 
+        let metadatas = committedItems.map(\.metadata)
         await NCManageDatabase.shared.addMetadatasAsync(metadatas)
 
         // Local File
@@ -135,7 +178,7 @@ actor NCMetadataUploadTranfersSuccess {
 
             // TransferDispatcher — notify outside of shared-state mutation
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                for item in items {
+                for item in committedItems {
                     let metadata = item.metadata
 
                     delegate.transferChange(networkingStatus: NCGlobal.shared.networkingStatusUploaded,
@@ -148,10 +191,6 @@ actor NCMetadataUploadTranfersSuccess {
                                             error: .success)
                 }
             }
-        }
-
-        for delegate in delegates {
-            delegate.metadataUploadTransferDidFlush(hasLivePhotos: hasLivePhotos)
         }
 
         nkLog(tag: NCGlobal.shared.logTagMetadataUploadTransfers, message: "Upload flush successful (\(metadatas.count))", consoleOnly: true)
