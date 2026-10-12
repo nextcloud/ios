@@ -44,6 +44,7 @@ final class NCLocalDatabase: @unchecked Sendable {
         let databasePool = try databasePool()
         try await databasePool.write { database in
             _ = try NCPhotoLibraryAsset.deleteAll(database)
+            _ = try NCAutoUploadAsset.deleteAll(database)
         }
     }
 
