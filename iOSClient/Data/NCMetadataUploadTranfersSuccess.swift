@@ -119,7 +119,6 @@ actor NCMetadataUploadTranfersSuccess {
             }
         }
 
-        let metadatasLocalFiles: [tableMetadata] = []
         var metadatasLivePhoto: [tableMetadata] = []
         var autoUploads: [tableAutoUploadTransfer] = []
 
@@ -138,6 +137,7 @@ actor NCMetadataUploadTranfersSuccess {
                     await NCManageDatabase.shared.deleteMetadataAsync(ocId: metadata.ocIdTransfer)
                 }
             } catch {
+                flushingItems.removeAll { $0.metadata === metadata }
                 if !tranfersSuccess.contains(where: {
                     $0.metadata.account == metadata.account && $0.metadata.ocId == metadata.ocId && $0.metadata.ocIdTransfer == metadata.ocIdTransfer
                 }) {
@@ -159,9 +159,6 @@ actor NCMetadataUploadTranfersSuccess {
 
         let metadatas = committedItems.map(\.metadata)
         await NCManageDatabase.shared.addMetadatasAsync(metadatas)
-
-        // Local File
-        await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasLocalFiles)
 
         // Auto Upload
         await NCManageDatabase.shared.addAutoUploadTransferAsync(autoUploads)

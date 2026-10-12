@@ -155,13 +155,22 @@ extension NCNetworking {
                                                  permissions: permissions)
                     } else {
 #if !EXTENSION
-                        await NCManageDatabase.shared.deleteMetadataAsync(ocId: metadata.ocId)
+                        var backgroundAutoUpload: Bool?
+                        do {
+                            // Confirm extension-owned resources before releasing their pending Realm metadata.
+                            backgroundAutoUpload = try await NCLocalDatabase.shared.recordAutoUploadTransfer(metadata, uploaded: true)
+                            await NCManageDatabase.shared.deleteMetadataAsync(ocId: metadata.ocId)
+                        } catch {
+                            // Keep the transfer and cache the server response for a later persistence retry.
+                            nkLog(error: "Unable to persist background upload completion: \(error)")
+                        }
                         await NCNetworking.shared.metadataUploadTranfersSuccess.append(metadata: metadata,
                                                                                        ocId: ocId,
                                                                                        date: date,
                                                                                        etag: etag,
                                                                                        ownerId: ownerId,
-                                                                                       permissions: permissions)
+                                                                                       permissions: permissions,
+                                                                                       backgroundAutoUpload: backgroundAutoUpload)
 #endif
                     }
                 } else {
