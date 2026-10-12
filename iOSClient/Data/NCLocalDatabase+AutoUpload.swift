@@ -19,18 +19,6 @@ struct NCAutoUploadResource: Codable, Equatable, FetchableRecord, PersistableRec
     var uploaded: Bool
     let creationDate: Date
     var transferIdentifier: String?
-
-    /// Chooses one naming context; successes for differently named pairs cannot complete each other.
-    static func discoveryResources(from history: [Self], sessionIdentifier: String, activeTransferIdentifiers: Set<String>) -> [Self] {
-        let previousSession = history.first { $0.transferIdentifier.map(activeTransferIdentifiers.contains) == true }?.uploadSessionIdentifier
-            ?? history.first { $0.uploadSessionIdentifier == sessionIdentifier }?.uploadSessionIdentifier
-            ?? history.first { $0.uploaded }?.uploadSessionIdentifier ?? history.first?.uploadSessionIdentifier
-        return history.filter { $0.uploadSessionIdentifier == previousSession }.map { resource in
-            var resource = resource
-            resource.uploaded = history.contains { $0.classFile == resource.classFile && $0.fileName == resource.fileName && $0.uploaded }
-            return resource
-        }
-    }
 }
 
 /// Background Upload history shared by the extension and host-app chunk completion.

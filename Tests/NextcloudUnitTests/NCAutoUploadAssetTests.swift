@@ -67,12 +67,19 @@ struct NCAutoUploadAssetTests {
     @Test("A standalone photo has one row; a missing video row is not a completed Live Photo")
     func expectedComponents() async throws {
         let database = try makeDatabase()
-        _ = try await database.recordAutoUploadResources([resource(uploaded: true)])
+        let photo = metadata()
+        try await database.recordAutoUploadTransfer(photo, sessionIdentifier: "session", uploaded: true)
         let rows = try await history(database)
         #expect(rows.count == 1)
         #expect(rows.first?.classFile == imageClass)
+        #expect(rows.first?.fileName == photo.fileNameView)
         #expect(rows.first?.uploaded == true)
         #expect(rows.contains { $0.classFile == videoClass && $0.uploaded } == false)
+        try await database.recordAutoUploadTransfer(metadata(video: true), sessionIdentifier: "session")
+        let resumed = try await history(database)
+        #expect(resumed.count == 2)
+        #expect(resumed.first { $0.classFile == imageClass }?.uploaded == true)
+        #expect(resumed.first { $0.classFile == videoClass }?.uploaded == false)
     }
 
     @Test("Repeated discovery retains names and completed progress for each component")
@@ -236,37 +243,6 @@ struct NCAutoUploadAssetTests {
         await #expect(throws: (any Error).self) {
             try await database.recordAutoUploadTransfer(transfer, uploaded: true)
         }
-    }
-
-    @Test("Successes with different pair names cannot complete one Live Photo")
-    func differentNamingContexts() {
-        let photo = resource(session: "photo-session", uploaded: true)
-        var video = resource(video: true, session: "video-session", uploaded: true)
-        video.fileName = "other.mov"
-        let selected = NCAutoUploadResource.discoveryResources(from: [photo, video], sessionIdentifier: "next", activeTransferIdentifiers: [])
-        #expect(selected.map(\.fileName) == ["0355.heic"])
-        #expect(selected.contains { $0.classFile == videoClass && $0.uploaded } == false)
-    }
-
-    @Test("The active transfer chooses its original naming context over pending new-session rows")
-    func activeNamingContext() {
-        var active = resource(session: "active")
-        active.fileName = "active.heic"
-        active.transferIdentifier = "active-transfer"
-        let current = resource(session: "current")
-        let selected = NCAutoUploadResource.discoveryResources(from: [current, active], sessionIdentifier: "current", activeTransferIdentifiers: ["active-transfer"])
-        #expect(selected.first?.fileName == "active.heic")
-        #expect(selected.first?.uploadSessionIdentifier == "active")
-    }
-
-    @Test("The same file name can reuse a confirmed component from another normal session")
-    func matchingNamingContext() {
-        let pending = resource(session: "current")
-        let completed = resource(session: "old", uploaded: true)
-        let selected = NCAutoUploadResource.discoveryResources(from: [pending, completed], sessionIdentifier: "current", activeTransferIdentifiers: [])
-        #expect(selected.count == 1)
-        #expect(selected.first?.uploaded == true)
-        #expect(selected.first?.uploadSessionIdentifier == "current")
     }
 
     @Test("A success for another file name cannot mark the reserved component complete")
