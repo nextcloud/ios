@@ -23,18 +23,18 @@ enum NCLocalDatabaseMigrator {
             }
         }
 
-        migrator.registerMigration("backgroundAutoUploadAssets") { database in
-            try database.create(table: "autoUploadAsset") { table in
+        migrator.registerMigration("backgroundAutoUploadResources") { database in
+            try database.create(table: "autoUploadResource") { table in
                 table.column("account", .text).notNull()
                 table.column("serverUrlBase", .text).notNull()
                 table.column("assetLocalIdentifier", .text).notNull()
                 table.column("uploadSessionIdentifier", .text).notNull()
-                table.column("photoUploaded", .boolean)
-                table.column("videoUploaded", .boolean)
-                table.column("photoFileName", .text)
-                table.column("videoFileName", .text)
+                table.column("classFile", .text).notNull()
+                table.column("fileName", .text).notNull()
+                table.column("uploaded", .boolean).notNull().defaults(to: false)
                 table.column("creationDate", .datetime).notNull()
-                table.primaryKey(["account", "serverUrlBase", "assetLocalIdentifier", "uploadSessionIdentifier"])
+                table.column("transferIdentifier", .text)
+                table.primaryKey(["account", "serverUrlBase", "assetLocalIdentifier", "uploadSessionIdentifier", "classFile"])
             }
         }
 
