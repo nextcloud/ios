@@ -820,9 +820,12 @@ actor NCNetworkingProcess {
 
         return .success
     }
+
     /// Releases only the shared transfer queue and its local file; GRDB completion is already confirmed.
     private func removeCompletedBackgroundUploadTransfer(_ metadata: tableMetadata) async {
+        let database = NCManageDatabase.shared
         let ocId = metadata.ocId
+
         await database.deleteMetadataAsync(ocId: ocId)
         guard !ocId.isEmpty,
               await database.core.performRealmReadAsync({ realm in
@@ -833,5 +836,4 @@ actor NCNetworkingProcess {
         let transferDirectory = URL(fileURLWithPath: storagePath, isDirectory: true).appendingPathComponent(ocId, isDirectory: true)
         utilityFileSystem.removeFile(atPath: transferDirectory.path)
     }
-
 }

@@ -58,6 +58,11 @@ final class NCCameraRoll: CameraRollExtractor {
     /// - Parameter metadata: Metadata to extract
     /// - Returns: Extracted metadata, possibly including a paired Live Photo
     func extractCameraRoll(from metadata: tableMetadata) async -> [tableMetadata] {
+        await extractCameraRoll(from: metadata, expandsLivePhoto: true)
+    }
+
+    /// The host upload pipeline disables pair expansion for independently registered extension components.
+    func extractCameraRoll(from metadata: tableMetadata, expandsLivePhoto: Bool) async -> [tableMetadata] {
         var metadatas: [tableMetadata] = []
         let metadataSource = metadata.detachedCopy()
         let autoUploadSessionIdentifier: String?
@@ -153,9 +158,8 @@ final class NCCameraRoll: CameraRollExtractor {
 
             metadatas.append(extractedMetadata)
 
-            let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
-            if extractedMetadata.isLivePhoto,
-               let asset = fetchAssets.firstObject,
+            if extractedMetadata.isLivePhotoImage, expandsLivePhoto,
+               let asset = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil).firstObject,
                let livePhotoMetadata = await createMetadataLivePhoto(metadata: extractedMetadata, asset: asset) {
                 if let metadata = await persistExtractedMetadata(livePhotoMetadata, sessionIdentifier: autoUploadSessionIdentifier, seedOcId: metadataSource.ocId) {
                     metadatas.append(metadata)
@@ -211,7 +215,7 @@ final class NCCameraRoll: CameraRollExtractor {
         }
 
         // Determine file extension and prepare filename
-        let ext = (asset.originalFilename as NSString).pathExtension.lowercased()
+        let ext = metadata.isLivePhotoVideo ? metadata.fileExtension.lowercased() : (asset.originalFilename as NSString).pathExtension.lowercased()
         let convertToJPEG = Self.shouldConvertToJPEG(fileExtension: ext, nativeFormat: metadata.nativeFormat)
         let fileName = Self.outputFileName(
             for: metadata.fileNameView,
@@ -235,13 +239,17 @@ final class NCCameraRoll: CameraRollExtractor {
         }
 
         // Extract file data from asset
-        switch asset.mediaType {
-        case .image:
-            try await extractImage(asset: asset, ext: ext, filePath: filePath, convertToJPEG: convertToJPEG)
-        case .video:
-            try await extractVideo( asset: asset, filePath: filePath)
-        default:
-            throw NSError(domain: "ExtractAssetError", code: 7, userInfo: [NSLocalizedDescriptionKey: "Unsupported media type"])
+        if metadata.isLivePhotoVideo {
+            try await extractPairedVideo(asset: asset, filePath: filePath)
+        } else {
+            switch asset.mediaType {
+            case .image:
+                try await extractImage(asset: asset, ext: ext, filePath: filePath, convertToJPEG: convertToJPEG)
+            case .video:
+                try await extractVideo(asset: asset, filePath: filePath)
+            default:
+                throw NSError(domain: "ExtractAssetError", code: 7, userInfo: [NSLocalizedDescriptionKey: "Unsupported media type"])
+            }
         }
 
         // Populate metadata with extracted file info
@@ -327,9 +335,12 @@ final class NCCameraRoll: CameraRollExtractor {
 
     /// Auto Upload extraction must not recreate a seed deleted by Stop or Transfers cancellation.
     private func persistExtractedMetadata(_ metadata: tableMetadata, sessionIdentifier: String?, seedOcId: String) async -> tableMetadata? {
+        // Transfers outside Auto Upload use the ordinary Realm persistence path.
         guard let sessionIdentifier else {
             return await database.addAndReturnMetadataAsync(metadata)
         }
+
+        // Shared auto-upload queue (Realm): legacy and BackgroundUploadExtension retain session and seed checks.
         await database.addAutoUploadMetadatasAsync([metadata], account: metadata.account, sessionIdentifier: sessionIdentifier, seedOcId: seedOcId)
         guard let account = await database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", metadata.account)),
               account.autoUploadStart,
@@ -380,6 +391,26 @@ final class NCCameraRoll: CameraRollExtractor {
         }
 
         try finalData.write(to: URL(fileURLWithPath: filePath), options: .atomic)
+    }
+
+    /// Writes the motion resource directly when an extension-owned Live Photo MOV needs chunks.
+    private func extractPairedVideo(asset: PHAsset, filePath: String) async throws {
+        let resources = PHAssetResource.assetResources(for: asset)
+        guard let resource = resources.first(where: { $0.type == .fullSizePairedVideo })
+            ?? resources.first(where: { $0.type == .pairedVideo }) else {
+            throw NSError(domain: "ExtractAssetError", code: 7, userInfo: [NSLocalizedDescriptionKey: "Paired video resource not found"])
+        }
+        let options = PHAssetResourceRequestOptions()
+        options.isNetworkAccessAllowed = true
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            PHAssetResourceManager.default().writeData(for: resource, toFile: URL(fileURLWithPath: filePath), options: options) { error in
+                if let error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume(returning: ())
+                }
+            }
+        }
     }
 
     private func extractVideo(asset: PHAsset, filePath: String) async throws {
