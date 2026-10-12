@@ -13,6 +13,15 @@ updates:
       swift-packages:
         patterns:
           - "*"
+    # These deps are ignored, since they are internal Firebase and Realm libs.
+    # They have their own version limits that may not be the latest version, which forces XCode to reverse a version change.
+    # Since these are ignored, the only way they update is through an Xcode package build, which will happen naturally.
+    ignore:
+      - dependency-name: "github.com/google/*"
+      - dependency-name: "github.com/googleads/*"
+      - dependency-name: "github.com/firebase/nanopb"
+      - dependency-name: "github.com/firebase/leveldb"
+      - dependency-name: "github.com/realm/realm-core"
     labels:
       - "dependencies"
     commit-message:
