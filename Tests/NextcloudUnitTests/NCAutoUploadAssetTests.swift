@@ -225,7 +225,8 @@ struct NCAutoUploadAssetTests {
             photo.fileName = "\(number).heic"
             video.fileName = "\(number).mov"
             let rows = try await database.recordAutoUploadResources([photo, video])
-            #expect(rows.allSatisfy(\.uploaded))
+            let allUploaded = rows.allSatisfy { $0.uploaded }
+            #expect(allUploaded)
             #expect(rows.map(\.fileName) == ["0355.heic", "0355.mov"])
         }
         #expect(try await history(database).count == 2)
@@ -302,7 +303,7 @@ struct NCAutoUploadAssetTests {
         try migrator.migrate(oldDatabase)
         let photo = NCPhotoLibraryAsset(account: account, assetLocalIdentifier: "photo", photoUploaded: true,
                                         videoUploaded: nil, creationDate: Date(timeIntervalSince1970: 100))
-        try oldDatabase.write { try photo.insert($0) }
+        try await oldDatabase.write { try photo.insert($0) }
         let database = try NCLocalDatabase(databaseURL: url)
         #expect(try await database.uploadedPhotoLibraryAssets(account: account) == [photo])
         _ = try await database.recordAutoUploadResources([resource(), resource(video: true)])
