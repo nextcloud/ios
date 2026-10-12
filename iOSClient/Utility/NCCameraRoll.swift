@@ -80,9 +80,6 @@ final class NCCameraRoll: CameraRollExtractor {
             }
             return [metadata]
         }
-        let chunkSize = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
-            ? NCGlobal.shared.chunkSizeMBEthernetOrWiFi
-            : NCGlobal.shared.chunkSizeMBCellular
 
         guard !metadataSource.assetLocalIdentifier.isEmpty else {
             let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataSource.ocId,
@@ -104,7 +101,7 @@ final class NCCameraRoll: CameraRollExtractor {
             if let date = utilityFileSystem.getFileModificationDate(filePath: filePath) {
                 metadataSource.date = date
             }
-            metadataSource.chunk = metadataSource.size > chunkSize ? chunkSize : 0
+            metadataSource.chunk = metadataSource.size > NCGlobal.shared.chunkSize ? NCGlobal.shared.chunkSize : 0
             metadataSource.e2eEncrypted = metadata.isDirectoryE2EE
             if metadataSource.chunk > 0 || metadataSource.e2eEncrypted {
                 metadataSource.session = NCNetworking.shared.sessionUpload
@@ -146,7 +143,6 @@ final class NCCameraRoll: CameraRollExtractor {
                   let extractedMetadata = await updateMetadataForUploadAsync(
                       metadata: result.metadata,
                       size: Int(finalSize),
-                      chunkSize: chunkSize,
                       sessionIdentifier: autoUploadSessionIdentifier
                   ) else {
                 throw NSError(
@@ -201,11 +197,6 @@ final class NCCameraRoll: CameraRollExtractor {
         modifyMetadataForUpload: Bool,
         temporaryDirectory: URL = FileManager.default.temporaryDirectory
     ) async throws -> ExtractedAsset {
-        // Determine the appropriate chunk size based on the current network connection
-        let chunkSize = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
-            ? NCGlobal.shared.chunkSizeMBEthernetOrWiFi
-            : NCGlobal.shared.chunkSizeMBCellular
-
         // Fetch the PHAsset using the local identifier
         guard let asset = PHAsset.fetchAssets(
             withLocalIdentifiers: [metadata.assetLocalIdentifier],
@@ -246,7 +237,7 @@ final class NCCameraRoll: CameraRollExtractor {
             case .image:
                 try await extractImage(asset: asset, ext: ext, filePath: filePath, convertToJPEG: convertToJPEG)
             case .video:
-                try await extractVideo(asset: asset, filePath: filePath)
+                try await extractVideo(asset: asset, filePath: filePath, fileExtension: (fileName as NSString).pathExtension)
             default:
                 throw NSError(domain: "ExtractAssetError", code: 7, userInfo: [NSLocalizedDescriptionKey: "Unsupported media type"])
             }
@@ -259,7 +250,7 @@ final class NCCameraRoll: CameraRollExtractor {
 
         // Optionally update metadata for upload and persist it
         if modifyMetadataForUpload {
-            if let metadata = await updateMetadataForUploadAsync(metadata: metadata, size: Int(metadata.size), chunkSize: chunkSize) {
+            if let metadata = await updateMetadataForUploadAsync(metadata: metadata, size: Int(metadata.size)) {
                 return ExtractedAsset(metadata: metadata, filePath: filePath)
             } else {
                 throw NSError(domain: "ExtractAssetError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Asset not found"])
@@ -313,18 +304,8 @@ final class NCCameraRoll: CameraRollExtractor {
         return (fileName as NSString).deletingPathExtension + ".jpg"
     }
 
-    private func updateMetadataForUpload(metadata: tableMetadata, size: Int, chunkSize: Int) -> tableMetadata? {
-        metadata.chunk = size > chunkSize ? chunkSize : 0
-        metadata.e2eEncrypted = metadata.isDirectoryE2EE
-        if metadata.chunk > 0 || metadata.e2eEncrypted {
-            metadata.session = NCNetworking.shared.sessionUpload
-        }
-        metadata.isExtractFile = true
-        return self.database.addAndReturnMetadata(metadata)
-    }
-
-    private func updateMetadataForUploadAsync(metadata: tableMetadata, size: Int, chunkSize: Int, sessionIdentifier: String? = nil) async -> tableMetadata? {
-        metadata.chunk = size > chunkSize ? chunkSize : 0
+    private func updateMetadataForUploadAsync(metadata: tableMetadata, size: Int, sessionIdentifier: String? = nil) async -> tableMetadata? {
+        metadata.chunk = size > NCGlobal.shared.chunkSize ? NCGlobal.shared.chunkSize : 0
         metadata.e2eEncrypted = metadata.isDirectoryE2EE
         if metadata.chunk > 0 || metadata.e2eEncrypted {
             metadata.session = NCNetworking.shared.sessionUpload
@@ -413,7 +394,7 @@ final class NCCameraRoll: CameraRollExtractor {
         }
     }
 
-    private func extractVideo(asset: PHAsset, filePath: String) async throws {
+    private func extractVideo(asset: PHAsset, filePath: String, fileExtension: String) async throws {
         let videoAsset: AVAsset = try await withCheckedThrowingContinuation { continuation in
             DispatchQueue.main.async {
                 let options = PHVideoRequestOptions()
@@ -439,7 +420,6 @@ final class NCCameraRoll: CameraRollExtractor {
             try FileManager.default.copyItem(at: urlAsset.url, to: URL(fileURLWithPath: filePath))
         } else if let composition = videoAsset as? AVComposition,
                   let exporter = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetPassthrough) {
-            let fileExtension = (filePath as NSString).pathExtension
             guard let outputFileType = Self.videoOutputFileType(fileExtension: fileExtension),
                   exporter.supportedFileTypes.contains(outputFileType)
             else {
@@ -490,9 +470,6 @@ final class NCCameraRoll: CameraRollExtractor {
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileName: fileName,
                                                                              userId: metadata.userId,
                                                                              urlBase: metadata.urlBase)
-        let chunkSize = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
-            ? NCGlobal.shared.chunkSizeMBEthernetOrWiFi
-            : NCGlobal.shared.chunkSizeMBCellular
 
         // Prefer the full-size rendered component for edited Live Photos, then fall back
         // to the original paired video when no rendered resource exists.
@@ -552,7 +529,7 @@ final class NCCameraRoll: CameraRollExtractor {
                         print(error)
                     }
                     metadataLivePhoto.status = capturedStatus
-                    metadataLivePhoto.chunk = metadataLivePhoto.size > chunkSize ? chunkSize : 0
+                    metadataLivePhoto.chunk = metadataLivePhoto.size > NCGlobal.shared.chunkSize ? NCGlobal.shared.chunkSize : 0
                     metadataLivePhoto.e2eEncrypted = capturedIsDirectoryE2EE
                     if metadataLivePhoto.chunk > 0 || metadataLivePhoto.e2eEncrypted {
                         metadataLivePhoto.session = NCNetworking.shared.sessionUpload
