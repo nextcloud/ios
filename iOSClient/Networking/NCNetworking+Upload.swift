@@ -86,10 +86,6 @@ extension NCNetworking {
                                                                           urlBase: metadata.urlBase)
         let chunkFolder = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
         let filesChunk = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
-        var chunkSize = self.global.chunkSizeMBCellular
-        if networkReachability == NKTypeReachability.reachableEthernetOrWiFi {
-            chunkSize = self.global.chunkSizeMBEthernetOrWiFi
-        }
         let options = NKRequestOptions(customHeader: customHeaders, queue: nkComm.backgroundQueue)
         var backupError = NKError()
         var backupFile: NKFile?
@@ -103,7 +99,7 @@ extension NCNetworking {
                 serverUrl: metadata.serverUrl,
                 chunkFolder: chunkFolder,
                 filesChunk: filesChunk,
-                chunkSize: chunkSize,
+                chunkSize: self.global.chunkSize,
                 account: metadata.account,
                 options: options) { total, counter in
                     chunkProgressHandler(total, counter)
