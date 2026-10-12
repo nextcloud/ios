@@ -9,7 +9,10 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 10
+    groups:
+      swift-packages:
+        patterns:
+          - "*"
     labels:
       - "dependencies"
     commit-message:
@@ -20,6 +23,10 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
     labels:
       - "dependencies"
     commit-message:
