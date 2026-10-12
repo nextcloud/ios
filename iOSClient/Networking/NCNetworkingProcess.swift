@@ -528,8 +528,22 @@ actor NCNetworkingProcess {
             if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan {
                 continue
             }
+            var backgroundUploadResource: NCAutoUploadResource?
+            if metadata.sessionSelector == global.selectorUploadAutoUpload {
+                do {
+                    backgroundUploadResource = try await NCLocalDatabase.shared.autoUploadResource(for: metadata)
+                } catch {
+                    // Leave the pending metadata intact; a failed lookup is not a failed extraction.
+                    nkLog(error: "Unable to resolve background upload component: \(error)")
+                    continue
+                }
+            }
+            if backgroundUploadResource?.uploaded == true {
+                await removeCompletedBackgroundUploadTransfer(metadata)
+                continue
+            }
             // extract image/video
-            let extractMetadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
+            let extractMetadatas = await NCCameraRoll().extractCameraRoll(from: metadata, expandsLivePhoto: backgroundUploadResource == nil)
             guard timer != nil else { return }
             // no extract photo
             if extractMetadatas.isEmpty {
@@ -544,27 +558,40 @@ actor NCNetworkingProcess {
 
                 // IS TRANSFER SUCCESS
                 //
-                if await NCNetworking.shared.metadataUploadTranfersSuccess.exists(serverUrlFileName: metadata.serverUrlFileName) {
-                    // File exists
+                if await NCNetworking.shared.metadataUploadTranfersSuccess.exists(
+                    serverUrlFileName: metadata.serverUrlFileName,
+                    transferIdentifier: backgroundUploadResource?.transferIdentifier
+                ) {
+                    // Skip this completed attempt, without suppressing another forced upload to the same path.
                     continue
                 }
 
-                // AUTO-UPLOAD: CHECK FILE EXISTS
+                // AUTO-UPLOAD: CHECK PROGRESS AND FILE EXISTS
                 //
-                if metadata.sessionSelector == global.selectorUploadAutoUpload,
-                   let uploadAccount = await database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", metadata.account)),
-                   !uploadAccount.autoUploadForceReupload {
-                    let existsResult = await networking.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
-                    if existsResult == .success {
-                        // Preserve completion in the incremental upload history before removing the transfer.
-                        await database.completeExistingAutoUploadAsync(metadata)
-                        continue
-                    } else if existsResult.errorCode == 404 {
-                        // 404 Not Found → file does not exist
-                        // Proceed
-                    } else {
-                        // Any other error (423 locked, 401 auth, 403 forbidden, 5xx, etc.)
-                        continue
+                if metadata.sessionSelector == global.selectorUploadAutoUpload {
+                    if let uploadAccount = await database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", metadata.account)),
+                       !uploadAccount.autoUploadForceReupload {
+                        let existsResult = await networking.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+                        if existsResult == .success {
+                            if backgroundUploadResource != nil {
+                                do {
+                                    try await NCLocalDatabase.shared.recordAutoUploadTransfer(metadata, uploaded: true)
+                                } catch {
+                                    nkLog(error: "Unable to record existing background upload component: \(error)")
+                                    continue
+                                }
+                                await removeCompletedBackgroundUploadTransfer(metadata)
+                            } else {
+                                await database.completeExistingAutoUploadAsync(metadata)
+                            }
+                            continue
+                        } else if existsResult.errorCode == 404 {
+                            // 404 Not Found → file does not exist
+                            // Proceed
+                        } else {
+                            // Any other error (423 locked, 401 auth, 403 forbidden, 5xx, etc.)
+                            continue
+                        }
                     }
                 }
 
@@ -793,4 +820,18 @@ actor NCNetworkingProcess {
 
         return .success
     }
+    /// Releases only the shared transfer queue and its local file; GRDB completion is already confirmed.
+    private func removeCompletedBackgroundUploadTransfer(_ metadata: tableMetadata) async {
+        let ocId = metadata.ocId
+        await database.deleteMetadataAsync(ocId: ocId)
+        guard !ocId.isEmpty,
+              await database.core.performRealmReadAsync({ realm in
+                  realm.object(ofType: tableMetadata.self, forPrimaryKey: ocId) == nil
+              }) == true else { return }
+        let storagePath = utilityFileSystem.getDocumentStorage(userId: metadata.userId, urlBase: metadata.urlBase)
+        guard !storagePath.isEmpty else { return }
+        let transferDirectory = URL(fileURLWithPath: storagePath, isDirectory: true).appendingPathComponent(ocId, isDirectory: true)
+        utilityFileSystem.removeFile(atPath: transferDirectory.path)
+    }
+
 }
