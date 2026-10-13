@@ -10,6 +10,25 @@ import NextcloudKit
 @Suite("Adaptive media layout")
 @MainActor
 struct NCMediaAdaptiveLayoutViewTests {
+    @Test("Folded media stays black with chrome visible or hidden", arguments: [false, true])
+    func foldedBackgroundIgnoresAppearanceAndChrome(isChromeHidden: Bool) {
+        let style = ncViewerBackgroundStyle(for: nil, isChromeHidden: isChromeHidden, isFoldedLayout: true)
+        for appearance in [UIUserInterfaceStyle.light, .dark] {
+            let color = UIColor.ncViewerBackground(style).resolvedColor(with: UITraitCollection(userInterfaceStyle: appearance))
+            #expect(color.isEqual(UIColor.black))
+        }
+    }
+
+    @Test("Unfolded media retains the normal appearance and tap behavior", arguments: [false, true])
+    func normalBackgroundPreservesAppearanceAndChrome(isChromeHidden: Bool) {
+        let style = ncViewerBackgroundStyle(for: nil, isChromeHidden: isChromeHidden, isFoldedLayout: false)
+        for appearance in [UIUserInterfaceStyle.light, .dark] {
+            let traits = UITraitCollection(userInterfaceStyle: appearance)
+            let expected = (isChromeHidden ? UIColor.black : UIColor.systemBackground).resolvedColor(with: traits)
+            #expect(UIColor.ncViewerBackground(style).resolvedColor(with: traits).isEqual(expected))
+        }
+    }
+
     @Test("Adaptive controls share playback state without adding a navigation bar")
     func separateAdaptiveControls() throws {
         let normalControls = NCVideoControlsView()

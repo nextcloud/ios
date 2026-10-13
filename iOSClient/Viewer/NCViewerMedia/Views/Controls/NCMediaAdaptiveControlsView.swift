@@ -16,7 +16,7 @@ struct NCMediaAdaptiveControlsView: View {
     let makeActionsView: () -> UIView
 
     var body: some View {
-        VStack(spacing: 3) {
+        VStack(spacing: 5) {
             NCMediaAdaptiveActionsHost(makeActionsView: makeActionsView)
                 .frame(height: NCMediaAdaptiveActionsView.preferredHeight)
                 .layoutPriority(1)
@@ -37,7 +37,7 @@ struct NCMediaAdaptiveControlsView: View {
             .fixedSize(horizontal: false, vertical: true)
             .layoutPriority(1)
         }
-        .padding(3)
+        .padding(5)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
         .foregroundStyle(.white)
@@ -161,7 +161,7 @@ final class NCMediaAdaptiveActionsView: UIStackView {
         axis = .horizontal
         alignment = .center
         distribution = .fillEqually
-        spacing = 3
+        spacing = 5
         layoutMargins = .zero
         isLayoutMarginsRelativeArrangement = true
 
@@ -186,7 +186,9 @@ final class NCMediaAdaptiveActionsView: UIStackView {
             configuration.image = button.image(for: .normal)
             configuration.baseForegroundColor = .white
             configuration.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(weight: .bold)
-            configuration.background.backgroundColor = .secondarySystemBackground
+            configuration.background.backgroundColor = UIColor(red: 0.15, green: 0.18, blue: 0.23, alpha: 1)
+            configuration.background.strokeColor = UIColor.white.withAlphaComponent(0.10)
+            configuration.background.strokeWidth = 0.5
             configuration.background.cornerRadius = 12
             button.configuration = configuration
             NSLayoutConstraint.activate([

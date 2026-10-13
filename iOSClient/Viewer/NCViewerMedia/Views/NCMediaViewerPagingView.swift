@@ -119,11 +119,17 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     var onVisibleMetadataChanged: (_ metadata: tableMetadata?, _ backgroundColor: UIColor) -> Void
     var onZoomChanged: (Bool) -> Void
     var onClose: (_ ocId: String?) -> Void
-    var adaptiveControlsState: NCMediaAdaptiveControlsState?
+    var adaptiveControlsState: NCMediaAdaptiveControlsState? {
+        didSet {
+            guard adaptiveControlsState !== oldValue else { return }
+            observeAdaptiveBackground()
+        }
+    }
 
     private var didScrollToInitialIndex = false
     private var lastCollectionViewBoundsSize: CGSize = .zero
     private var cancellable: AnyCancellable?
+    private var adaptiveBackgroundCancellable: AnyCancellable?
     private var lastVisibleIndex: Int?
     private var isAdjustingLayout = false
 
@@ -147,6 +153,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         self.adaptiveControlsState = adaptiveControlsState
 
         super.init()
+        observeAdaptiveBackground()
 
         self.cancellable = model.$revision
             .receive(on: RunLoop.main)
@@ -158,6 +165,16 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                 self.refreshVisibleCells()
                 self.updateCollectionBackground()
                 self.updateVisibleMetadataTitle(for: self.model.selectedIndex)
+            }
+    }
+
+    private func observeAdaptiveBackground() {
+        adaptiveBackgroundCancellable = adaptiveControlsState?.$isFoldedLayout
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.updateCollectionBackground()
+                self?.refreshVisibleCells()
             }
     }
 
@@ -219,7 +236,8 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     // MARK: - Background
 
     private func backgroundColor(for page: NCMediaViewerPageModel?) -> UIColor {
-        UIColor.ncViewerBackground(ncViewerBackgroundStyle(for: page?.metadata, isChromeHidden: model.isChromeHidden))
+        let style = ncViewerBackgroundStyle(for: page?.metadata, isChromeHidden: model.isChromeHidden, isFoldedLayout: adaptiveControlsState?.isFoldedLayout == true)
+        return UIColor.ncViewerBackground(style)
     }
 
     func updateCollectionBackground(for index: Int? = nil) {
@@ -815,22 +833,29 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
         self.backgroundColor = backgroundColor
         contentView.backgroundColor = backgroundColor
 
+        let pageView = NCMediaViewerPageView(
+            model: model,
+            page: page,
+            onToggleChrome: onToggleChrome,
+            canGoPrevious: canGoPrevious,
+            canGoNext: canGoNext,
+            onPreviousPage: onPreviousPage,
+            onNextPage: onNextPage,
+            onNextMediaOfSameType: onNextMediaOfSameType,
+            onClose: onClose,
+            onAutoPlayConsumed: onAutoPlayConsumed,
+            onZoomChanged: onZoomChanged,
+            contextMenuController: contextMenuController,
+            navigationBar: navigationBar
+        )
         let view = AnyView(
-            NCMediaViewerPageView(
-                model: model,
-                page: page,
-                onToggleChrome: onToggleChrome,
-                canGoPrevious: canGoPrevious,
-                canGoNext: canGoNext,
-                onPreviousPage: onPreviousPage,
-                onNextPage: onNextPage,
-                onNextMediaOfSameType: onNextMediaOfSameType,
-                onClose: onClose,
-                onAutoPlayConsumed: onAutoPlayConsumed,
-                onZoomChanged: onZoomChanged,
-                contextMenuController: contextMenuController,
-                navigationBar: navigationBar
-            )
+            Group {
+                if let adaptiveControlsState {
+                    NCMediaAdaptivePageSurface(state: adaptiveControlsState, content: pageView)
+                } else {
+                    pageView
+                }
+            }
             .environment(\.mediaAdaptiveCoverContext, adaptiveControlsState.map {
                 NCMediaAdaptiveCoverContext(state: $0, ocId: page.ocId)
             })
@@ -884,5 +909,15 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
 
         contentView.addSubview(hostingController.view)
         self.hostingController = hostingController
+    }
+}
+
+/// Observe fold changes inside each retained cell host without replacing image or playback content.
+private struct NCMediaAdaptivePageSurface: View {
+    @ObservedObject var state: NCMediaAdaptiveControlsState
+    let content: NCMediaViewerPageView
+
+    var body: some View {
+        content.environment(\.mediaViewerIsFoldedLayout, state.isFoldedLayout)
     }
 }

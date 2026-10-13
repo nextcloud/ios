@@ -58,10 +58,21 @@ func ncViewerBackgroundStyle(for metadata: tableMetadata?) -> NCViewerBackground
 }
 
 // MARK: - Viewer Chrome-Aware Background Resolution
-func ncViewerBackgroundStyle(for metadata: tableMetadata?, isChromeHidden: Bool) -> NCViewerBackgroundStyle {
-    if isChromeHidden {
+func ncViewerBackgroundStyle(for metadata: tableMetadata?, isChromeHidden: Bool, isFoldedLayout: Bool = false) -> NCViewerBackgroundStyle {
+    if isFoldedLayout || isChromeHidden {
         return .black
     }
 
     return ncViewerBackgroundStyle(for: metadata)
+}
+
+private struct NCMediaViewerFoldedLayoutKey: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    var mediaViewerIsFoldedLayout: Bool {
+        get { self[NCMediaViewerFoldedLayoutKey.self] }
+        set { self[NCMediaViewerFoldedLayoutKey.self] = newValue }
+    }
 }

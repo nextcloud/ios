@@ -57,7 +57,7 @@ pager's `ignoresSafeArea()`. This lets the media cover the area behind the
 transparent navigation bar even with the experiment enabled and no active fold.
 The controls hosts retain their own safe-area handling. The adaptive lower panel
 extends through the bottom container safe area so its thumbnail lane stays near
-the lower edge with the explicit 3-point margin; top and side safe areas remain
+the lower edge with the explicit 5-point margin; top and side safe areas remain
 in effect for actions. The lower host is created
 only for a suitable active fold, retained across subsequent transitions and
 clipped to its region. If its factory cannot supply controls, the normal layout
@@ -104,9 +104,18 @@ Missing fields are omitted. Info expands the scrollable content with EXIF and
 location details; previous/next buttons remain visible outside that scroll area
 and work while information is open. Map taps retain the existing Maps action.
 The two `Adaptive Image` canvas previews isolate these visual states. The adaptive
-image panel uses a black background, dark gray controls and bold white text and
-symbols. Dark appearance is scoped to the adaptive lower host and its controls;
-normal controls and the upper media keep their existing appearance.
+image panel uses a black background, subtly shaded graphite controls and bold
+white text and symbols. Previous/next buttons use a compact icon/text row and
+occupy 18% of the middle area's height (70% less than the initial 60%), with a
+44-point minimum when space permits; the
+remaining space is a bounded information island. Both sizes depend only on the
+available region, not Info visibility or metadata length. Details scroll inside
+the island without moving the buttons or thumbnails. Dark appearance is scoped to the adaptive lower host and its controls;
+normal controls retain their existing appearance. Folded upper media is always
+black, independently of appearance and tap-to-hide chrome. Each retained page
+host observes fold changes and passes that state to its content; the image zoom
+surface and UIKit paging backgrounds use the same resolution rule. Unfolding
+restores the normal appearance/chrome rule without replacing the page host.
 
 Fullscreen video currently uses fixed proxy frames to exclude control touches
 from player gestures. When repositioning those controls, update the proxy frames
@@ -133,7 +142,7 @@ pages it remains visible in adaptive mode, even when the user hides normal
 chrome or opens information. Its height matches the normal thumbnail lane;
 the area remains reserved even with a single page, when no selection strip is
 needed. Extra vertical thumbnail padding is removed. Adaptive sections and
-buttons use 3-point gaps; standalone actions are separate equally sized buttons
+buttons use 5-point gaps; standalone actions are separate equally sized buttons
 with 44-point height. The middle content is clipped and scrolls independently. This shared
 area currently covers paged images and video covers; fullscreen video and future
 adaptive audio still need their own thumbnail integration.
