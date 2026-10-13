@@ -492,7 +492,7 @@ class NCEndToEndSetup {
                 textField.isSecureTextEntry = true
             }
 
-            self.controller?.present(alertController, animated: true)
+            self.controller?.topMostViewController().present(alertController, animated: true)
         }
     }
 
@@ -540,7 +540,7 @@ class NCEndToEndSetup {
             alertController.addAction(okAction)
             alertController.addAction(copyAction)
 
-            self.controller?.present(alertController, animated: true)
+            self.controller?.topMostViewController().present(alertController, animated: true)
         }
     }
 
