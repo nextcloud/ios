@@ -189,6 +189,13 @@ content; they have not been relocated into the lower controls.
 
 ## Verification
 
+Preview selection resolves and caches the destination metadata before publishing
+the new selected index. This prevents an uncached image from temporarily losing
+its adaptive controls or switching to normal layout while its type is unknown.
+A metadata lookup superseded by another selection cannot commit a stale page.
+Check previous/next and thumbnail selection with uncached images and delayed
+metadata responses; missing metadata still follows the existing fallback.
+
 Shared viewer optimizations keep the existing loading and playback policies:
 the viewer model normalizes its source identifiers once during initialization,
 and updates cached pages without searching the full identifier list. Thumbnail

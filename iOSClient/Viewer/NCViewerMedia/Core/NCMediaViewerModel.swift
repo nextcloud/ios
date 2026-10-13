@@ -356,15 +356,18 @@ final class NCMediaViewerModel: ObservableObject {
             return
         }
 
+        let sourceIndex = selectedIndex
+        let ocId = ocIds[index]
+        let targetMetadata = await resolvedMetadata(for: ocId)
+
+        // Keep the source controls until the target type is known; ignore a lookup superseded by another selection.
+        guard !Task.isCancelled, selectedIndex == sourceIndex else { return }
+        if let targetMetadata {
+            setThumbnailMetadata(targetMetadata, for: ocId)
+        }
         finishPageTransition(at: index)
 
-        let ocId = ocIds[index]
-
-        guard let metadata = await resolvedMetadata(for: ocId) else {
-            return
-        }
-
-        setThumbnailMetadata(metadata, for: ocId)
+        guard let metadata = targetMetadata else { return }
 
         let previewURL: URL?
 
