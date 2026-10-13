@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AC13ADAF2026101300000022 /* NCAudioAdaptiveControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC13ADAF2026101300000021 /* NCAudioAdaptiveControlsView.swift */; };
 		AC13ADAF2026101300000012 /* NCImageAdaptiveControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC13ADAF2026101300000011 /* NCImageAdaptiveControlsView.swift */; };
 		AC13ADAF2026101300000002 /* NCMediaAdaptiveLayoutViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC13ADAF2026101300000001 /* NCMediaAdaptiveLayoutViewTests.swift */; };
 		22BA14432CF44BDBA2E6C291 /* NCDocumentEditorSupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B74B947E07444CC9CFE0A6C /* NCDocumentEditorSupportTests.swift */; };
@@ -1327,6 +1328,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AC13ADAF2026101300000021 /* NCAudioAdaptiveControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAudioAdaptiveControlsView.swift; sourceTree = "<group>"; };
 		AC13ADAF2026101300000011 /* NCImageAdaptiveControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCImageAdaptiveControlsView.swift; sourceTree = "<group>"; };
 		AC13ADAF2026101300000001 /* NCMediaAdaptiveLayoutViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaAdaptiveLayoutViewTests.swift; sourceTree = "<group>"; };
 		2C33C47F23E2C475005F963B /* Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2935,8 +2937,17 @@
 			isa = PBXGroup;
 			children = (
 				F75A64B1307E0FAE0059B78E /* NCAudioViewerContentView.swift */,
+				AC13ADAF2026101300000023 /* Controls */,
 			);
 			path = Audio;
+			sourceTree = "<group>";
+		};
+		AC13ADAF2026101300000023 /* Controls */ = {
+			isa = PBXGroup;
+			children = (
+				AC13ADAF2026101300000021 /* NCAudioAdaptiveControlsView.swift */,
+			);
+			path = Controls;
 			sourceTree = "<group>";
 		};
 		F75A64B4307E0FAE0059B78E /* Controls */ = {
@@ -5541,6 +5552,7 @@
 				F75A64F2307E0FAE0059B78E /* NCLivePhotoViewerContentView.swift in Sources */,
 				F75A64F3307E0FAE0059B78E /* NCImageZoomView.swift in Sources */,
 				F75A64F4307E0FAE0059B78E /* NCAudioViewerContentView.swift in Sources */,
+				AC13ADAF2026101300000022 /* NCAudioAdaptiveControlsView.swift in Sources */,
 				F75A64F5307E0FAE0059B78E /* NCVideoViewerContentView+VLC.swift in Sources */,
 				F75A64F6307E0FAE0059B78E /* NCVideoControlsView.swift in Sources */,
 				F75A64F7307E0FAE0059B78E /* NCVideoAVPlayerViewControls.swift in Sources */,

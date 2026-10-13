@@ -26,6 +26,7 @@ struct NCAudioViewerContentView: View {
     let onToggleChrome: () -> Void
 
     @Environment(\.layoutDirection) private var layoutDirection
+    @Environment(\.mediaViewerIsFoldedLayout) private var isFoldedLayout
     @StateObject private var model: NCAudioViewerModel
 
     init(
@@ -67,6 +68,55 @@ struct NCAudioViewerContentView: View {
     }
 
     var body: some View {
+        Group {
+            if isFoldedLayout {
+                adaptiveArtwork
+            } else {
+                normalContent
+            }
+        }
+        .task(id: localURL) {
+            guard isSelected else {
+                return
+            }
+
+            model.configurePlaybackCompletion(options: playbackOptions, onPlayNextMedia: onPlayNextMedia)
+            await model.load(url: localURL)
+            await consumeAutoPlayIfNeeded()
+        }
+        .onChange(of: isSelected) { _, selected in
+            guard selected else {
+                model.stop()
+                return
+            }
+
+            Task { @MainActor in
+                model.configurePlaybackCompletion(options: playbackOptions, onPlayNextMedia: onPlayNextMedia)
+                await model.load(url: localURL)
+                await consumeAutoPlayIfNeeded()
+            }
+        }
+        .onChange(of: shouldAutoPlay) { _, newValue in
+            guard newValue else {
+                return
+            }
+
+            Task { @MainActor in
+                await consumeAutoPlayIfNeeded()
+            }
+        }
+        // Stop all audio playback when the media viewer performs a global playback teardown.
+        // This notification is intentionally viewer-wide and should not be used for normal
+        // audio page-to-page state changes.
+        .onReceive(NotificationCenter.default.publisher(for: .ncMediaViewerStopPlayback)) { _ in
+            NCAudioViewerPlaybackRegistry.shared.stopAll()
+        }
+    }
+
+    // MARK: - Views
+
+    // Keep all player lifecycle modifiers above the layout switch so folding never reloads playback.
+    private var normalContent: some View {
         GeometryReader { proxy in
             let mainSpacing: CGFloat = 18
             let sliderHorizontalPadding: CGFloat = 32
@@ -177,45 +227,23 @@ struct NCAudioViewerContentView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .task(id: localURL) {
-            guard isSelected else {
-                return
-            }
-
-            model.configurePlaybackCompletion(options: playbackOptions, onPlayNextMedia: onPlayNextMedia)
-            await model.load(url: localURL)
-            await consumeAutoPlayIfNeeded()
-        }
-        .onChange(of: isSelected) { _, selected in
-            guard selected else {
-                model.stop()
-                return
-            }
-
-            Task { @MainActor in
-                model.configurePlaybackCompletion(options: playbackOptions, onPlayNextMedia: onPlayNextMedia)
-                await model.load(url: localURL)
-                await consumeAutoPlayIfNeeded()
-            }
-        }
-        .onChange(of: shouldAutoPlay) { _, newValue in
-            guard newValue else {
-                return
-            }
-
-            Task { @MainActor in
-                await consumeAutoPlayIfNeeded()
-            }
-        }
-        // Stop all audio playback when the media viewer performs a global playback teardown.
-        // This notification is intentionally viewer-wide and should not be used for normal
-        // audio page-to-page state changes.
-        .onReceive(NotificationCenter.default.publisher(for: .ncMediaViewerStopPlayback)) { _ in
-            NCAudioViewerPlaybackRegistry.shared.stopAll()
-        }
     }
 
-    // MARK: - Views
+    private var adaptiveArtwork: some View {
+        GeometryReader { proxy in
+            let size = max(0, min(320, min(proxy.size.width, proxy.size.height) - 24))
+            ZStack {
+                Color.black
+                if size > 0 {
+                    artworkView(size: size)
+                }
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height)
+            .contentShape(Rectangle())
+            .onTapGesture { onToggleChrome() }
+        }
+        .clipped()
+    }
 
     private func navigationBarBottom(in proxy: GeometryProxy) -> CGFloat? {
         guard let navigationBar, let window = navigationBar.window, !navigationBar.isHidden else {

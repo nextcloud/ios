@@ -55,7 +55,8 @@ struct NCMediaViewerView: View {
                     state: adaptiveControlsState,
                     makeActionsView: makeAdaptiveActionsView,
                     supportsAdaptiveLayout: model.selectedMetadata?.classFile == NKTypeClassFile.image.rawValue ||
-                        model.selectedMetadata?.classFile == NKTypeClassFile.video.rawValue,
+                        model.selectedMetadata?.classFile == NKTypeClassFile.video.rawValue ||
+                        model.selectedMetadata?.classFile == NKTypeClassFile.audio.rawValue,
                     onLayoutModeChanged: onAdaptiveLayoutChanged
                 )
                 .ignoresSafeArea()

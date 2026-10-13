@@ -649,6 +649,9 @@
 "_play_next_media_automatically_" = "Play next item automatically";
 "_previous_media_" = "Previous";
 "_next_media_" = "Next";
+"_restart_audio_" = "Restart audio";
+"_play_" = "Play";
+"_pause_" = "Pause";
 "_image_load_failed_" = "Image load failed";
 "_image_load_failed_" = "Image load failed";
 "_gif_file_could_not_be_decoded_" = "GIF file could not be decoded";

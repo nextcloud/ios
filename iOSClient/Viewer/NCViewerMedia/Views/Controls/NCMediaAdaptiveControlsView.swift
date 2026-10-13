@@ -50,7 +50,7 @@ struct NCMediaAdaptiveControlsView: View {
 
     // Keep page swipes outside the buttons/thumbnail strip and preserve information scrolling/map gestures.
     private var isPageSwipeEnabled: Bool {
-        state.isFoldedLayout && state.detailView == nil && model.numberOfPages > 1
+        state.isFoldedLayout && state.detailView == nil && model.numberOfPages > 1 && model.selectedMetadata?.classFile != NKTypeClassFile.audio.rawValue
     }
 
     private var pageSwipe: some Gesture {
@@ -79,6 +79,18 @@ struct NCMediaAdaptiveControlsView: View {
                 onPrevious: { selectAdjacentPage(offset: -1) },
                 onNext: { selectAdjacentPage(offset: 1) }
             )
+        } else if let metadata = model.selectedMetadata, metadata.classFile == NKTypeClassFile.audio.rawValue {
+            NCAudioAdaptiveControlsView(
+                metadata: metadata,
+                playbackModel: NCAudioViewerPlaybackRegistry.shared.model(for: metadata.ocId),
+                playbackOptions: model.playbackOptions,
+                detailView: state.detailView?.metadata.ocId == metadata.ocId ? state.detailView : nil,
+                isSelected: isSelectedAudioReady,
+                canGoPrevious: model.selectedIndex > 0 && model.pageTransition.isIdle,
+                canGoNext: model.selectedIndex < model.numberOfPages - 1 && model.pageTransition.isIdle,
+                onPrevious: { selectAdjacentPage(offset: -1) },
+                onNext: { selectAdjacentPage(offset: 1) }
+            )
         } else if let detailView = state.detailView {
             detailView
         } else if let ocId = model.selectedMetadata?.ocId,
@@ -87,6 +99,12 @@ struct NCMediaAdaptiveControlsView: View {
         } else {
             Spacer(minLength: 0)
         }
+    }
+
+    private var isSelectedAudioReady: Bool {
+        guard model.activePageIndex == model.selectedIndex,
+              let page = model.selectedPageModel(), case .audio = page.state else { return false }
+        return true
     }
 
     private func selectAdjacentPage(offset: Int) {

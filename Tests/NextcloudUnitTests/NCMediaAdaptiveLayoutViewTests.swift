@@ -112,11 +112,11 @@ struct NCMediaAdaptiveLayoutViewTests {
         #expect(state.videoCoverControls(for: "selected") == nil)
     }
 
-    @Test("Image folding retains the paging host and uses independent controls")
-    func imageFoldingPreservesPagingHost() throws {
+    @Test("Media folding retains the paging host and uses independent controls", arguments: [NKTypeClassFile.image.rawValue, NKTypeClassFile.audio.rawValue])
+    func mediaFoldingPreservesPagingHost(classFile: String) throws {
         let metadata = tableMetadata()
         metadata.ocId = "image"
-        metadata.classFile = NKTypeClassFile.image.rawValue
+        metadata.classFile = classFile
         let model = NCMediaViewerModel(
             currentMetadata: metadata,
             ocIds: [metadata.ocId],

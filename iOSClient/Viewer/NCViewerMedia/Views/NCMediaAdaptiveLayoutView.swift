@@ -4,7 +4,7 @@
 
 import UIKit
 
-/// Single experimental switch for images and both video engines. See ../README.md.
+/// Single experimental switch for images, audio and both video engines. See ../README.md.
 enum NCMediaAdaptiveLayoutConfiguration {
     /// Enabled for experimental verification; set to false to use the normal layout.
     static let isAdaptiveLayoutEnabled = true

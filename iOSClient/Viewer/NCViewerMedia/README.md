@@ -21,15 +21,14 @@ enum NCMediaAdaptiveLayoutConfiguration {
 ```
 
 The switch is currently `true` for experimental verification. This enables
-paged images, video covers and both fullscreen video engines
+paged images, audio, video covers and both fullscreen video engines
 (AVPlayer and VLC). Set it to `false` to use the normal layout. There is no
-user-facing setting. Audio does not yet have an
-adaptive controls view.
+user-facing setting.
 
 `NCMediaAdaptiveLayoutView.isLayoutEnabled` is the container's operating state,
 not another feature switch. Video containers inherit the central value. The
 paging bridge combines that value with the selected media type, returning to the
-normal layout when an audio or unsupported page is selected in the pager.
+normal layout when an unsupported page is selected in the pager.
 
 ## Components
 
@@ -38,7 +37,8 @@ normal layout when an audio or unsupported page is selected in the pager.
 | `Views/NCMediaAdaptiveLayoutView.swift` | Shared UIKit geometry, normal/adaptive visibility and layout change callback. Keeps the media view in place. |
 | `Content/Image/Controls/NCImageControlsView.swift` | Normal thumbnail overlay, with the existing visibility, spacing and selection actions. Normal navigation and the information sheet remain in the hosting controller. |
 | `Content/Image/Controls/NCImageAdaptiveControlsView.swift` | Always hosts the shared information view inside its fixed island, plus previous/next buttons; the shared panel owns actions and thumbnails. |
-| `Views/Controls/NCMediaAdaptiveControlsView.swift` | Lower composition for paged images and video covers: standalone buttons, inline information, cover actions and thumbnails. Also contains the SwiftUI/UIKit bridge and its hosting support types. |
+| `Views/Controls/NCMediaAdaptiveControlsView.swift` | Lower composition for paged images, audio and video covers: standalone buttons, inline information, cover actions and thumbnails. Also contains the SwiftUI/UIKit bridge and its hosting support types. |
+| `Content/Audio/Controls/NCAudioAdaptiveControlsView.swift` | Independent lower audio controls: available information, repeat/restart/play/pause/auto-advance, seeking and previous/next. Observes the existing playback model. |
 | `NCMediaViewerHostingController.swift` | Owns paged-media navigation actions, title updates and information loading. Hides the upper navigation bar when folded and routes information into the lower controls. |
 | `Core/NCMediaViewerView.swift` | Selects the normal composition or experimental paging bridge using the central switch. |
 | `Views/NCMediaViewerThumbnail.swift` | Shared thumbnail strip and collection implementation for all media; callers own normal/adaptive visibility and spacing. |
@@ -154,15 +154,17 @@ the area remains reserved even with a single page, when no selection strip is
 needed. Extra vertical thumbnail padding is removed. Adaptive sections and
 buttons use 5-point gaps; standalone actions are separate equally sized buttons
 with 44-point height. The middle content is clipped and scrolls independently. This shared
-area currently covers paged images and video covers; fullscreen video and future
-adaptive audio still need their own thumbnail integration.
+area currently covers paged images, audio and video covers; fullscreen video
+still needs its own thumbnail integration.
 
 Page swipes remain available on the upper media surface. In the folded layout,
 horizontal swipes in the middle controls area also select the previous/next page,
 using the same selection flow as the thumbnail strip. This excludes the action
 row and thumbnail strip. When information is open, lower page swipes are ignored
 to preserve vertical scrolling and map gestures. Page swipes are also ignored
-while another page transition is in progress.
+while another page transition is in progress. Lower audio controls also exclude
+page swipes so seeking cannot accidentally change pages; use previous/next,
+thumbnails or the upper surface instead.
 
 `NCMediaViewerThumbnailStrip` holds the same metadata, loading and selection
 bindings for both layouts. The normal overlay retains its existing visibility,
@@ -172,8 +174,14 @@ and actions; it does not own or create a player.
 The UIKit paging bridge remains in the same file under `Stable paging bridge`.
 Do not rebuild its media host to rearrange lower controls. Fullscreen AVPlayer/VLC
 controls still have their existing separate implementations. Connecting their
-thumbnail strip and adding adaptive audio controls are follow-up integration
-work; this refactor does not establish support for those cases.
+thumbnail strip is follow-up integration work.
+
+Audio keeps its `@StateObject` and playback lifecycle modifiers above the visual
+layout switch in `NCAudioViewerContentView`. The upper folded region shows only
+artwork (or the waveform fallback) on black. The lower panel obtains the same
+model from `NCAudioViewerPlaybackRegistry`, without loading or creating a player.
+Folding changes the composition, preserving playback position and repeat/advance
+options. Normal audio geometry and playback lifecycle remain unchanged.
 
 ## Layout and compatibility
 
@@ -265,7 +273,10 @@ Start with the normal layout before testing the fold:
    including share popovers on iPad. Check horizontal and vertical video covers
    for centering in the upper region before/after loading and unfolding. The
    `Video Playback Cover - Folded Upper Region` canvas preview isolates that area.
-   Audio currently returns to normal layout.
+   For audio, verify artwork above, information and playback controls below, and
+   the same fixed thumbnail lane. Check seeking, restart, repeat, auto-advance and
+   previous/next; dragging the seek bar must not change pages. Fold/unfold during
+   playback and check that sound and position continue without restarting.
    In folded mode, compare a local original with a preview-only image: local EXIF
    should appear without tapping Info; preview-only images should not download
    automatically. After Info downloads the original, check that its button is
