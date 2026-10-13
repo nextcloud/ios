@@ -86,10 +86,6 @@ extension NCNetworking {
                                                                           urlBase: metadata.urlBase)
         let chunkFolder = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
         let filesChunk = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
-        var chunkSize = self.global.chunkSizeMBCellular
-        if networkReachability == NKTypeReachability.reachableEthernetOrWiFi {
-            chunkSize = self.global.chunkSizeMBEthernetOrWiFi
-        }
         let options = NKRequestOptions(customHeader: customHeaders, queue: nkComm.backgroundQueue)
         var backupError = NKError()
         var backupFile: NKFile?
@@ -103,7 +99,7 @@ extension NCNetworking {
                 serverUrl: metadata.serverUrl,
                 chunkFolder: chunkFolder,
                 filesChunk: filesChunk,
-                chunkSize: chunkSize,
+                chunkSize: self.global.chunkSize,
                 account: metadata.account,
                 options: options) { total, counter in
                     chunkProgressHandler(total, counter)
@@ -317,6 +313,18 @@ extension NCNetworking {
                        permissions: String? = nil) async {
         nkLog(success: "Uploaded file: " + metadata.serverUrlFileName)
 
+        var backgroundAutoUpload = false
+#if !EXTENSION
+        do {
+            backgroundAutoUpload = try await NCLocalDatabase.shared.recordAutoUploadTransfer(metadata, uploaded: true)
+        } catch {
+            // Retain the pending transfer and confirmed response until GRDB can persist the completion.
+            nkLog(error: "Unable to persist background upload completion: \(error)")
+            await metadataUploadTranfersSuccess.append(metadata: metadata, ocId: ocId, date: date, etag: etag, ownerId: ownerId, permissions: permissions)
+            return
+        }
+#endif
+
         metadata.uploadDate = (date as? NSDate) ?? NSDate()
         metadata.etag = etag ?? ""
         metadata.ocId = ocId
@@ -342,7 +350,7 @@ extension NCNetworking {
         metadata.sessionTaskIdentifier = 0
         metadata.status = self.global.metadataStatusNormal
 
-        let results = await helperMetadataSuccess(metadata: metadata)
+        let results = await helperMetadataSuccess(metadata: metadata, backgroundAutoUpload: backgroundAutoUpload)
 
         await NCManageDatabase.shared.replaceMetadataAsync(ocId: metadata.ocIdTransfer, metadata: metadata)
         if let tblAutoUpload = results.autoUpload {
@@ -557,7 +565,7 @@ extension NCNetworking {
 
     // MARK: - Helper
 
-    func helperMetadataSuccess(metadata: tableMetadata) async -> (livePhoto: tableMetadata?, autoUpload: tableAutoUploadTransfer?) {
+    func helperMetadataSuccess(metadata: tableMetadata, backgroundAutoUpload: Bool) async -> (livePhoto: tableMetadata?, autoUpload: tableAutoUploadTransfer?) {
         var livePhoto: tableMetadata?
         var autoUpload: tableAutoUploadTransfer?
 
@@ -567,8 +575,10 @@ extension NCNetworking {
                                                                              urlBase: metadata.urlBase)
         utilityFileSystem.removeFile(atPath: fileNamePath)
 
-#if !EXTENSION
+        // Auto Upload
         if metadata.sessionSelector == global.selectorUploadAutoUpload {
+#if !EXTENSION
+            // Photo library state shared by both auto-upload paths.
             do {
                 try await NCLocalDatabase.shared.recordPhotoLibraryAssetUpload(
                     account: metadata.account,
@@ -581,24 +591,23 @@ extension NCNetworking {
                 // The server upload remains successful even if its local PhotoKit state cannot be recorded.
                 nkLog(error: "Unable to record uploaded photo library asset \(metadata.assetLocalIdentifier): \(error)")
             }
-        }
 #endif
+
+            // LEGACY AUTO-UPLOAD history (Realm), returned for persistence by uploadSuccess.
+            if !backgroundAutoUpload, let serverUrlBase = metadata.autoUploadServerUrlBase {
+                autoUpload = tableAutoUploadTransfer(account: metadata.account,
+                                                     serverUrlBase: serverUrlBase,
+                                                     fileName: metadata.fileNameView,
+                                                     assetLocalIdentifier: metadata.assetLocalIdentifier,
+                                                     date: metadata.creationDate as Date)
+            }
+        }
 
         // Live Photo
         let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
         if capabilities.isLivePhotoServerAvailable,
            metadata.isLivePhoto {
             livePhoto = tableMetadata(value: metadata)
-        }
-
-        // Auto Upload
-        if metadata.sessionSelector == self.global.selectorUploadAutoUpload,
-           let serverUrlBase = metadata.autoUploadServerUrlBase {
-            autoUpload = tableAutoUploadTransfer(account: metadata.account,
-                                                 serverUrlBase: serverUrlBase,
-                                                 fileName: metadata.fileNameView,
-                                                 assetLocalIdentifier: metadata.assetLocalIdentifier,
-                                                 date: metadata.creationDate as Date)
         }
 
         return (livePhoto: livePhoto, autoUpload: autoUpload)

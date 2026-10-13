@@ -142,11 +142,21 @@ class NCAccount: NSObject {
             }
             // Remove account in all database
             database.clearDatabase(account: account)
+            do {
+                try await NCLocalDatabase.shared.clearDatabase(account: account)
+            } catch {
+                nkLog(error: "Unable to clear GRDB data for account \(account): \(error)")
+            }
         } else {
             // Remove account
             await database.clearTableAsync(tableAccount.self, account: account)
             // Remove autoupload
             await database.clearTableAsync(tableAutoUploadTransfer.self, account: account)
+            do {
+                try await NCLocalDatabase.shared.removeAutoUploadResources(account: account)
+            } catch {
+                nkLog(error: "Unable to remove background upload history for account \(account): \(error)")
+            }
         }
         // Remove session in NextcloudKit
         NextcloudKit.shared.nkCommonInstance.nksessions.remove(account: account)

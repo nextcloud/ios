@@ -73,6 +73,13 @@ extension BackgroundUploadExtension {
                 continue
             }
 
+            guard let backgroundUploadResource = try await NCLocalDatabase.shared.autoUploadResource(for: metadata) else { continue }
+            if backgroundUploadResource.uploaded {
+                await database.deleteMetadataAsync(id: metadata.ocId)
+                madeProgress = true
+                continue
+            }
+
             guard let destination = buildDestination(metadata: metadata, asset: asset) else {
                 continue
             }
@@ -413,6 +420,7 @@ extension BackgroundUploadExtension {
             switch job.state {
             case .succeeded:
                 uploadSucceeded = await processUploadSuccess(metadata: metadata, job: job)
+                if !uploadSucceeded && hasConfirmedUploadResponse(job: job) { continue }
                 createNewJob = false
 
             case .failed:
@@ -421,6 +429,7 @@ extension BackgroundUploadExtension {
                 if hasConfirmedUploadResponse(job: job) {
                     // A valid oc-fileid takes precedence over PhotoKit's failed state for HTTP 204.
                     uploadSucceeded = await processUploadSuccess(metadata: metadata, job: job)
+                    guard uploadSucceeded else { continue }
                     createNewJob = false
                     logInfo("Accepted server-confirmed upload for \(metadata.fileName), job: \(jobIdentifier)")
                 } else {
