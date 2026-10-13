@@ -37,7 +37,7 @@ DerivedData
 
 ### SwiftPackageManager ###
 .swiftpm
-Nextcloud.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+# Don't ignore Package.resolved: Dependabot needs it committed to update Xcode packages.
 
 ## Claude Code
 .claude/

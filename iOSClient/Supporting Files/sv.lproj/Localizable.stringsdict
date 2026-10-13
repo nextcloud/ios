@@ -29,9 +29,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d file in queue</string>
+			<string>%d fil i kö</string>
 			<key>other</key>
-			<string>%d files in queue</string>
+			<string>%d filer i kö</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_photos_to_back_up_</key>
@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d photo</string>
+			<string>%d bild</string>
 			<key>other</key>
-			<string>%d photos</string>
+			<string>%d bilder</string>
 		</dict>
 	</dict>
 	<key>_albums_list_photos_and_videos_count_</key>
@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d photo or video</string>
+			<string>%d bild eller video</string>
 			<key>other</key>
-			<string>%d photos and videos</string>
+			<string>%d bilder och videor</string>
 		</dict>
 	</dict>
 </dict>

@@ -498,12 +498,8 @@ extension NCShareExtension {
         metadata.serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
 
         // CHUNK
-        var chunkSize = NCGlobal.shared.chunkSizeMBCellular
-        if NCNetworking.shared.networkReachability == NKTypeReachability.reachableEthernetOrWiFi {
-            chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
-        }
-        if metadata.size > chunkSize {
-            metadata.chunk = chunkSize
+        if metadata.size > self.global.chunkSize {
+            metadata.chunk = self.global.chunkSize
         } else {
             metadata.chunk = 0
         }

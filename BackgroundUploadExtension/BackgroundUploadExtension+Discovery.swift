@@ -49,15 +49,12 @@ extension BackgroundUploadExtension {
         }
         var fetchIndexes = Array(repeating: 0, count: fetchResults.count)
         var yieldedAssetIdentifiers = Set<String>()
-        let knownAssetIdentifiers = await database.fetchAutoUploadAssetIdentifiersAsync(
-            account: account.account,
-            autoUploadServerUrlBase: autoUploadServerUrlBase,
-            createdOnOrAfter: discoveryStartDate
-        )
-        var trackedMetadataFileNames = await database.fetchActiveAutoUploadFileNamesAsync(
-            account: account.account,
-            autoUploadServerUrlBase: autoUploadServerUrlBase
-        )
+        guard let activeMetadatas = await database.getMetadatasAsync(predicate: NSPredicate(
+            format: "account == %@ AND autoUploadServerUrlBase == %@ AND status IN %@",
+            account.account, autoUploadServerUrlBase, global.metadataStatusUploadingAllMode
+        ), limit: nil) else { return false }
+        let activeAssets = Dictionary(grouping: activeMetadatas, by: \.assetLocalIdentifier)
+        var trackedMetadataFileNames = Set(activeMetadatas.map(\.fileNameView))
 
         var remaining = limit
         var madeProgress = false
@@ -74,14 +71,30 @@ extension BackgroundUploadExtension {
             let isLivePhotoAsset = asset.mediaSubtypes.contains(.photoLive)
             let isLivePhoto = isLivePhotoAsset && livePhotoEnabled
 
-            if !isLivePhotoAsset, knownAssetIdentifiers.uploaded.contains(asset.localIdentifier) {
+            let history: [NCAutoUploadResource]
+            do {
+                history = try await NCLocalDatabase.shared.autoUploadResources(
+                    account: account.account,
+                    serverUrlBase: autoUploadServerUrlBase,
+                    assetLocalIdentifier: asset.localIdentifier,
+                    sessionIdentifier: account.autoUploadForceReupload ? account.autoUploadSessionIdentifier : nil
+                )
+            } catch {
+                logError("Unable to read background upload history: \(error)")
+                break
+            }
+            let queued = activeAssets[asset.localIdentifier] ?? []
+            let queuedClasses = Set(queued.map(\.classFile))
+            let primaryClassFile = asset.mediaType == .video ? NKTypeClassFile.video.rawValue : NKTypeClassFile.image.rawValue
+            let requiredClasses = isLivePhoto ? [primaryClassFile, NKTypeClassFile.video.rawValue] : [primaryClassFile]
+            let uploadedClasses = Set(history.filter(\.uploaded).map(\.classFile))
+            if requiredClasses.allSatisfy({ uploadedClasses.contains($0) }) {
                 if canAdvanceSinceDate { lastUploadedDate = asset.creationDate ?? lastUploadedDate }
                 continue
             }
-            if !isLivePhotoAsset, knownAssetIdentifiers.tracked.contains(asset.localIdentifier) {
-                canAdvanceSinceDate = false
-                continue
-            }
+
+            // Check capacity before generating a name that may advance the incremental counter.
+            guard requiredClasses.filter({ !uploadedClasses.contains($0) && !queuedClasses.contains($0) }).count <= remaining else { break }
 
             guard let primaryResource = primaryUploadResource(for: asset),
                   let originalFileName = primaryResource.filename,
@@ -92,9 +105,15 @@ extension BackgroundUploadExtension {
             }
 
             let creationDate = asset.creationDate ?? Date()
-            let primaryFileName = utilityFileSystem.createFileName(originalFileName, fileDate: creationDate, fileType: asset.mediaType)
-            let primaryClassFile = asset.mediaType == .video ? NKTypeClassFile.video.rawValue : NKTypeClassFile.image.rawValue
-
+            let queuedPrimary = queued.first { $0.classFile == primaryClassFile }
+            let primaryFileName = queuedPrimary?.fileNameView
+                ?? queued.first { $0.isLivePhotoVideo }?.livePhotoFile
+                ?? history.first { $0.classFile == primaryClassFile }?.fileName
+                ?? utilityFileSystem.createFileName(originalFileName, fileDate: creationDate, fileType: asset.mediaType)
+            let videoFileName = queued.first { $0.classFile == NKTypeClassFile.video.rawValue }?.fileNameView
+                ?? queuedPrimary.flatMap { $0.isLivePhotoImage ? $0.livePhotoFile : nil }
+                ?? history.first { $0.classFile == NKTypeClassFile.video.rawValue }?.fileName
+                ?? (primaryFileName as NSString).deletingPathExtension + ".mov"
             var uploadResources: [(resource: PHAssetResource, fileName: String, classFile: String, livePhotoFile: String)]
 
             if isLivePhoto {
@@ -103,8 +122,6 @@ extension BackgroundUploadExtension {
                     canAdvanceSinceDate = false
                     continue
                 }
-
-                let videoFileName = (primaryFileName as NSString).deletingPathExtension + ".mov"
 
                 uploadResources = [
                     (primaryResource, primaryFileName, NKTypeClassFile.image.rawValue, videoFileName),
@@ -116,56 +133,15 @@ extension BackgroundUploadExtension {
                 ]
             }
 
-            let fileNames = uploadResources.map(\.fileName)
-            let transferredFileNames = await database.fetchTransferredAutoUploadFileNamesAsync(account: account.account, autoUploadServerUrlBase: autoUploadServerUrlBase, fileNames: fileNames)
-            if fileNames.allSatisfy({ transferredFileNames.contains($0) }) {
-                if canAdvanceSinceDate { lastUploadedDate = asset.creationDate ?? lastUploadedDate }
-                continue
-            }
-
-            // Keep the date before the first unfinished asset, including either Live Photo component.
+            // Completed components are independent from the server metadata refreshed by sync.
             canAdvanceSinceDate = false
             let resourcesToUpload = uploadResources.filter {
-                !trackedMetadataFileNames.contains($0.fileName) && !transferredFileNames.contains($0.fileName)
+                !uploadedClasses.contains($0.classFile) && !queuedClasses.contains($0.classFile) && !trackedMetadataFileNames.contains($0.fileName)
             }
 
-            // A complete Live Photo over the direct-upload limit is represented by one primary metadata
-            // seed. No PhotoKit jobs are created: the host app later extracts and uploads both HEIC and MOV.
-            // The final `continue` makes this path mutually exclusive with the per-resource loop below.
-            if isLivePhoto,
-               resourcesToUpload.count == uploadResources.count,
-               let livePhotoChunkSize = legacyChunkSize(resources: uploadResources.map(\.resource)),
-               let seedResource = uploadResources.first {
-                // Store only the primary metadata as a seed. No PhotoKit job is requested for it:
-                // the host app will extract and upload both Live Photo components in foreground.
-                let inserted = await createPendingMetadata(
-                    asset: asset,
-                    resource: seedResource.resource,
-                    fileName: seedResource.fileName,
-                    classFile: seedResource.classFile,
-                    livePhotoFile: seedResource.livePhotoFile,
-                    legacyChunkSize: livePhotoChunkSize,
-                    account: account
-                )
-
-                guard inserted else { break discoveryLoop }
-                trackedMetadataFileNames.insert(seedResource.fileName)
-                remaining -= 1
-                madeProgress = true
-                continue
-            }
-
-            // Do not split a newly discovered Live Photo pair across two discovery passes.
-            guard resourcesToUpload.count <= remaining else {
-                break
-            }
-
-            // Process resources individually through PhotoKit: one for a regular asset, two for a complete
-            // Live Photo within the limit, or only the component missing from a partially processed pair.
+            // Each resource selects its own pipeline: PhotoKit up to 100 MB, host-app chunks above it.
             for uploadResource in resourcesToUpload {
-                // Complete large Live Photos were deferred above as a single seed. Any Live Photo
-                // reaching this loop keeps its remaining component(s) in the PhotoKit pipeline.
-                let chunkSize = isLivePhoto ? nil : legacyChunkSize(resource: uploadResource.resource)
+                let chunkSize = Int64(uploadResource.resource.dataSize ?? 0) > Int64(global.chunkSize) ? global.chunkSize : nil
 
                 let inserted = await createPendingMetadata(
                     asset: asset,
@@ -270,6 +246,13 @@ extension BackgroundUploadExtension {
         metadata.status = global.metadataStatusWaitUpload
         metadata.chunk = legacyChunkSize ?? 0
         metadata.backgroundUploadJobIdentifier = legacyChunkSize == nil ? "pending" : ""
+
+        do {
+            guard try await NCLocalDatabase.shared.recordAutoUploadTransfer(metadata, sessionIdentifier: account.autoUploadSessionIdentifier) else { return false }
+        } catch {
+            logError("Unable to register background upload transfer: \(error)")
+            return false
+        }
 
         await database.addAutoUploadMetadatasAsync([metadata], account: account.account, sessionIdentifier: account.autoUploadSessionIdentifier)
         guard await database.getMetadataAsync(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) != nil else { return false }
