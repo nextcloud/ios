@@ -136,6 +136,15 @@ final class NCBackgroundUploadExtensionManager {
             return false
         }
 
+        do {
+            let sessionIdentifier = database.getTableAccount(account: metadata.account)?.autoUploadSessionIdentifier
+            guard try await NCLocalDatabase.shared.recordAutoUploadTransfer(metadata, sessionIdentifier: sessionIdentifier, uploaded: true) else { return false }
+        } catch {
+            // Keep the terminal PhotoKit job available until its success is durably recorded.
+            logUploadMessage("Unable to persist background upload completion: \(error)")
+            return false
+        }
+
         // Any confirmed upload breaks the sequence of consecutive asset failures.
         preferences.resetBackgroundUploadConsecutiveFailures(account: metadata.account)
 
@@ -168,17 +177,6 @@ final class NCBackgroundUploadExtensionManager {
        if let permissions, !permissions.isEmpty {
            metadata.permissions = permissions
        }
-
-        if metadata.sessionSelector == global.selectorUploadAutoUpload,
-           let serverUrlBase = metadata.autoUploadServerUrlBase {
-            await database.addAutoUploadTransferAsync(
-                account: metadata.account,
-                serverUrlBase: serverUrlBase,
-                fileName: metadata.fileNameView,
-                assetLocalIdentifier: metadata.assetLocalIdentifier,
-                date: metadata.creationDate as Date
-            )
-        }
 
         await database.replaceMetadataAsync(ocId: metadata.ocIdTransfer, metadata: metadata)
 

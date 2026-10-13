@@ -129,7 +129,7 @@ extension BackgroundUploadExtension {
     /// A missing `oc-fileid` converts the result to an upload error and requires manual recovery.
     func processUploadSuccess(metadata: tableMetadata, job: PHAssetResourceUploadJob) async -> Bool {
         let succeeded = await NCBackgroundUploadExtensionManager.shared.recordUploadSuccess(metadata: metadata, job: job)
-        if !succeeded {
+        if !succeeded, !hasConfirmedUploadResponse(job: job) {
             await persistMetadataState(
                 .failed(message: "Upload response missing oc-fileid", errorCode: NSURLErrorBadServerResponse),
                 metadata: metadata
