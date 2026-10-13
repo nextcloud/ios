@@ -34,8 +34,8 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Meh-VD-wWh"/>
                         <constraints>
-                            <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="leading" secondItem="QEs-gO-Cmp" secondAttribute="leading" id="1bp-sm-u0X"/>
-                            <constraint firstAttribute="trailing" secondItem="Zaz-Cl-qpZ" secondAttribute="trailing" id="aNd-UL-hmu"/>
+                            <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="leading" secondItem="Meh-VD-wWh" secondAttribute="leading" id="1bp-sm-u0X"/>
+                            <constraint firstItem="Meh-VD-wWh" firstAttribute="trailing" secondItem="Zaz-Cl-qpZ" secondAttribute="trailing" id="aNd-UL-hmu"/>
                             <constraint firstAttribute="bottom" secondItem="Zaz-Cl-qpZ" secondAttribute="bottom" id="aNr-tf-2AH"/>
                             <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="top" secondItem="QEs-gO-Cmp" secondAttribute="top" id="nIB-3t-o2I"/>
                         </constraints>

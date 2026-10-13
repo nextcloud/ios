@@ -40,13 +40,13 @@ extension NCNetworking: NCTransferDelegate {
             var controller: NCMainTabBarController?
             let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
             if windowScenes.count == 1 {
-                controller = UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
+                controller = SceneManager.shared.getController(window: UIApplication.shared.mainAppWindow)
             } else if let sceneIdentifier = metadata.sceneIdentifier,
                       let tabBarController = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
                 controller = tabBarController
             } else {
                 for windowScene in windowScenes {
-                    if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
+                    if let rootViewController = SceneManager.shared.getController(window: windowScene.keyWindow),
                        rootViewController.currentServerUrl() == metadata.serverUrl {
                         controller = rootViewController
                         break
@@ -292,8 +292,9 @@ extension NCNetworking: NCTransferDelegate {
     func openFileView(serverUrl: String,
                       metadata: tableMetadata? = nil,
                       sceneIdentifier: String) async {
-        guard let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
-              let navigationController = controller.viewControllers?.first as? UINavigationController
+        guard let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) else { return }
+        controller.openSidebarFiles()
+        guard let navigationController = controller.viewControllers?.first as? UINavigationController
         else { return }
         controller.selectedIndex = 0
 
@@ -304,8 +305,9 @@ extension NCNetworking: NCTransferDelegate {
 
     @MainActor
     func moveInFolder(serverUrl: String, sceneIdentifier: String) async -> NCFiles? {
-        guard let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
-              let navigationController = controller.viewControllers?.first as? UINavigationController
+        guard let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) else { return nil }
+        controller.openSidebarFiles()
+        guard let navigationController = controller.viewControllers?.first as? UINavigationController
         else {
             return nil
         }

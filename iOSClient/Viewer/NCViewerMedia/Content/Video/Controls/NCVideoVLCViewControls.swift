@@ -131,12 +131,13 @@ extension NCVideoVLCViewController {
     }
 
     internal func setControlsVisible(_ visible: Bool, animated: Bool) {
+        let controlsView = self.controlsView
         let changes = {
-            self.controlsView.alpha = visible ? 1 : 0
+            controlsView.alpha = visible ? 1 : 0
         }
 
         let completion: (Bool) -> Void = { _ in
-            self.controlsView.isHidden = !visible
+            controlsView.isHidden = !self.controlsVisible
         }
 
         if visible {
@@ -192,13 +193,13 @@ extension NCVideoVLCViewController {
 
 // MARK: - Shared Controls Delegate
 extension NCVideoVLCViewController: NCVideoControlsViewDelegate {
-    func videoControlsDidTapSeekBackward(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidTapSeekBackward(_ controlsView: any NCVideoPlaybackControls) {
         showControls(animated: true)
         scheduleControlsHide()
         seek(byMilliseconds: -10_000)
     }
 
-    func videoControlsDidTapPlayPause(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidTapPlayPause(_ controlsView: any NCVideoPlaybackControls) {
         showControls(animated: true)
 
         if mediaPlayer.isPlaying || mediaPlayer.state == .playing || isPlaybackRequested {
@@ -221,65 +222,65 @@ extension NCVideoVLCViewController: NCVideoControlsViewDelegate {
         updateProgressControls()
     }
 
-    func videoControlsDidTapSeekForward(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidTapSeekForward(_ controlsView: any NCVideoPlaybackControls) {
         showControls(animated: true)
         scheduleControlsHide()
         seek(byMilliseconds: 10_000)
     }
 
-    func videoControlsDidToggleRepeat(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidToggleRepeat(_ controlsView: any NCVideoPlaybackControls) {
         playbackOptions.toggleRepeat()
         updatePlaybackOptionsControls()
         scheduleControlsHide()
     }
 
-    func videoControlsDidToggleAutoAdvance(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidToggleAutoAdvance(_ controlsView: any NCVideoPlaybackControls) {
         playbackOptions.toggleAutoAdvance()
         updatePlaybackOptionsControls()
         scheduleControlsHide()
     }
 
-    func videoControlsDidBeginScrubbing(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidBeginScrubbing(_ controlsView: any NCVideoPlaybackControls) {
         showControls(animated: true)
         stopControlsHideTimer()
         playbackPresentationContext.beginSeeking()
     }
 
-    func videoControlsDidTapSubtitle(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidTapSubtitle(_ controlsView: any NCVideoPlaybackControls) {
         showControls(animated: true)
         stopControlsHideTimer()
         refreshVLCTrackMenuItemsWhenPlayerIsActive()
     }
 
-    func videoControlsDidTapAudio(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidTapAudio(_ controlsView: any NCVideoPlaybackControls) {
         showControls(animated: true)
         stopControlsHideTimer()
         refreshVLCTrackMenuItemsWhenPlayerIsActive()
     }
 
-    func videoControlsDidTapAddExternalSubtitle(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidTapAddExternalSubtitle(_ controlsView: any NCVideoPlaybackControls) {
         showControls(animated: true)
         stopControlsHideTimer()
         presentExternalSubtitlePicker()
     }
 
-    func videoControls(_ controlsView: NCVideoControlsView, didSelectSubtitleTrackIndex index: Int32) {
+    func videoControls(_ controlsView: any NCVideoPlaybackControls, didSelectSubtitleTrackIndex index: Int32) {
         showControls(animated: true)
         stopControlsHideTimer()
         selectSubtitleTrack(index: index)
     }
 
-    func videoControls(_ controlsView: NCVideoControlsView, didSelectAudioTrackIndex index: Int32) {
+    func videoControls(_ controlsView: any NCVideoPlaybackControls, didSelectAudioTrackIndex index: Int32) {
         showControls(animated: true)
         stopControlsHideTimer()
         selectAudioTrack(index: index)
     }
 
-    func videoControls(_ controlsView: NCVideoControlsView, didScrubTo progress: Float) {
+    func videoControls(_ controlsView: any NCVideoPlaybackControls, didScrubTo progress: Float) {
         updateProgressLabels(position: progress)
     }
 
-    func videoControlsDidEndScrubbing(_ controlsView: NCVideoControlsView, progress: Float) {
+    func videoControlsDidEndScrubbing(_ controlsView: any NCVideoPlaybackControls, progress: Float) {
         let progress = max(0, min(1, progress))
         let duration = mediaPlayer.media?.length.intValue ?? 0
 

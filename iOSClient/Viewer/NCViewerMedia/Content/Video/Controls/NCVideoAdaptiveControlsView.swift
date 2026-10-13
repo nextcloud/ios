@@ -1,0 +1,665 @@
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+import SwiftUI
+import UIKit
+
+final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
+
+    // MARK: - Public
+
+    weak var delegate: NCVideoControlsViewDelegate?
+    let foldedNavigationBar = UINavigationBar()
+
+    // MARK: - Hit Test Proxies
+
+    let centerControlsView = UIView()
+    let bottomControlsView = UIView()
+    let topActionsView = UIView()
+
+    // MARK: - Layout Constants
+
+    fileprivate static let centerControlsWidth: CGFloat = 220
+    fileprivate static let centerControlsHeight: CGFloat = 76
+    fileprivate static let bottomControlsHeight: CGFloat = 45
+    fileprivate static let bottomControlsHorizontalInset: CGFloat = 28
+    fileprivate static let bottomControlsBottomInset: CGFloat = 30
+    fileprivate static let topActionsHeight: CGFloat = 46
+    fileprivate static let topActionsHorizontalInset: CGFloat = 28
+    fileprivate static let topActionsButtonSize: CGFloat = 38
+    fileprivate static let topActionsSpacing: CGFloat = 8
+
+    // MARK: - State
+
+    // Keep the hosted hierarchy stable so playback updates do not dismiss an open menu.
+    let state: NCVideoControlsState
+    private let layoutState = NCVideoControlsLayoutState()
+    private var topActionsTopConstraint: NSLayoutConstraint?
+
+    private lazy var hostingController = UIHostingController(
+        rootView: makeRootView()
+    )
+
+    // MARK: - Init
+
+    override init(frame: CGRect) {
+        state = NCVideoControlsState()
+        super.init(frame: frame)
+        configureLayout()
+    }
+
+    init(state: NCVideoControlsState) {
+        self.state = state
+        super.init(frame: .zero)
+        configureLayout()
+    }
+
+    required init?(coder: NSCoder) {
+        state = NCVideoControlsState()
+        super.init(coder: coder)
+        configureLayout()
+    }
+
+    // MARK: - Public Updates
+
+    func updatePlayPauseButton(isPlaying: Bool) {
+        guard state.isPlaying != isPlaying else {
+            return
+        }
+
+        state.isPlaying = isPlaying
+    }
+
+    func updateProgress(progress: Float, elapsedText: String, remainingText: String) {
+        let progress = max(0, min(1, progress))
+
+        guard state.progress != progress ||
+                state.elapsedText != elapsedText ||
+                state.remainingText != remainingText else {
+            return
+        }
+
+        state.progress = progress
+        state.elapsedText = elapsedText
+        state.remainingText = remainingText
+    }
+
+    func setSeekingEnabled(_ isEnabled: Bool) {
+        guard state.isSeekingEnabled != isEnabled else {
+            return
+        }
+
+        state.isSeekingEnabled = isEnabled
+    }
+
+    func updatePlaybackOptions(isRepeatEnabled: Bool, isAutoAdvanceEnabled: Bool) {
+        if state.isRepeatEnabled != isRepeatEnabled {
+            state.isRepeatEnabled = isRepeatEnabled
+        }
+
+        if state.isAutoAdvanceEnabled != isAutoAdvanceEnabled {
+            state.isAutoAdvanceEnabled = isAutoAdvanceEnabled
+        }
+    }
+
+    func setPictureInPictureVisible(_ isVisible: Bool) {
+        setTopActionsMode(isVisible ? .pictureInPicture : .none)
+    }
+
+    func setVLCTrackControlsVisible(_ isVisible: Bool) {
+        setTopActionsMode(isVisible ? .vlcTracks : .none)
+    }
+
+    func setTopActionsMode(_ mode: NCVideoControlsTopActionsMode) {
+        let didChangeMode = state.topActionsMode != mode
+        let hasTrackItems = !state.subtitleTrackItems.isEmpty || !state.audioTrackItems.isEmpty
+
+        if didChangeMode {
+            state.topActionsMode = mode
+        }
+
+        if mode != .vlcTracks, hasTrackItems {
+            state.subtitleTrackItems = []
+            state.audioTrackItems = []
+        }
+    }
+
+    func setSubtitleTrackMenuItems(_ items: [NCVideoTrackMenuItem]) {
+        guard state.subtitleTrackItems != items else {
+            return
+        }
+
+        state.subtitleTrackItems = items
+    }
+
+    func setAudioTrackMenuItems(_ items: [NCVideoTrackMenuItem]) {
+        guard state.audioTrackItems != items else {
+            return
+        }
+
+        state.audioTrackItems = items
+    }
+
+    func configureFoldedNavigation(titleView: UIView, closeAction: UIAction, moreItem: UIBarButtonItem) {
+        let item = UINavigationItem()
+        item.titleView = titleView
+        item.leftBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "chevron.backward"),
+            primaryAction: closeAction
+        )
+        item.rightBarButtonItem = moreItem
+        foldedNavigationBar.setItems([item], animated: false)
+    }
+
+    // Keeps top actions aligned below the real navigation bar.
+    func setTopActionsNavigationBar(_ navigationBar: UINavigationBar?) {
+        updateTopActionsPosition()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        foldedNavigationBar.frame = CGRect(
+            x: 0,
+            y: safeAreaInsets.top,
+            width: bounds.width,
+            height: 44
+        )
+        updateTopActionsPosition()
+    }
+
+    // MARK: - Configuration
+
+    private func configureLayout() {
+        backgroundColor = .clear
+        translatesAutoresizingMaskIntoConstraints = false
+
+        configureHostingView()
+        configureHitTestProxyViews()
+        foldedNavigationBar.isHidden = false
+        addSubview(foldedNavigationBar)
+    }
+
+    private func configureHostingView() {
+        let hostingView = hostingController.view!
+        hostingView.backgroundColor = .clear
+        hostingView.translatesAutoresizingMaskIntoConstraints = false
+
+        addSubview(hostingView)
+
+        NSLayoutConstraint.activate([
+            hostingView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            hostingView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            hostingView.topAnchor.constraint(equalTo: topAnchor),
+            hostingView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
+    }
+
+    private func configureHitTestProxyViews() {
+        [centerControlsView, bottomControlsView, topActionsView].forEach { proxyView in
+            proxyView.backgroundColor = .clear
+            proxyView.isUserInteractionEnabled = false
+            proxyView.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(proxyView)
+        }
+
+        let topActionsTopConstraint = topActionsView.topAnchor.constraint(equalTo: topAnchor)
+        self.topActionsTopConstraint = topActionsTopConstraint
+
+        NSLayoutConstraint.activate([
+            centerControlsView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            centerControlsView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            centerControlsView.widthAnchor.constraint(equalToConstant: Self.centerControlsWidth),
+            centerControlsView.heightAnchor.constraint(equalToConstant: Self.centerControlsHeight),
+
+            bottomControlsView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Self.bottomControlsHorizontalInset),
+            bottomControlsView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Self.bottomControlsHorizontalInset),
+            bottomControlsView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -Self.bottomControlsBottomInset),
+            bottomControlsView.heightAnchor.constraint(equalToConstant: Self.bottomControlsHeight),
+
+            topActionsView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            topActionsView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            topActionsTopConstraint,
+            topActionsView.heightAnchor.constraint(equalToConstant: Self.topActionsHeight)
+        ])
+    }
+
+    private func updateTopActionsPosition() {
+        guard let topActionsTopConstraint else {
+            return
+        }
+
+        let topOffset: CGFloat
+
+        let navigationBar = foldedNavigationBar
+        if !navigationBar.isHidden {
+            let navigationFrame = navigationBar.convert(
+                navigationBar.bounds,
+                to: self
+            )
+            topOffset = max(safeAreaInsets.top, navigationFrame.maxY)
+        } else {
+            topOffset = safeAreaInsets.top
+        }
+
+        guard layoutState.topActionsTopOffset != topOffset else {
+            return
+        }
+
+        layoutState.topActionsTopOffset = topOffset
+        topActionsTopConstraint.constant = topOffset
+    }
+
+    private func makeRootView() -> NCVideoAdaptiveControlsSwiftUIView {
+        NCVideoAdaptiveControlsSwiftUIView(
+            state: state,
+            layoutState: layoutState,
+            onSeekBackward: { [weak self] in
+                guard let self else {
+                    return
+                }
+                delegate?.videoControlsDidTapSeekBackward(self)
+            },
+            onPlayPause: { [weak self] in
+                guard let self else {
+                    return
+                }
+                delegate?.videoControlsDidTapPlayPause(self)
+            },
+            onSeekForward: { [weak self] in
+                guard let self else {
+                    return
+                }
+                delegate?.videoControlsDidTapSeekForward(self)
+            },
+            onToggleRepeat: { [weak self] in
+                guard let self else {
+                    return
+                }
+                delegate?.videoControlsDidToggleRepeat(self)
+            },
+            onToggleAutoAdvance: { [weak self] in
+                guard let self else {
+                    return
+                }
+                delegate?.videoControlsDidToggleAutoAdvance(self)
+            },
+            onScrubBegan: { [weak self] in
+                guard let self else {
+                    return
+                }
+                delegate?.videoControlsDidBeginScrubbing(self)
+            },
+            onScrubChanged: { [weak self] progress in
+                guard let self else {
+                    return
+                }
+                state.progress = progress
+                delegate?.videoControls(self, didScrubTo: progress)
+            },
+            onScrubEnded: { [weak self] progress in
+                guard let self else {
+                    return
+                }
+                state.progress = progress
+                delegate?.videoControlsDidEndScrubbing(self, progress: progress)
+            },
+            onPictureInPicture: { [weak self] in
+                guard let self else {
+                    return
+                }
+                delegate?.videoControlsDidTapPictureInPicture(self)
+            },
+            onSubtitleTrackSelected: { [weak self] index in
+                guard let self else {
+                    return
+                }
+                delegate?.videoControls(self, didSelectSubtitleTrackIndex: index)
+            },
+            onAddExternalSubtitle: { [weak self] in
+                guard let self else {
+                    return
+                }
+                delegate?.videoControlsDidTapAddExternalSubtitle(self)
+            },
+            onAudioTrackSelected: { [weak self] index in
+                guard let self else {
+                    return
+                }
+                delegate?.videoControls(self, didSelectAudioTrackIndex: index)
+            }
+        )
+    }
+}
+
+// MARK: - Adaptive SwiftUI Controls
+
+private struct NCVideoAdaptiveControlsSwiftUIView: View {
+    @ObservedObject var state: NCVideoControlsState
+    @ObservedObject var layoutState: NCVideoControlsLayoutState
+    let onSeekBackward: () -> Void
+    let onPlayPause: () -> Void
+    let onSeekForward: () -> Void
+    let onToggleRepeat: () -> Void
+    let onToggleAutoAdvance: () -> Void
+    let onScrubBegan: () -> Void
+    let onScrubChanged: (Float) -> Void
+    let onScrubEnded: (Float) -> Void
+    let onPictureInPicture: () -> Void
+    let onSubtitleTrackSelected: (_ index: Int32) -> Void
+    let onAddExternalSubtitle: () -> Void
+    let onAudioTrackSelected: (_ index: Int32) -> Void
+
+    @State private var currentScrubProgress: Double?
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack {
+                centerControls
+                    .position(
+                        x: proxy.size.width / 2,
+                        y: proxy.size.height / 2
+                    )
+
+                bottomControls
+                    .frame(height: NCVideoAdaptiveControlsView.bottomControlsHeight)
+                    .padding(.horizontal, NCVideoAdaptiveControlsView.bottomControlsHorizontalInset)
+                    .position(
+                        x: proxy.size.width / 2,
+                        y: proxy.size.height - proxy.safeAreaInsets.bottom - NCVideoAdaptiveControlsView.bottomControlsBottomInset - (NCVideoAdaptiveControlsView.bottomControlsHeight / 2)
+                    )
+
+                topActions
+                    .frame(height: NCVideoAdaptiveControlsView.topActionsHeight)
+                    .position(
+                        x: topActionsCenterX,
+                        y: layoutState.topActionsTopOffset + (NCVideoAdaptiveControlsView.topActionsHeight / 2)
+                    )
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .background(Color.clear)
+    }
+
+    private var topActionsCenterX: CGFloat {
+        let visibleButtonsCount: CGFloat
+
+        switch state.topActionsMode {
+        case .none:
+            visibleButtonsCount = 2
+        case .pictureInPicture:
+            visibleButtonsCount = 4
+        case .vlcTracks:
+            visibleButtonsCount = 4
+        }
+
+        let totalWidth = (visibleButtonsCount * NCVideoAdaptiveControlsView.topActionsButtonSize) + (max(0, visibleButtonsCount - 1) * NCVideoAdaptiveControlsView.topActionsSpacing)
+        return NCVideoAdaptiveControlsView.topActionsHorizontalInset + (totalWidth / 2)
+    }
+
+    private var centerControls: some View {
+        HStack(spacing: 28) {
+            circleButton(
+                systemName: "gobackward.10",
+                size: 44,
+                pointSize: 22,
+                isEnabled: state.isSeekingEnabled,
+                action: onSeekBackward
+            )
+
+            circleButton(
+                systemName: state.isPlaying ? "pause.fill" : "play.fill",
+                size: 62,
+                pointSize: 36,
+                isEnabled: true,
+                action: onPlayPause
+            )
+
+            circleButton(
+                systemName: "goforward.10",
+                size: 44,
+                pointSize: 22,
+                isEnabled: state.isSeekingEnabled,
+                action: onSeekForward
+            )
+        }
+        .frame(
+            width: NCVideoAdaptiveControlsView.centerControlsWidth,
+            height: NCVideoAdaptiveControlsView.centerControlsHeight
+        )
+    }
+
+    private var bottomControls: some View {
+        HStack(spacing: NCVideoAdaptiveControlsView.topActionsSpacing) {
+            timeLabel(state.elapsedText)
+                .frame(width: 54)
+
+            Slider(
+                value: Binding(
+                    get: {
+                        currentScrubProgress ?? Double(state.progress)
+                    },
+                    set: { progress in
+                        currentScrubProgress = progress
+                        onScrubChanged(Float(progress))
+                    }
+                ),
+                in: 0...1,
+                onEditingChanged: { isEditing in
+                    if isEditing {
+                        currentScrubProgress = Double(state.progress)
+                        onScrubBegan()
+                    } else {
+                        let progress = Float(currentScrubProgress ?? Double(state.progress))
+                        currentScrubProgress = nil
+                        onScrubEnded(progress)
+                    }
+                }
+            )
+            .disabled(!state.isSeekingEnabled)
+            .tint(.gray)
+            .opacity(state.isSeekingEnabled ? 1 : 0.45)
+
+            timeLabel(state.remainingText)
+                .frame(width: 58)
+        }
+        .padding(.horizontal, 18)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .controlGlassBackground(shape: Capsule(), isInteractive: false)
+        .contentShape(Capsule())
+    }
+
+    private var topActions: some View {
+        HStack(spacing: NCVideoAdaptiveControlsView.topActionsSpacing) {
+            Button(action: onToggleRepeat) {
+                topActionIcon(
+                    systemName: state.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1",
+                    pointSize: 17
+                )
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(NSLocalizedString("_repeat_current_media_", comment: ""))
+
+            Button(action: onToggleAutoAdvance) {
+                topActionIcon(
+                    systemName: state.isAutoAdvanceEnabled ? "forward.end.fill" : "forward.end",
+                    pointSize: 17
+                )
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(NSLocalizedString("_play_next_media_automatically_", comment: ""))
+
+            switch state.topActionsMode {
+            case .none:
+                EmptyView()
+
+            case .pictureInPicture:
+                Button(action: onPictureInPicture) {
+                    topActionIcon(
+                        systemName: "pip.enter",
+                        pointSize: 18
+                    )
+                }
+                .buttonStyle(.plain)
+
+                NCVideoAirPlayRoutePickerView()
+                    .frame(
+                        width: NCVideoAdaptiveControlsView.topActionsButtonSize,
+                        height: NCVideoAdaptiveControlsView.topActionsButtonSize
+                    )
+                    .controlGlassBackground(shape: Circle())
+
+            case .vlcTracks:
+                subtitleActionMenu(
+                    systemName: "captions.bubble",
+                    pointSize: 17,
+                    items: state.subtitleTrackItems,
+                    emptyTitle: "_no_subtitles_available_",
+                    onSelect: onSubtitleTrackSelected,
+                    onAddExternalSubtitle: onAddExternalSubtitle
+                )
+
+                topActionMenu(
+                    systemName: "speaker.wave.2",
+                    pointSize: 17,
+                    items: state.audioTrackItems,
+                    emptyTitle: "_no_audio_tracks_available_",
+                    onSelect: onAudioTrackSelected
+                )
+            }
+        }
+    }
+
+    private func subtitleActionMenu(
+        systemName: String,
+        pointSize: CGFloat,
+        items: [NCVideoTrackMenuItem],
+        emptyTitle: String,
+        onSelect: @escaping (_ index: Int32) -> Void,
+        onAddExternalSubtitle: @escaping () -> Void
+    ) -> some View {
+        return Menu {
+            if items.isEmpty {
+                Text(NSLocalizedString(emptyTitle, comment: ""))
+            } else {
+                ForEach(items) { item in
+                    Button {
+                        onSelect(item.index)
+                    } label: {
+                        HStack {
+                            Text(item.title)
+
+                            if item.isSelected {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+                }
+            }
+
+            Divider()
+
+            Button {
+                onAddExternalSubtitle()
+            } label: {
+                Label(
+                    NSLocalizedString("_add_external_subtitle_", comment: ""),
+                    systemImage: "plus"
+                )
+            }
+        } label: {
+            topActionIcon(
+                systemName: systemName,
+                pointSize: pointSize
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func topActionMenu(
+        systemName: String,
+        pointSize: CGFloat,
+        items: [NCVideoTrackMenuItem],
+        emptyTitle: String,
+        onSelect: @escaping (_ index: Int32) -> Void
+    ) -> some View {
+        return Menu {
+            if items.isEmpty {
+                Text(NSLocalizedString(emptyTitle, comment: ""))
+            } else {
+                ForEach(items) { item in
+                    Button {
+                        onSelect(item.index)
+                    } label: {
+                        HStack {
+                            Text(item.title)
+
+                            if item.isSelected {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+                }
+            }
+        } label: {
+            topActionIcon(
+                systemName: systemName,
+                pointSize: pointSize
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func topActionIcon(systemName: String, pointSize: CGFloat) -> some View {
+        Image(systemName: systemName)
+            .font(.system(size: pointSize, weight: .regular))
+            .foregroundStyle(.primary)
+            .frame(
+                width: NCVideoAdaptiveControlsView.topActionsButtonSize,
+                height: NCVideoAdaptiveControlsView.topActionsButtonSize
+            )
+            .controlGlassBackground(shape: Circle())
+    }
+
+    private func circleButton(systemName: String, size: CGFloat, pointSize: CGFloat, isEnabled: Bool, action: @escaping () -> Void) -> some View {
+        Button {
+            guard isEnabled else {
+                return
+            }
+
+            action()
+        } label: {
+            Image(systemName: systemName)
+                .font(.system(size: pointSize, weight: .regular))
+                .foregroundStyle(.primary)
+                .frame(width: size, height: size)
+                .controlGlassBackground(shape: Circle())
+        }
+        .buttonStyle(.plain)
+        .transaction { transaction in
+            transaction.animation = nil
+        }
+    }
+
+    private func timeLabel(_ text: String) -> some View {
+        Text(text)
+            .font(.system(size: 15, weight: .medium, design: .rounded).monospacedDigit())
+            .foregroundStyle(.secondary)
+            .lineLimit(1)
+            .minimumScaleFactor(0.85)
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func controlGlassBackground<BackgroundShape: Shape>(shape: BackgroundShape, isInteractive: Bool = true) -> some View {
+        if #available(iOS 26.0, *) {
+            self
+                .glassEffect(.regular.interactive(isInteractive), in: shape)
+        } else {
+            self
+                .background(.regularMaterial)
+                .clipShape(shape)
+        }
+    }
+}

@@ -9,9 +9,7 @@ import SwiftUI
 struct TransfersView: View {
     @StateObject private var model: TransfersViewModel
 
-    private let onClose: (() -> Void)?
-
-    init(session: NCSession.Session? = nil, previewMetadatas: [tableMetadata]? = nil, onClose: (() -> Void)? = nil) {
+    init(session: NCSession.Session? = nil, previewMetadatas: [tableMetadata]? = nil) {
         if let previewMetadatas {
             let previewSession = NCSession.Session(account: "", urlBase: "", user: "", userId: "")
             let model = TransfersViewModel(session: previewSession)
@@ -22,29 +20,6 @@ struct TransfersView: View {
         } else {
             fatalError("TransfersView must be initialized with either a session or previewItems.")
         }
-
-        self.onClose = onClose
-    }
-
-    var body: some View {
-        NavigationStack {
-            contentView
-                .navigationTitle(NSLocalizedString("_transfers_", comment: ""))
-                .toolbar {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button {
-                            onClose?()
-                        } label: {
-                            Image(systemName: "xmark")
-                        }
-                        .accessibilityLabel(NSLocalizedString("_close_", comment: ""))
-                    }
-                }
-        }
-        .onDisappear {
-            model.detach()
-        }
-        .presentationDetents([.medium, .large])
     }
 
     private var emptyFilterTitle: String {
@@ -80,87 +55,91 @@ struct TransfersView: View {
         }
     }
 
-    @ViewBuilder
-    private var contentView: some View {
-        if model.showFlushMessage || (
-            model.inWaitingCount == 0 &&
-            model.inProgressCount == 0 &&
-            model.inErrorCount == 0
-        ) {
-            EmptyTransfersView(model: model)
-        } else if model.metadatas.isEmpty {
-            VStack(spacing: 0) {
-                TransfersSummaryHeader(
-                    selectedFilter: model.selectedFilter,
-                    inWaitingCount: model.inWaitingCount,
-                    inProgressCount: model.inProgressCount,
-                    inErrorCount: model.inErrorCount,
-                    onSelect: { filter in
-                        Task {
-                            await model.selectFilter(filter)
-                        }
-                    }
-                )
-                .font(.headline)
-                .padding(.horizontal, 15)
-                .padding(.vertical, 6)
-
-                Spacer()
-
-                ContentUnavailableView(
-                    emptyFilterTitle,
-                    systemImage: emptyFilterSymbol,
-                    description: Text(emptyFilterDescription)
-                )
-
-                Spacer()
-            }
-        } else {
-            List {
-                Section(header: TransfersSummaryHeader(
-                    selectedFilter: model.selectedFilter,
-                    inWaitingCount: model.inWaitingCount,
-                    inProgressCount: model.inProgressCount,
-                    inErrorCount: model.inErrorCount,
-                    onSelect: { filter in
-                        Task {
-                            await model.selectFilter(filter)
-                        }
-                    }
-                ).font(.headline)) {
-                    ForEach(model.metadatas, id: \.ocId) { item in
-                        TransferRowView(
-                            model: model,
-                            item: item,
-                            onRetry: {
-                                await model.retry(item: item)
-                            },
-                            onCancel: {
-                                await model.cancel(item: item)
+    var body: some View {
+        Group {
+            if model.showFlushMessage || (
+                model.inWaitingCount == 0 &&
+                model.inProgressCount == 0 &&
+                model.inErrorCount == 0
+            ) {
+                EmptyTransfersView(model: model)
+            } else if model.metadatas.isEmpty {
+                VStack(spacing: 0) {
+                    TransfersSummaryHeader(
+                        selectedFilter: model.selectedFilter,
+                        inWaitingCount: model.inWaitingCount,
+                        inProgressCount: model.inProgressCount,
+                        inErrorCount: model.inErrorCount,
+                        onSelect: { filter in
+                            Task {
+                                await model.selectFilter(filter)
                             }
-                        )
-                        .listRowInsets(EdgeInsets())
-                        .listRowSeparator(.hidden)
-                    }
+                        }
+                    )
+                    .font(.headline)
+                    .padding(.horizontal, 15)
+                    .padding(.vertical, 6)
 
-                    if model.selectedFilter == .waiting,
-                       model.inWaitingCount > model.metadatas.count {
-                        Text(
-                            String(
-                                format: NSLocalizedString("_transfers_waiting_shown_", comment: ""),
-                                model.metadatas.count,
-                                model.inWaitingCount
+                    Spacer()
+
+                    ContentUnavailableView(
+                        emptyFilterTitle,
+                        systemImage: emptyFilterSymbol,
+                        description: Text(emptyFilterDescription)
+                    )
+
+                    Spacer()
+                }
+            } else {
+                List {
+                    Section(header: TransfersSummaryHeader(
+                        selectedFilter: model.selectedFilter,
+                        inWaitingCount: model.inWaitingCount,
+                        inProgressCount: model.inProgressCount,
+                        inErrorCount: model.inErrorCount,
+                        onSelect: { filter in
+                            Task {
+                                await model.selectFilter(filter)
+                            }
+                        }
+                    ).font(.headline)) {
+                        ForEach(model.metadatas, id: \.ocId) { item in
+                            TransferRowView(
+                                model: model,
+                                item: item,
+                                onRetry: {
+                                    await model.retry(item: item)
+                                },
+                                onCancel: {
+                                    await model.cancel(item: item)
+                                }
                             )
-                        )
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.vertical, 12)
-                        .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets())
+                            .listRowSeparator(.hidden)
+                        }
+
+                        if model.selectedFilter == .waiting,
+                           model.inWaitingCount > model.metadatas.count {
+                            Text(
+                                String(
+                                    format: NSLocalizedString("_transfers_waiting_shown_", comment: ""),
+                                    model.metadatas.count,
+                                    model.inWaitingCount
+                                )
+                            )
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, 12)
+                            .listRowSeparator(.hidden)
+                        }
                     }
                 }
+                .listStyle(.plain)
             }
-            .listStyle(.plain)
+        }
+        .task {
+            await model.observeTransfers()
         }
     }
 }

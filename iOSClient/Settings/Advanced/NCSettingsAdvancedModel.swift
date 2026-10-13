@@ -234,7 +234,9 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     /// Previews an immutable copy so Quick Look never coordinates the file used by the logger.
     @MainActor
     func viewLogFile(at url: URL) async throws {
-        guard !isPreparingLogPreview, let controller, controller.presentedViewController == nil else { return }
+        guard !isPreparingLogPreview, let controller else { return }
+        let presenter = controller.topMostViewController()
+        guard !presenter.isBeingDismissed, presenter.presentedViewController == nil else { return }
         isPreparingLogPreview = true
         defer { isPreparingLogPreview = false }
         let previousDirectory = logPreviewDirectory
@@ -261,10 +263,12 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         }.value
         logPreviewDirectory = previewURL.deletingLastPathComponent()
         guard !Task.isCancelled,
-              controller.viewIfLoaded?.window?.windowScene?.activationState == .foregroundActive,
-              controller.presentedViewController == nil else { return }
+              controller.topMostViewController() === presenter,
+              presenter.viewIfLoaded?.window?.windowScene?.activationState == .foregroundActive,
+              !presenter.isBeingDismissed,
+              presenter.presentedViewController == nil else { return }
         let viewerQuickLook = NCViewerQuickLook(with: previewURL, isEditingEnabled: false, metadata: nil)
-        controller.present(viewerQuickLook, animated: true)
+        presenter.present(viewerQuickLook, animated: true)
     }
 }
 

@@ -16,7 +16,7 @@ class NCGroupfolders: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewGroupfolders
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImageName = "folder_group"
+        emptyImageName = "folder.badge.person.crop"
         emptyTitle = "_files_no_files_"
         emptyDescription = "_tutorial_groupfolders_view_"
     }

@@ -7,6 +7,9 @@ import SwiftUI
 import NextcloudKit
 
 class NCFilesNavigationController: NCMainNavigationController {
+    /// The current Files destination; shared by its root and subfolders, not persisted.
+    var personalFilesOnly = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -40,7 +43,7 @@ class NCFilesNavigationController: NCMainNavigationController {
         }
 
         if collectionViewCommon.serverUrl == utilityFileSystem.getHomeServer(session: session) {
-            let fileSettings = UIMenu(title: "", options: .displayInline, children: [items.personalFilesOnly, items.favoriteOnTop, items.directoryOnTop, items.hiddenFiles])
+            let fileSettings = UIMenu(title: "", options: .displayInline, children: [items.favoriteOnTop, items.directoryOnTop, items.hiddenFiles])
             var children: [UIMenuElement] = [items.showDescription]
             if let showRecommendedFiles = items.showRecommendedFiles {
                 children.insert(showRecommendedFiles, at: 0)
@@ -59,6 +62,7 @@ class NCFilesNavigationController: NCMainNavigationController {
     // MARK: - Left
 
     override func setNavigationLeftItems() async {
+        defer { configureSidebarButton() }
         guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", self.session.account))
         else {
             self.collectionViewCommon?.navigationItem.leftBarButtonItems = nil
@@ -151,7 +155,11 @@ class NCFilesNavigationController: NCMainNavigationController {
             return
         }
 
-        if self.collectionViewCommon?.navigationItem.leftBarButtonItems == nil {
+        let navigationItem = collectionViewCommon?.navigationItem
+        let groupedItems = navigationItem?.leadingItemGroups.flatMap { $0.barButtonItems } ?? []
+        let leftItems = groupedItems.isEmpty ? navigationItem?.leftBarButtonItems ?? [] : groupedItems
+        let accountItem = leftItems.first { $0.customView?.accessibilityIdentifier == "accountSwitcher" }
+        if accountItem == nil {
             let accountButton = AccountSwitcherButton(type: .custom)
 
             accountButton.accessibilityIdentifier = "accountSwitcher"
@@ -166,13 +174,30 @@ class NCFilesNavigationController: NCMainNavigationController {
                 self.collectionViewCommon?.dismissTip()
             }
 
-            self.collectionViewCommon?.navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)], animated: true)
+            self.collectionViewCommon?.navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)] + leftItems, animated: true)
 
         } else {
 
-            let accountButton = self.collectionViewCommon?.navigationItem.leftBarButtonItems?.first?.customView as? UIButton
+            let accountButton = accountItem?.customView as? UIButton
             accountButton?.setImage(image, for: .normal)
             accountButton?.menu = await createLeftMenu()
+        }
+
+        // Custom views need an explicit menu representation when UIKit moves them
+        // into overflow, for example when iPad tabs share the top bar.
+        let updatedAccountItem = accountItem ?? collectionViewCommon?.navigationItem.leftBarButtonItems?.first {
+            $0.customView?.accessibilityIdentifier == "accountSwitcher"
+        }
+        if let item = updatedAccountItem, let button = item.customView as? UIButton {
+            let title = NSLocalizedString("_account_select_", comment: "")
+            item.accessibilityLabel = title
+            button.accessibilityLabel = title
+            item.menuRepresentation = button.menu.map {
+                UIMenu(title: title, image: UIImage(systemName: "person.crop.circle"), children: $0.children)
+            }
+            if #available(iOS 27.0, *) {
+                item.visibilityPriority = .high
+            }
         }
     }
 }

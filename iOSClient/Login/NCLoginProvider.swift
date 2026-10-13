@@ -170,7 +170,7 @@ class NCLoginProvider: NSObject, ASWebAuthenticationPresentationContextProviding
             webViewFallbackVC = nil
 
             if self.controller == nil {
-                self.controller = UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
+                self.controller = SceneManager.shared.getController(window: UIApplication.shared.mainAppWindow)
             }
 
             Task { @MainActor in
@@ -243,7 +243,7 @@ class NCLoginProvider: NSObject, ASWebAuthenticationPresentationContextProviding
 
         if controller == nil {
             nkLog(debug: "View controller is still undefined, will resolve root view controller of first window.")
-            controller = UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
+            controller = SceneManager.shared.getController(window: UIApplication.shared.mainAppWindow)
         }
 
         guard let viewController = presentingViewController else {

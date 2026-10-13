@@ -146,7 +146,7 @@ actor NCNetworkingProcess {
 
     @MainActor
     private func getRootController() -> NCMainTabBarController? {
-        UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
+        SceneManager.shared.getController(window: UIApplication.shared.mainAppWindow)
     }
 
     @MainActor

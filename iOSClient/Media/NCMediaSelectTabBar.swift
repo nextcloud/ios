@@ -22,8 +22,6 @@ class NCMediaSelectTabBar: ObservableObject {
             return
         }
         let rootView = MediaTabBarSelectView(tabBarSelect: self)
-        let bottomAreaInsets: CGFloat = controller.tabBar.safeAreaInsets.bottom == 0 ? 34 : 0
-        let height = controller.tabBar.frame.height + bottomAreaInsets
         hostingController = UIHostingController(rootView: rootView)
         guard let hostingController else {
             return
@@ -36,14 +34,18 @@ class NCMediaSelectTabBar: ObservableObject {
         hostingController.view.backgroundColor = .clear
         hostingController.view.isHidden = true
 
+        viewController.addChild(hostingController)
         viewController.view.addSubview(hostingController.view)
 
         NSLayoutConstraint.activate([
-            hostingController.view.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
-            hostingController.view.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
+            // Use the same bottom action-bar height as Files, independent of
+            // whether UIKit places the main tab bar at the bottom, top or side.
+            hostingController.view.leadingAnchor.constraint(equalTo: viewController.view.safeAreaLayoutGuide.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: viewController.view.safeAreaLayoutGuide.trailingAnchor),
             hostingController.view.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor),
-            hostingController.view.heightAnchor.constraint(equalToConstant: height)
+            hostingController.view.heightAnchor.constraint(equalToConstant: NCCollectionViewCommonSelectTabBar.height)
         ])
+        hostingController.didMove(toParent: viewController)
     }
 
     func show() {

@@ -199,7 +199,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 let recommendations = self.database.getRecommendedFiles(account: self.session.account)
                 var sectionText = NSLocalizedString("_all_files_", comment: "")
 
-                if NCPreferences().getPersonalFilesOnly(account: session.account) {
+                if (self as? NCFiles)?.personalFilesOnly == true {
                     sectionText = NSLocalizedString("_personal_files_", comment: "")
                 }
 

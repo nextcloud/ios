@@ -368,7 +368,16 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         guard layoutSize != collectionViewLayoutSize else { return }
 
         collectionViewLayoutSize = layoutSize
-        collectionView.collectionViewLayout.invalidateLayout()
+        if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            // A split-column resize must recalculate item widths as well as their positions.
+            let context = UICollectionViewFlowLayoutInvalidationContext()
+            context.invalidateFlowLayoutDelegateMetrics = true
+            context.invalidateFlowLayoutAttributes = true
+            flowLayout.invalidateLayout(with: context)
+        } else {
+            collectionView.collectionViewLayout.invalidateLayout()
+        }
+        sectionFirstHeader?.setNeedsLayout()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
