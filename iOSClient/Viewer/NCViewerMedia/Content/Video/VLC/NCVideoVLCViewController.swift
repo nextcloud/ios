@@ -162,6 +162,7 @@ final class NCVideoVLCViewController: UIViewController {
             }
 
             showControls(animated: false)
+            updateViewerBackgroundIfNeeded(force: true)
 
             if isFolded {
                 stopControlsHideTimer()
@@ -275,11 +276,12 @@ final class NCVideoVLCViewController: UIViewController {
     }
 
     private var viewerBackgroundColor: UIColor {
-        UIColor.ncViewerBackground(ncViewerBackgroundStyle(for: metadata, isChromeHidden: isChromeHidden))
+        let isFolded = (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true
+        return .ncViewerBackground(ncViewerVideoPlaybackBackgroundStyle(for: metadata, isChromeHidden: isChromeHidden, isFoldedLayout: isFolded))
     }
 
-    private func updateViewerBackgroundIfNeeded() {
-        guard !controlsVisible else {
+    private func updateViewerBackgroundIfNeeded(force: Bool = false) {
+        guard force || !controlsVisible || (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true else {
             return
         }
 

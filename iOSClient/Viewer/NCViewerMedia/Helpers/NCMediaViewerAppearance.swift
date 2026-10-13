@@ -11,6 +11,7 @@ import NextcloudKit
 // See README.md, "Changing colors and appearance", for the consumer map and checks.
 
 // MARK: - Viewer Background Style
+
 /// A background choice, separate from layout geometry and the visibility of navigation.
 enum NCViewerBackgroundStyle {
     case system
@@ -20,6 +21,7 @@ enum NCViewerBackgroundStyle {
 }
 
 // MARK: - UIColor Viewer Background
+
 extension UIColor {
     static func ncViewerBackground(_ style: NCViewerBackgroundStyle = .system) -> UIColor {
         switch style {
@@ -36,6 +38,7 @@ extension UIColor {
 }
 
 // MARK: - Color Viewer Background
+
 extension Color {
     static func ncViewerBackground(_ style: NCViewerBackgroundStyle = .system) -> Color {
         Color(uiColor: .ncViewerBackground(style))
@@ -43,6 +46,7 @@ extension Color {
 }
 
 // MARK: - Color Viewer Progress Tint
+
 extension Color {
     /// Loading indicators stay visible on black; other backgrounds use the app accent.
     static func ncViewerProgressTint(_ style: NCViewerBackgroundStyle = .system) -> Color {
@@ -59,12 +63,14 @@ extension Color {
 }
 
 // MARK: - Viewer Background Resolution
+
 /// Default viewer background. `.system` follows the inherited light/dark appearance.
 func ncViewerBackgroundStyle(for metadata: tableMetadata?) -> NCViewerBackgroundStyle {
     .system
 }
 
 // MARK: - Viewer Chrome-Aware Background Resolution
+
 /// Shared by normal and folded content: hiding chrome makes the background black.
 /// Folding only hides the traditional navigation bar; it does not change this policy
 /// or `isChromeHidden`. The adaptive panel inherits this policy by default.
@@ -76,7 +82,17 @@ func ncViewerBackgroundStyle(for metadata: tableMetadata?, isChromeHidden: Bool)
     return ncViewerBackgroundStyle(for: metadata)
 }
 
+// MARK: - Video Playback Background
+
+/// Presented video playback uses black across both folded regions, independently
+/// of appearance, chrome visibility and the paged preview's panel customization.
+/// Unfolded playback retains the existing chrome-aware background policy.
+func ncViewerVideoPlaybackBackgroundStyle(for metadata: tableMetadata?, isChromeHidden: Bool, isFoldedLayout: Bool) -> NCViewerBackgroundStyle {
+    isFoldedLayout ? .black : ncViewerBackgroundStyle(for: metadata, isChromeHidden: isChromeHidden)
+}
+
 // MARK: - Adaptive Panel Background
+
 /// Background of the lower paged-media panel only. The upper content and normal
 /// layout do not use this entry. Keep `contentStyle` to follow the standard viewer;
 /// return `.custom(.systemOrange)`, `.black` or `.white` to customize this panel.
@@ -86,6 +102,7 @@ func ncViewerAdaptivePanelBackgroundStyle(contentStyle: NCViewerBackgroundStyle)
 }
 
 // MARK: - Adaptive Control Appearance
+
 /// Applied by the common adaptive lower panel so its SwiftUI and UIKit controls
 /// contrast with the resolved background. System/custom backgrounds inherit appearance;
 /// callers choosing a custom color must ensure it contrasts with the inherited palette.

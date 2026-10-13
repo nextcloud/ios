@@ -167,6 +167,8 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
     // MARK: - Configuration
 
     private func configureLayout() {
+        // Presented adaptive video always uses black, including when controls are visible.
+        overrideUserInterfaceStyle = .dark
         backgroundColor = .clear
         translatesAutoresizingMaskIntoConstraints = false
 
@@ -177,6 +179,7 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
     }
 
     private func configureHostingView() {
+        hostingController.overrideUserInterfaceStyle = .dark
         let hostingView = hostingController.view!
         hostingView.backgroundColor = .clear
         hostingView.translatesAutoresizingMaskIntoConstraints = false

@@ -302,7 +302,8 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     private var viewerBackgroundColor: UIColor {
-        UIColor.ncViewerBackground(ncViewerBackgroundStyle(for: metadata, isChromeHidden: isChromeHidden))
+        let isFolded = (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true
+        return .ncViewerBackground(ncViewerVideoPlaybackBackgroundStyle(for: metadata, isChromeHidden: isChromeHidden, isFoldedLayout: isFolded))
     }
 
     @MainActor

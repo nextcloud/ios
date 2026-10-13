@@ -237,10 +237,14 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(closeButtonTapped))
 
-        navigationItem.rightBarButtonItems = [
-            moreNavigationItem,
-            mediaDetailNavigationItem
-        ]
+        updateInformationNavigationItem(metadata: model.selectedMetadata)
+    }
+
+    /// Info belongs to images only, including when paging between different media types.
+    private func updateInformationNavigationItem(metadata: tableMetadata?) {
+        let items = metadata?.classFile == NKTypeClassFile.image.rawValue ? [moreNavigationItem, mediaDetailNavigationItem] : [moreNavigationItem]
+        guard navigationItem.rightBarButtonItems != items else { return }
+        navigationItem.rightBarButtonItems = items
     }
 
     /// Observes model changes and refreshes navigation UI.
@@ -255,6 +259,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     /// Updates the floating title using the current media metadata.
     private func updateTitleLabel(metadata: tableMetadata?, backgroundColor: UIColor) {
+        updateInformationNavigationItem(metadata: metadata)
         guard let metadata else {
             floatingTitleView.clear()
             return
@@ -367,7 +372,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     /// Opens or closes the media detail panel.
     private func openDetail(animated: Bool = true) {
-        guard !isFoldedMediaLayout || model.selectedMetadata?.classFile == NKTypeClassFile.image.rawValue else { return }
+        guard model.selectedMetadata?.classFile == NKTypeClassFile.image.rawValue else { return }
         guard !isShowingDetail else {
             closeDetail(animated: animated)
             return

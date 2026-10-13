@@ -11,6 +11,18 @@ import NextcloudKit
 @Suite("Adaptive media layout")
 @MainActor
 struct NCMediaAdaptiveLayoutViewTests {
+    @Test("Folded video playback stays black and unfolded playback retains its policy", arguments: [false, true])
+    func videoPlaybackBackground(isChromeHidden: Bool) {
+        let folded = ncViewerVideoPlaybackBackgroundStyle(for: nil, isChromeHidden: isChromeHidden, isFoldedLayout: true)
+        let unfolded = ncViewerVideoPlaybackBackgroundStyle(for: nil, isChromeHidden: isChromeHidden, isFoldedLayout: false)
+        for appearance in [UIUserInterfaceStyle.light, .dark] {
+            let traits = UITraitCollection(userInterfaceStyle: appearance)
+            #expect(UIColor.ncViewerBackground(folded).resolvedColor(with: traits).isEqual(UIColor.black))
+            let expected = UIColor.ncViewerBackground(ncViewerBackgroundStyle(for: nil, isChromeHidden: isChromeHidden)).resolvedColor(with: traits)
+            #expect(UIColor.ncViewerBackground(unfolded).resolvedColor(with: traits).isEqual(expected))
+        }
+    }
+
     @Test("Control appearance follows the viewer background", arguments: [ColorScheme.light, .dark])
     func controlAppearanceMatchesBackground(inherited: ColorScheme) {
         #expect(ncViewerAdaptiveControlsColorScheme(for: .system, inherited: inherited) == inherited)

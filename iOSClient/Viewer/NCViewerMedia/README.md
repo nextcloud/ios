@@ -34,7 +34,8 @@ Shared background and control-color rules live in
 `Helpers/NCMediaViewerAppearance.swift`: background resolution, control surfaces,
 foreground/border colors and contrast appearance. Image/audio controls consume
 these rules; the common lower panel applies the resolved appearance once.
-Fullscreen video retains its existing playback appearance.
+Presented folded video uses black across both regions with light controls;
+normal playback retains its existing appearance policy.
 
 ## Changing colors and appearance
 
@@ -48,6 +49,7 @@ default, but has its own customization entry.
 | Default content background | `ncViewerBackgroundStyle(for:)` | Normal and folded pages, paging collection backgrounds; the adaptive panel inherits it by default. |
 | Background when controls are hidden | `ncViewerBackgroundStyle(for:isChromeHidden:)` | The same consumers; folding does not itself change `isChromeHidden`. |
 | Adaptive lower-panel background | `ncViewerAdaptivePanelBackgroundStyle(contentStyle:)` | Common paged-media lower panel only; upper content and normal mode remain independent. |
+| Presented adaptive video background | `ncViewerVideoPlaybackBackgroundStyle(for:isChromeHidden:isFoldedLayout:)` | AVPlayer/VLC root and rendering surface: folded playback stays black across both regions. |
 | Mapping a background style to a color | `UIColor.ncViewerBackground(_:)` | UIKit backgrounds and the SwiftUI `Color` wrapper. |
 | Control island/button fill | `UIColor.ncViewerAdaptiveControlBackground` | Adaptive image/audio islands, video-cover status controls and shared Close/Info/More buttons. |
 | Control text and icon color | `UIColor.ncViewerAdaptiveControlForeground` | Adaptive image/audio and video-cover controls, the common lower panel and shared action buttons. |
@@ -254,7 +256,9 @@ Audio and video do not reserve an inline information island in adaptive mode.
 Audio uses the middle area for playback and previous/next controls. Video covers
 keep their playback/download controls visible. The adaptive Info button is shown
 only for images; audio/video show Close and More without an empty button slot.
-Normal mode retains its existing Info button and information sheets for all media.
+Normal mode also shows Info only for images. Its navigation items update when
+paging between media types, keeping More available for audio/video. Image
+information sheets retain their existing behavior.
 
 ## Layout and compatibility
 

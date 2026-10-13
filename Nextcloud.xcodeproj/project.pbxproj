@@ -3005,8 +3005,8 @@
 		F75A64CB307E0FAE0059B78E /* Video */ = {
 			isa = PBXGroup;
 			children = (
-				F75A64BC307E0FAE0059B78E /* AVPlayer */,
 				F75A64C2307E0FAE0059B78E /* Controls */,
+				F75A64BC307E0FAE0059B78E /* AVPlayer */,
 				F75A64C6307E0FAE0059B78E /* VLC */,
 				F75A64C7307E0FAE0059B78E /* NCVideoPlaybackController.swift */,
 				F75A64C8307E0FAE0059B78E /* NCVideoPlaybackCoverView.swift */,
