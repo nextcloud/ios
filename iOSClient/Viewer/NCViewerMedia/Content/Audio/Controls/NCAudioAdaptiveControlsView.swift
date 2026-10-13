@@ -3,14 +3,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
-import NextcloudKit
 
 /// Lower audio panel. Observes the existing player model; never owns player creation or loading.
 struct NCAudioAdaptiveControlsView: View {
-    let metadata: tableMetadata
     @ObservedObject var playbackModel: NCAudioViewerModel
     @ObservedObject var playbackOptions: NCMediaPlaybackOptions
-    let detailView: NCMediaViewerDetailView?
     let isSelected: Bool
     let canGoPrevious: Bool
     let canGoNext: Bool
@@ -20,19 +17,8 @@ struct NCAudioAdaptiveControlsView: View {
     var body: some View {
         GeometryReader { geometry in
             let navigationHeight = min(max(0, geometry.size.height - 5), max(44, geometry.size.height * 0.18))
-            let playbackHeight = min(max(0, geometry.size.height - navigationHeight - 10), max(128, geometry.size.height * 0.45))
-            let informationHeight = max(0, geometry.size.height - navigationHeight - playbackHeight - 10)
+            let playbackHeight = max(0, geometry.size.height - navigationHeight - 5)
             VStack(spacing: 5) {
-                NCMediaViewerDetailView(
-                    metadata: detailView?.metadata ?? metadata,
-                    exif: detailView?.exif ?? ExifData(),
-                    showsOnlyAvailableData: true,
-                    backgroundStyle: .custom(.clear)
-                )
-                    .frame(height: informationHeight)
-                    .background(Color.ncViewerAdaptiveControlBackground, in: RoundedRectangle(cornerRadius: 16))
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-
                 playbackControls
                     .frame(height: playbackHeight)
                     .background(Color.ncViewerAdaptiveControlBackground, in: RoundedRectangle(cornerRadius: 16))
@@ -114,18 +100,9 @@ struct NCAudioAdaptiveControlsView: View {
 
 #if DEBUG
 #Preview("Adaptive Audio - Controls") {
-    let metadata = tableMetadata()
-    metadata.ocId = "adaptive-audio-preview"
-    metadata.fileName = "Waterfall.m4a"
-    metadata.fileNameView = metadata.fileName
-    metadata.classFile = NKTypeClassFile.audio.rawValue
-    metadata.size = 4_200_000
-
     return NCAudioAdaptiveControlsView(
-        metadata: metadata,
         playbackModel: NCAudioViewerModel(),
         playbackOptions: NCMediaPlaybackOptions(preferences: nil),
-        detailView: nil,
         isSelected: true,
         canGoPrevious: true,
         canGoNext: true,

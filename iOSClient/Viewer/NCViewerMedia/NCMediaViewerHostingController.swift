@@ -367,6 +367,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     /// Opens or closes the media detail panel.
     private func openDetail(animated: Bool = true) {
+        guard !isFoldedMediaLayout || model.selectedMetadata?.classFile == NKTypeClassFile.image.rawValue else { return }
         guard !isShowingDetail else {
             closeDetail(animated: animated)
             return
@@ -455,10 +456,9 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     private func presentDetailView(metadata: tableMetadata, index: Int, exif: ExifData, animated: Bool) {
         let detailView = NCMediaViewerDetailView(metadata: metadata, exif: exif)
 
-        if isFoldedMediaLayout {
-            if metadata.classFile == NKTypeClassFile.image.rawValue {
-                adaptiveControlsState.imageInformation = (ocId: metadata.ocId, exif: exif)
-            }
+        // Only images have inline information. Audio/video keep the standard Info sheet.
+        if isFoldedMediaLayout, metadata.classFile == NKTypeClassFile.image.rawValue {
+            adaptiveControlsState.imageInformation = (ocId: metadata.ocId, exif: exif)
             adaptiveControlsState.detailView = detailView
             return
         }

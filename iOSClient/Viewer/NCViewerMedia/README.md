@@ -103,8 +103,8 @@ video playback behavior. Local builds and tests remain user-run in Xcode.
 | `Views/NCMediaAdaptiveLayoutView.swift` | Shared UIKit geometry, normal/adaptive visibility and layout change callback. Keeps the media view in place. |
 | `Content/Image/Controls/NCImageControlsView.swift` | Normal thumbnail overlay, with the existing visibility, spacing and selection actions. Normal navigation and the information sheet remain in the hosting controller. |
 | `Content/Image/Controls/NCImageAdaptiveControlsView.swift` | Always hosts the shared information view inside its fixed island, plus previous/next buttons; the shared panel owns actions and thumbnails. |
-| `Views/Controls/NCMediaAdaptiveControlsView.swift` | Lower composition for paged images, audio and video covers: standalone buttons, inline information, cover actions and thumbnails. Also contains the SwiftUI/UIKit bridge and its hosting support types. |
-| `Content/Audio/Controls/NCAudioAdaptiveControlsView.swift` | Independent lower audio controls: available information, repeat/restart/play/pause/auto-advance, seeking and previous/next. Observes the existing playback model. |
+| `Views/Controls/NCMediaAdaptiveControlsView.swift` | Lower composition for paged images, audio and video covers: standalone buttons, image-only inline information, playback/cover actions and thumbnails. Also contains the SwiftUI/UIKit bridge and its hosting support types. |
+| `Content/Audio/Controls/NCAudioAdaptiveControlsView.swift` | Independent lower audio controls: repeat/restart/play/pause/auto-advance, seeking and previous/next; no information island. Observes the existing playback model. |
 | `NCMediaViewerHostingController.swift` | Owns paged-media navigation actions, title updates and information loading. Hides the upper navigation bar when folded and routes information into the lower controls. |
 | `Core/NCMediaViewerView.swift` | Selects the normal composition or experimental paging bridge using the central switch. |
 | `Views/NCMediaViewerThumbnail.swift` | Shared thumbnail strip and collection implementation for all media; callers own normal/adaptive visibility and spacing. |
@@ -250,6 +250,12 @@ model from `NCAudioViewerPlaybackRegistry`, without loading or creating a player
 Folding changes the composition, preserving playback position and repeat/advance
 options. Normal audio geometry and playback lifecycle remain unchanged.
 
+Audio and video do not reserve an inline information island in adaptive mode.
+Audio uses the middle area for playback and previous/next controls. Video covers
+keep their playback/download controls visible. The adaptive Info button is shown
+only for images; audio/video show Close and More without an empty button slot.
+Normal mode retains its existing Info button and information sheets for all media.
+
 ## Layout and compatibility
 
 With the switch `false`, images use the normal SwiftUI pager and thumbnail overlay.
@@ -340,7 +346,7 @@ Start with the normal layout before testing the fold:
    including share popovers on iPad. Check horizontal and vertical video covers
    for centering in the upper region before/after loading and unfolding. The
    `Video Playback Cover - Folded Upper Region` canvas preview isolates that area.
-   For audio, verify artwork above, information and playback controls below, and
+   For audio, verify artwork above, playback controls below without an information island, and
    the same fixed thumbnail lane. Check seeking, restart, repeat, auto-advance and
    previous/next; dragging the seek bar must not change pages. Fold/unfold during
    playback and check that sound and position continue without restarting.

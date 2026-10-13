@@ -3048,14 +3048,6 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
-		F75A64D8307E0FAE0059B78E /* Loading */ = {
-			isa = PBXGroup;
-			children = (
-				F75A64D7307E0FAE0059B78E /* NCNextcloudMediaViewerLoader.swift */,
-			);
-			path = Loading;
-			sourceTree = "<group>";
-		};
 		F75A64DA307E0FAE0059B78E /* Controls */ = {
 			isa = PBXGroup;
 			children = (
@@ -3081,12 +3073,12 @@
 		F75A64E5307E0FAE0059B78E /* NCViewerMedia */ = {
 			isa = PBXGroup;
 			children = (
-				F75A64CC307E0FAE0059B78E /* Content */,
 				F75A64D2307E0FAE0059B78E /* Core */,
-				F75A64D8307E0FAE0059B78E /* Loading */,
 				F75A64E1307E0FAE0059B78E /* Views */,
+				F75A64CC307E0FAE0059B78E /* Content */,
 				F75A64D6307E0FAE0059B78E /* Helpers */,
 				F75A64E2307E0FAE0059B78E /* NCMediaViewerHostingController.swift */,
+				F75A64D7307E0FAE0059B78E /* NCNextcloudMediaViewerLoader.swift */,
 				F75A64E3307E0FAE0059B78E /* NCMediaViewerPresenter.swift */,
 				F75A64E4307E0FAE0059B78E /* README.md */,
 			);

@@ -20,7 +20,7 @@ struct NCMediaAdaptiveControlsView: View {
         let contentStyle = ncViewerBackgroundStyle(for: model.selectedMetadata, isChromeHidden: model.isChromeHidden)
         let backgroundStyle = ncViewerAdaptivePanelBackgroundStyle(contentStyle: contentStyle)
         VStack(spacing: 5) {
-            NCMediaAdaptiveActionsHost(makeActionsView: makeActionsView)
+            NCMediaAdaptiveActionsHost(makeActionsView: makeActionsView, showsInformation: model.selectedMetadata?.classFile == NKTypeClassFile.image.rawValue)
                 .frame(height: NCMediaAdaptiveActionsView.preferredHeight)
                 .layoutPriority(1)
 
@@ -84,20 +84,13 @@ struct NCMediaAdaptiveControlsView: View {
             )
         } else if let metadata = model.selectedMetadata, metadata.classFile == NKTypeClassFile.audio.rawValue {
             NCAudioAdaptiveControlsView(
-                metadata: metadata,
                 playbackModel: NCAudioViewerPlaybackRegistry.shared.model(for: metadata.ocId),
                 playbackOptions: model.playbackOptions,
-                detailView: state.detailView?.metadata.ocId == metadata.ocId ? state.detailView : nil,
                 isSelected: isSelectedAudioReady,
                 canGoPrevious: model.selectedIndex > 0 && model.pageTransition.isIdle,
                 canGoNext: model.selectedIndex < model.numberOfPages - 1 && model.pageTransition.isIdle,
                 onPrevious: { selectAdjacentPage(offset: -1) },
                 onNext: { selectAdjacentPage(offset: 1) }
-            )
-        } else if let detailView = state.detailView {
-            NCMediaViewerDetailView(
-                metadata: detailView.metadata, exif: detailView.exif,
-                showsOnlyAvailableData: detailView.showsOnlyAvailableData, backgroundStyle: .custom(.clear)
             )
         } else if let ocId = model.selectedMetadata?.ocId,
                   let controls = state.videoCoverControls(for: ocId) {
@@ -229,6 +222,7 @@ final class NCMediaAdaptiveActionsView: UIStackView {
 
 private struct NCMediaAdaptiveActionsHost: UIViewRepresentable {
     let makeActionsView: () -> UIView
+    let showsInformation: Bool
 
     func makeUIView(context: Context) -> UIView {
         makeActionsView()
@@ -237,6 +231,8 @@ private struct NCMediaAdaptiveActionsHost: UIViewRepresentable {
     func updateUIView(_ uiView: UIView, context: Context) {
         // Keep UIKit action colors in sync with the lower panel's SwiftUI appearance.
         uiView.overrideUserInterfaceStyle = context.environment.colorScheme == .dark ? .dark : .light
+        // UIStackView removes the hidden image-only button from its layout and accessibility.
+        (uiView as? NCMediaAdaptiveActionsView)?.informationButton?.isHidden = !showsInformation
     }
 }
 
