@@ -37,7 +37,7 @@ normal layout when an audio or unsupported page is selected in the pager.
 | --- | --- |
 | `Views/NCMediaAdaptiveLayoutView.swift` | Shared UIKit geometry, normal/adaptive visibility and layout change callback. Keeps the media view in place. |
 | `Content/Image/Controls/NCImageControlsView.swift` | Normal thumbnail overlay, with the existing visibility, spacing and selection actions. Normal navigation and the information sheet remain in the hosting controller. |
-| `Content/Image/Controls/NCImageAdaptiveControlsView.swift` | Adaptive image summary, previous/next buttons and independent EXIF/location rendering. The shared panel owns actions and the fixed thumbnail area. |
+| `Content/Image/Controls/NCImageAdaptiveControlsView.swift` | Always hosts the shared information view inside its fixed island, plus previous/next buttons; the shared panel owns actions and thumbnails. |
 | `Views/Controls/NCMediaAdaptiveControlsView.swift` | Lower composition for paged images and video covers: standalone buttons, inline information, cover actions and thumbnails. Also contains the SwiftUI/UIKit bridge and its hosting support types. |
 | `NCMediaViewerHostingController.swift` | Owns paged-media navigation actions, title updates and information loading. Hides the upper navigation bar when folded and routes information into the lower controls. |
 | `Core/NCMediaViewerView.swift` | Selects the normal composition or experimental paging bridge using the central switch. |
@@ -93,16 +93,22 @@ Share media state and action callbacks, rather than normal/adaptive rendered
 views. Keep the paging and playback hosts stable across layout changes. The
 thumbnail renderer is still shared: layout-specific styling belongs in the
 adaptive composition; editing its internal graphics affects both modes.
-Adaptive images use `NCImageAdaptiveControlsView` for information, independently
-of the normal `NCMediaViewerDetailView`. Other media still reuse the existing
-information renderer. Keep data/loading bindings shared when adding variants.
+Adaptive images use `NCImageAdaptiveControlsView` as their independent layout,
+but reuse the existing `NCMediaViewerDetailView` for the Info contents, just like
+normal mode and other media. Changes inside that information view affect both
+modes; its hosting island, buttons and thumbnail placement remain independent.
 
-The adaptive image summary uses real file metadata immediately. EXIF loaded by
-the existing Info action is retained for the last inspected image only, matched
-by media ID; opening the summary does not download the original automatically.
-Missing fields are omitted. Info expands the scrollable content with EXIF and
-location details; previous/next buttons remain visible outside that scroll area
-and work while information is open. Map taps retain the existing Maps action.
+The adaptive image island always uses the same scrollable information panel.
+It starts with available file metadata (including dimensions and coordinates),
+without downloading the original. The existing Info action loads additional
+EXIF and updates that panel. Data is retained for the last inspected image only,
+matched by media ID, and remains visible after closing Info. The adaptive caller
+sets `showsOnlyAvailableData` to omit missing camera/lens/exposure fields; the
+default remains false for normal sheets. The selectable filename appears at
+the top in both modes, wrapping long names instead of truncating them.
+The file date is used when an EXIF date is unavailable. Previous/next buttons
+remain outside the fixed island and work while information is open. Map taps
+retain the existing Maps action.
 The two `Adaptive Image` canvas previews isolate these visual states. The adaptive
 image panel uses a black background, subtly shaded graphite controls and bold
 white text and symbols. Previous/next buttons use a compact icon/text row and
@@ -186,6 +192,11 @@ closed. In the folded layout, reopening information displays the existing
 `NCMediaViewerDetailView` below the image, using the existing download/EXIF flow.
 Live Photo badges and image-analysis interactions still belong to the image
 content; they have not been relocated into the lower controls.
+The LIVE badge uses the owning viewer's actual safe area in normal mode, including
+side bars after rotation, with 8-point top and 12-point leading clearance. In
+folded mode it keeps 12-point upper/leading margins without navbar clearance.
+The legacy inset remains only a fallback when no owning viewer is attached,
+such as an isolated canvas preview. Verify both rotations and tap-to-hide chrome.
 
 ## Verification
 

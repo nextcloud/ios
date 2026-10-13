@@ -10,13 +10,21 @@ import NextcloudKit
 struct NCMediaViewerDetailView: View {
     let metadata: tableMetadata
     let exif: ExifData
+    /// Adaptive inline use omits missing fields; normal sheets retain their existing presentation.
+    var showsOnlyAvailableData = false
 
     private let utilityFileSystem = NCUtilityFileSystem()
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                dateSection
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(metadata.fileNameView.isEmpty ? metadata.fileName : metadata.fileNameView)
+                        .font(.headline)
+                        .textSelection(.enabled)
+                        .fixedSize(horizontal: false, vertical: true)
+                    dateSection
+                }
                 mediaSummaryCard
                 locationSection
             }
@@ -32,9 +40,11 @@ struct NCMediaViewerDetailView: View {
     private var mediaSummaryCard: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Text(cameraText)
-                    .font(.body)
-                    .lineLimit(1)
+                if !showsOnlyAvailableData || !cameraText.isEmpty {
+                    Text(cameraText)
+                        .font(.body)
+                        .lineLimit(1)
+                }
 
                 Spacer(minLength: 8)
 
@@ -53,34 +63,38 @@ struct NCMediaViewerDetailView: View {
             .background(.secondary.opacity(0.10))
 
             VStack(alignment: .leading, spacing: 10) {
-                Text(lensText)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
+                if !showsOnlyAvailableData || !lensText.isEmpty {
+                    Text(lensText)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
 
                 FlowingDetailValues(values: primaryMediaValues)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
 
-            Divider()
+            if !exifStripValues.isEmpty {
+                Divider()
 
-            HStack(spacing: 0) {
-                ForEach(Array(exifStripValues.enumerated()), id: \.offset) { index, value in
-                    Text(value)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .frame(maxWidth: .infinity)
+                HStack(spacing: 0) {
+                    ForEach(Array(exifStripValues.enumerated()), id: \.offset) { index, value in
+                        Text(value)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .frame(maxWidth: .infinity)
 
-                    if index < exifStripValues.count - 1 {
-                        Divider()
-                            .frame(height: 22)
+                        if index < exifStripValues.count - 1 {
+                            Divider()
+                                .frame(height: 22)
+                        }
                     }
                 }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 12)
             }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 12)
         }
         .background(.secondary.opacity(0.08))
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
@@ -90,18 +104,10 @@ struct NCMediaViewerDetailView: View {
 
     @ViewBuilder
     private var dateSection: some View {
-        if let date = exif.date as Date? {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(dayString(from: date))
-                    .font(.body)
-
-                HStack(spacing: 8) {
-                    Text(dateString(from: date))
-                    Text(timeString(from: date))
-                }
+        if let date = exif.date ?? (showsOnlyAvailableData ? metadata.date as Date : nil) {
+            Text("\(dayString(from: date)), \(dateString(from: date)) \(timeString(from: date))")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
-            }
         } else {
             Text(NSLocalizedString("_no_date_information_", comment: ""))
                 .font(.headline)
@@ -246,7 +252,9 @@ struct NCMediaViewerDetailView: View {
             values.append(resolutionText)
         }
 
-        values.append(utilityFileSystem.transformedSize(metadata.size))
+        if !showsOnlyAvailableData || metadata.size > 0 {
+            values.append(utilityFileSystem.transformedSize(metadata.size))
+        }
 
         if metadata.isLivePhoto {
             values.append("LIVE")
@@ -256,13 +264,14 @@ struct NCMediaViewerDetailView: View {
     }
 
     private var exifStripValues: [String] {
-        [
+        let values: [String?] = [
             exif.iso.map { "ISO \($0)" },
             exif.lensLength.map { "\($0) mm" },
             exif.exposureValue.map { "\($0) ev" },
             exif.apertureValue.map { "ƒ\($0)" },
             exif.shutterSpeedApex.map { "1/\(Int(pow(2, $0))) s" }
-        ].map { $0 ?? "-" }
+        ]
+        return showsOnlyAvailableData ? values.compactMap { $0 } : values.map { $0 ?? "-" }
     }
 
     private var fileNameWithoutExtension: String {
@@ -270,6 +279,9 @@ struct NCMediaViewerDetailView: View {
     }
 
     private var cameraText: String {
+        if showsOnlyAvailableData {
+            return [exif.make, exif.model].compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }.joined(separator: " ")
+        }
         guard let make = exif.make,
               let model = exif.model else {
             return NSLocalizedString("_no_camera_information_", comment: "")
@@ -279,6 +291,9 @@ struct NCMediaViewerDetailView: View {
     }
 
     private var lensText: String {
+        if showsOnlyAvailableData {
+            return exif.lensModel?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        }
         guard let make = exif.make,
               let model = exif.model,
               let lensModel = exif.lensModel else {

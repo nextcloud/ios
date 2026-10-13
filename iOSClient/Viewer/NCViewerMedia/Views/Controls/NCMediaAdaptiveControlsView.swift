@@ -73,7 +73,7 @@ struct NCMediaAdaptiveControlsView: View {
             NCImageAdaptiveControlsView(
                 metadata: metadata,
                 exif: state.imageInformation?.ocId == metadata.ocId ? state.imageInformation?.exif : nil,
-                isShowingInformation: state.detailView?.metadata.ocId == metadata.ocId,
+                detailView: state.detailView?.metadata.ocId == metadata.ocId ? state.detailView : nil,
                 canGoPrevious: model.selectedIndex > 0 && model.pageTransition.isIdle,
                 canGoNext: model.selectedIndex < model.numberOfPages - 1 && model.pageTransition.isIdle,
                 onPrevious: { selectAdjacentPage(offset: -1) },

@@ -11,6 +11,9 @@ import NextcloudKit
 // MARK: - Live Photo Viewer Content View
 
 struct NCLivePhotoViewerContentView: View {
+    @Environment(\.mediaViewerIsFoldedLayout) private var isFoldedLayout
+    @Environment(\.layoutDirection) private var layoutDirection
+    @State private var overlaySafeInsets: UIEdgeInsets?
     private final class ZoomStateStore {
         var value: NCImageZoomView.ZoomState?
 
@@ -180,7 +183,10 @@ struct NCLivePhotoViewerContentView: View {
         GeometryReader { proxy in
             let isLandscape = proxy.size.width > proxy.size.height
             let isPad = UIDevice.current.userInterfaceIdiom == .pad
-            let topInset = isLandscape && !isPad ? max(topOverlayInset, 76) : topOverlayInset
+            let fallbackTopInset = isLandscape && !isPad ? max(topOverlayInset, 76) : topOverlayInset
+            let topInset = isFoldedLayout ? 12 : overlaySafeInsets.map { $0.top + 8 } ?? fallbackTopInset
+            let leadingSafeInset = layoutDirection == .leftToRight ? overlaySafeInsets?.left : overlaySafeInsets?.right
+            let leadingInset = isFoldedLayout ? 12 : (leadingSafeInset ?? 0) + 12
 
             VStack {
                 HStack {
@@ -205,7 +211,7 @@ struct NCLivePhotoViewerContentView: View {
                     .overlay(Capsule() .stroke(livePhotoBadgeStroke, lineWidth: 1))
                     .clipShape(Capsule())
                     .shadow(color: .black.opacity(0.08), radius: 2, x: 0, y: 1)
-                    .padding(.leading, 12)
+                    .padding(.leading, leadingInset)
                     .padding(.top, topInset)
 
                     Spacer()
@@ -214,7 +220,56 @@ struct NCLivePhotoViewerContentView: View {
                 Spacer()
             }
         }
+        .background(OverlaySafeAreaReader { overlaySafeInsets = $0 })
         .allowsHitTesting(false)
+    }
+
+    /// Read the owning viewer's safe area in badge coordinates, including bars that move to a side.
+    private struct OverlaySafeAreaReader: UIViewRepresentable {
+        let onChange: (UIEdgeInsets) -> Void
+
+        func makeUIView(context: Context) -> ReaderView {
+            let view = ReaderView()
+            view.isUserInteractionEnabled = false
+            view.onChange = onChange
+            return view
+        }
+
+        func updateUIView(_ view: ReaderView, context: Context) {
+            view.onChange = onChange
+            view.setNeedsLayout()
+        }
+
+        final class ReaderView: UIView {
+            var onChange: ((UIEdgeInsets) -> Void)?
+            private var lastInsets: UIEdgeInsets?
+
+            override func layoutSubviews() {
+                super.layoutSubviews()
+                guard window != nil, bounds.width > 0, bounds.height > 0 else { return }
+                var ancestor: UIView? = self
+                while let view = ancestor {
+                    if let owner = view.next as? NCMediaViewerHostingController {
+                        let safeFrame = owner.view.convert(owner.view.safeAreaLayoutGuide.layoutFrame, to: self)
+                        let insets = UIEdgeInsets(
+                            top: max(0, safeFrame.minY - bounds.minY),
+                            left: max(0, safeFrame.minX - bounds.minX),
+                            bottom: max(0, bounds.maxY - safeFrame.maxY),
+                            right: max(0, bounds.maxX - safeFrame.maxX)
+                        )
+                        guard lastInsets != insets else { return }
+                        lastInsets = insets
+                        // Publish after UIKit layout, rather than changing SwiftUI state during its update.
+                        DispatchQueue.main.async { [weak self] in
+                            guard let self, self.lastInsets == insets, self.window != nil else { return }
+                            self.onChange?(insets)
+                        }
+                        return
+                    }
+                    ancestor = view.superview
+                }
+            }
+        }
     }
 
     // MARK: - Identifiers
