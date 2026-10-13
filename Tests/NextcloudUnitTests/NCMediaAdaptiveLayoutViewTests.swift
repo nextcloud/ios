@@ -344,6 +344,44 @@ struct NCMediaAdaptiveLayoutViewTests {
         #expect(lowerControls.superview === view)
     }
 
+    @Test("Enabled mode without a fold preserves normal chrome while resizing", arguments: [
+        CGSize(width: 390, height: 844),
+        CGSize(width: 844, height: 390),
+        CGSize(width: 1024, height: 1366),
+        CGSize(width: 420, height: 600)
+    ])
+    func resizingWithoutFoldPreservesNormalChrome(size: CGSize) {
+        let mediaView = UIView()
+        let normalControls = UIView()
+        normalControls.isHidden = true
+        var creationCount = 0
+        var modes: [Bool] = []
+        let view = NCMediaAdaptiveLayoutView(
+            mediaView: mediaView,
+            normalControlsView: normalControls,
+            isLayoutEnabled: true,
+            adaptiveControlsView: {
+                creationCount += 1
+                return UIView()
+            }
+        )
+        view.onLayoutModeChanged = { modes.append($0) }
+
+        for boundsSize in [CGSize(width: 800, height: 600), size, CGSize(width: 800, height: 600)] {
+            view.frame = CGRect(origin: .zero, size: boundsSize)
+            view.updateLayout(divisionFrames: [])
+            #expect(mediaView.frame == view.bounds)
+            #expect(normalControls.frame == view.bounds)
+            #expect(normalControls.isHidden)
+            #expect(!view.isFoldedLayout)
+        }
+
+        #expect(creationCount == 0)
+        #expect(modes.isEmpty)
+        #expect(mediaView.superview === view)
+        #expect(normalControls.superview === view)
+    }
+
     @Test("Unavailable adaptive controls preserve the normal layout and can recover")
     func unavailableLowerControlsKeepNormalLayout() {
         let mediaView = UIView()

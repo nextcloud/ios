@@ -172,6 +172,9 @@ action ownership, fold geometry,
 unfolding, initial adaptive constraints, deferred creation of lower controls and
 recovery when lower controls are unavailable. These tests do not establish runtime
 zoom or playback continuity on a folded device.
+The no-fold resizing case covers portrait, landscape, tablet-sized and narrow
+window bounds while preserving hidden normal controls and avoiding lower-host
+creation. It does not simulate a particular device or system reserved regions.
 
 [NCImageZoomViewTests.swift](../../../Tests/NextcloudUnitTests/NCImageZoomViewTests.swift)
 also covers centering of horizontal, vertical and square images through a full /
@@ -213,6 +216,13 @@ Start with the normal layout before testing the fold:
 4. Fold/unfold repeatedly while loading or playing; check position and playback
    continuity with each engine. Fullscreen video thumbnails are still pending.
 5. Repeat on iOS 18 to verify the normal fallback.
+6. With the switch `true`, repeat normal flows on iPhone and iPad without a fold.
+   Rotate the device and resize iPad windows, with controls both visible and
+   hidden. Verify thumbnail selection, zoom, navigation, information sheets,
+   playback and iPad menu/share popover anchors. On Duo, also check the outer
+   display, fully open inner display and a vertical book-like fold: these use
+   the normal composition. Only a suitable active horizontal division enables
+   the upper-media/lower-controls composition.
 
 A successful build and these checks do not establish readiness on a physical
 foldable device. Validate actual reserved regions, window resizing and transitions
