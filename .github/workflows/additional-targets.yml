@@ -26,7 +26,7 @@ jobs:
     env:
       PROJECT: Nextcloud.xcodeproj
       DESTINATION: platform=iOS Simulator,name=iPhone 17,OS=27.0
-      XCODE_VERSION: '27.0'
+      XCODE_VERSION: '27.1'
     steps:
     - uses: actions/checkout@v7
     - name: Download GoogleService-Info.plist
