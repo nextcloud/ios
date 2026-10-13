@@ -25,6 +25,8 @@ enum NCVideoAVPlayerPresenter {
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?,
         playbackOptions: NCMediaPlaybackOptions,
+        adaptivePagingModel: NCMediaViewerModel? = nil,
+        onSelectPage: ((_ index: Int) -> Void)? = nil,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
         onPrevious: (() -> Void)? = nil,
@@ -53,6 +55,7 @@ enum NCVideoAVPlayerPresenter {
             )
             currentViewController.canGoPrevious = canGoPrevious
             currentViewController.canGoNext = canGoNext
+            currentViewController.configureAdaptivePaging(model: adaptivePagingModel, onSelectPage: onSelectPage)
             currentViewController.onPrevious = onPrevious
             currentViewController.onNext = onNext
             currentViewController.onPlaybackEnded = onPlaybackEnded
@@ -79,6 +82,7 @@ enum NCVideoAVPlayerPresenter {
             )
             currentViewController.canGoPrevious = canGoPrevious
             currentViewController.canGoNext = canGoNext
+            currentViewController.configureAdaptivePaging(model: adaptivePagingModel, onSelectPage: onSelectPage)
             currentViewController.onPrevious = onPrevious
             currentViewController.onNext = onNext
             currentViewController.onPlaybackEnded = onPlaybackEnded
@@ -117,6 +121,7 @@ enum NCVideoAVPlayerPresenter {
         )
         viewController.canGoPrevious = canGoPrevious
         viewController.canGoNext = canGoNext
+        viewController.configureAdaptivePaging(model: adaptivePagingModel, onSelectPage: onSelectPage)
         viewController.onPrevious = onPrevious
         viewController.onNext = onNext
         viewController.onPlaybackEnded = onPlaybackEnded

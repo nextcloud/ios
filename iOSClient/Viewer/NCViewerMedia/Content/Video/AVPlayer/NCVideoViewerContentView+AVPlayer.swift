@@ -29,6 +29,8 @@ extension NCVideoViewerContentView {
             isChromeHidden: isChromeHidden,
             contextMenuController: contextMenuController,
             playbackOptions: playbackOptions,
+            adaptivePagingModel: adaptivePagingModel,
+            onSelectPage: selectPageFromAVPlayer,
             canGoPrevious: canGoPrevious,
             canGoNext: canGoNext,
             onPrevious: goToPreviousPageFromAVPlayer,
@@ -72,4 +74,21 @@ extension NCVideoViewerContentView {
             onNextPage?()
         }
     }
+    @MainActor
+    func selectPageFromAVPlayer(_ index: Int) {
+        guard !isSelectingPlaybackPage, let model = adaptivePagingModel,
+              model.pageTransition.isIdle, index != model.selectedIndex,
+              index >= 0, index < model.numberOfPages else { return }
+        isSelectingPlaybackPage = true
+        let sourceIndex = model.selectedIndex
+        NCVideoAVPlayerPresenter.dismiss {
+            resetPlaybackPresentationState()
+            Task { @MainActor in
+                defer { isSelectingPlaybackPage = false }
+                guard model.pageTransition.isIdle, model.selectedIndex == sourceIndex else { return }
+                await model.displayPreviewPage(at: index)
+            }
+        }
+    }
+
 }

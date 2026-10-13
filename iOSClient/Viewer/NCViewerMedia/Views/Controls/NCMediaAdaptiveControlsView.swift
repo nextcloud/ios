@@ -51,7 +51,8 @@ struct NCMediaAdaptiveControlsView: View {
         .ignoresSafeArea(.container, edges: .bottom)
     }
 
-    // Keep page swipes outside the buttons/thumbnail strip and preserve information scrolling/map gestures.
+    // Audio handles swipes locally outside its slider; keep this common gesture away from seeking.
+    // Other media preserve information scrolling/map gestures and the action/thumbnail rows.
     private var isPageSwipeEnabled: Bool {
         state.isFoldedLayout && state.detailView == nil && model.numberOfPages > 1 && model.selectedMetadata?.classFile != NKTypeClassFile.audio.rawValue
     }
@@ -92,9 +93,26 @@ struct NCMediaAdaptiveControlsView: View {
                 onPrevious: { selectAdjacentPage(offset: -1) },
                 onNext: { selectAdjacentPage(offset: 1) }
             )
-        } else if let ocId = model.selectedMetadata?.ocId,
-                  let controls = state.videoCoverControls(for: ocId) {
-            NCVideoAdaptivePlaybackCoverControlsView(presentation: controls)
+        } else if let metadata = model.selectedMetadata, metadata.classFile == NKTypeClassFile.video.rawValue {
+            GeometryReader { geometry in
+                let navigationHeight = min(max(0, geometry.size.height - 5), max(44, geometry.size.height * 0.18))
+                VStack(spacing: 5) {
+                    Group {
+                        if let controls = state.videoCoverControls(for: metadata.ocId) {
+                            NCVideoAdaptivePlaybackCoverControlsView(presentation: controls)
+                        } else {
+                            Spacer(minLength: 0)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                    NCMediaAdaptivePagingFooterView(model: model, navigationHeight: navigationHeight, onSelectPage: { index in
+                        selectAdjacentPage(offset: index - model.selectedIndex)
+                    })
+                    .pageNavigation
+                    .frame(height: navigationHeight)
+                }
+            }
         } else {
             Spacer(minLength: 0)
         }

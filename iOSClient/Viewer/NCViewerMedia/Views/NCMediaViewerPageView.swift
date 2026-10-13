@@ -163,6 +163,7 @@ struct NCMediaViewerPageView: View {
         if let metadata = page.metadata {
             NCVideoViewerContentView(
                 metadata: metadata,
+                adaptivePagingModel: model,
                 localURL: localURL,
                 previewURL: previewURL,
                 userAgent: userAgent,

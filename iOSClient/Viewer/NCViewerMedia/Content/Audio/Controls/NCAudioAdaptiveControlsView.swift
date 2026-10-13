@@ -21,7 +21,11 @@ struct NCAudioAdaptiveControlsView: View {
             VStack(spacing: 5) {
                 playbackControls
                     .frame(height: playbackHeight)
-                    .background(Color.ncViewerAdaptiveControlBackground, in: RoundedRectangle(cornerRadius: 16))
+                    .background {
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.ncViewerAdaptiveControlBackground)
+                            .gesture(pageSwipe)
+                    }
                     .clipped()
 
                 HStack(spacing: 5) {
@@ -29,6 +33,7 @@ struct NCAudioAdaptiveControlsView: View {
                     pageButton(systemName: "chevron.right", title: "_next_media_", isEnabled: canGoNext, action: onNext)
                 }
                 .frame(height: navigationHeight)
+                .simultaneousGesture(pageSwipe)
             }
         }
         .foregroundStyle(Color.ncViewerAdaptiveControlForeground)
@@ -53,7 +58,10 @@ struct NCAudioAdaptiveControlsView: View {
                     title: "_play_next_media_automatically_", isEnabled: true, action: playbackOptions.toggleAutoAdvance
                 )
             }
+            .contentShape(Rectangle())
+            .simultaneousGesture(pageSwipe)
 
+            // No page gesture on this row: horizontal drags seek within the current audio.
             Slider(value: Binding(get: { playbackModel.currentTime }, set: { playbackModel.seek(to: $0) }), in: 0...max(playbackModel.duration, 1))
                 .disabled(!isSelected || playbackModel.duration <= 0)
 
@@ -63,8 +71,23 @@ struct NCAudioAdaptiveControlsView: View {
                 Text(formatTime(playbackModel.duration))
             }
             .font(.caption.monospacedDigit())
+            .contentShape(Rectangle())
+            .simultaneousGesture(pageSwipe)
         }
         .padding(.horizontal, 12)
+    }
+
+    private var pageSwipe: some Gesture {
+        DragGesture(minimumDistance: 30)
+            .onEnded { value in
+                let translation = value.translation
+                guard abs(translation.width) >= 50, abs(translation.width) > abs(translation.height) else { return }
+                if translation.width < 0, canGoNext {
+                    onNext()
+                } else if translation.width > 0, canGoPrevious {
+                    onPrevious()
+                }
+            }
     }
 
     private func controlButton(systemName: String, title: String, isEnabled: Bool, action: @escaping () -> Void) -> some View {

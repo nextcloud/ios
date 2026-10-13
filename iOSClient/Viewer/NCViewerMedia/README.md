@@ -105,6 +105,7 @@ video playback behavior. Local builds and tests remain user-run in Xcode.
 | `Views/NCMediaAdaptiveLayoutView.swift` | Shared UIKit geometry, normal/adaptive visibility and layout change callback. Keeps the media view in place. |
 | `Content/Image/Controls/NCImageControlsView.swift` | Normal thumbnail overlay, with the existing visibility, spacing and selection actions. Normal navigation and the information sheet remain in the hosting controller. |
 | `Content/Image/Controls/NCImageAdaptiveControlsView.swift` | Always hosts the shared information view inside its fixed island, plus previous/next buttons; the shared panel owns actions and thumbnails. |
+| `Views/Controls/NCMediaAdaptivePagingFooterView.swift` | Presented adaptive video footer: persistent previous/next and thumbnails sharing the viewer model, with dismissal-aware selection. |
 | `Views/Controls/NCMediaAdaptiveControlsView.swift` | Lower composition for paged images, audio and video covers: standalone buttons, image-only inline information, playback/cover actions and thumbnails. Also contains the SwiftUI/UIKit bridge and its hosting support types. |
 | `Content/Audio/Controls/NCAudioAdaptiveControlsView.swift` | Independent lower audio controls: repeat/restart/play/pause/auto-advance, seeking and previous/next; no information island. Observes the existing playback model. |
 | `NCMediaViewerHostingController.swift` | Owns paged-media navigation actions, title updates and information loading. Hides the upper navigation bar when folded and routes information into the lower controls. |
@@ -223,17 +224,20 @@ the area remains reserved even with a single page, when no selection strip is
 needed. Extra vertical thumbnail padding is removed. Adaptive sections and
 buttons use 5-point gaps; standalone actions are separate equally sized buttons
 with 44-point height. The middle content is clipped and scrolls independently. This shared
-area currently covers paged images, audio and video covers; fullscreen video
-still needs its own thumbnail integration.
+area covers paged images, audio and video covers. Presented adaptive video uses
+`NCMediaAdaptivePagingFooterView` for the same fixed thumbnail lane and previous/next
+position. Normal fullscreen video does not create this footer.
 
 Page swipes remain available on the upper media surface. In the folded layout,
 horizontal swipes in the middle controls area also select the previous/next page,
 using the same selection flow as the thumbnail strip. This excludes the action
 row and thumbnail strip. When information is open, lower page swipes are ignored
 to preserve vertical scrolling and map gestures. Page swipes are also ignored
-while another page transition is in progress. Lower audio controls also exclude
-page swipes so seeking cannot accidentally change pages; use previous/next,
-thumbnails or the upper surface instead.
+while another page transition is in progress. Audio handles lower swipes locally
+on the playback island's free background, button/time rows and previous/next row.
+The seek slider is excluded so its horizontal drags only seek within the current
+audio. Local swipes call the same previous/next actions, with the same page-boundary
+and transition guards; upper swipes and thumbnails remain available.
 
 `NCMediaViewerThumbnailStrip` holds the same metadata, loading and selection
 bindings for both layouts. The normal overlay retains its existing visibility,
@@ -242,8 +246,14 @@ and actions; it does not own or create a player.
 
 The UIKit paging bridge remains in the same file under `Stable paging bridge`.
 Do not rebuild its media host to rearrange lower controls. Fullscreen AVPlayer/VLC
-controls still have their existing separate implementations. Connecting their
-thumbnail strip is follow-up integration work.
+controls retain their separate implementations. Both presenters receive the same
+viewer model for their adaptive footer. Selecting a thumbnail or previous/next
+stops and dismisses the current player before selecting the target page, using
+the existing paging flow without auto-starting another video. Selecting the current
+thumbnail leaves playback running. Repeated selections are gated during dismissal.
+Footer selection does not invoke the viewer's Close action. Folding retains the
+player and footer host; resizing only updates the footer geometry. Player gestures
+exclude the footer as well as the existing control hit frames.
 
 Audio keeps its `@StateObject` and playback lifecycle modifiers above the visual
 layout switch in `NCAudioViewerContentView`. The upper folded region shows only
@@ -359,7 +369,13 @@ Start with the normal layout before testing the fold:
    automatically. After Info downloads the original, check that its button is
    disabled and page changes cannot apply EXIF from the previous image.
 4. Fold/unfold repeatedly while loading or playing; check position and playback
-   continuity with each engine. Fullscreen video thumbnails are still pending.
+   continuity with each engine. In folded playback, check that previous/next and
+   thumbnails keep the same bottom position as images/audio, including a single
+   page's reserved lane. Select image, audio and video thumbnails and verify the
+   player stops before the target page appears. Tapping the current thumbnail must
+   leave playback running. Check rapid selections, dragging thumbnails, seeking,
+   subtitle/audio-track menus, pause, close and folding/unfolding. Normal playback
+   must not show the footer.
 5. Repeat on iOS 18 to verify the normal fallback.
 6. With the switch `true`, repeat normal flows on iPhone and iPad without a fold.
    Rotate the device and resize iPad windows, with controls both visible and

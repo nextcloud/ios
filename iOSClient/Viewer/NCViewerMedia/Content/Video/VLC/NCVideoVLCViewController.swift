@@ -26,6 +26,9 @@ final class NCVideoVLCViewController: UIViewController {
 
     // MARK: - Paging Callbacks
 
+    private var adaptivePagingModel: NCMediaViewerModel?
+    private var onSelectPage: ((_ index: Int) -> Void)?
+
     var onPrevious: (() -> Void)?
     var onNext: (() -> Void)?
     var onPlaybackEnded: NCMediaPlaybackAdvanceRequest?
@@ -33,6 +36,17 @@ final class NCVideoVLCViewController: UIViewController {
     var onPlaybackError: (() -> Void)?
     var canGoPrevious = false
     var canGoNext = false
+
+    func configureAdaptivePaging(model: NCMediaViewerModel?, onSelectPage: ((_ index: Int) -> Void)?) {
+        adaptivePagingModel = model
+        self.onSelectPage = onSelectPage
+        updateAdaptivePagingIfFolded()
+    }
+
+    private func updateAdaptivePagingIfFolded() {
+        guard (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true else { return }
+        adaptiveControlsView.configurePaging(model: adaptivePagingModel, onSelectPage: { [weak self] index in self?.onSelectPage?(index) })
+    }
 
     // MARK: - Views
 
@@ -161,6 +175,7 @@ final class NCVideoVLCViewController: UIViewController {
                 return
             }
 
+            updateAdaptivePagingIfFolded()
             showControls(animated: false)
             updateViewerBackgroundIfNeeded(force: true)
 
@@ -1055,7 +1070,8 @@ final class NCVideoVLCViewController: UIViewController {
 
         if (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true {
             let adaptiveActionsFrame = adaptiveControlsView.actionsContainerView.convert(adaptiveControlsView.actionsContainerView.bounds, to: view)
-            if !adaptiveControlsView.isHidden && adaptiveActionsFrame.contains(location) {
+            let footerFrame = adaptiveControlsView.pagingFooterView.convert(adaptiveControlsView.pagingFooterView.bounds, to: view)
+            if !adaptiveControlsView.isHidden && (adaptiveActionsFrame.contains(location) || footerFrame.contains(location)) {
                 return true
             }
         }

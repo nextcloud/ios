@@ -11,6 +11,11 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
 
     weak var delegate: NCVideoControlsViewDelegate?
     let actionsContainerView = UIView()
+    let pagingFooterView = UIView()
+    private var pagingModel: NCMediaViewerModel?
+    private var onSelectPage: ((_ index: Int) -> Void)?
+    private var pagingFooterController: UIHostingController<NCMediaAdaptivePagingFooterView>?
+    private var hostingBottomConstraint: NSLayoutConstraint?
 
     // MARK: - Hit Test Proxies
 
@@ -57,6 +62,30 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
         state = NCVideoControlsState()
         super.init(coder: coder)
         configureLayout()
+    }
+
+    /// Called only for the folded player; normal controls never create this footer.
+    func configurePaging(model: NCMediaViewerModel?, onSelectPage: @escaping (_ index: Int) -> Void) {
+        pagingModel = model
+        self.onSelectPage = onSelectPage
+        guard let model else {
+            pagingFooterController?.view.removeFromSuperview()
+            pagingFooterController = nil
+            setNeedsLayout()
+            return
+        }
+        let root = NCMediaAdaptivePagingFooterView(model: model, navigationHeight: 44, onSelectPage: onSelectPage)
+        if let pagingFooterController {
+            pagingFooterController.rootView = root
+        } else {
+            let controller = UIHostingController(rootView: root)
+            controller.overrideUserInterfaceStyle = .dark
+            controller.safeAreaRegions = []
+            controller.view.backgroundColor = .clear
+            pagingFooterView.addSubview(controller.view)
+            pagingFooterController = controller
+        }
+        setNeedsLayout()
     }
 
     // MARK: - Public Updates
@@ -160,8 +189,27 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        actionsContainerView.frame = CGRect(x: 0, y: safeAreaInsets.top, width: bounds.width, height: NCMediaAdaptiveActionsView.preferredHeight)
+        actionsContainerView.frame = CGRect(x: 5, y: safeAreaInsets.top + 5, width: max(0, bounds.width - 10), height: NCMediaAdaptiveActionsView.preferredHeight)
+        updatePagingFooterLayout()
         updateTopActionsPosition()
+    }
+
+    private func updatePagingFooterLayout() {
+        var footerHeight: CGFloat = 0
+        if let model = pagingModel, let onSelectPage, let controller = pagingFooterController {
+            // Same middle-area budget and navigation height as paged image/audio controls.
+            let middleHeight = max(0, bounds.height - NCMediaAdaptiveActionsView.preferredHeight - NCMediaViewerThumbnail.preferredHeight - 20)
+            let navigationHeight = min(max(0, middleHeight - 5), max(44, middleHeight * 0.18))
+            footerHeight = navigationHeight + NCMediaViewerThumbnail.preferredHeight + 15
+            if controller.rootView.navigationHeight != navigationHeight {
+                controller.rootView = NCMediaAdaptivePagingFooterView(model: model, navigationHeight: navigationHeight, onSelectPage: onSelectPage)
+            }
+            pagingFooterView.frame = CGRect(x: 0, y: max(0, bounds.height - footerHeight), width: bounds.width, height: footerHeight)
+            controller.view.frame = pagingFooterView.bounds
+        } else {
+            pagingFooterView.frame = .zero
+        }
+        hostingBottomConstraint?.constant = -footerHeight
     }
 
     // MARK: - Configuration
@@ -176,6 +224,7 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
         configureHitTestProxyViews()
         actionsContainerView.isHidden = false
         addSubview(actionsContainerView)
+        addSubview(pagingFooterView)
     }
 
     private func configureHostingView() {
@@ -186,11 +235,13 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
 
         addSubview(hostingView)
 
+        let bottomConstraint = hostingView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        hostingBottomConstraint = bottomConstraint
         NSLayoutConstraint.activate([
             hostingView.leadingAnchor.constraint(equalTo: leadingAnchor),
             hostingView.trailingAnchor.constraint(equalTo: trailingAnchor),
             hostingView.topAnchor.constraint(equalTo: topAnchor),
-            hostingView.bottomAnchor.constraint(equalTo: bottomAnchor)
+            bottomConstraint
         ])
     }
 
@@ -205,15 +256,18 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
         let topActionsTopConstraint = topActionsView.topAnchor.constraint(equalTo: topAnchor)
         self.topActionsTopConstraint = topActionsTopConstraint
 
+        let bottomConstraint = bottomControlsView.bottomAnchor.constraint(
+            equalTo: hostingController.view.safeAreaLayoutGuide.bottomAnchor, constant: -Self.bottomControlsBottomInset
+        )
         NSLayoutConstraint.activate([
             centerControlsView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            centerControlsView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            centerControlsView.centerYAnchor.constraint(equalTo: hostingController.view.centerYAnchor),
             centerControlsView.widthAnchor.constraint(equalToConstant: Self.centerControlsWidth),
             centerControlsView.heightAnchor.constraint(equalToConstant: Self.centerControlsHeight),
 
             bottomControlsView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Self.bottomControlsHorizontalInset),
             bottomControlsView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Self.bottomControlsHorizontalInset),
-            bottomControlsView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -Self.bottomControlsBottomInset),
+            bottomConstraint,
             bottomControlsView.heightAnchor.constraint(equalToConstant: Self.bottomControlsHeight),
 
             topActionsView.leadingAnchor.constraint(equalTo: leadingAnchor),

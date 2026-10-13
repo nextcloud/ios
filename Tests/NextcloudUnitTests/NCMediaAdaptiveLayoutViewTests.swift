@@ -42,6 +42,35 @@ struct NCMediaAdaptiveLayoutViewTests {
         }
     }
 
+    @Test("Adaptive video footer retains its host and reserves the shared bottom lane")
+    func videoFooterPreservesHostOnResize() throws {
+        let metadata = tableMetadata()
+        metadata.ocId = "video-footer"
+        metadata.classFile = NKTypeClassFile.video.rawValue
+        let model = NCMediaViewerModel(
+            currentMetadata: metadata, ocIds: [metadata.ocId],
+            session: NCSession().getSession(account: ""), loader: NCMediaViewerLoader()
+        )
+        let controls = NCVideoAdaptiveControlsView(state: NCVideoControlsState())
+        controls.configurePaging(model: model, onSelectPage: { _ in })
+        let host = try #require(controls.pagingFooterView.subviews.first)
+        for height in [CGFloat(330), 500] {
+            controls.frame = CGRect(x: 0, y: 0, width: 430, height: height)
+            controls.setNeedsLayout()
+            controls.layoutIfNeeded()
+            let middleHeight = max(0, height - NCMediaAdaptiveActionsView.preferredHeight - NCMediaViewerThumbnail.preferredHeight - 20)
+            let navigationHeight = min(max(0, middleHeight - 5), max(44, middleHeight * 0.18))
+            #expect(controls.pagingFooterView.frame.maxY == height)
+            #expect(controls.pagingFooterView.frame.height == navigationHeight + NCMediaViewerThumbnail.preferredHeight + 15)
+            #expect(controls.pagingFooterView.subviews.first === host)
+            #expect(controls.bottomControlsView.frame.maxY <= controls.pagingFooterView.frame.minY)
+        }
+        controls.configurePaging(model: nil, onSelectPage: { _ in })
+        controls.layoutIfNeeded()
+        #expect(controls.pagingFooterView.subviews.isEmpty)
+        #expect(controls.pagingFooterView.frame == .zero)
+    }
+
     @Test("Adaptive controls share playback state without adding a navigation bar")
     func separateAdaptiveControls() throws {
         let normalControls = NCVideoControlsView()

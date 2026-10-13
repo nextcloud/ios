@@ -9,6 +9,7 @@ import NextcloudKit
 
 struct NCVideoViewerContentView: View {
     let metadata: tableMetadata
+    let adaptivePagingModel: NCMediaViewerModel?
     let localURL: URL?
     let previewURL: URL?
     let userAgent: String?
@@ -35,6 +36,7 @@ struct NCVideoViewerContentView: View {
     @State private var errorMessage: String?
     @State var presentedAVPlayerURL: URL?
     @State var presentedVLCURL: URL?
+    @State var isSelectingPlaybackPage = false
     @State var hasRequestedPlayback = false
     @State var isLaunchingPlayback = false
     @State private var resolvedPlaybackURL: URL?
@@ -50,6 +52,7 @@ struct NCVideoViewerContentView: View {
 
     init(
         metadata: tableMetadata,
+        adaptivePagingModel: NCMediaViewerModel? = nil,
         localURL: URL?,
         previewURL: URL? = nil,
         userAgent: String? = nil,
@@ -72,6 +75,7 @@ struct NCVideoViewerContentView: View {
         cancelVideoDownload: (@MainActor () async -> Void)? = nil
     ) {
         self.metadata = metadata
+        self.adaptivePagingModel = adaptivePagingModel
         self.localURL = localURL
         self.previewURL = previewURL
         self.userAgent = userAgent

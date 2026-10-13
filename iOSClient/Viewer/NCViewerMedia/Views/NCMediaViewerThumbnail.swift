@@ -10,6 +10,7 @@ import NextcloudKit
 /// The caller owns visibility and spacing; this view never hides with the media controls.
 struct NCMediaViewerThumbnailStrip: View {
     @ObservedObject var model: NCMediaViewerModel
+    var onSelectPage: ((_ index: Int) -> Void)?
 
     var body: some View {
         NCMediaViewerThumbnail(
@@ -32,6 +33,10 @@ struct NCMediaViewerThumbnailStrip: View {
                 model.isThumbnailDeleted(at: index)
             },
             onSelect: { index in
+                if let onSelectPage {
+                    onSelectPage(index)
+                    return
+                }
                 Task {
                     await model.displayPreviewPage(at: index)
                 }
