@@ -26,6 +26,8 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     private let floatingTitleView = NCMediaViewerFloatingTitleView()
 
     private var isFoldedMediaLayout = false
+    private var localImageInformationKey: String?
+    private var isAdaptiveImageLocal = false
     private lazy var adaptiveControlsState = NCMediaAdaptiveControlsState()
     private lazy var adaptiveActionsView = NCMediaAdaptiveActionsView(
         closeAction: UIAction { [weak self] _ in self?.closeButtonTapped() },
@@ -197,12 +199,14 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         adaptiveControlsState.isFoldedLayout = isFolded
         isFoldedMediaLayout = isFolded
         setChromeHidden(model.isChromeHidden, animated: false)
+        updateLocalAdaptiveImageInformation()
     }
 
     // MARK: - Closing
 
     /// Stops media playback before the viewer is closed.
     private func stop() {
+        localImageInformationKey = nil
         detailLoadingTask?.cancel()
         detailLoadingTask = nil
         setMediaDetailLoading(false)
@@ -265,6 +269,40 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
            let detailView = adaptiveControlsState.detailView,
            detailView.metadata.ocId != metadata.ocId, isFoldedMediaLayout {
             closeDetail(animated: false)
+        }
+        updateLocalAdaptiveImageInformation()
+    }
+
+    /// Read only an existing original; never download it just to populate the adaptive information island.
+    private func updateLocalAdaptiveImageInformation() {
+        guard NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled else { return }
+        guard isFoldedMediaLayout else {
+            localImageInformationKey = nil
+            isAdaptiveImageLocal = false
+            return
+        }
+        guard let metadata = model.selectedMetadata,
+              metadata.classFile == NKTypeClassFile.image.rawValue,
+              NCUtilityFileSystem().fileProviderStorageExists(metadata) else {
+            localImageInformationKey = nil
+            isAdaptiveImageLocal = false
+            adaptiveActionsView.informationButton?.isEnabled = !mediaDetailActivityIndicator.isAnimating
+            return
+        }
+
+        isAdaptiveImageLocal = true
+        adaptiveActionsView.informationButton?.isEnabled = false
+        let ocId = metadata.ocId
+        let etag = metadata.etag
+        let key = "\(ocId)|\(etag)"
+        guard localImageInformationKey != key else { return }
+        localImageInformationKey = key
+        NCUtility().getExif(metadata: metadata) { [weak self] exif in
+            Task { @MainActor [weak self] in
+                guard let self, self.isFoldedMediaLayout, self.localImageInformationKey == key,
+                      self.model.selectedMetadata?.ocId == ocId, self.model.selectedMetadata?.etag == etag else { return }
+                self.adaptiveControlsState.imageInformation = (ocId: ocId, exif: exif)
+            }
         }
     }
 
@@ -369,6 +407,14 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                 return
             }
 
+            if self.isFoldedMediaLayout, downloadsOriginal {
+                self.updateLocalAdaptiveImageInformation()
+                if self.isAdaptiveImageLocal {
+                    self.finishDetailLoadingWithoutPresentation()
+                    return
+                }
+            }
+
             self.detailLoadingTask = nil
             self.setMediaDetailLoading(false)
 
@@ -394,7 +440,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     private func setMediaDetailLoading(_ isLoading: Bool) {
         if NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled {
-            adaptiveActionsView.informationButton?.isEnabled = !isLoading
+            adaptiveActionsView.informationButton?.isEnabled = !isLoading && !isAdaptiveImageLocal
         }
         if isLoading {
             mediaDetailActivityIndicator.startAnimating()

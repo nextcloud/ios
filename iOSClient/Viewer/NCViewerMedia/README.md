@@ -100,8 +100,12 @@ modes; its hosting island, buttons and thumbnail placement remain independent.
 
 The adaptive image island always uses the same scrollable information panel.
 It starts with available file metadata (including dimensions and coordinates),
-without downloading the original. The existing Info action loads additional
-EXIF and updates that panel. Data is retained for the last inspected image only,
+without downloading the original. When the original already exists locally,
+its EXIF is read automatically and the adaptive Info button is disabled. Reads
+are deduplicated by media ID/etag; callbacks from another page/version are ignored.
+For remote-only images, the existing Info action loads the original and updates
+the same panel, then disables Info once the original is local. Normal-mode Info
+behavior is unchanged. Data is retained for the last inspected image only,
 matched by media ID, and remains visible after closing Info. The adaptive caller
 sets `showsOnlyAvailableData` to omit missing camera/lens/exposure fields; the
 default remains false for normal sheets. The selectable filename appears at
@@ -262,6 +266,10 @@ Start with the normal layout before testing the fold:
    for centering in the upper region before/after loading and unfolding. The
    `Video Playback Cover - Folded Upper Region` canvas preview isolates that area.
    Audio currently returns to normal layout.
+   In folded mode, compare a local original with a preview-only image: local EXIF
+   should appear without tapping Info; preview-only images should not download
+   automatically. After Info downloads the original, check that its button is
+   disabled and page changes cannot apply EXIF from the previous image.
 4. Fold/unfold repeatedly while loading or playing; check position and playback
    continuity with each engine. Fullscreen video thumbnails are still pending.
 5. Repeat on iOS 18 to verify the normal fallback.
