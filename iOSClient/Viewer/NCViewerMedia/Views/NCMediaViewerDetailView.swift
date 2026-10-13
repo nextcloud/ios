@@ -12,6 +12,8 @@ struct NCMediaViewerDetailView: View {
     let exif: ExifData
     /// Adaptive inline use omits missing fields; normal sheets retain their existing presentation.
     var showsOnlyAvailableData = false
+    /// Inline panels pass clear so their containing island owns the background.
+    var backgroundStyle: NCViewerBackgroundStyle = .system
 
     private let utilityFileSystem = NCUtilityFileSystem()
 
@@ -33,7 +35,7 @@ struct NCMediaViewerDetailView: View {
             .padding(.vertical, 20)
         }
         .scrollContentBackground(.hidden)
-        .background(Color.ncViewerBackground(.system))
+        .background(Color.ncViewerBackground(backgroundStyle))
         .presentationBackground(Color.ncViewerBackground(.system))
     }
 

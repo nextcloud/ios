@@ -233,7 +233,7 @@ struct NCAudioViewerContentView: View {
         GeometryReader { proxy in
             let size = max(0, min(320, min(proxy.size.width, proxy.size.height) - 24))
             ZStack {
-                Color.black
+                Color.ncViewerBackground(backgroundStyle)
                 if size > 0 {
                     artworkView(size: size)
                 }

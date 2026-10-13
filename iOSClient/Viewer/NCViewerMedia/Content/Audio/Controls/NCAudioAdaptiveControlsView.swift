@@ -23,14 +23,19 @@ struct NCAudioAdaptiveControlsView: View {
             let playbackHeight = min(max(0, geometry.size.height - navigationHeight - 10), max(128, geometry.size.height * 0.45))
             let informationHeight = max(0, geometry.size.height - navigationHeight - playbackHeight - 10)
             VStack(spacing: 5) {
-                NCMediaViewerDetailView(metadata: detailView?.metadata ?? metadata, exif: detailView?.exif ?? ExifData(), showsOnlyAvailableData: true)
+                NCMediaViewerDetailView(
+                    metadata: detailView?.metadata ?? metadata,
+                    exif: detailView?.exif ?? ExifData(),
+                    showsOnlyAvailableData: true,
+                    backgroundStyle: .custom(.clear)
+                )
                     .frame(height: informationHeight)
-                    .background(controlSurface, in: RoundedRectangle(cornerRadius: 16))
+                    .background(Color.ncViewerAdaptiveControlBackground, in: RoundedRectangle(cornerRadius: 16))
                     .clipShape(RoundedRectangle(cornerRadius: 16))
 
                 playbackControls
                     .frame(height: playbackHeight)
-                    .background(controlSurface, in: RoundedRectangle(cornerRadius: 16))
+                    .background(Color.ncViewerAdaptiveControlBackground, in: RoundedRectangle(cornerRadius: 16))
                     .clipped()
 
                 HStack(spacing: 5) {
@@ -40,10 +45,9 @@ struct NCAudioAdaptiveControlsView: View {
                 .frame(height: navigationHeight)
             }
         }
-        .foregroundStyle(.white)
+        .foregroundStyle(Color.ncViewerAdaptiveControlForeground)
         .fontWeight(.bold)
-        .tint(.white)
-        .environment(\.colorScheme, .dark)
+        .tint(Color.ncViewerAdaptiveControlForeground)
     }
 
     private var playbackControls: some View {
@@ -94,15 +98,11 @@ struct NCAudioAdaptiveControlsView: View {
             Label(NSLocalizedString(title, comment: ""), systemImage: systemName)
                 .font(.subheadline)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(controlSurface, in: RoundedRectangle(cornerRadius: 16))
+                .background(Color.ncViewerAdaptiveControlBackground, in: RoundedRectangle(cornerRadius: 16))
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled)
         .opacity(isEnabled ? 1 : 0.45)
-    }
-
-    private var controlSurface: LinearGradient {
-        LinearGradient(colors: [Color(red: 0.19, green: 0.22, blue: 0.28), Color(red: 0.11, green: 0.13, blue: 0.17)], startPoint: .topLeading, endPoint: .bottomTrailing)
     }
 
     private func formatTime(_ seconds: Double) -> String {
@@ -133,6 +133,6 @@ struct NCAudioAdaptiveControlsView: View {
         onNext: {}
     )
     .frame(width: 430, height: 330)
-    .background(Color.black)
+    .background(Color.ncViewerBackground(.system))
 }
 #endif

@@ -332,9 +332,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         navigationController?.setNavigationBarHidden(hidden || isFoldedMediaLayout, animated: animated)
 
         UIView.animate(withDuration: animated ? 0.2 : 0, delay: 0, options: [.curveEaseInOut]) {
-            self.view.backgroundColor = hidden
-                ? .black
-                : .ncViewerBackground(.system)
+            self.view.backgroundColor = .ncViewerBackground(ncViewerBackgroundStyle(for: self.model.selectedMetadata, isChromeHidden: hidden))
             self.floatingTitleView.alpha = hidden ? 0 : 1
         }
     }

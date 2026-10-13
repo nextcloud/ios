@@ -20,11 +20,11 @@ struct NCImageAdaptiveControlsView: View {
             let navigationHeight = min(max(0, geometry.size.height - 5), max(44, geometry.size.height * 0.18))
             let informationHeight = max(0, geometry.size.height - navigationHeight - 5)
             VStack(spacing: 5) {
-                NCMediaViewerDetailView(metadata: detailView?.metadata ?? metadata, exif: availableExif, showsOnlyAvailableData: true)
+                NCMediaViewerDetailView(metadata: detailView?.metadata ?? metadata, exif: availableExif, showsOnlyAvailableData: true, backgroundStyle: .custom(.clear))
                     .frame(height: informationHeight)
-                    .background(controlSurface, in: RoundedRectangle(cornerRadius: 16))
+                    .background(Color.ncViewerAdaptiveControlBackground, in: RoundedRectangle(cornerRadius: 16))
                     .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(.white.opacity(0.10), lineWidth: 0.5))
+                    .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(Color.ncViewerAdaptiveControlBorder, lineWidth: 0.5))
 
                 // Both islands depend only on available space, never on Info visibility or metadata content.
                 pageActions
@@ -32,10 +32,9 @@ struct NCImageAdaptiveControlsView: View {
                     .layoutPriority(1)
             }
         }
-        .foregroundStyle(.white)
+        .foregroundStyle(Color.ncViewerAdaptiveControlForeground)
         .fontWeight(.bold)
-        .tint(.white)
-        .environment(\.colorScheme, .dark)
+        .tint(Color.ncViewerAdaptiveControlForeground)
     }
 
     private var pageActions: some View {
@@ -54,21 +53,13 @@ struct NCImageAdaptiveControlsView: View {
                     .font(.subheadline)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(controlSurface, in: RoundedRectangle(cornerRadius: 16))
-            .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(.white.opacity(0.10), lineWidth: 0.5))
+            .background(Color.ncViewerAdaptiveControlBackground, in: RoundedRectangle(cornerRadius: 16))
+            .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(Color.ncViewerAdaptiveControlBorder, lineWidth: 0.5))
             .contentShape(RoundedRectangle(cornerRadius: 16))
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled)
         .opacity(isEnabled ? 1 : 0.45)
-    }
-
-    private var controlSurface: LinearGradient {
-        LinearGradient(
-            colors: [Color(red: 0.19, green: 0.22, blue: 0.28), Color(red: 0.11, green: 0.13, blue: 0.17)],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
     }
 
     private var availableExif: ExifData {
@@ -123,7 +114,7 @@ private extension NCImageAdaptiveControlsView {
             onNext: {}
         )
         .frame(width: 430, height: 330)
-        .background(Color.black)
+        .background(Color.ncViewerBackground(.system))
     }
 }
 #endif

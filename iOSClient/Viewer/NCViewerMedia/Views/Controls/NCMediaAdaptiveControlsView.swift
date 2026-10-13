@@ -11,11 +11,14 @@ import NextcloudKit
 /// Common lower panel: buttons, replaceable media controls and a persistent thumbnail strip.
 /// Keep thumbnail visibility outside the media-specific content and information panel.
 struct NCMediaAdaptiveControlsView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var model: NCMediaViewerModel
     @ObservedObject var state: NCMediaAdaptiveControlsState
     let makeActionsView: () -> UIView
 
     var body: some View {
+        let contentStyle = ncViewerBackgroundStyle(for: model.selectedMetadata, isChromeHidden: model.isChromeHidden)
+        let backgroundStyle = ncViewerAdaptivePanelBackgroundStyle(contentStyle: contentStyle)
         VStack(spacing: 5) {
             NCMediaAdaptiveActionsHost(makeActionsView: makeActionsView)
                 .frame(height: NCMediaAdaptiveActionsView.preferredHeight)
@@ -39,11 +42,11 @@ struct NCMediaAdaptiveControlsView: View {
         }
         .padding(5)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black)
-        .foregroundStyle(.white)
+        .background(Color.ncViewerBackground(backgroundStyle))
+        .foregroundStyle(Color.ncViewerAdaptiveControlForeground)
         .fontWeight(.bold)
-        .tint(.white)
-        .environment(\.colorScheme, .dark)
+        .tint(Color.ncViewerAdaptiveControlForeground)
+        .environment(\.colorScheme, ncViewerAdaptiveControlsColorScheme(for: backgroundStyle, inherited: colorScheme))
         // The adaptive footer reaches the lower region's bottom; keep top/side safe areas for actions.
         .ignoresSafeArea(.container, edges: .bottom)
     }
@@ -92,7 +95,10 @@ struct NCMediaAdaptiveControlsView: View {
                 onNext: { selectAdjacentPage(offset: 1) }
             )
         } else if let detailView = state.detailView {
-            detailView
+            NCMediaViewerDetailView(
+                metadata: detailView.metadata, exif: detailView.exif,
+                showsOnlyAvailableData: detailView.showsOnlyAvailableData, backgroundStyle: .custom(.clear)
+            )
         } else if let ocId = model.selectedMetadata?.ocId,
                   let controls = state.videoCoverControls(for: ocId) {
             NCVideoAdaptivePlaybackCoverControlsView(presentation: controls)
@@ -175,7 +181,6 @@ final class NCMediaAdaptiveActionsView: UIStackView {
 
     init(closeAction: UIAction, moreButton: UIButton, infoAction: UIAction? = nil) {
         super.init(frame: .zero)
-        overrideUserInterfaceStyle = .dark
         axis = .horizontal
         alignment = .center
         distribution = .fillEqually
@@ -202,10 +207,10 @@ final class NCMediaAdaptiveActionsView: UIStackView {
         for button in arrangedSubviews.compactMap({ $0 as? UIButton }) {
             var configuration = button.configuration ?? .plain()
             configuration.image = button.image(for: .normal)
-            configuration.baseForegroundColor = .white
+            configuration.baseForegroundColor = .ncViewerAdaptiveControlForeground
             configuration.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(weight: .bold)
-            configuration.background.backgroundColor = UIColor(red: 0.15, green: 0.18, blue: 0.23, alpha: 1)
-            configuration.background.strokeColor = UIColor.white.withAlphaComponent(0.10)
+            configuration.background.backgroundColor = .ncViewerAdaptiveControlBackground
+            configuration.background.strokeColor = .ncViewerAdaptiveControlBorder
             configuration.background.strokeWidth = 0.5
             configuration.background.cornerRadius = 12
             button.configuration = configuration
@@ -229,7 +234,10 @@ private struct NCMediaAdaptiveActionsHost: UIViewRepresentable {
         makeActionsView()
     }
 
-    func updateUIView(_ uiView: UIView, context: Context) { }
+    func updateUIView(_ uiView: UIView, context: Context) {
+        // Keep UIKit action colors in sync with the lower panel's SwiftUI appearance.
+        uiView.overrideUserInterfaceStyle = context.environment.colorScheme == .dark ? .dark : .light
+    }
 }
 
 // MARK: - Stable paging bridge
@@ -290,7 +298,6 @@ final class NCMediaAdaptiveLayoutController: UIViewController {
                 return nil
             }
             let controller = UIHostingController(rootView: self.adaptiveControlsView)
-            controller.overrideUserInterfaceStyle = .dark
             self.addChild(controller)
             self.adaptiveControlsController = controller
             return controller.view

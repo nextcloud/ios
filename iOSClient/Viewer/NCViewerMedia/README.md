@@ -30,6 +30,72 @@ not another feature switch. Video containers inherit the central value. The
 paging bridge combines that value with the selected media type, returning to the
 normal layout when an unsupported page is selected in the pager.
 
+Shared background and control-color rules live in
+`Helpers/NCMediaViewerAppearance.swift`: background resolution, control surfaces,
+foreground/border colors and contrast appearance. Image/audio controls consume
+these rules; the common lower panel applies the resolved appearance once.
+Fullscreen video retains its existing playback appearance.
+
+## Changing colors and appearance
+
+Start in [Helpers/NCMediaViewerAppearance.swift](Helpers/NCMediaViewerAppearance.swift).
+The file separates three choices: content background, adaptive lower-panel
+background and adaptive control colors. The lower panel follows content by
+default, but has its own customization entry.
+
+| What to change | Entry point | Used by |
+| --- | --- | --- |
+| Default content background | `ncViewerBackgroundStyle(for:)` | Normal and folded pages, paging collection backgrounds; the adaptive panel inherits it by default. |
+| Background when controls are hidden | `ncViewerBackgroundStyle(for:isChromeHidden:)` | The same consumers; folding does not itself change `isChromeHidden`. |
+| Adaptive lower-panel background | `ncViewerAdaptivePanelBackgroundStyle(contentStyle:)` | Common paged-media lower panel only; upper content and normal mode remain independent. |
+| Mapping a background style to a color | `UIColor.ncViewerBackground(_:)` | UIKit backgrounds and the SwiftUI `Color` wrapper. |
+| Control island/button fill | `UIColor.ncViewerAdaptiveControlBackground` | Adaptive image/audio islands, video-cover status controls and shared Close/Info/More buttons. |
+| Control text and icon color | `UIColor.ncViewerAdaptiveControlForeground` | Adaptive image/audio and video-cover controls, the common lower panel and shared action buttons. |
+| Control border color | `UIColor.ncViewerAdaptiveControlBorder` | Image island borders and shared action button borders. |
+| Control contrast in light/dark appearance | `ncViewerAdaptiveControlsColorScheme(for:inherited:)` | The common lower panel: black uses dark appearance, white uses light, system/custom inherit. |
+| Loading indicator tint | `Color.ncViewerProgressTint(_:)` | Media loading indicators. |
+
+For example, changing an island fill requires editing only
+`UIColor.ncViewerAdaptiveControlBackground`. Its SwiftUI counterpart forwards to that
+same entry, so image/audio islands and UIKit action buttons stay consistent.
+Keep dynamic system colors unresolved until rendering, so appearance changes
+continue to work. A custom background must contrast with its inherited controls.
+
+To make only the lower paged-media panel orange, change its dedicated resolver:
+
+```swift
+func ncViewerAdaptivePanelBackgroundStyle(contentStyle: NCViewerBackgroundStyle) -> NCViewerBackgroundStyle {
+    .custom(.systemOrange)
+}
+```
+
+This does not change the upper content or normal mode. Returning `contentStyle`
+restores the standard matching background. `.black` and `.white` also select the
+matching control appearance; custom colors inherit appearance unless you change
+`ncViewerAdaptiveControlsColorScheme(for:inherited:)`.
+
+The common lower panel first resolves content from the selected media and
+`model.isChromeHidden`, then passes that style through the dedicated panel resolver
+and applies the resulting control appearance to its descendants.
+Image/audio controls consume the shared palette rather than forcing dark mode.
+Inline information uses a clear background so the containing island/panel owns
+its fill; normal information sheets retain their system background. The UIKit
+action host synchronizes its appearance with the SwiftUI panel on updates.
+The folded upper audio artwork uses the background passed by its page, just as
+normal audio does. The folded-layout environment value controls composition and
+gestures; it must not become a second color switch.
+
+These entries cover shared backgrounds and adaptive control colors. Normal
+navigation, normal playback controls, thumbnail artwork, maps and fullscreen
+AVPlayer/VLC presentation retain their existing styling. Do not change player
+lifecycle or layout geometry to experiment with this palette. Spacing, corner
+radii and island sizes remain in the corresponding controls views.
+
+After changing colors, manually check light/dark appearance, tap-to-hide chrome,
+fold/unfold, local and remote image information, audio controls and video-cover
+loading. Verify readable text/icons in both regions and the existing fullscreen
+video playback behavior. Local builds and tests remain user-run in Xcode.
+
 ## Components
 
 | Component | Responsibility |
@@ -114,18 +180,19 @@ The file date is used when an EXIF date is unavailable. Previous/next buttons
 remain outside the fixed island and work while information is open. Map taps
 retain the existing Maps action.
 The two `Adaptive Image` canvas previews isolate these visual states. The adaptive
-image panel uses a black background, subtly shaded graphite controls and bold
-white text and symbols. Previous/next buttons use a compact icon/text row and
+image panel uses the standard viewer background and system-colored control
+islands, text and symbols. Previous/next buttons use a compact icon/text row and
 occupy 18% of the middle area's height (70% less than the initial 60%), with a
 44-point minimum when space permits; the
 remaining space is a bounded information island. Both sizes depend only on the
 available region, not Info visibility or metadata length. Details scroll inside
-the island without moving the buttons or thumbnails. Dark appearance is scoped to the adaptive lower host and its controls;
-normal controls retain their existing appearance. Folded upper media is always
-black, independently of appearance and tap-to-hide chrome. Each retained page
+the island without moving the buttons or thumbnails. Both regions follow the standard appearance/chrome rule: system background
+when chrome is visible, black with contrasting controls when chrome is hidden.
+Folding itself does not change that rule. Fullscreen video retains its black
+playback background. Each retained page
 host observes fold changes and passes that state to its content; the image zoom
 surface and UIKit paging backgrounds use the same resolution rule. Unfolding
-restores the normal appearance/chrome rule without replacing the page host.
+retains the same appearance/chrome rule without replacing the page host.
 
 Fullscreen video currently uses fixed proxy frames to exclude control touches
 from player gestures. When repositioning those controls, update the proxy frames
@@ -178,7 +245,7 @@ thumbnail strip is follow-up integration work.
 
 Audio keeps its `@StateObject` and playback lifecycle modifiers above the visual
 layout switch in `NCAudioViewerContentView`. The upper folded region shows only
-artwork (or the waveform fallback) on black. The lower panel obtains the same
+artwork (or the waveform fallback) on the standard viewer background. The lower panel obtains the same
 model from `NCAudioViewerPlaybackRegistry`, without loading or creating a player.
 Folding changes the composition, preserving playback position and repeat/advance
 options. Normal audio geometry and playback lifecycle remain unchanged.

@@ -29,7 +29,7 @@ struct NCMediaViewerPagingView: UIViewRepresentable {
 
         let collectionView = NCMediaViewerCollectionView(frame: .zero, collectionViewLayout: layout)
 
-        collectionView.backgroundColor = .black
+        collectionView.backgroundColor = .ncViewerBackground(ncViewerBackgroundStyle(for: model.selectedMetadata, isChromeHidden: model.isChromeHidden))
         collectionView.isPagingEnabled = true
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
@@ -236,7 +236,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     // MARK: - Background
 
     private func backgroundColor(for page: NCMediaViewerPageModel?) -> UIColor {
-        let style = ncViewerBackgroundStyle(for: page?.metadata, isChromeHidden: model.isChromeHidden, isFoldedLayout: adaptiveControlsState?.isFoldedLayout == true)
+        let style = ncViewerBackgroundStyle(for: page?.metadata, isChromeHidden: model.isChromeHidden)
         return UIColor.ncViewerBackground(style)
     }
 

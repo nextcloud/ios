@@ -142,6 +142,7 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
     func configureAdaptiveActions(closeAction: UIAction, moreButton: UIButton) {
         actionsContainerView.subviews.forEach { $0.removeFromSuperview() }
         let actionsView = NCMediaAdaptiveActionsView(closeAction: closeAction, moreButton: moreButton)
+        actionsView.overrideUserInterfaceStyle = .dark
         actionsView.translatesAutoresizingMaskIntoConstraints = false
         actionsContainerView.addSubview(actionsView)
         NSLayoutConstraint.activate([

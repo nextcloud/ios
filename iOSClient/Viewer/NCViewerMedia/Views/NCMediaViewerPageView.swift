@@ -8,7 +8,6 @@ import NextcloudKit
 // MARK: - Media Viewer Page View
 
 struct NCMediaViewerPageView: View {
-    @Environment(\.mediaViewerIsFoldedLayout) private var isFoldedLayout
     @ObservedObject var model: NCMediaViewerModel
     @ObservedObject var page: NCMediaViewerPageModel
 
@@ -77,7 +76,7 @@ struct NCMediaViewerPageView: View {
     }
 
     private var backgroundStyle: NCViewerBackgroundStyle {
-        ncViewerBackgroundStyle(for: page.metadata, isChromeHidden: model.isChromeHidden, isFoldedLayout: isFoldedLayout)
+        ncViewerBackgroundStyle(for: page.metadata, isChromeHidden: model.isChromeHidden)
     }
 
     // Neighbor pages must not consume auto-play.

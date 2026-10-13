@@ -45,7 +45,7 @@ struct NCMediaViewerView: View {
 
     var body: some View {
         ZStack {
-            Color.black
+            Color.ncViewerBackground(ncViewerBackgroundStyle(for: model.selectedMetadata, isChromeHidden: model.isChromeHidden))
                 .ignoresSafeArea()
 
             if let adaptiveControlsState, let makeAdaptiveActionsView {

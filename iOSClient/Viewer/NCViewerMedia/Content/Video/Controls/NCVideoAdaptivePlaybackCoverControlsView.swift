@@ -21,14 +21,14 @@ struct NCVideoAdaptivePlaybackCoverControlsView: View {
                     if presentation.isLoading || presentation.isLaunchingPlayback {
                         ProgressView()
                             .controlSize(.large)
-                            .tint(.primary)
+                            .tint(Color.ncViewerAdaptiveControlForeground)
                             .transition(.opacity)
                     } else {
-                        // Color.primary, not .primary: the default button style resolves .primary against the accent tint.
+                        // Use the explicit palette color so the default button style does not substitute accent tint.
                         // The default style stays because .plain fades disabled content, like the loading spinner.
                         Image(systemName: "play.fill")
                             .font(.system(size: 36, weight: .regular))
-                            .foregroundStyle(Color.primary.opacity(presentation.isPlayEnabled ? 1 : 0.35))
+                            .foregroundStyle(Color.ncViewerAdaptiveControlForeground.opacity(presentation.isPlayEnabled ? 1 : 0.35))
                             .transition(.opacity)
                     }
                 }
@@ -45,7 +45,7 @@ struct NCVideoAdaptivePlaybackCoverControlsView: View {
                 VStack(spacing: 10) {
                     Text(statusMessage)
                         .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color.ncViewerAdaptiveControlForeground)
                         .multilineTextAlignment(.center)
 
                     if let onCancel = presentation.onCancel {
@@ -54,13 +54,13 @@ struct NCVideoAdaptivePlaybackCoverControlsView: View {
                         }
                         .font(.subheadline.weight(.semibold))
                         .buttonStyle(.borderedProminent)
-                        .tint(.white)
-                        .foregroundStyle(.black)
+                        .tint(Color.ncViewerAdaptiveControlForeground)
+                        .foregroundStyle(Color.ncViewerAdaptiveControlBackground)
                     }
                 }
                 .padding(.horizontal, 14)
                 .padding(.vertical, 10)
-                .background(.black.opacity(0.46), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .background(Color.ncViewerAdaptiveControlBackground, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
         }
     }
