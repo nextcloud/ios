@@ -39,6 +39,8 @@ struct NCMediaAdaptiveLayoutViewTests {
         )
         let closeButton = try #require(actions.arrangedSubviews.first as? UIButton)
         let informationButton = try #require(actions.informationButton)
+        #expect(actions.arrangedSubviews.count == 3)
+        #expect(actions.arrangedSubviews.allSatisfy { $0 is UIButton })
         closeButton.sendActions(for: .touchUpInside)
         informationButton.sendActions(for: .touchUpInside)
         #expect(closed)

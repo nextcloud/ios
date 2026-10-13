@@ -412,6 +412,9 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         let detailView = NCMediaViewerDetailView(metadata: metadata, exif: exif)
 
         if isFoldedMediaLayout {
+            if metadata.classFile == NKTypeClassFile.image.rawValue {
+                adaptiveControlsState.imageInformation = (ocId: metadata.ocId, exif: exif)
+            }
             adaptiveControlsState.detailView = detailView
             return
         }

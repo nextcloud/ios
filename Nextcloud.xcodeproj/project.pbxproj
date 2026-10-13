@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AC13ADAF2026101300000012 /* NCImageAdaptiveControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC13ADAF2026101300000011 /* NCImageAdaptiveControlsView.swift */; };
 		AC13ADAF2026101300000002 /* NCMediaAdaptiveLayoutViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC13ADAF2026101300000001 /* NCMediaAdaptiveLayoutViewTests.swift */; };
 		22BA14432CF44BDBA2E6C291 /* NCDocumentEditorSupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B74B947E07444CC9CFE0A6C /* NCDocumentEditorSupportTests.swift */; };
 		2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
@@ -1326,6 +1327,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AC13ADAF2026101300000011 /* NCImageAdaptiveControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCImageAdaptiveControlsView.swift; sourceTree = "<group>"; };
 		AC13ADAF2026101300000001 /* NCMediaAdaptiveLayoutViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaAdaptiveLayoutViewTests.swift; sourceTree = "<group>"; };
 		2C33C47F23E2C475005F963B /* Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C33C48123E2C475005F963B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -2941,6 +2943,7 @@
 			isa = PBXGroup;
 			children = (
 				F75A64B3307E0FAE0059B78E /* NCImageControlsView.swift */,
+				AC13ADAF2026101300000011 /* NCImageAdaptiveControlsView.swift */,
 			);
 			path = Controls;
 			sourceTree = "<group>";
@@ -5523,6 +5526,7 @@
 				F76995F42F9A4AC400291FA7 /* NCCollectionViewCommon+UIEditMenuInteractionDelegate.swift in Sources */,
 				F722133B2D40EF9D002F7438 /* NCFilesNavigationController.swift in Sources */,
 				F75A64E6307E0FAE0059B78E /* NCImageControlsView.swift in Sources */,
+				AC13ADAF2026101300000012 /* NCImageAdaptiveControlsView.swift in Sources */,
 				F75A64E7307E0FAE0059B78E /* NCMediaViewerDetailView.swift in Sources */,
 				F75A64E8307E0FAE0059B78E /* NCVideoVLCViewControls.swift in Sources */,
 				F75A64E9307E0FAE0059B78E /* NCMediaViewerHostingController.swift in Sources */,

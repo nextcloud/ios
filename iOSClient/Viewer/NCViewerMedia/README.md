@@ -37,6 +37,7 @@ normal layout when an audio or unsupported page is selected in the pager.
 | --- | --- |
 | `Views/NCMediaAdaptiveLayoutView.swift` | Shared UIKit geometry, normal/adaptive visibility and layout change callback. Keeps the media view in place. |
 | `Content/Image/Controls/NCImageControlsView.swift` | Normal thumbnail overlay, with the existing visibility, spacing and selection actions. Normal navigation and the information sheet remain in the hosting controller. |
+| `Content/Image/Controls/NCImageAdaptiveControlsView.swift` | Adaptive image summary, previous/next buttons and independent EXIF/location rendering. The shared panel owns actions and the fixed thumbnail area. |
 | `Views/Controls/NCMediaAdaptiveControlsView.swift` | Lower composition for paged images and video covers: standalone buttons, inline information, cover actions and thumbnails. Also contains the SwiftUI/UIKit bridge and its hosting support types. |
 | `NCMediaViewerHostingController.swift` | Owns paged-media navigation actions, title updates and information loading. Hides the upper navigation bar when folded and routes information into the lower controls. |
 | `Core/NCMediaViewerView.swift` | Selects the normal composition or experimental paging bridge using the central switch. |
@@ -54,7 +55,10 @@ layout changes do not recreate a player.
 The image paging host disables its own safe-area regions to match the normal
 pager's `ignoresSafeArea()`. This lets the media cover the area behind the
 transparent navigation bar even with the experiment enabled and no active fold.
-The controls hosts retain their own safe-area handling. The lower host is created
+The controls hosts retain their own safe-area handling. The adaptive lower panel
+extends through the bottom container safe area so its thumbnail lane stays near
+the lower edge with the explicit 3-point margin; top and side safe areas remain
+in effect for actions. The lower host is created
 only for a suitable active fold, retained across subsequent transitions and
 clipped to its region. If its factory cannot supply controls, the normal layout
 remains usable and the next layout pass may retry.
@@ -87,10 +91,22 @@ spacing, backgrounds and button graphics in those adaptive components.
 
 Share media state and action callbacks, rather than normal/adaptive rendered
 views. Keep the paging and playback hosts stable across layout changes. The
-thumbnail strip and information renderer are still shared: layout-specific
-styling belongs in the adaptive composition; editing their internal graphics
-affects both modes. Add an adaptive visual variant if either needs a distinct
-design, keeping its data/loading bindings shared.
+thumbnail renderer is still shared: layout-specific styling belongs in the
+adaptive composition; editing its internal graphics affects both modes.
+Adaptive images use `NCImageAdaptiveControlsView` for information, independently
+of the normal `NCMediaViewerDetailView`. Other media still reuse the existing
+information renderer. Keep data/loading bindings shared when adding variants.
+
+The adaptive image summary uses real file metadata immediately. EXIF loaded by
+the existing Info action is retained for the last inspected image only, matched
+by media ID; opening the summary does not download the original automatically.
+Missing fields are omitted. Info expands the scrollable content with EXIF and
+location details; previous/next buttons remain visible outside that scroll area
+and work while information is open. Map taps retain the existing Maps action.
+The two `Adaptive Image` canvas previews isolate these visual states. The adaptive
+image panel uses a black background, dark gray controls and bold white text and
+symbols. Dark appearance is scoped to the adaptive lower host and its controls;
+normal controls and the upper media keep their existing appearance.
 
 Fullscreen video currently uses fixed proxy frames to exclude control touches
 from player gestures. When repositioning those controls, update the proxy frames
@@ -114,7 +130,13 @@ manually because fixed controls cannot fit every possible region.
 Edit `mediaControls` to add or change media-specific lower content. Keep the
 thumbnail strip outside that content and the information panel: with multiple
 pages it remains visible in adaptive mode, even when the user hides normal
-chrome or opens information. With a single page there is no selection strip.
+chrome or opens information. Its height matches the normal thumbnail lane;
+the area remains reserved even with a single page, when no selection strip is
+needed. Extra vertical thumbnail padding is removed. Adaptive sections and
+buttons use 3-point gaps; standalone actions are separate equally sized buttons
+with 44-point height. The middle content is clipped and scrolls independently. This shared
+area currently covers paged images and video covers; fullscreen video and future
+adaptive audio still need their own thumbnail integration.
 
 Page swipes remain available on the upper media surface. In the folded layout,
 horizontal swipes in the middle controls area also select the previous/next page,
