@@ -28,6 +28,7 @@ struct NCSidebarView: View {
     let openExternalSite: (String, String, Int) -> Void
     let openApp: (String, String?) -> Void
     var navigationBarCenterY: () -> CGFloat? = { nil }
+    var usesExpandedPhonePortrait: () -> Bool = { false }
     var windowSafeAreaLeadingInset: () -> CGFloat = { 0 }
     var currentSelection: () -> String? = { nil }
     @State private var selectedDestination: String?
@@ -187,10 +188,12 @@ struct NCSidebarView: View {
                 }
             }
         }
+        // Only the expanded phone portrait layout (Duo) inherits the navbar inset.
+        // Other phones and iPad retain their original safe-area behavior.
+        .ignoresSafeArea(.container, edges: usesExpandedPhonePortrait() ? .top : [])
         .onGeometryChange(for: CGRect.self) { geometry in
             geometry.frame(in: .global)
         } action: { _ in
-            // Reevaluate after insertion and whenever the window or orientation changes.
             updateHeaderLayout()
         }
         .background {

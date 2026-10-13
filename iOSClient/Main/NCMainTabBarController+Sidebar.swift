@@ -74,6 +74,8 @@ extension NCMainTabBarController {
             self?.openSidebarApp(url: url, fallbackUrl: fallbackUrl)
         }, navigationBarCenterY: { [weak self] in
             self?.sidebarNavigationBarCenterY()
+        }, usesExpandedPhonePortrait: { [weak self] in
+            self?.sidebarUsesExpandedPhonePortrait ?? false
         }, windowSafeAreaLeadingInset: { [weak self] in
             self?.view.window?.safeAreaInsets.left ?? 0
         }, currentSelection: { [weak self] in
@@ -106,6 +108,14 @@ extension NCMainTabBarController {
         }
     }
 
+    /// Expanded portrait phones use regular width; ordinary iPhones remain compact.
+    private var sidebarUsesExpandedPhonePortrait: Bool {
+        guard UIDevice.current.userInterfaceIdiom == .phone,
+              view.traitCollection.horizontalSizeClass == .regular,
+              let window = view.window else { return false }
+        return window.bounds.height > window.bounds.width
+    }
+
     /// Measure the visible button row in the panel's safe content coordinates.
     /// Bar-item identifiers are not necessarily forwarded to their rendered views.
     /// Use public control types and accessibility traits, with the bar as fallback.
@@ -120,7 +130,8 @@ extension NCMainTabBarController {
         let centers = buttonFrames.map(\.midY).sorted()
         // The median avoids favoring either the leading or trailing button group.
         let barCenterY = centers.isEmpty ? bar.bounds.midY : centers[centers.count / 2]
-        let centerY = bar.convert(CGPoint(x: bar.bounds.midX, y: barCenterY), to: hostingView).y - hostingView.safeAreaInsets.top
+        let safeTop = sidebarUsesExpandedPhonePortrait ? 0 : hostingView.safeAreaInsets.top
+        let centerY = bar.convert(CGPoint(x: bar.bounds.midX, y: barCenterY), to: hostingView).y - safeTop
 
         return centerY
     }
