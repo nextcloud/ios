@@ -4,6 +4,7 @@
 
 import SwiftUI
 import UIKit
+import NextcloudKit
 
 // MARK: - Lower panel composition
 
@@ -15,25 +16,36 @@ struct NCMediaAdaptiveControlsView: View {
     let makeActionsView: () -> UIView
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 3) {
             NCMediaAdaptiveActionsHost(makeActionsView: makeActionsView)
                 .frame(height: NCMediaAdaptiveActionsView.preferredHeight)
                 .layoutPriority(1)
 
             mediaControls
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipped()
                 .contentShape(Rectangle())
                 .simultaneousGesture(pageSwipe, including: isPageSwipeEnabled ? .all : .subviews)
 
-            if model.numberOfPages > 1 {
-                NCMediaViewerThumbnailStrip(model: model)
-                    .padding(.vertical, 12)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .layoutPriority(1)
+            ZStack {
+                if model.numberOfPages > 1 {
+                    NCMediaViewerThumbnailStrip(model: model)
+                }
             }
+            .frame(maxWidth: .infinity)
+            .frame(height: NCMediaViewerThumbnail.preferredHeight)
+            .fixedSize(horizontal: false, vertical: true)
+            .layoutPriority(1)
         }
+        .padding(3)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(uiColor: .ncViewerBackground(.system)))
+        .background(Color.black)
+        .foregroundStyle(.white)
+        .fontWeight(.bold)
+        .tint(.white)
+        .environment(\.colorScheme, .dark)
+        // The adaptive footer reaches the lower region's bottom; keep top/side safe areas for actions.
+        .ignoresSafeArea(.container, edges: .bottom)
     }
 
     // Keep page swipes outside the buttons/thumbnail strip and preserve information scrolling/map gestures.
@@ -50,28 +62,41 @@ struct NCMediaAdaptiveControlsView: View {
                       abs(translation.width) >= 50,
                       abs(translation.width) > abs(translation.height) else { return }
 
-                let sourceIndex = model.selectedIndex
-                let index = sourceIndex + (translation.width < 0 ? 1 : -1)
-                guard index >= 0, index < model.numberOfPages else { return }
-
-                Task {
-                    guard isPageSwipeEnabled, model.pageTransition.isIdle else { return }
-                    guard model.selectedIndex == sourceIndex else { return }
-                    await model.displayPreviewPage(at: index)
-                }
+                selectAdjacentPage(offset: translation.width < 0 ? 1 : -1)
             }
     }
 
     // Add media-specific lower controls here; the buttons and thumbnails stay shared.
     @ViewBuilder
     private var mediaControls: some View {
-        if let detailView = state.detailView {
+        if let metadata = model.selectedMetadata, metadata.classFile == NKTypeClassFile.image.rawValue {
+            NCImageAdaptiveControlsView(
+                metadata: metadata,
+                exif: state.imageInformation?.ocId == metadata.ocId ? state.imageInformation?.exif : nil,
+                isShowingInformation: state.detailView?.metadata.ocId == metadata.ocId,
+                canGoPrevious: model.selectedIndex > 0 && model.pageTransition.isIdle,
+                canGoNext: model.selectedIndex < model.numberOfPages - 1 && model.pageTransition.isIdle,
+                onPrevious: { selectAdjacentPage(offset: -1) },
+                onNext: { selectAdjacentPage(offset: 1) }
+            )
+        } else if let detailView = state.detailView {
             detailView
         } else if let ocId = model.selectedMetadata?.ocId,
                   let controls = state.videoCoverControls(for: ocId) {
             NCVideoAdaptivePlaybackCoverControlsView(presentation: controls)
         } else {
             Spacer(minLength: 0)
+        }
+    }
+
+    private func selectAdjacentPage(offset: Int) {
+        guard state.isFoldedLayout, model.numberOfPages > 1, model.pageTransition.isIdle else { return }
+        let sourceIndex = model.selectedIndex
+        let index = sourceIndex + offset
+        guard index >= 0, index < model.numberOfPages else { return }
+        Task {
+            guard state.isFoldedLayout, model.pageTransition.isIdle, model.selectedIndex == sourceIndex else { return }
+            await model.displayPreviewPage(at: index)
         }
     }
 }
@@ -84,6 +109,8 @@ struct NCMediaAdaptiveControlsView: View {
 final class NCMediaAdaptiveControlsState: ObservableObject {
     @Published var detailView: NCMediaViewerDetailView?
     @Published var isFoldedLayout = false
+    /// Retain only the last inspected image's EXIF for its compact summary; no automatic original download.
+    @Published var imageInformation: (ocId: String, exif: ExifData)?
     private struct VideoCoverRegistration {
         let owner: UUID
         let controls: NCVideoPlaybackCoverPresentation
@@ -126,14 +153,16 @@ extension EnvironmentValues {
 
 /// Standalone actions, without navigation items, title or navigation-bar appearance.
 final class NCMediaAdaptiveActionsView: UIStackView {
-    static let preferredHeight: CGFloat = 56
+    static let preferredHeight: CGFloat = 44
 
     init(closeAction: UIAction, moreButton: UIButton, infoAction: UIAction? = nil) {
         super.init(frame: .zero)
+        overrideUserInterfaceStyle = .dark
         axis = .horizontal
         alignment = .center
-        spacing = 12
-        layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
+        distribution = .fillEqually
+        spacing = 3
+        layoutMargins = .zero
         isLayoutMarginsRelativeArrangement = true
 
         let closeButton = UIButton(type: .system)
@@ -141,7 +170,6 @@ final class NCMediaAdaptiveActionsView: UIStackView {
         closeButton.accessibilityLabel = NSLocalizedString("_close_", comment: "")
         closeButton.addAction(closeAction, for: .touchUpInside)
         addArrangedSubview(closeButton)
-        addArrangedSubview(UIView())
 
         if let infoAction {
             let infoButton = UIButton(type: .system)
@@ -151,10 +179,17 @@ final class NCMediaAdaptiveActionsView: UIStackView {
             addArrangedSubview(infoButton)
             informationButton = infoButton
         }
+        moreButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         addArrangedSubview(moreButton)
         for button in arrangedSubviews.compactMap({ $0 as? UIButton }) {
+            var configuration = button.configuration ?? .plain()
+            configuration.image = button.image(for: .normal)
+            configuration.baseForegroundColor = .white
+            configuration.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(weight: .bold)
+            configuration.background.backgroundColor = .secondarySystemBackground
+            configuration.background.cornerRadius = 12
+            button.configuration = configuration
             NSLayoutConstraint.activate([
-                button.widthAnchor.constraint(equalToConstant: 44),
                 button.heightAnchor.constraint(equalToConstant: 44)
             ])
         }
@@ -235,6 +270,7 @@ final class NCMediaAdaptiveLayoutController: UIViewController {
                 return nil
             }
             let controller = UIHostingController(rootView: self.adaptiveControlsView)
+            controller.overrideUserInterfaceStyle = .dark
             self.addChild(controller)
             self.adaptiveControlsController = controller
             return controller.view
