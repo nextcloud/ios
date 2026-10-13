@@ -257,6 +257,14 @@ class NCMainTabBarController: UITabBarController {
 
 extension NCMainTabBarController: UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        // Only a user tap on Browse restores All files. Sidebar selection is programmatic
+        // and must keep displaying the destination the user chose there.
+        if tabBarController.selectedIndex == 0,
+           let filesNavigationController,
+           viewController !== filesNavigationController || filesNavigationController.personalFilesOnly || filesNavigationController.viewControllers.count > 1 {
+            openSidebarFiles(personalFilesOnly: false)
+            return
+        }
         if previousIndex == tabBarController.selectedIndex {
             scrollToTop(viewController: viewController)
         }

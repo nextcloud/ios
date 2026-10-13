@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
+import NextcloudKit
 
 /// A glass overlay sidebar shared by iPad, iPhone and Duo.
 @MainActor
@@ -37,6 +38,7 @@ struct NCSidebarView: View {
     @State private var updatedAccount: String?
     @State private var capabilitiesRevision = UUID()
     @State private var autoUploadCounter = NCAutoUploadCounter()
+    @State private var transfersSubtitle: String?
     @State private var autoUploadEnabled: Bool?
     @State private var quotaDescription = ""
     @State private var quotaProgress: Double = 0
@@ -46,6 +48,7 @@ struct NCSidebarView: View {
     @State private var showsGroupfolders = false
     @State private var showsAssistant = false
     @State private var showsNotifications = false
+    @State private var notificationCount: Int?
     @State private var isVisible = false
     @State private var isClosing = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -94,25 +97,25 @@ struct NCSidebarView: View {
                                 sidebarItem("_group_folders_", systemImage: "folder.badge.person.crop", isSelected: selectedDestination == "sidebarGroupfolders", action: openGroupfolders)
                                     .accessibilityIdentifier("sidebarGroupfolders")
                             }
+                            sidebarItem("_offline_files_", systemImage: "arrow.down.circle.dotted", isSelected: selectedDestination == "sidebarOffline", action: openOffline)
+                                .accessibilityIdentifier("sidebarOffline")
+                            sidebarItem("_trash_view_", systemImage: "trash", isSelected: selectedDestination == "sidebarTrash", action: openTrash)
+                                .accessibilityIdentifier("sidebarTrash")
                             Text("_status_")
                                 .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(.secondary)
                                 .padding(.horizontal, 32)
                                 .padding(.top, 20)
                                 .padding(.bottom, 8)
-                            sidebarItem("_transfers_", systemImage: "arrow.left.arrow.right", isSelected: selectedDestination == "sidebarTransfers", action: openTransfers)
+                            sidebarItem("_transfers_", systemImage: "arrow.left.arrow.right", isSelected: selectedDestination == "sidebarTransfers", subtitle: transfersSubtitle, action: openTransfers)
                                 .accessibilityIdentifier("sidebarTransfers")
-                            sidebarItem("_offline_files_", systemImage: "arrow.down.circle.dotted", isSelected: selectedDestination == "sidebarOffline", action: openOffline)
-                                .accessibilityIdentifier("sidebarOffline")
-                            sidebarItem("_trash_view_", systemImage: "trash", isSelected: selectedDestination == "sidebarTrash", action: openTrash)
-                                .accessibilityIdentifier("sidebarTrash")
                             Text("_media_")
                                 .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(.secondary)
                                 .padding(.horizontal, 32)
                                 .padding(.top, 20)
                                 .padding(.bottom, 8)
-                            sidebarItem("_auto_upload_folder_", systemImage: "arrow.triangle.2.circlepath", isSelected: false, subtitle: autoUploadSubtitle, action: openAutoUpload)
+                            sidebarItem("_auto_upload_folder_", icon: autoUploadIcon, subtitle: autoUploadSubtitle, action: openAutoUpload)
                                 .accessibilityIdentifier("sidebarAutoUpload")
                             sidebarItem("_scanned_images_", systemImage: "doc.text.viewfinder", isSelected: false, action: openScannedImages)
                                 .accessibilityIdentifier("sidebarScannedImages")
@@ -151,6 +154,17 @@ struct NCSidebarView: View {
                                     openApp(NCGlobal.shared.moreAppsUrl, nil)
                                 }
                                 .accessibilityIdentifier("sidebarMoreApps")
+                            }
+                        }
+                        // Let the final row scroll completely above the fade.
+                        .padding(.bottom, quotaDescription.isEmpty ? 0 : 32)
+                    }
+                    .mask {
+                        VStack(spacing: 0) {
+                            Rectangle()
+                            if !quotaDescription.isEmpty {
+                                LinearGradient(colors: [.black, .clear], startPoint: .top, endPoint: .bottom)
+                                    .frame(height: 32)
                             }
                         }
                     }
@@ -243,6 +257,7 @@ struct NCSidebarView: View {
             quotaHasLimit = false
             showsAssistant = false
             showsNotifications = false
+            notificationCount = nil
             showsShares = false
             showsGroupfolders = false
             capabilitiesRevision = UUID()
@@ -258,7 +273,7 @@ struct NCSidebarView: View {
             autoUploadEnabled = nil
             autoUploadCounter.stop(reset: true)
             defer { autoUploadCounter.stop() }
-            // The docked sidebar stays visible while Auto upload settings can change.
+            // Keep sidebar counters current only while the overlay is visible.
             while !Task.isCancelled {
                 let tableAccount = await NCManageDatabase.shared.getTableAccountAsync(account: account)
                 guard !Task.isCancelled else { return }
@@ -270,6 +285,7 @@ struct NCSidebarView: View {
                                             userId: tableAccount.userId,
                                             autoUploadStart: tableAccount.autoUploadStart)
                 }
+                await updateTransfersSubtitle()
                 do { try await Task.sleep(for: .seconds(2)) } catch { return }
             }
         }
@@ -293,7 +309,40 @@ struct NCSidebarView: View {
             } else {
                 quotaDescription = ""
             }
+            if showsNotifications {
+                let notificationAccount = activeAccount
+                let results = await NextcloudKit.shared.getNotificationsAsync(account: notificationAccount)
+                guard !Task.isCancelled, activeAccount == notificationAccount,
+                      results.error == .success, let notifications = results.notifications else { return }
+                notificationCount = notifications.count
+            } else {
+                notificationCount = nil
+            }
         }
+    }
+
+    private func updateTransfersSubtitle() async {
+        let database = NCManageDatabase.shared
+        async let progress = database.getMetadatasStatusCountAsync(status: TransfersFilter.progress.statuses)
+        async let waiting = database.getMetadatasStatusCountAsync(status: TransfersFilter.waiting.statuses)
+        async let errors = database.getMetadatasStatusCountAsync(status: TransfersFilter.error.statuses)
+        let counts = await (progress, waiting, errors)
+        guard !Task.isCancelled else { return }
+        let states = [("_in_error_", counts.2), ("_in_progress_", counts.0), ("_in_waiting_", counts.1)]
+        if let state = states.first(where: { $0.1 > 0 }) {
+            transfersSubtitle = "\(state.1) \(NSLocalizedString(state.0, comment: ""))"
+        } else {
+            transfersSubtitle = NSLocalizedString("_no_transfer_in_progress_", comment: "")
+        }
+    }
+
+    private var autoUploadIcon: some View {
+        NCFocusedAutoUploadCloudAnimation(
+            size: 36,
+            cloudColor: Color(NCBrandColor.shared.iconImageColor),
+            arrowColor: autoUploadEnabled == true && !reduceMotion ? Color(UIColor.systemBackground) : Color(NCBrandColor.shared.iconImageColor),
+            isAnimated: autoUploadEnabled == true && !reduceMotion
+        )
     }
 
     private var autoUploadSubtitle: String? {
@@ -428,6 +477,21 @@ struct NCSidebarView: View {
 
             if showsNotifications {
                 headerButton("_notifications_", systemImage: "bell.fill", action: openNotifications)
+                    .overlay(alignment: .topTrailing) {
+                        if let notificationCount, notificationCount > 0 {
+                            Text(notificationCount > 99 ? "99+" : String(notificationCount))
+                                .font(.caption2.weight(.semibold))
+                                .monospacedDigit()
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 5)
+                                .frame(minWidth: 18, minHeight: 18)
+                                .background(.red, in: Capsule())
+                                .offset(x: 6, y: -6)
+                                .allowsHitTesting(false)
+                                .accessibilityHidden(true)
+                        }
+                    }
+                    .accessibilityValue(notificationCount.map { String($0) } ?? "")
                     .accessibilityIdentifier("sidebarNotifications")
             }
         }
