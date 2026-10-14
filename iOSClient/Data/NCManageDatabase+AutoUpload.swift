@@ -63,6 +63,23 @@ extension NCManageDatabase {
                   realm.object(ofType: tableMetadata.self, forPrimaryKey: detached.ocId) == nil
               }) == true else { return }
 
+#if !EXTENSION
+        // PhotoKit removal uses the same record as a finished upload. Record it before
+        // directory cleanup so an empty storage path cannot skip a file already on the server.
+        do {
+            try await NCLocalDatabase.shared.recordPhotoLibraryAssetUpload(
+                account: detached.account,
+                assetLocalIdentifier: detached.assetLocalIdentifier,
+                classFile: detached.classFile,
+                isLivePhoto: detached.isLivePhoto,
+                creationDate: detached.creationDate as Date
+            )
+        } catch {
+            // The server file is already present, so a local PhotoKit write must not restore the transfer.
+            nkLog(error: "Unable to record uploaded photo library asset \(detached.assetLocalIdentifier): \(error)")
+        }
+#endif
+
         let utilityFileSystem = NCUtilityFileSystem()
         let storagePath = utilityFileSystem.getDocumentStorage(userId: detached.userId, urlBase: detached.urlBase)
         guard !storagePath.isEmpty else { return }

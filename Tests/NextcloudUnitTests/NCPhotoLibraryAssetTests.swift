@@ -23,6 +23,20 @@ struct NCPhotoLibraryAssetTests {
         #expect(try await database.uploadedPhotoLibraryAssets(account: "account").map(\.assetLocalIdentifier) == ["photo"])
     }
 
+    @Test("A video is complete after its component is uploaded")
+    func videoUpload() async throws {
+        let database = try makeDatabase()
+        try await database.recordPhotoLibraryAssetUpload(
+            account: "account",
+            assetLocalIdentifier: "video",
+            classFile: NKTypeClassFile.video.rawValue,
+            isLivePhoto: false,
+            creationDate: Date()
+        )
+
+        #expect(try await database.uploadedPhotoLibraryAssets(account: "account").map(\.assetLocalIdentifier) == ["video"])
+    }
+
     @Test("A Live Photo requires both components")
     func livePhotoUpload() async throws {
         let database = try makeDatabase()
@@ -121,6 +135,28 @@ struct NCPhotoLibraryAssetTests {
             creationDate: Date()
         )
         #expect(try await database.uploadedPhotoLibraryAssets(account: "account").map(\.assetLocalIdentifier) == ["live-photo"])
+    }
+
+    @Test("An empty identifier or a non-media class leaves no uploaded asset")
+    func ignoredComponents() async throws {
+        let database = try makeDatabase()
+        try await database.recordPhotoLibraryAssetUpload(
+            account: "account",
+            assetLocalIdentifier: "",
+            classFile: NKTypeClassFile.image.rawValue,
+            isLivePhoto: false,
+            creationDate: Date()
+        )
+        #expect(try await database.uploadedPhotoLibraryAssets(account: "account").isEmpty)
+
+        try await database.recordPhotoLibraryAssetUpload(
+            account: "account",
+            assetLocalIdentifier: "document",
+            classFile: NKTypeClassFile.audio.rawValue,
+            isLivePhoto: false,
+            creationDate: Date()
+        )
+        #expect(try await database.uploadedPhotoLibraryAssets(account: "account").isEmpty)
     }
 
     private func makeDatabase() throws -> NCLocalDatabase {

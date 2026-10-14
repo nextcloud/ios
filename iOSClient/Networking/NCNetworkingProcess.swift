@@ -821,7 +821,7 @@ actor NCNetworkingProcess {
         return .success
     }
 
-    /// Releases only the shared transfer queue and its local file; GRDB completion is already confirmed.
+    /// Records PhotoKit removal state, then releases the shared transfer queue and its local file. GRDB completion is already confirmed.
     private func removeCompletedBackgroundUploadTransfer(_ metadata: tableMetadata) async {
         let database = NCManageDatabase.shared
         let ocId = metadata.ocId
@@ -831,6 +831,22 @@ actor NCNetworkingProcess {
               await database.core.performRealmReadAsync({ realm in
                   realm.object(ofType: tableMetadata.self, forPrimaryKey: ocId) == nil
               }) == true else { return }
+
+        // Same PhotoKit record as a finished upload. A second record after the extension
+        // success path is idempotent, and an empty transfer directory must not skip it.
+        do {
+            try await NCLocalDatabase.shared.recordPhotoLibraryAssetUpload(
+                account: metadata.account,
+                assetLocalIdentifier: metadata.assetLocalIdentifier,
+                classFile: metadata.classFile,
+                isLivePhoto: metadata.isLivePhoto,
+                creationDate: metadata.creationDate as Date
+            )
+        } catch {
+            // The server file is already present, so a local PhotoKit write must not restore the transfer.
+            nkLog(error: "Unable to record uploaded photo library asset \(metadata.assetLocalIdentifier): \(error)")
+        }
+
         let storagePath = utilityFileSystem.getDocumentStorage(userId: metadata.userId, urlBase: metadata.urlBase)
         guard !storagePath.isEmpty else { return }
         let transferDirectory = URL(fileURLWithPath: storagePath, isDirectory: true).appendingPathComponent(ocId, isDirectory: true)
