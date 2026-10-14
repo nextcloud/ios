@@ -730,9 +730,28 @@ private extension NCVideoViewerContentView {
 // MARK: - Fullscreen Playback State
 
 extension NCVideoViewerContentView {
+    /// Both engines stop/dismiss before changing the selected page; the presenter
+    /// choice is the only engine-specific part of thumbnail navigation.
     @MainActor
-    func closeFromFullscreenVideo(ocId: String?) {
-        onClose?(ocId)
+    func selectPageFromPlayback(_ index: Int, usingVLC: Bool) {
+        guard !isSelectingPlaybackPage, let model = mediaViewerModel,
+              model.pageTransition.isIdle, index != model.selectedIndex,
+              index >= 0, index < model.numberOfPages else { return }
+        isSelectingPlaybackPage = true
+        let sourceIndex = model.selectedIndex
+        let selectPage: () -> Void = {
+            resetPlaybackPresentationState()
+            Task { @MainActor in
+                defer { isSelectingPlaybackPage = false }
+                guard model.pageTransition.isIdle, model.selectedIndex == sourceIndex else { return }
+                await model.displayPreviewPage(at: index)
+            }
+        }
+        if usingVLC {
+            NCVideoVLCPresenter.dismiss(completion: selectPage)
+        } else {
+            NCVideoAVPlayerPresenter.dismiss(completion: selectPage)
+        }
     }
 
     @MainActor

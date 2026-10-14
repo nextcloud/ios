@@ -272,6 +272,9 @@ viewer model for their adaptive footer. Selecting a thumbnail or previous/next
 stops and dismisses the current player before selecting the target page, using
 the existing paging flow without auto-starting another video. Selecting the current
 thumbnail leaves playback running. Repeated selections are gated during dismissal.
+`selectPageFromPlayback` owns the common guards/reset/selection sequence; the
+engine extensions only choose which presenter to dismiss. Close forwards the
+existing `onClose` callback directly.
 Footer selection does not invoke the viewer's Close action. Folding retains the
 player and footer host; resizing only updates the footer geometry. The video content
 view receives no navigation bar: each player controller owns its navigation.

@@ -30,13 +30,13 @@ extension NCVideoViewerContentView {
             contextMenuController: contextMenuController,
             playbackOptions: playbackOptions,
             mediaViewerModel: mediaViewerModel,
-            onSelectPage: selectPageFromAVPlayer,
+            onSelectPage: { index in selectPageFromPlayback(index, usingVLC: false) },
             canGoPrevious: canGoPrevious,
             canGoNext: canGoNext,
             onPrevious: goToPreviousPageFromAVPlayer,
             onNext: goToNextPageFromAVPlayer,
             onPlaybackEnded: onPlayNextMedia,
-            onClose: closeFromFullscreenVideo,
+            onClose: onClose,
             onPlaybackError: handleAVPlayerPlaybackError
         )
 
@@ -74,21 +74,4 @@ extension NCVideoViewerContentView {
             onNextPage?()
         }
     }
-    @MainActor
-    func selectPageFromAVPlayer(_ index: Int) {
-        guard !isSelectingPlaybackPage, let model = mediaViewerModel,
-              model.pageTransition.isIdle, index != model.selectedIndex,
-              index >= 0, index < model.numberOfPages else { return }
-        isSelectingPlaybackPage = true
-        let sourceIndex = model.selectedIndex
-        NCVideoAVPlayerPresenter.dismiss {
-            resetPlaybackPresentationState()
-            Task { @MainActor in
-                defer { isSelectingPlaybackPage = false }
-                guard model.pageTransition.isIdle, model.selectedIndex == sourceIndex else { return }
-                await model.displayPreviewPage(at: index)
-            }
-        }
-    }
-
 }
