@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
+import QuickLook
 import NextcloudKit
 
 /// Shows a rendered page with its subpages and offers editing in Nextcloud Text.
@@ -15,6 +16,9 @@ struct NCCollectivePageView: View {
     @State private var error: NKError?
     @State private var action: NCCollectivePageAction?
     @State private var destination: NCCollectivePage?
+    @State private var attachments: [NCCollectivePageAttachment] = []
+    @State private var openingEmbed: String?
+    @State private var previewURL: URL?
 
     /// The latest server state of the page, which changes after renaming or editing.
     private var current: NCCollectivePage {
@@ -31,6 +35,7 @@ struct NCCollectivePageView: View {
                 header
                 Divider()
                 pageContent(markdown: markdown)
+                otherAttachments
                 subpages
             }
             .padding(.horizontal, 20)
@@ -51,6 +56,7 @@ struct NCCollectivePageView: View {
         .navigationDestination(item: $destination) { page in
             NCCollectivePageView(page: page, model: model)
         }
+        .quickLookPreview($previewURL)
         .modifier(NCCollectivePageDialogs(action: $action, model: model, onCreated: { page in
             destination = page
         }, onTrashed: { _ in
@@ -89,10 +95,15 @@ struct NCCollectivePageView: View {
                 Text("_collectives_empty_page_")
                     .foregroundStyle(.secondary)
             } else {
-                NCCollectivesMarkdownView(markdown: markdown) { url in
-                    guard let linked = model.page(for: url) else { return false }
-                    destination = linked
-                    return true
+                VStack(alignment: .leading, spacing: 16) {
+                    ForEach(Array(NCCollectivesMarkdownBlock.blocks(from: markdown).enumerated()), id: \.offset) { _, block in
+                        switch block {
+                        case .text(let text):
+                            NCCollectivesMarkdownView(markdown: text, openLink: openLink)
+                        case .embed(let alt, let source):
+                            embedView(NCCollectivesEmbed(alt: alt, source: source, page: current, attachments: attachments))
+                        }
+                    }
                 }
             }
         } else if let error {
@@ -103,6 +114,68 @@ struct NCCollectivePageView: View {
             ProgressView()
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 40)
+        }
+    }
+
+    @ViewBuilder
+    private func embedView(_ embed: NCCollectivesEmbed) -> some View {
+        if embed.isImage {
+            NCCollectivesImageView(embed: embed, account: model.account, isOpening: openingEmbed == embed.id) {
+                open(embed)
+            }
+        } else {
+            NCCollectivesAttachmentRow(embed: embed, isOpening: openingEmbed == embed.id) {
+                open(embed)
+            }
+        }
+    }
+
+    /// Attachments that the page content does not show, like files uploaded in the web sidebar.
+    @ViewBuilder
+    private var otherAttachments: some View {
+        let sources = Set((markdown.map(NCCollectivesMarkdownBlock.blocks(from:)) ?? []).compactMap { block -> String? in
+            if case .embed(_, let source) = block { return source.removingPercentEncoding ?? source }
+            return nil
+        })
+        let others = attachments.filter { !sources.contains($0.src.removingPercentEncoding ?? $0.src) }
+        if !others.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("_collectives_attachments_")
+                    .font(.headline)
+                    .padding(.top, 12)
+                ForEach(others) { attachment in
+                    let embed = NCCollectivesEmbed(attachment: attachment)
+                    NCCollectivesAttachmentRow(embed: embed, isOpening: openingEmbed == embed.id) {
+                        open(embed)
+                    }
+                }
+            }
+        }
+    }
+
+    private func openLink(_ url: URL) -> Bool {
+        if let linked = model.page(for: url) {
+            destination = linked
+            return true
+        }
+        // Relative links point to attachments or other files of the collective.
+        guard url.scheme == nil, current.relativePath(forSource: url.absoluteString) != nil else { return false }
+        open(NCCollectivesEmbed(alt: "", source: url.absoluteString, page: current, attachments: attachments))
+        return true
+    }
+
+    private func open(_ embed: NCCollectivesEmbed) {
+        guard openingEmbed == nil else { return }
+        openingEmbed = embed.id
+        Task {
+            let result = await NCCollectivesFileLoader.shared.localFile(for: embed, account: model.account)
+            openingEmbed = nil
+            switch result {
+            case .success(let url):
+                previewURL = url
+            case .failure(let error):
+                model.showError(error)
+            }
         }
     }
 
@@ -181,7 +254,10 @@ struct NCCollectivePageView: View {
     }
 
     private func loadContent() async {
-        switch await model.content(of: current) {
+        async let attachments = model.attachments(of: current)
+        let content = await model.content(of: current)
+        self.attachments = await attachments
+        switch content {
         case .success(let markdown):
             self.markdown = markdown
             error = nil

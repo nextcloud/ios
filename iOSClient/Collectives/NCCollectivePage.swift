@@ -36,6 +36,25 @@ struct NCCollectivePage: Decodable, Identifiable, Hashable, Sendable {
             .joined(separator: "/")
     }
 
+    /// Resolves a relative link or embed source like `.attachments.12/a%20b.png` to a path relative to the user's root folder.
+    func relativePath(forSource source: String) -> String? {
+        guard let collectivePath, !collectivePath.isEmpty,
+              URL(string: source)?.scheme == nil,
+              let decoded = source.split(separator: "?", maxSplits: 1).first?.removingPercentEncoding,
+              !decoded.isEmpty else {
+            return nil
+        }
+        var components = [collectivePath, filePath].joined(separator: "/").split(separator: "/").map(String.init)
+        for part in decoded.split(separator: "/") {
+            switch part {
+            case ".": continue
+            case "..": _ = components.popLast()
+            default: components.append(String(part))
+            }
+        }
+        return components.joined(separator: "/")
+    }
+
     /// The page id a link points to, e.g. `Intro/Readme.md?fileId=12` or `…/apps/collectives/Handbook-1/Intro-12`.
     /// A page's id is the file id of its Markdown file.
     static func pageId(linkedBy url: URL) -> Int? {

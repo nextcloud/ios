@@ -26,7 +26,7 @@ final class NCCollectivePagesModel {
         return NCCollectivePageNode.tree(pages: pages, parentId: landingPage.id)
     }
 
-    private var account: String {
+    var account: String {
         collectivesModel.account
     }
 
@@ -72,6 +72,17 @@ final class NCCollectivePagesModel {
         // Reload the page first: adding a subpage moves a page's file into a folder.
         let current = self.page(id: page.id) ?? page
         return await networking.getContent(page: current, account: account)
+    }
+
+    func attachments(of page: NCCollectivePage) async -> [NCCollectivePageAttachment] {
+        if case .success(let attachments) = await networking.getAttachments(page: page, collectiveId: collective.id, account: account) {
+            return attachments
+        }
+        return []
+    }
+
+    func showError(_ error: NKError) {
+        collectivesModel.showError(error)
     }
 
     @discardableResult

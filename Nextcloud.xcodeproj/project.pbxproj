@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		749D4094A0933F68A3447D33 /* NCCollectivesAttachmentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B1C8EA3A6B43542189608E /* NCCollectivesAttachmentRow.swift */; };
+		63EF7D8CFA9B2394C53B5D07 /* NCCollectivesImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 738B63B524B2C298E553131C /* NCCollectivesImageView.swift */; };
+		418655B7607F4EE0AF4B89C3 /* NCCollectivesFileLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D3F8696FB2FB052FE6EEF0 /* NCCollectivesFileLoader.swift */; };
+		8D4D8F8946EA7FA8E02875E2 /* NCCollectivesEmbed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63911F7501BA06C4EF35B297 /* NCCollectivesEmbed.swift */; };
+		26D64DFD6BD3B30FAAC0A86B /* NCCollectivesMarkdownBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E2EAB3F63001223821E4C2 /* NCCollectivesMarkdownBlock.swift */; };
+		3542B74C9532FCD51A7D8360 /* NCCollectivePageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B59B081CC3687CE1FFE7399B /* NCCollectivePageAttachment.swift */; };
 		2F4B45B46393FC2A3699D5DD /* NCCollectivePageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F299376DF4343AD1B1F8298C /* NCCollectivePageTests.swift */; };
 		C23979384147BA75AB0A9785 /* NCCollective.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31E083BE569B57C326F14E45 /* NCCollective.swift */; };
 		C4967DBE569B791E8395CC8A /* NCCollectivePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AD925C149DD542C4092D31B /* NCCollectivePage.swift */; };
@@ -1348,6 +1354,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B2B1C8EA3A6B43542189608E /* NCCollectivesAttachmentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivesAttachmentRow.swift; sourceTree = "<group>"; };
+		738B63B524B2C298E553131C /* NCCollectivesImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivesImageView.swift; sourceTree = "<group>"; };
+		55D3F8696FB2FB052FE6EEF0 /* NCCollectivesFileLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivesFileLoader.swift; sourceTree = "<group>"; };
+		63911F7501BA06C4EF35B297 /* NCCollectivesEmbed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivesEmbed.swift; sourceTree = "<group>"; };
+		C9E2EAB3F63001223821E4C2 /* NCCollectivesMarkdownBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivesMarkdownBlock.swift; sourceTree = "<group>"; };
+		B59B081CC3687CE1FFE7399B /* NCCollectivePageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivePageAttachment.swift; sourceTree = "<group>"; };
 		F299376DF4343AD1B1F8298C /* NCCollectivePageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivePageTests.swift; sourceTree = "<group>"; };
 		31E083BE569B57C326F14E45 /* NCCollective.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollective.swift; sourceTree = "<group>"; };
 		6AD925C149DD542C4092D31B /* NCCollectivePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivePage.swift; sourceTree = "<group>"; };
@@ -3013,6 +3025,12 @@
 		EB8BF3D6A50E02542895C961 /* Collectives */ = {
 			isa = PBXGroup;
 			children = (
+				B2B1C8EA3A6B43542189608E /* NCCollectivesAttachmentRow.swift */,
+				738B63B524B2C298E553131C /* NCCollectivesImageView.swift */,
+				55D3F8696FB2FB052FE6EEF0 /* NCCollectivesFileLoader.swift */,
+				63911F7501BA06C4EF35B297 /* NCCollectivesEmbed.swift */,
+				C9E2EAB3F63001223821E4C2 /* NCCollectivesMarkdownBlock.swift */,
+				B59B081CC3687CE1FFE7399B /* NCCollectivePageAttachment.swift */,
 				31E083BE569B57C326F14E45 /* NCCollective.swift */,
 				6AD925C149DD542C4092D31B /* NCCollectivePage.swift */,
 				B61A9052EFE41CAE15C3BC4C /* NCCollectivePageAction.swift */,
@@ -5266,6 +5284,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				749D4094A0933F68A3447D33 /* NCCollectivesAttachmentRow.swift in Sources */,
+				63EF7D8CFA9B2394C53B5D07 /* NCCollectivesImageView.swift in Sources */,
+				418655B7607F4EE0AF4B89C3 /* NCCollectivesFileLoader.swift in Sources */,
+				8D4D8F8946EA7FA8E02875E2 /* NCCollectivesEmbed.swift in Sources */,
+				26D64DFD6BD3B30FAAC0A86B /* NCCollectivesMarkdownBlock.swift in Sources */,
+				3542B74C9532FCD51A7D8360 /* NCCollectivePageAttachment.swift in Sources */,
 				C23979384147BA75AB0A9785 /* NCCollective.swift in Sources */,
 				C4967DBE569B791E8395CC8A /* NCCollectivePage.swift in Sources */,
 				981739E87ED7FEF862F97BBA /* NCCollectivePageAction.swift in Sources */,

@@ -886,6 +886,7 @@
 "_collectives_empty_description_" = "Collectives you are a member of appear here. New collectives can be created in the Collectives app on the web.";
 "_collectives_pages_" = "Pages";
 "_collectives_subpages_" = "Subpages";
+"_collectives_attachments_" = "Attachments";
 "_collectives_new_page_" = "New page";
 "_collectives_new_subpage_" = "New subpage";
 "_collectives_page_title_" = "Page title";

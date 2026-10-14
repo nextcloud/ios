@@ -34,6 +34,10 @@ final class NCCollectivesNetworking: Sendable {
         let page: NCCollectivePage
     }
 
+    private struct AttachmentsPayload: Decodable {
+        let attachments: [NCCollectivePageAttachment]
+    }
+
     // MARK: - Collectives
 
     func getCollectives(account: String) async -> Result<[NCCollective], NKError> {
@@ -96,9 +100,46 @@ final class NCCollectivesNetworking: Sendable {
     }
 
     func getContent(page: NCCollectivePage, account: String) async -> Result<String, NKError> {
+        guard let relativeFilePath = page.relativeFilePath else {
+            return .failure(.urlError)
+        }
+        return await download(relativePath: relativeFilePath, account: account).flatMap { data in
+            String(bytes: data, encoding: .utf8).map { .success($0) } ?? .failure(.invalidData)
+        }
+    }
+
+    // MARK: - Attachments
+
+    func getAttachments(page: NCCollectivePage, collectiveId: Int, account: String) async -> Result<[NCCollectivePageAttachment], NKError> {
+        await request(account: account,
+                      path: "/\(collectiveId)/pages/\(page.id)/attachments",
+                      method: .get,
+                      as: AttachmentsPayload.self).map(\.attachments)
+    }
+
+    /// Downloads a file by its path relative to the user's root folder.
+    func download(relativePath: String, account: String) async -> Result<Data, NKError> {
         guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account),
-              let relativeFilePath = page.relativeFilePath?.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed),
-              let url = URL(string: NKDav.homeURLStringNoSlash(urlBase: nkSession.urlBase, userId: nkSession.userId) + "/" + relativeFilePath),
+              let encodedPath = relativePath.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed),
+              let url = URL(string: NKDav.homeURLStringNoSlash(urlBase: nkSession.urlBase, userId: nkSession.userId) + "/" + encodedPath) else {
+            return .failure(.urlError)
+        }
+        return await data(url: url, account: account)
+    }
+
+    /// A server-side scaled preview, much smaller than large photos.
+    func preview(fileId: Int, size: Int, account: String) async -> Result<Data, NKError> {
+        guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account),
+              let url = URL(string: nkSession.urlBase + "/index.php/core/preview?fileId=\(fileId)&x=\(size)&y=\(size)&a=1") else {
+            return .failure(.urlError)
+        }
+        return await data(url: url, account: account)
+    }
+
+    // MARK: - Private
+
+    private func data(url: URL, account: String) async -> Result<Data, NKError> {
+        guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account),
               let headers = NextcloudKit.shared.nkCommonInstance.getStandardHeaders(account: account, accept: "*/*") else {
             return .failure(.urlError)
         }
@@ -111,16 +152,11 @@ final class NCCollectivesNetworking: Sendable {
 
         switch response.result {
         case .success(let data):
-            guard let markdown = String(bytes: data, encoding: .utf8) else {
-                return .failure(.invalidData)
-            }
-            return .success(markdown)
+            return .success(data)
         case .failure(let error):
             return .failure(NKError(error: error, afResponse: response, responseData: response.data))
         }
     }
-
-    // MARK: - Private
 
     private func request<Payload: Decodable>(account: String,
                                              path: String,
