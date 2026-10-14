@@ -41,31 +41,8 @@ enum NCVideoAVPlayerPresenter {
             return false
         }
 
-        if currentURL == url,
-           let currentViewController {
-            currentViewController.update(
-                metadata: metadata,
-                preparedPlayback: preparedPlayback,
-                userAgent: userAgent,
-                shouldAutoPlayOnStart: shouldAutoPlayOnStart,
-                playbackStartReason: playbackStartReason,
-                isChromeHidden: isChromeHidden,
-                contextMenuController: contextMenuController,
-                playbackOptions: playbackOptions
-            )
-            currentViewController.canGoPrevious = canGoPrevious
-            currentViewController.canGoNext = canGoNext
-            currentViewController.configureAdaptivePaging(model: mediaViewerModel, onSelectPage: onSelectPage)
-            currentViewController.onPrevious = onPrevious
-            currentViewController.onNext = onNext
-            currentViewController.onPlaybackEnded = onPlaybackEnded
-            currentViewController.onClose = onClose
-            currentViewController.onPlaybackError = onPlaybackError
-
-            return true
-        }
-
-        if isPresenting {
+        // Updating the current URL is allowed while its presentation finishes.
+        if isPresenting && (currentURL != url || currentViewController == nil) {
             return false
         }
 

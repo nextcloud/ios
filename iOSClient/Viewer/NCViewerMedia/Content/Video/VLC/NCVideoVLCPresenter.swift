@@ -43,30 +43,8 @@ enum NCVideoVLCPresenter {
             return false
         }
 
-        if currentURL == url,
-           let currentViewController {
-            currentViewController.update(
-                metadata: metadata,
-                preparedPlayback: preparedPlayback,
-                userAgent: userAgent,
-                shouldAutoPlayOnStart: shouldAutoPlayOnStart,
-                playbackStartReason: playbackStartReason,
-                isChromeHidden: isChromeHidden,
-                contextMenuController: contextMenuController,
-                playbackOptions: playbackOptions
-            )
-            currentViewController.configureAdaptivePaging(model: mediaViewerModel, onSelectPage: onSelectPage)
-            currentViewController.onPrevious = onPrevious
-            currentViewController.onNext = onNext
-            currentViewController.onPlaybackEnded = onPlaybackEnded
-            currentViewController.onClose = onClose
-            currentViewController.onPlaybackError = onPlaybackError
-            currentViewController.canGoPrevious = canGoPrevious
-            currentViewController.canGoNext = canGoNext
-            return true
-        }
-
-        if isPresenting {
+        // Updating the current URL is allowed while its presentation finishes.
+        if isPresenting && (currentURL != url || currentViewController == nil) {
             logPresentationRejected("presentation in progress")
             return false
         }
