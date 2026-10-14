@@ -576,24 +576,23 @@ extension NCNetworking {
                                                                              urlBase: metadata.urlBase)
         utilityFileSystem.removeFile(atPath: fileNamePath)
 
-        // Auto Upload
-        if metadata.sessionSelector == global.selectorUploadAutoUpload {
 #if !EXTENSION
-            // Photo library state shared by both auto-upload paths.
-            do {
-                try await NCLocalDatabase.shared.recordPhotoLibraryAssetUpload(
-                    account: metadata.account,
-                    assetLocalIdentifier: metadata.assetLocalIdentifier,
-                    classFile: metadata.classFile,
-                    isLivePhoto: metadata.isLivePhoto,
-                    creationDate: metadata.creationDate as Date
-                )
-            } catch {
-                // The server upload remains successful even if its local PhotoKit state cannot be recorded.
-                nkLog(error: "Unable to record uploaded photo library asset \(metadata.assetLocalIdentifier): \(error)")
-            }
+        // Track Photos assets for both manual and automatic uploads.
+        // The database ignores empty asset identifiers and waits for both Live Photo components.
+        do {
+            try await NCLocalDatabase.shared.recordPhotoLibraryAssetUpload(account: metadata.account,
+                                                                         assetLocalIdentifier: metadata.assetLocalIdentifier,
+                                                                         classFile: metadata.classFile,
+                                                                         isLivePhoto: metadata.isLivePhoto,
+                                                                         creationDate: metadata.creationDate as Date)
+        } catch {
+            // The server upload remains successful even if its local PhotoKit state cannot be recorded.
+            nkLog(error: "Unable to record uploaded photo library asset \(metadata.assetLocalIdentifier): \(error)")
+        }
 #endif
 
+        // Auto Upload
+        if metadata.sessionSelector == global.selectorUploadAutoUpload {
             // LEGACY AUTO-UPLOAD history (Realm), returned for persistence by uploadSuccess.
             if !backgroundAutoUpload, let serverUrlBase = metadata.autoUploadServerUrlBase {
                 autoUpload = tableAutoUploadTransfer(account: metadata.account,
