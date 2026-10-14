@@ -68,10 +68,10 @@ struct NCMediaAdaptiveLayoutViewTests {
             controls.frame = CGRect(x: 0, y: 0, width: 430, height: height)
             controls.setNeedsLayout()
             controls.layoutIfNeeded()
-            let middleHeight = max(0, height - NCMediaAdaptiveActionsView.preferredHeight - NCMediaViewerThumbnail.preferredHeight - 20)
+            let middleHeight = max(0, height - NCMediaAdaptiveActionsView.preferredHeight - NCMediaViewerThumbnail.preferredHeight - 27)
             let navigationHeight = min(max(0, middleHeight - 5), max(44, middleHeight * 0.18))
             #expect(controls.pagingFooterView.frame.maxY == height)
-            #expect(controls.pagingFooterView.frame.height == navigationHeight + NCMediaViewerThumbnail.preferredHeight + 15)
+            #expect(controls.pagingFooterView.frame.height == navigationHeight + NCMediaViewerThumbnail.preferredHeight + 22)
             #expect(controls.pagingFooterView.subviews.first === host)
             #expect(controls.bottomControlsView.frame.maxY <= controls.pagingFooterView.frame.minY)
         }

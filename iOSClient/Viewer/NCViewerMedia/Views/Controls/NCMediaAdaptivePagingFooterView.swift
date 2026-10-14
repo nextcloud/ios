@@ -24,6 +24,7 @@ struct NCMediaAdaptivePagingFooterView: View {
             .frame(height: NCMediaViewerThumbnail.preferredHeight)
         }
         .padding(NCMediaAdaptiveControlsLayout.spacing)
+        .padding(.bottom, NCMediaAdaptiveControlsLayout.thumbnailBottomInset)
         .foregroundStyle(Color.ncViewerAdaptiveControlForeground)
         .tint(Color.ncViewerAdaptiveControlForeground)
         .fontWeight(.bold)

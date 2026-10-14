@@ -147,7 +147,7 @@ pager's `ignoresSafeArea()`. This lets the media cover the area behind the
 transparent navigation bar even with the experiment enabled and no active fold.
 The controls hosts retain their own safe-area handling. The adaptive lower panel
 extends through the bottom container safe area so its thumbnail lane stays near
-the lower edge with the explicit 5-point margin; top and side safe areas remain
+the lower edge with the 12-point bottom margin (5-point outer spacing plus 7-point thumbnail clearance); top and side safe areas remain
 in effect for actions. The lower host is created
 only for a suitable active fold, retained across subsequent transitions and
 clipped to its region. If its factory cannot supply controls, the normal layout
@@ -242,7 +242,8 @@ thumbnail strip outside that content and the information panel: with multiple
 pages it remains visible in adaptive mode, even when the user hides normal
 chrome or opens information. Its height matches the normal thumbnail lane;
 the area remains reserved even with a single page, when no selection strip is
-needed. Extra vertical thumbnail padding is removed. Adaptive sections and
+needed. The lane retains its preferred height with 7 points of additional bottom clearance,
+configured by `NCMediaAdaptiveControlsLayout.thumbnailBottomInset`. Adaptive sections and
 buttons use 5-point gaps; standalone actions are separate equally sized buttons
 with 60-point height, configured by `NCMediaAdaptiveControlsLayout.actionsHeight`. The middle content is clipped and scrolls independently. This shared
 area covers paged images, audio and video covers. Presented adaptive video uses

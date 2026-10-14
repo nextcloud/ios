@@ -41,6 +41,7 @@ struct NCMediaAdaptiveControlsView: View {
             .layoutPriority(1)
         }
         .padding(NCMediaAdaptiveControlsLayout.spacing)
+        .padding(.bottom, NCMediaAdaptiveControlsLayout.thumbnailBottomInset)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.ncViewerBackground(backgroundStyle))
         .foregroundStyle(Color.ncViewerAdaptiveControlForeground)
