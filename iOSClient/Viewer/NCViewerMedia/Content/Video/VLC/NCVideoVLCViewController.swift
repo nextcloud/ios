@@ -26,6 +26,9 @@ final class NCVideoVLCViewController: UIViewController {
 
     // MARK: - Paging Callbacks
 
+    private var adaptivePagingModel: NCMediaViewerModel?
+    private var onSelectPage: ((_ index: Int) -> Void)?
+
     var onPrevious: (() -> Void)?
     var onNext: (() -> Void)?
     var onPlaybackEnded: NCMediaPlaybackAdvanceRequest?
@@ -34,6 +37,17 @@ final class NCVideoVLCViewController: UIViewController {
     var canGoPrevious = false
     var canGoNext = false
 
+    func configureAdaptivePaging(model: NCMediaViewerModel?, onSelectPage: ((_ index: Int) -> Void)?) {
+        adaptivePagingModel = model
+        self.onSelectPage = onSelectPage
+        updateAdaptivePagingIfFolded()
+    }
+
+    private func updateAdaptivePagingIfFolded() {
+        guard (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true else { return }
+        adaptiveControlsView.configurePaging(model: adaptivePagingModel, onSelectPage: { [weak self] index in self?.onSelectPage?(index) })
+    }
+
     // MARK: - Views
 
     internal let drawableView = UIView()
@@ -41,10 +55,9 @@ final class NCVideoVLCViewController: UIViewController {
     private lazy var adaptiveControlsView: NCVideoAdaptiveControlsView = {
         let controlsView = NCVideoAdaptiveControlsView(state: normalControlsView.state)
         controlsView.delegate = self
-        controlsView.configureFoldedNavigation(
-            titleView: foldedTitleView,
+        controlsView.configureAdaptiveActions(
             closeAction: UIAction { [weak self] _ in self?.close() },
-            moreItem: NCContextMenuViewer.mediaNavigationItem(
+            moreButton: NCContextMenuViewer.mediaActionsButton(
                 viewController: self,
                 metadataProvider: { [weak self] in self?.metadata },
                 controllerProvider: { [weak self] in self?.contextMenuController }
@@ -54,14 +67,13 @@ final class NCVideoVLCViewController: UIViewController {
     }()
 
     internal var controlsView: any NCVideoPlaybackControls {
-        if (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true {
+        if (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true {
             return adaptiveControlsView
         }
         return normalControlsView
     }
 
     private let floatingTitleView = NCMediaViewerFloatingTitleView()
-    private let foldedTitleView = NCMediaViewerFloatingTitleView()
 
     private lazy var moreNavigationItem = NCContextMenuViewer.mediaNavigationItem(
         viewController: self,
@@ -95,16 +107,13 @@ final class NCVideoVLCViewController: UIViewController {
     private weak var closePanGesture: UIPanGestureRecognizer?
 
     internal var shouldKeepControlsVisible: Bool {
-        (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true ||
+        (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true ||
             mediaPlayer.state != .playing && !mediaPlayer.isPlaying && !isPlaybackRequested
     }
 
     internal func setNavigationBarVisible(_ isVisible: Bool, animated: Bool) {
         guard let navigationController else { return }
-        navigationController.setNavigationBarHidden(
-            !isVisible || (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true,
-            animated: animated
-        )
+        navigationController.setNavigationBarHidden(!isVisible || (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true, animated: animated)
         navigationController.view.layoutIfNeeded()
         updateControlsNavigationBar()
         navigationController.transitionCoordinator?.animate(alongsideTransition: nil) { [weak self] _ in
@@ -132,14 +141,9 @@ final class NCVideoVLCViewController: UIViewController {
         self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
         self.playbackOptions = playbackOptions
-        self.playbackPresentationContext = NCVideoPlaybackPresentationContext(
-            startReason: playbackStartReason
-        )
+        self.playbackPresentationContext = NCVideoPlaybackPresentationContext(startReason: playbackStartReason)
 
-        super.init(
-            nibName: nil,
-            bundle: nil
-        )
+        super.init(nibName: nil, bundle: nil)
 
         modalPresentationStyle = .fullScreen
     }
@@ -161,8 +165,8 @@ final class NCVideoVLCViewController: UIViewController {
     override func loadView() {
         let backgroundColor = viewerBackgroundColor
 
-        let rootView = NCVideoAdaptiveLayoutView(
-            videoView: drawableView,
+        let rootView = NCMediaAdaptiveLayoutView(
+            mediaView: drawableView,
             normalControlsView: normalControlsView,
             adaptiveControlsView: { [weak self] in self?.adaptiveControlsView }
         )
@@ -171,7 +175,9 @@ final class NCVideoVLCViewController: UIViewController {
                 return
             }
 
+            updateAdaptivePagingIfFolded()
             showControls(animated: false)
+            updateViewerBackgroundIfNeeded(force: true)
 
             if isFolded {
                 stopControlsHideTimer()
@@ -229,10 +235,7 @@ final class NCVideoVLCViewController: UIViewController {
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(
-            to: size,
-            with: coordinator
-        )
+        super.viewWillTransition(to: size, with: coordinator)
 
         coordinator.animate(alongsideTransition: { [weak self] _ in
             self?.view.layoutIfNeeded()
@@ -288,16 +291,12 @@ final class NCVideoVLCViewController: UIViewController {
     }
 
     private var viewerBackgroundColor: UIColor {
-        UIColor.ncViewerBackground(
-            ncViewerBackgroundStyle(
-                for: metadata,
-                isChromeHidden: isChromeHidden
-            )
-        )
+        let isFolded = (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true
+        return .ncViewerBackground(ncViewerVideoPlaybackBackgroundStyle(for: metadata, isChromeHidden: isChromeHidden, isFoldedLayout: isFolded))
     }
 
-    private func updateViewerBackgroundIfNeeded() {
-        guard !controlsVisible else {
+    private func updateViewerBackgroundIfNeeded(force: Bool = false) {
+        guard force || !controlsVisible || (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true else {
             return
         }
 
@@ -313,12 +312,7 @@ final class NCVideoVLCViewController: UIViewController {
         navigationItem.title = nil
         navigationItem.titleView = floatingTitleView
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "chevron.backward"),
-            style: .plain,
-            target: self,
-            action: #selector(closeTapped)
-        )
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), style: .plain, target: self, action: #selector(closeTapped))
 
         navigationItem.rightBarButtonItem = moreNavigationItem
 
@@ -336,12 +330,7 @@ final class NCVideoVLCViewController: UIViewController {
             ? metadata.fileName
             : metadata.fileNameView
 
-        for titleView in [floatingTitleView, foldedTitleView] {
-            titleView.update(
-                primaryText: primaryTitle,
-                secondaryText: floatingTitleDateFormatter.string(from: metadata.date as Date)
-            )
-        }
+        floatingTitleView.update(primaryText: primaryTitle, secondaryText: floatingTitleDateFormatter.string(from: metadata.date as Date))
     }
 
     @objc
@@ -369,24 +358,15 @@ final class NCVideoVLCViewController: UIViewController {
     // MARK: - Swipe Navigation
 
     private func configureSwipeGestures() {
-        let swipeLeft = UISwipeGestureRecognizer(
-            target: self,
-            action: #selector(handleSwipe(_:))
-        )
+        let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
         swipeLeft.direction = .left
         swipeLeft.delegate = self
 
-        let swipeRight = UISwipeGestureRecognizer(
-            target: self,
-            action: #selector(handleSwipe(_:))
-        )
+        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
         swipeRight.direction = .right
         swipeRight.delegate = self
 
-        let closePanGesture = UIPanGestureRecognizer(
-            target: self,
-            action: #selector(handleClosePan(_:))
-        )
+        let closePanGesture = UIPanGestureRecognizer(target: self, action: #selector(handleClosePan(_:)))
         closePanGesture.delegate = self
         self.closePanGesture = closePanGesture
 
@@ -396,10 +376,7 @@ final class NCVideoVLCViewController: UIViewController {
     }
 
     private func configureTapGesture() {
-        let tapGesture = UITapGestureRecognizer(
-            target: self,
-            action: #selector(handleSingleTap(_:))
-        )
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleSingleTap(_:)))
         tapGesture.numberOfTapsRequired = 1
         tapGesture.cancelsTouchesInView = false
         tapGesture.delegate = self
@@ -622,12 +599,7 @@ final class NCVideoVLCViewController: UIViewController {
         let scheme = url.scheme ?? "unknown"
         let host = url.host ?? (url.isFileURL ? "local" : "unknown")
 
-        nkLog(
-            tag: NCGlobal.shared.logTagViewer,
-            emoji: .start,
-            message: "VIDEO VLC play requested scheme: \(scheme), host: \(host)",
-            consoleOnly: false
-        )
+        nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .start, message: "VIDEO VLC play requested scheme: \(scheme), host: \(host)", consoleOnly: false)
     }
 
     private func startPlaybackStartupTimeout() {
@@ -653,12 +625,7 @@ final class NCVideoVLCViewController: UIViewController {
                 return
             }
 
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .error,
-                message: "VIDEO VLC playback startup timed out",
-                consoleOnly: false
-            )
+            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO VLC playback startup timed out", consoleOnly: false)
 
             self.reportPlaybackErrorIfNeeded()
         }
@@ -703,12 +670,7 @@ final class NCVideoVLCViewController: UIViewController {
             stateDescription = "unknown"
         }
 
-        nkLog(
-            tag: NCGlobal.shared.logTagViewer,
-            emoji: mediaPlayer.state == .error ? .error : .debug,
-            message: "VIDEO VLC state: \(stateDescription)",
-            consoleOnly: false
-        )
+        nkLog(tag: NCGlobal.shared.logTagViewer, emoji: mediaPlayer.state == .error ? .error : .debug, message: "VIDEO VLC state: \(stateDescription)", consoleOnly: false)
 
         if isStopInFlight {
             if mediaPlayer.state == .stopped {
@@ -790,12 +752,7 @@ final class NCVideoVLCViewController: UIViewController {
 
             if isPlaybackRequested,
                hasEnteredPlaybackPipeline {
-                nkLog(
-                    tag: NCGlobal.shared.logTagViewer,
-                    emoji: .error,
-                    message: "VIDEO VLC playback stopped before reaching playing",
-                    consoleOnly: false
-                )
+                nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO VLC playback stopped before reaching playing", consoleOnly: false)
                 reportPlaybackErrorIfNeeded()
                 return
             }
@@ -853,10 +810,7 @@ final class NCVideoVLCViewController: UIViewController {
     }
 
     internal func updatePlaybackOptionsControls() {
-        controlsView.updatePlaybackOptions(
-            isRepeatEnabled: playbackOptions.isRepeatEnabled,
-            isAutoAdvanceEnabled: playbackOptions.isAutoAdvanceEnabled
-        )
+        controlsView.updatePlaybackOptions(isRepeatEnabled: playbackOptions.isRepeatEnabled, isAutoAdvanceEnabled: playbackOptions.isAutoAdvanceEnabled)
     }
 
     // MARK: - VLC Track Menus
@@ -890,10 +844,7 @@ final class NCVideoVLCViewController: UIViewController {
     func selectSubtitleTrack(index: Int32) {
         mediaPlayer.currentVideoSubTitleIndex = index
 
-        NCManageDatabase.shared.addVideo(
-            metadata: metadata,
-            currentVideoSubTitleIndex: Int(index)
-        )
+        NCManageDatabase.shared.addVideo(metadata: metadata, currentVideoSubTitleIndex: Int(index))
 
         Task { @MainActor [weak self] in
             try? await Task.sleep(for: .milliseconds(200))
@@ -904,10 +855,7 @@ final class NCVideoVLCViewController: UIViewController {
     func selectAudioTrack(index: Int32) {
         mediaPlayer.currentAudioTrackIndex = index
 
-        NCManageDatabase.shared.addVideo(
-            metadata: metadata,
-            currentAudioTrackIndex: Int(index)
-        )
+        NCManageDatabase.shared.addVideo(metadata: metadata, currentAudioTrackIndex: Int(index))
 
         Task { @MainActor [weak self] in
             try? await Task.sleep(for: .milliseconds(200))
@@ -929,10 +877,7 @@ final class NCVideoVLCViewController: UIViewController {
         let session = NCSession.shared.getSession(account: metadata.account)
 
         guard !session.account.isEmpty,
-              let navigationController = UIStoryboard(
-                  name: "NCSelect",
-                  bundle: nil
-              ).instantiateInitialViewController() as? UINavigationController,
+              let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
               let rootViewController = navigationController.topViewController as? NCSelect else {
             return nil
         }
@@ -948,31 +893,18 @@ final class NCVideoVLCViewController: UIViewController {
             if serverUrl == homeServerUrl {
                 viewController = rootViewController
             } else {
-                viewController = UIStoryboard(
-                    name: "NCSelect",
-                    bundle: nil
-                ).instantiateViewController(
-                    withIdentifier: "NCSelect.storyboard"
-                ) as? NCSelect
+                viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect
             }
 
             guard let viewController else {
                 return nil
             }
 
-            configureExternalSubtitlePicker(
-                viewController,
-                serverUrl: serverUrl,
-                homeServerUrl: homeServerUrl,
-                session: session
-            )
+            configureExternalSubtitlePicker(viewController, serverUrl: serverUrl, homeServerUrl: homeServerUrl, session: session)
             viewControllers.insert(viewController, at: 0)
 
             guard serverUrl != homeServerUrl,
-                  let parentServerUrl = utilityFileSystem.serverDirectoryUp(
-                      serverUrl: serverUrl,
-                      home: homeServerUrl
-                  ) else {
+                  let parentServerUrl = utilityFileSystem.serverDirectoryUp(serverUrl: serverUrl, home: homeServerUrl) else {
                 break
             }
 
@@ -1009,12 +941,7 @@ final class NCVideoVLCViewController: UIViewController {
 
     private func loadExternalSubtitle(url: URL) {
         guard isSupportedExternalSubtitleURL(url) else {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .error,
-                message: "VIDEO VLC unsupported external subtitle extension: \(url.lastPathComponent)",
-                consoleOnly: true
-            )
+            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO VLC unsupported external subtitle extension: \(url.lastPathComponent)", consoleOnly: true)
             return
         }
 
@@ -1023,20 +950,11 @@ final class NCVideoVLCViewController: UIViewController {
 
             externalSubtitleURL = localURL
 
-            _ = mediaPlayer.addPlaybackSlave(
-                localURL.standardizedFileURL,
-                type: .subtitle,
-                enforce: true
-            )
+            _ = mediaPlayer.addPlaybackSlave(localURL.standardizedFileURL, type: .subtitle, enforce: true)
 
             refreshExternalSubtitleTracksAfterLoad()
         } catch {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .error,
-                message: "VIDEO VLC external subtitle load error: \(error.localizedDescription)",
-                consoleOnly: true
-            )
+            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO VLC external subtitle load error: \(error.localizedDescription)", consoleOnly: true)
         }
     }
 
@@ -1058,19 +976,13 @@ final class NCVideoVLCViewController: UIViewController {
             .appendingPathComponent(fileName)
 
         let destinationDirectory = destinationURL.deletingLastPathComponent()
-        try FileManager.default.createDirectory(
-            at: destinationDirectory,
-            withIntermediateDirectories: true
-        )
+        try FileManager.default.createDirectory(at: destinationDirectory, withIntermediateDirectories: true)
 
         if FileManager.default.fileExists(atPath: destinationURL.path) {
             try FileManager.default.removeItem(at: destinationURL)
         }
 
-        try FileManager.default.copyItem(
-            at: url,
-            to: destinationURL
-        )
+        try FileManager.default.copyItem(at: url, to: destinationURL)
 
         return destinationURL
     }
@@ -1085,19 +997,11 @@ final class NCVideoVLCViewController: UIViewController {
     }
 
     private func makeSubtitleTrackMenuItems() -> [NCVideoTrackMenuItem] {
-        makeTrackMenuItems(
-            titles: mediaPlayer.videoSubTitlesNames,
-            indexes: mediaPlayer.videoSubTitlesIndexes,
-            currentIndex: currentSubtitleTrackIndex()
-        )
+        makeTrackMenuItems(titles: mediaPlayer.videoSubTitlesNames, indexes: mediaPlayer.videoSubTitlesIndexes, currentIndex: currentSubtitleTrackIndex())
     }
 
     private func makeAudioTrackMenuItems() -> [NCVideoTrackMenuItem] {
-        makeTrackMenuItems(
-            titles: mediaPlayer.audioTrackNames,
-            indexes: mediaPlayer.audioTrackIndexes,
-            currentIndex: currentAudioTrackIndex()
-        )
+        makeTrackMenuItems(titles: mediaPlayer.audioTrackNames, indexes: mediaPlayer.audioTrackIndexes, currentIndex: currentAudioTrackIndex())
     }
 
     private func currentSubtitleTrackIndex() -> Int? {
@@ -1160,25 +1064,14 @@ final class NCVideoVLCViewController: UIViewController {
     }
 
     private func controlsHitFramesContain(_ location: CGPoint) -> Bool {
-        let topActionsFrame = controlsView.topActionsView.convert(
-            controlsView.topActionsView.bounds,
-            to: view
-        )
-        let centerControlsFrame = controlsView.centerControlsView.convert(
-            controlsView.centerControlsView.bounds,
-            to: view
-        )
-        let bottomControlsFrame = controlsView.bottomControlsView.convert(
-            controlsView.bottomControlsView.bounds,
-            to: view
-        )
+        let topActionsFrame = controlsView.topActionsView.convert(controlsView.topActionsView.bounds, to: view)
+        let centerControlsFrame = controlsView.centerControlsView.convert(controlsView.centerControlsView.bounds, to: view)
+        let bottomControlsFrame = controlsView.bottomControlsView.convert(controlsView.bottomControlsView.bounds, to: view)
 
-        if (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true {
-            let foldedNavigationFrame = adaptiveControlsView.foldedNavigationBar.convert(
-                adaptiveControlsView.foldedNavigationBar.bounds,
-                to: view
-            )
-            if !adaptiveControlsView.isHidden && foldedNavigationFrame.contains(location) {
+        if (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true {
+            let adaptiveActionsFrame = adaptiveControlsView.actionsContainerView.convert(adaptiveControlsView.actionsContainerView.bounds, to: view)
+            let footerFrame = adaptiveControlsView.pagingFooterView.convert(adaptiveControlsView.pagingFooterView.bounds, to: view)
+            if !adaptiveControlsView.isHidden && (adaptiveActionsFrame.contains(location) || footerFrame.contains(location)) {
                 return true
             }
         }
@@ -1308,23 +1201,13 @@ extension NCVideoVLCViewController: NCSelectDelegate {
                 let result = await NCNetworking.shared.downloadFile(metadata: metadata)
 
                 guard result.nkError == .success else {
-                    nkLog(
-                        tag: NCGlobal.shared.logTagViewer,
-                        emoji: .error,
-                        message: "VIDEO VLC subtitle download error: \(result.nkError.errorDescription)",
-                        consoleOnly: true
-                    )
+                    nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO VLC subtitle download error: \(result.nkError.errorDescription)", consoleOnly: true)
                     showControls(animated: true)
                     return
                 }
             }
 
-            let localPath = utilityFileSystem.getDirectoryProviderStorageOcId(
-                metadata.ocId,
-                fileName: metadata.fileName,
-                userId: metadata.userId,
-                urlBase: metadata.urlBase
-            )
+            let localPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
 
             loadExternalSubtitle(url: URL(fileURLWithPath: localPath))
             showControls(animated: true)
