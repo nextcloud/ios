@@ -260,7 +260,7 @@ struct NCMediaAdaptiveLayoutViewTests {
         #expect(!videoView.translatesAutoresizingMaskIntoConstraints)
         #expect(!normalControlsView.translatesAutoresizingMaskIntoConstraints)
         #expect(view.constraints.count == 8)
-        #expect(view.constraints.allSatisfy(\.isActive))
+        #expect(view.constraints.allSatisfy { $0.isActive })
         #expect(modes.isEmpty)
 
         view.isLayoutEnabled = true
@@ -303,7 +303,7 @@ struct NCMediaAdaptiveLayoutViewTests {
         view.isLayoutEnabled = false
         view.layoutIfNeeded()
         #expect(view.constraints.count == 8)
-        #expect(view.constraints.allSatisfy(\.isActive))
+        #expect(view.constraints.allSatisfy { $0.isActive })
         #expect(!view.isFoldedLayout)
         #expect(mediaView.frame == view.bounds)
     }
