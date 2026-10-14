@@ -224,8 +224,8 @@ retain the existing Maps action.
 The two `Adaptive Image` canvas previews isolate these visual states. The adaptive
 image panel uses the standard viewer background and system-colored control
 islands, text and symbols. Previous/next buttons use a compact icon/text row and
-occupy 18% of the middle area's height (70% less than the initial 60%), with a
-44-point minimum when space permits; the
+match the top action row at 60 points, using the same `actionsHeight` setting;
+in very small regions navigation shrinks to fit. The
 remaining space is a bounded information island. Both sizes depend only on the
 available region, not Info visibility or metadata length. Details scroll inside
 the island without moving the buttons or thumbnails. Both regions follow the standard appearance/chrome rule: system background

@@ -74,7 +74,7 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
             setNeedsLayout()
             return
         }
-        let root = NCMediaAdaptivePagingFooterView(model: model, navigationHeight: 44, onSelectPage: onSelectPage)
+        let root = NCMediaAdaptivePagingFooterView(model: model, navigationHeight: NCMediaAdaptiveControlsLayout.actionsHeight, onSelectPage: onSelectPage)
         if let pagingFooterController {
             pagingFooterController.rootView = root
         } else {

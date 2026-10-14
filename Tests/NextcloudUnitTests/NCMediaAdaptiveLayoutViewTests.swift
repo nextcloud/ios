@@ -16,8 +16,9 @@ struct NCMediaAdaptiveLayoutViewTests {
         let navigationHeight = NCMediaAdaptiveControlsLayout.navigationHeight(availableHeight: height)
         #expect(navigationHeight >= 0)
         #expect(navigationHeight <= max(0, height - NCMediaAdaptiveControlsLayout.spacing))
-        if height >= 49 {
-            #expect(navigationHeight >= 44)
+        #expect(navigationHeight <= NCMediaAdaptiveControlsLayout.actionsHeight)
+        if height >= NCMediaAdaptiveControlsLayout.actionsHeight + NCMediaAdaptiveControlsLayout.spacing {
+            #expect(navigationHeight == NCMediaAdaptiveControlsLayout.actionsHeight)
         }
     }
 
@@ -71,7 +72,7 @@ struct NCMediaAdaptiveLayoutViewTests {
             let middleHeight = max(
                 0, height - NCMediaAdaptiveActionsView.preferredHeight - NCMediaViewerThumbnail.preferredHeight - 20 - NCMediaAdaptiveControlsLayout.thumbnailBottomInset
             )
-            let navigationHeight = min(max(0, middleHeight - 5), max(44, middleHeight * 0.18))
+            let navigationHeight = min(max(0, middleHeight - 5), NCMediaAdaptiveControlsLayout.actionsHeight)
             #expect(controls.pagingFooterView.frame.maxY == height)
             #expect(controls.pagingFooterView.frame.height == navigationHeight + NCMediaViewerThumbnail.preferredHeight + 15 + NCMediaAdaptiveControlsLayout.thumbnailBottomInset)
             #expect(controls.pagingFooterView.subviews.first === host)
