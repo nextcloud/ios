@@ -16,14 +16,39 @@ The only feature switch is in [Views/NCMediaAdaptiveLayoutView.swift](Views/NCMe
 
 ```swift
 enum NCMediaAdaptiveLayoutConfiguration {
-    static let isAdaptiveLayoutEnabled = true
+    static let isAdaptiveLayoutEnabled = false
 }
 ```
 
-The switch is currently `true` for experimental verification. This enables
-paged images, audio, video covers and both fullscreen video engines
-(AVPlayer and VLC). Set it to `false` to use the normal layout. There is no
-user-facing setting.
+The switch is currently `false` for normal-mode regression verification in
+TestFlight. Setting it to `true` enables paged images, audio, video covers and
+both fullscreen video engines (AVPlayer and VLC). There is no user-facing setting.
+Disabling the adaptive layout does not revert shared changes: normal audio uses
+−10/+10 seeking, normal audio/video progress bars use account branding and a
+single remaining-time label, information panels omit the repeated filename and prefer EXIF
+dates with a file-date fallback, EXIF loading delivers one complete result, and
+both video layouts use the updated subtitle symbol. Paging/presenter cleanup
+also remains active. Check these paths during the TestFlight regression pass.
+
+### TestFlight pass with the switch disabled
+
+On iPhone and iPad, check light/dark appearance and portrait/landscape:
+
+- Images: local and remote previews, zoom, swipe, thumbnails, navigation visibility
+  after tapping, and the Live Photo badge/playback.
+- Information: EXIF date versus file-date fallback, GPS location, missing EXIF and
+  offline use; delete an image while its information is open and then change pages.
+- Audio: Play/Pause, −10/+10 at the beginning/end, slider, repeat, automatic advance
+  and switching to another media type while playing.
+- Video: both AVPlayer and VLC, local/remote cover and loading/cancel states,
+  Play/Pause, seeking, repeat, automatic advance, VLC tracks and subtitle import.
+  Check PiP/AirPlay on a device where they are supported.
+- Lifecycle: close/reopen the viewer, background/foreground during playback and
+  confirm normal auto-hide and teardown still work.
+
+Static inspection and SwiftLint do not replace this device pass. Build and run
+unit tests manually in Xcode; the adaptive layout tests explicitly enable their
+containers where needed, independently of the shipping feature switch.
 
 `NCMediaAdaptiveLayoutView.isLayoutEnabled` is the container's operating state,
 not another feature switch. Video containers inherit the central value. The
@@ -93,7 +118,7 @@ default, but has its own customization entry.
 | Control text and icon color | `UIColor.ncViewerAdaptiveControlForeground` | Adaptive image/audio and video-cover controls, the common lower panel and shared action buttons. |
 | Control border color/width | `UIColor.ncViewerAdaptiveControlBorder` / `ncViewerAdaptiveControlBorderWidth` | All adaptive control islands and buttons, including thumbnails and video playback controls. |
 | Control contrast in light/dark appearance | `ncViewerAdaptiveControlsColorScheme(for:inherited:)` | The common lower panel: black uses dark appearance, white uses light, system/custom inherit. |
-| Adaptive audio played-track tint | `Color.ncViewerAdaptiveProgressTint(account:)` | Selected file account’s `NCBrandColor.shared.getElement(account:)`; other controls retain their palette. |
+| Audio/video played-track tint, both layouts | `Color.ncViewerPlaybackProgressTint(account:)` | Selected file account’s `NCBrandColor.shared.getElement(account:)`; other controls retain their palette. |
 | Loading indicator tint | `Color.ncViewerProgressTint(_:)` | Media loading indicators. |
 
 For example, changing an island fill requires editing only
@@ -342,8 +367,8 @@ these two options there; the middle playback row is −10 seconds, Play/Pause an
 +10 seconds, each in its own button island directly below the header. These three
 buttons fill the remaining middle area and absorb changes in available height.
 A separate 60-point island above Previous/Next contains the seek slider and a
-remaining-time countdown on its right. Normal mode retains its elapsed/duration
-labels. There is no empty spacer between the
+remaining-time countdown on its right. Normal audio/video also show only the
+remaining-time countdown at the right and use the same account branding tint. There is no empty spacer between the
 rows. The slider island shrinks only when the region cannot accommodate it. The header observes the existing playback options for icon updates. Video covers
 keep their playback/download controls visible. The adaptive Info button is shown
 only for images; audio/video show Close and More without an empty button slot.

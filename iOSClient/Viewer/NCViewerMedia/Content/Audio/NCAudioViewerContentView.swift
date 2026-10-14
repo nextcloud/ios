@@ -168,7 +168,7 @@ struct NCAudioViewerContentView: View {
                         }
                         .frame(minHeight: 0, maxHeight: .infinity)
 
-                        VStack(spacing: 10) {
+                        HStack(spacing: 5) {
                             Slider(
                                 value: Binding(
                                     get: { model.currentTime },
@@ -177,16 +177,14 @@ struct NCAudioViewerContentView: View {
                                 in: 0...max(model.duration, 1)
                             )
                             .disabled(!isSelected || model.duration <= 0)
+                            .tint(Color.ncViewerPlaybackProgressTint(account: metadata.account))
 
-                            HStack {
-                                Text(formatTime(model.currentTime))
-
-                                Spacer()
-
-                                Text(formatTime(model.duration))
-                            }
-                            .font(.caption.monospacedDigit())
-                            .foregroundStyle(secondaryForegroundStyle)
+                            Text(model.remainingTimeText)
+                                .font(.subheadline.monospacedDigit())
+                                .fontWeight(.bold)
+                                .foregroundStyle(primaryForegroundStyle)
+                                .lineLimit(1)
+                                .fixedSize()
                         }
                         .padding(.horizontal, sliderHorizontalPadding)
                         .fixedSize(horizontal: false, vertical: true)
@@ -368,18 +366,6 @@ struct NCAudioViewerContentView: View {
         onAutoPlayConsumed()
     }
 
-    private func formatTime(_ seconds: Double) -> String {
-        guard seconds.isFinite,
-              seconds >= 0 else {
-            return "00:00"
-        }
-
-        let totalSeconds = Int(seconds.rounded())
-        let minutes = totalSeconds / 60
-        let remainingSeconds = totalSeconds % 60
-
-        return String(format: "%02d:%02d", minutes, remainingSeconds)
-    }
 }
 
 private extension View {
@@ -424,7 +410,6 @@ final class NCAudioViewerPlaybackRegistry {
 
 @MainActor
 final class NCAudioViewerModel: ObservableObject {
-
     // MARK: - Published State
 
     @Published private(set) var isPlaying = false
@@ -443,6 +428,13 @@ final class NCAudioViewerModel: ObservableObject {
     private var onPlayNextMedia: NCMediaPlaybackAdvanceRequest?
 
     // MARK: - Public API
+
+    var remainingTimeText: String {
+        let remaining = max(0, duration - currentTime)
+        guard remaining.isFinite, remaining < Double(Int.max) else { return "0:00" }
+        let seconds = Int(remaining.rounded(.up))
+        return String(format: "%d:%02d", seconds / 60, seconds % 60)
+    }
 
     func configurePlaybackCompletion(options: NCMediaPlaybackOptions, onPlayNextMedia: @escaping NCMediaPlaybackAdvanceRequest) {
         playbackOptions = options

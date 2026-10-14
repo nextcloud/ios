@@ -6,8 +6,8 @@ import UIKit
 
 /// Single experimental switch for images, audio and both video engines. See ../README.md.
 enum NCMediaAdaptiveLayoutConfiguration {
-    /// Enabled for experimental verification; set to false to use the normal layout.
-    static let isAdaptiveLayoutEnabled = true
+    /// Keep disabled for TestFlight regression checks of the normal viewer before enabling the experiment.
+    static let isAdaptiveLayoutEnabled = false
 }
 
 /// Arranges the same media surface above the fold and independent controls below it.

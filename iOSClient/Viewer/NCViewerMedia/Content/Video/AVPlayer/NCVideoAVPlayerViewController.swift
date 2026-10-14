@@ -352,6 +352,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     private func updateTitleLabel(metadata: tableMetadata) {
+        normalControlsView.setAccount(metadata.account)
         let primaryTitle = metadata.fileNameView.isEmpty
             ? metadata.fileName
             : metadata.fileNameView

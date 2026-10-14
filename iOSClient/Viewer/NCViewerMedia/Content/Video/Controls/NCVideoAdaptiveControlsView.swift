@@ -450,7 +450,7 @@ private struct NCVideoAdaptiveControlsSwiftUIView: View {
                 }
             )
             .disabled(!state.isSeekingEnabled)
-            .tint(Color.ncViewerAdaptiveProgressTint(account: layoutState.account))
+            .tint(Color.ncViewerPlaybackProgressTint(account: layoutState.account))
             .opacity(state.isSeekingEnabled ? 1 : 0.45)
 
             timeLabel(state.remainingText.trimmingCharacters(in: CharacterSet(charactersIn: "−-")))

@@ -58,9 +58,9 @@ struct NCAudioAdaptiveControlsView: View {
             // No page gesture on this row: horizontal drags seek within the current audio.
             HStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
                 Slider(value: Binding(get: { playbackModel.currentTime }, set: { playbackModel.seek(to: $0) }), in: 0...max(playbackModel.duration, 1))
-                    .tint(Color.ncViewerAdaptiveProgressTint(account: account))
+                    .tint(Color.ncViewerPlaybackProgressTint(account: account))
                     .disabled(!isSelected || playbackModel.duration <= 0)
-                Text(remainingTime)
+                Text(playbackModel.remainingTimeText)
                     .font(.subheadline.monospacedDigit())
                     .lineLimit(1)
                     .fixedSize()
@@ -70,13 +70,6 @@ struct NCAudioAdaptiveControlsView: View {
             .layoutPriority(1)
             .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 16))
         }
-    }
-
-    private var remainingTime: String {
-        let remaining = max(0, playbackModel.duration - playbackModel.currentTime)
-        guard remaining.isFinite, remaining < Double(Int.max) else { return "0:00" }
-        let seconds = Int(remaining.rounded(.up))
-        return String(format: "%d:%02d", seconds / 60, seconds % 60)
     }
 
     private var pageSwipe: some Gesture {

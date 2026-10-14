@@ -146,6 +146,10 @@ final class NCVideoControlsView: UIView, NCVideoPlaybackControls {
         state.isPlaying = isPlaying
     }
 
+    func setAccount(_ account: String) {
+        if layoutState.account != account { layoutState.account = account }
+    }
+
     func updateProgress(progress: Float, elapsedText: String, remainingText: String) {
         let progress = max(0, min(1, progress))
 
@@ -409,7 +413,7 @@ final class NCVideoControlsState: ObservableObject {
 @MainActor
 final class NCVideoControlsLayoutState: ObservableObject {
     @Published var topActionsTopOffset: CGFloat = 0
-    /// Account used only by the adaptive seek bar's branding color.
+    /// Selected file account for the seek bar branding color in either layout.
     @Published var account = ""
 }
 
@@ -512,9 +516,6 @@ private struct NCVideoControlsSwiftUIView: View {
 
     private var bottomControls: some View {
         HStack(spacing: NCVideoControlsView.topActionsSpacing) {
-            timeLabel(state.elapsedText)
-                .frame(width: 54)
-
             Slider(
                 value: Binding(
                     get: {
@@ -538,11 +539,11 @@ private struct NCVideoControlsSwiftUIView: View {
                 }
             )
             .disabled(!state.isSeekingEnabled)
-            .tint(.gray)
+            .tint(Color.ncViewerPlaybackProgressTint(account: layoutState.account))
             .opacity(state.isSeekingEnabled ? 1 : 0.45)
 
-            timeLabel(state.remainingText)
-                .frame(width: 58)
+            timeLabel(state.remainingText.trimmingCharacters(in: CharacterSet(charactersIn: "−-")))
+                .fixedSize()
         }
         .padding(.horizontal, 18)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -724,8 +725,9 @@ private struct NCVideoControlsSwiftUIView: View {
 
     private func timeLabel(_ text: String) -> some View {
         Text(text)
-            .font(.system(size: 15, weight: .medium, design: .rounded).monospacedDigit())
-            .foregroundStyle(.secondary)
+            .font(.subheadline.monospacedDigit())
+            .fontWeight(.bold)
+            .foregroundStyle(.primary)
             .lineLimit(1)
             .minimumScaleFactor(0.85)
     }
