@@ -78,8 +78,8 @@ struct NCMediaAdaptiveControlsView: View {
                 metadata: metadata,
                 exif: state.imageInformation?.ocId == metadata.ocId ? state.imageInformation?.exif : nil,
                 detailView: state.detailView?.metadata.ocId == metadata.ocId ? state.detailView : nil,
-                canGoPrevious: model.selectedIndex > 0 && model.pageTransition.isIdle,
-                canGoNext: model.selectedIndex < model.numberOfPages - 1 && model.pageTransition.isIdle,
+                canGoPrevious: model.selectedIndex > 0,
+                canGoNext: model.selectedIndex < model.numberOfPages - 1,
                 onPrevious: { selectAdjacentPage(offset: -1) },
                 onNext: { selectAdjacentPage(offset: 1) }
             )
@@ -88,8 +88,8 @@ struct NCMediaAdaptiveControlsView: View {
                 playbackModel: NCAudioViewerPlaybackRegistry.shared.model(for: metadata.ocId),
                 playbackOptions: model.playbackOptions,
                 isSelected: isSelectedAudioReady,
-                canGoPrevious: model.selectedIndex > 0 && model.pageTransition.isIdle,
-                canGoNext: model.selectedIndex < model.numberOfPages - 1 && model.pageTransition.isIdle,
+                canGoPrevious: model.selectedIndex > 0,
+                canGoNext: model.selectedIndex < model.numberOfPages - 1,
                 onPrevious: { selectAdjacentPage(offset: -1) },
                 onNext: { selectAdjacentPage(offset: 1) }
             )
@@ -188,7 +188,7 @@ extension EnvironmentValues {
 
 /// Standalone actions, without navigation items, title or navigation-bar appearance.
 final class NCMediaAdaptiveActionsView: UIStackView {
-    static let preferredHeight: CGFloat = 44
+    static var preferredHeight: CGFloat { NCMediaAdaptiveControlsLayout.actionsHeight }
 
     init(closeAction: UIAction, moreButton: UIButton, infoAction: UIAction? = nil) {
         super.init(frame: .zero)
@@ -226,7 +226,7 @@ final class NCMediaAdaptiveActionsView: UIStackView {
             configuration.background.cornerRadius = 12
             button.configuration = configuration
             NSLayoutConstraint.activate([
-                button.heightAnchor.constraint(equalToConstant: 44)
+                button.heightAnchor.constraint(equalToConstant: Self.preferredHeight)
             ])
         }
     }

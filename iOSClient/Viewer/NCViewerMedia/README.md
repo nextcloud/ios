@@ -244,7 +244,7 @@ chrome or opens information. Its height matches the normal thumbnail lane;
 the area remains reserved even with a single page, when no selection strip is
 needed. Extra vertical thumbnail padding is removed. Adaptive sections and
 buttons use 5-point gaps; standalone actions are separate equally sized buttons
-with 44-point height. The middle content is clipped and scrolls independently. This shared
+with 60-point height, configured by `NCMediaAdaptiveControlsLayout.actionsHeight`. The middle content is clipped and scrolls independently. This shared
 area covers paged images, audio and video covers. Presented adaptive video uses
 `NCMediaAdaptivePagingFooterView` for the same fixed thumbnail lane and previous/next
 position. Normal fullscreen video does not create this footer.

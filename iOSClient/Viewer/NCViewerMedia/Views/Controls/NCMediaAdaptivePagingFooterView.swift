@@ -41,7 +41,8 @@ struct NCMediaAdaptivePagingFooterView: View {
 
     private func pageButton(offset: Int, systemName: String, title: String) -> some View {
         let index = model.selectedIndex + offset
-        let isEnabled = model.pageTransition.isIdle && index >= 0 && index < model.numberOfPages
+        // Transition guards belong to selection actions; avoid fading buttons during upper swipes.
+        let isEnabled = index >= 0 && index < model.numberOfPages
         return Button { onSelectPage(index) } label: {
             Label(NSLocalizedString(title, comment: ""), systemImage: systemName)
                 .font(.subheadline)
