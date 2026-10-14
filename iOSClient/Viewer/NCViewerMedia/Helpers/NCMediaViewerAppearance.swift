@@ -122,7 +122,13 @@ extension UIColor {
     // Keep system colors dynamic: resolving them here would freeze light/dark appearance.
     static var ncViewerAdaptiveControlBackground: UIColor { .secondarySystemBackground }
     static var ncViewerAdaptiveControlForeground: UIColor { .label }
-    static var ncViewerAdaptiveControlBorder: UIColor { .separator }
+    /// Soft relief in both appearances: light edge on dark controls, dark edge on light controls.
+    /// Tune the two opacities here; UIKit and SwiftUI use the same dynamic color.
+    static var ncViewerAdaptiveControlBorder: UIColor {
+        UIColor { traits in
+            traits.userInterfaceStyle == .dark ? UIColor.white.withAlphaComponent(0.22) : UIColor.black.withAlphaComponent(0.14)
+        }
+    }
     static var ncViewerAdaptiveControlBorderWidth: CGFloat { 0.5 }
 }
 
@@ -131,6 +137,10 @@ extension Color {
     static var ncViewerAdaptiveControlBackground: Color { Color(uiColor: .ncViewerAdaptiveControlBackground) }
     static var ncViewerAdaptiveControlForeground: Color { Color(uiColor: .ncViewerAdaptiveControlForeground) }
     static var ncViewerAdaptiveControlBorder: Color { Color(uiColor: .ncViewerAdaptiveControlBorder) }
+    /// Played portion of the adaptive audio slider follows the selected file's account branding.
+    static func ncViewerAdaptiveProgressTint(account: String) -> Color {
+        Color(NCBrandColor.shared.getElement(account: account))
+    }
 }
 
 extension View {

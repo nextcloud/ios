@@ -45,6 +45,7 @@ final class NCVideoVLCViewController: UIViewController {
 
     private func updateAdaptivePagingIfFolded() {
         guard (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true else { return }
+        adaptiveControlsView.setFileName(metadata.fileNameView.isEmpty ? metadata.fileName : metadata.fileNameView)
         adaptiveControlsView.configurePaging(model: mediaViewerModel, onSelectPage: { [weak self] index in self?.onSelectPage?(index) })
     }
 

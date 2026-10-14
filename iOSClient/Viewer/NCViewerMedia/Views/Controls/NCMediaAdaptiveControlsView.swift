@@ -24,7 +24,8 @@ struct NCMediaAdaptiveControlsView: View {
                 makeActionsView: makeActionsView,
                 showsInformation: model.selectedMetadata?.classFile == NKTypeClassFile.image.rawValue,
                 showsAudioOptions: model.selectedMetadata?.classFile == NKTypeClassFile.audio.rawValue,
-                playbackOptions: model.playbackOptions
+                playbackOptions: model.playbackOptions,
+                fileName: model.selectedMetadata.map { $0.fileNameView.isEmpty ? $0.fileName : $0.fileNameView } ?? ""
             )
                 .frame(height: NCMediaAdaptiveActionsView.preferredHeight)
                 .layoutPriority(1)
@@ -92,6 +93,7 @@ struct NCMediaAdaptiveControlsView: View {
             )
         } else if let metadata = model.selectedMetadata, metadata.classFile == NKTypeClassFile.audio.rawValue {
             NCAudioAdaptiveControlsView(
+                account: metadata.account,
                 playbackModel: NCAudioViewerPlaybackRegistry.shared.model(for: metadata.ocId),
                 isSelected: isSelectedAudioReady,
                 canGoPrevious: model.selectedIndex > 0,
@@ -192,18 +194,20 @@ extension EnvironmentValues {
     }
 }
 
-/// Standalone actions, without navigation items, title or navigation-bar appearance.
+/// Standalone controls and a filename island, without a traditional navigation bar.
 final class NCMediaAdaptiveActionsView: UIStackView {
     static var preferredHeight: CGFloat { NCMediaAdaptiveControlsLayout.actionsHeight }
     private let repeatButton = UIButton(type: .system)
     private let autoAdvanceButton = UIButton(type: .system)
+    private let fileNameIsland = UIView()
+    private let fileNameLabel = UILabel()
     private weak var playbackOptions: NCMediaPlaybackOptions?
 
     init(closeAction: UIAction, moreButton: UIButton, infoAction: UIAction? = nil) {
         super.init(frame: .zero)
         axis = .horizontal
         alignment = .center
-        distribution = .fillEqually
+        distribution = .fill
         spacing = NCMediaAdaptiveControlsLayout.spacing
         layoutMargins = .zero
         isLayoutMarginsRelativeArrangement = true
@@ -214,6 +218,31 @@ final class NCMediaAdaptiveActionsView: UIStackView {
         closeButton.addAction(closeAction, for: .touchUpInside)
         addArrangedSubview(closeButton)
 
+        repeatButton.accessibilityLabel = NSLocalizedString("_repeat_current_media_", comment: "")
+        repeatButton.addAction(UIAction { [weak self] _ in self?.playbackOptions?.toggleRepeat() }, for: .touchUpInside)
+        repeatButton.isHidden = true
+        addArrangedSubview(repeatButton)
+
+        fileNameIsland.backgroundColor = .ncViewerAdaptiveControlBackground
+        fileNameIsland.layer.cornerRadius = 12
+        fileNameIsland.layer.borderWidth = UIColor.ncViewerAdaptiveControlBorderWidth
+        fileNameLabel.font = .preferredFont(forTextStyle: .headline)
+        fileNameLabel.textColor = .ncViewerAdaptiveControlForeground
+        fileNameLabel.textAlignment = .center
+        fileNameLabel.numberOfLines = 2
+        fileNameLabel.lineBreakMode = .byTruncatingMiddle
+        fileNameLabel.adjustsFontForContentSizeCategory = true
+        fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        fileNameIsland.addSubview(fileNameLabel)
+        addArrangedSubview(fileNameIsland)
+        NSLayoutConstraint.activate([
+            fileNameIsland.heightAnchor.constraint(equalToConstant: Self.preferredHeight),
+            fileNameLabel.leadingAnchor.constraint(equalTo: fileNameIsland.leadingAnchor, constant: 12),
+            fileNameLabel.trailingAnchor.constraint(equalTo: fileNameIsland.trailingAnchor, constant: -12),
+            fileNameLabel.topAnchor.constraint(equalTo: fileNameIsland.topAnchor),
+            fileNameLabel.bottomAnchor.constraint(equalTo: fileNameIsland.bottomAnchor)
+        ])
+
         if let infoAction {
             let infoButton = UIButton(type: .system)
             infoButton.setImage(UIImage(systemName: "info.circle"), for: .normal)
@@ -222,14 +251,10 @@ final class NCMediaAdaptiveActionsView: UIStackView {
             addArrangedSubview(infoButton)
             informationButton = infoButton
         }
-        repeatButton.accessibilityLabel = NSLocalizedString("_repeat_current_media_", comment: "")
-        repeatButton.addAction(UIAction { [weak self] _ in self?.playbackOptions?.toggleRepeat() }, for: .touchUpInside)
         autoAdvanceButton.accessibilityLabel = NSLocalizedString("_play_next_media_automatically_", comment: "")
         autoAdvanceButton.addAction(UIAction { [weak self] _ in self?.playbackOptions?.toggleAutoAdvance() }, for: .touchUpInside)
-        for button in [repeatButton, autoAdvanceButton] {
-            button.isHidden = true
-            addArrangedSubview(button)
-        }
+        autoAdvanceButton.isHidden = true
+        addArrangedSubview(autoAdvanceButton)
         moreButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         addArrangedSubview(moreButton)
         for button in arrangedSubviews.compactMap({ $0 as? UIButton }) {
@@ -243,9 +268,20 @@ final class NCMediaAdaptiveActionsView: UIStackView {
             configuration.background.cornerRadius = 12
             button.configuration = configuration
             NSLayoutConstraint.activate([
-                button.heightAnchor.constraint(equalToConstant: Self.preferredHeight)
+                button.heightAnchor.constraint(equalToConstant: Self.preferredHeight),
+                button.widthAnchor.constraint(equalToConstant: Self.preferredHeight)
             ])
         }
+    }
+
+    func setFileName(_ name: String) {
+        if fileNameLabel.text != name { fileNameLabel.text = name }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        // CALayer needs a resolved color; refresh it when appearance/layout changes.
+        fileNameIsland.layer.borderColor = UIColor.ncViewerAdaptiveControlBorder.resolvedColor(with: traitCollection).cgColor
     }
 
     /// Keeps audio options between Close and More without rebuilding the shared action row.
@@ -278,6 +314,7 @@ private struct NCMediaAdaptiveActionsHost: UIViewRepresentable {
     let showsInformation: Bool
     let showsAudioOptions: Bool
     @ObservedObject var playbackOptions: NCMediaPlaybackOptions
+    let fileName: String
 
     func makeUIView(context: Context) -> UIView {
         makeActionsView()
@@ -290,6 +327,7 @@ private struct NCMediaAdaptiveActionsHost: UIViewRepresentable {
         guard let actions = uiView as? NCMediaAdaptiveActionsView else { return }
         actions.informationButton?.isHidden = !showsInformation
         actions.configureAudioOptions(showsAudioOptions ? playbackOptions : nil)
+        actions.setFileName(fileName)
     }
 }
 
@@ -473,6 +511,7 @@ private final class NCMediaNormalControlsContainerView: UIView {
     let controls = NCVideoAdaptiveControlsView(state: NCVideoControlsState())
     controls.configureAdaptiveActions(closeAction: UIAction { _ in }, moreButton: UIButton(type: .system))
     controls.configurePaging(model: model, onSelectPage: { _ in })
+    controls.setFileName("Waterfall.mp4")
     controls.updatePlayPauseButton(isPlaying: true)
     controls.updateProgress(progress: 0.42, elapsedText: "1:24", remainingText: "−2:31")
     controls.backgroundColor = .black

@@ -6,6 +6,7 @@ import SwiftUI
 
 /// Lower audio panel. Observes the existing player model; never owns player creation or loading.
 struct NCAudioAdaptiveControlsView: View {
+    let account: String
     @ObservedObject var playbackModel: NCAudioViewerModel
     let isSelected: Bool
     let canGoPrevious: Bool
@@ -55,13 +56,27 @@ struct NCAudioAdaptiveControlsView: View {
             .simultaneousGesture(pageSwipe)
 
             // No page gesture on this row: horizontal drags seek within the current audio.
-            Slider(value: Binding(get: { playbackModel.currentTime }, set: { playbackModel.seek(to: $0) }), in: 0...max(playbackModel.duration, 1))
-                .disabled(!isSelected || playbackModel.duration <= 0)
-                .padding(.horizontal, 12)
-                .frame(height: progressHeight)
-                .layoutPriority(1)
-                .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 16))
+            HStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
+                Slider(value: Binding(get: { playbackModel.currentTime }, set: { playbackModel.seek(to: $0) }), in: 0...max(playbackModel.duration, 1))
+                    .tint(Color.ncViewerAdaptiveProgressTint(account: account))
+                    .disabled(!isSelected || playbackModel.duration <= 0)
+                Text(remainingTime)
+                    .font(.subheadline.monospacedDigit())
+                    .lineLimit(1)
+                    .fixedSize()
+            }
+            .padding(.horizontal, 12)
+            .frame(height: progressHeight)
+            .layoutPriority(1)
+            .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 16))
         }
+    }
+
+    private var remainingTime: String {
+        let remaining = max(0, playbackModel.duration - playbackModel.currentTime)
+        guard remaining.isFinite, remaining < Double(Int.max) else { return "0:00" }
+        let seconds = Int(remaining.rounded(.up))
+        return String(format: "%d:%02d", seconds / 60, seconds % 60)
     }
 
     private var pageSwipe: some Gesture {
@@ -107,6 +122,7 @@ struct NCAudioAdaptiveControlsView: View {
 #if DEBUG
 #Preview("Adaptive Audio - Controls") {
     return NCAudioAdaptiveControlsView(
+        account: "",
         playbackModel: NCAudioViewerModel(),
         isSelected: true,
         canGoPrevious: true,

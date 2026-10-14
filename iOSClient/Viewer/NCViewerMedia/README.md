@@ -93,6 +93,7 @@ default, but has its own customization entry.
 | Control text and icon color | `UIColor.ncViewerAdaptiveControlForeground` | Adaptive image/audio and video-cover controls, the common lower panel and shared action buttons. |
 | Control border color/width | `UIColor.ncViewerAdaptiveControlBorder` / `ncViewerAdaptiveControlBorderWidth` | All adaptive control islands and buttons, including thumbnails and video playback controls. |
 | Control contrast in light/dark appearance | `ncViewerAdaptiveControlsColorScheme(for:inherited:)` | The common lower panel: black uses dark appearance, white uses light, system/custom inherit. |
+| Adaptive audio played-track tint | `Color.ncViewerAdaptiveProgressTint(account:)` | Selected file account’s `NCBrandColor.shared.getElement(account:)`; other controls retain their palette. |
 | Loading indicator tint | `Color.ncViewerProgressTint(_:)` | Media loading indicators. |
 
 For example, changing an island fill requires editing only
@@ -101,6 +102,9 @@ same entry, so image/audio islands and UIKit action buttons stay consistent.
 SwiftUI controls use `ncAdaptiveControlSurface(shape:)` for the shared fill and
 border; UIKit action buttons read the same palette and border width. Circular and
 capsule video controls use this surface too, rather than a separate glass style.
+The border dynamically uses white at 22% opacity in dark appearance and black at
+14% in light appearance, with the shared 0.5-point width. Adjust these values in
+`ncViewerAdaptiveControlBorder` to tune the relief for every adaptive control.
 Keep dynamic system colors unresolved until rendering, so appearance changes
 continue to work. A custom background must contrast with its inherited controls.
 
@@ -254,6 +258,11 @@ There is no adaptive `UINavigationBar`, navigation item or title.
 `NCMediaAdaptiveActionsView` contains standalone Close, Info (paged media) and
 More buttons; rearrange or replace them independently of the normal navigation.
 The deferred More menu uses the button itself as its popover anchor.
+The same row contains a filename island for every media type, including presented
+video. Buttons are square (`actionsHeight` wide/high), while the filename uses
+the remaining width with up to two lines. Image: Close, Name, Info, More. Audio:
+Close, Repeat, Name, Auto-advance, More. Video: Close, Name, More. The row height
+and the lower thumbnail/navigation positions are unchanged.
 `NCMediaAdaptiveActionsView.preferredHeight` supplies the shared button height for
 paged media and fullscreen video. Buttons and thumbnails have priority over the
 flexible middle content when the lower panel shrinks; check very small windows
@@ -321,8 +330,9 @@ Its top action row is Close, Repeat, Auto-advance and More. Only audio shows
 these two options there; the middle playback row is −10 seconds, Play/Pause and
 +10 seconds, each in its own button island directly below the header. These three
 buttons fill the remaining middle area and absorb changes in available height.
-A separate 60-point island above Previous/Next contains only the seek slider;
-elapsed/duration labels stay in normal mode. There is no empty spacer between the
+A separate 60-point island above Previous/Next contains the seek slider and a
+remaining-time countdown on its right. Normal mode retains its elapsed/duration
+labels. There is no empty spacer between the
 rows. The slider island shrinks only when the region cannot accommodate it. The header observes the existing playback options for icon updates. Video covers
 keep their playback/download controls visible. The adaptive Info button is shown
 only for images; audio/video show Close and More without an empty button slot.

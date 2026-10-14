@@ -182,6 +182,10 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
         ])
     }
 
+    func setFileName(_ name: String) {
+        (actionsContainerView.subviews.first as? NCMediaAdaptiveActionsView)?.setFileName(name)
+    }
+
     // The adaptive layout positions top actions below standalone buttons.
     func setTopActionsNavigationBar(_ navigationBar: UINavigationBar?) {
         updateTopActionsPosition()
