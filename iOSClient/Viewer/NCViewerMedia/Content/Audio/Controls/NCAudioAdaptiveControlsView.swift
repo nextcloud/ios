@@ -48,11 +48,16 @@ struct NCAudioAdaptiveControlsView: View {
                     systemName: playbackOptions.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1",
                     title: "_repeat_current_media_", isEnabled: true, action: playbackOptions.toggleRepeat
                 )
-                controlButton(systemName: "backward.end.fill", title: "_restart_audio_", isEnabled: isSelected && playbackModel.duration > 0, action: playbackModel.restart)
+                controlButton(systemName: "gobackward.10", title: "_seek_backward_10_", isEnabled: isSelected && playbackModel.duration > 0) {
+                    playbackModel.seek(to: playbackModel.currentTime - 10)
+                }
                 controlButton(
                     systemName: playbackModel.isPlaying ? "pause.fill" : "play.fill",
                     title: playbackModel.isPlaying ? "_pause_" : "_play_", isEnabled: isSelected, action: playbackModel.togglePlayback
                 )
+                controlButton(systemName: "goforward.10", title: "_seek_forward_10_", isEnabled: isSelected && playbackModel.duration > 0) {
+                    playbackModel.seek(to: playbackModel.currentTime + 10)
+                }
                 controlButton(
                     systemName: playbackOptions.isAutoAdvanceEnabled ? "forward.end.fill" : "forward.end",
                     title: "_play_next_media_automatically_", isEnabled: true, action: playbackOptions.toggleAutoAdvance

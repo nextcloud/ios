@@ -202,16 +202,19 @@ struct NCAudioViewerContentView: View {
                             .buttonStyle(.plain)
                             .disabled(!isSelected)
 
-                            Button {
-                                model.restart()
-                            } label: {
-                                Image(systemName: "backward.end.circle.fill")
-                                    .font(.system(size: sideButtonSize, weight: .regular))
-                                    .foregroundStyle(primaryForegroundStyle)
+                            ForEach([-10, 10], id: \.self) { seconds in
+                                Button {
+                                    model.seek(to: model.currentTime + Double(seconds))
+                                } label: {
+                                    Image(systemName: seconds < 0 ? "gobackward.10" : "goforward.10")
+                                        .font(.system(size: sideButtonSize, weight: .regular))
+                                        .foregroundStyle(primaryForegroundStyle)
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(!isSelected || model.duration <= 0)
+                                .accessibilityLabel(NSLocalizedString(seconds < 0 ? "_seek_backward_10_" : "_seek_forward_10_", comment: ""))
+                                .offset(x: (seconds < 0 ? -1 : 1) * (playButtonSize / 2 + buttonSpacing + sideButtonSize / 2))
                             }
-                            .buttonStyle(.plain)
-                            .disabled(!isSelected || model.duration <= 0)
-                            .offset(x: -(playButtonSize / 2 + buttonSpacing + sideButtonSize / 2))
                         }
                         .frame(height: playButtonSize)
                         .frame(maxWidth: .infinity)

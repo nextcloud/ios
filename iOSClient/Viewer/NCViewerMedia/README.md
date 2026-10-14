@@ -146,7 +146,7 @@ video playback behavior. Local builds and tests remain user-run in Xcode.
 | `Content/Image/Controls/NCImageAdaptiveControlsView.swift` | Always hosts the shared information view inside its fixed island, plus previous/next buttons; the shared panel owns actions and thumbnails. |
 | `Views/Controls/NCMediaAdaptivePagingFooterView.swift` | Presented adaptive video footer: persistent previous/next and thumbnails sharing the viewer model, with dismissal-aware selection. |
 | `Views/Controls/NCMediaAdaptiveControlsView.swift` | Lower composition for paged images, audio and video covers: standalone buttons, image-only inline information, playback/cover actions and thumbnails. Also contains the SwiftUI/UIKit bridge and its hosting support types. |
-| `Content/Audio/Controls/NCAudioAdaptiveControlsView.swift` | Independent lower audio controls: repeat/restart/play/pause/auto-advance, seeking and previous/next; no information island. Observes the existing playback model. |
+| `Content/Audio/Controls/NCAudioAdaptiveControlsView.swift` | Independent lower audio controls: repeat/seek backward/play/pause/seek forward/auto-advance, seeking and previous/next; no information island. Observes the existing playback model. |
 | `NCMediaViewerHostingController.swift` | Owns paged-media navigation actions, title updates and information loading. Hides the upper navigation bar when folded and routes information into the lower controls. |
 | `Core/NCMediaViewerView.swift` | Selects the normal composition or experimental paging bridge using the central switch. |
 | `Views/NCMediaViewerThumbnail.swift` | Shared thumbnail strip and collection implementation for all media; callers own normal/adaptive visibility and spacing. |
@@ -411,7 +411,7 @@ Start with the normal layout before testing the fold:
    for centering in the upper region before/after loading and unfolding. The
    `Video Playback Cover - Folded Upper Region` canvas preview isolates that area.
    For audio, verify artwork above, playback controls below without an information island, and
-   the same fixed thumbnail lane. Check seeking, restart, repeat, auto-advance and
+   the same fixed thumbnail lane. Check seeking, ±10-second jumps, repeat, auto-advance and
    previous/next; dragging the seek bar must not change pages. Fold/unfold during
    playback and check that sound and position continue without restarting.
    In folded mode, compare a local original with a preview-only image: local EXIF

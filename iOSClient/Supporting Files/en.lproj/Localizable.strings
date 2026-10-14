@@ -876,3 +876,6 @@
 "_autoupload_force_reupload_footer_" = "Previous upload records are ignored for photos and videos in the selected library or date range. New completed uploads are still recorded. This option stays enabled until you turn it off.";
 
 "_auto_upload_active_" = "Automatic photo and video upload active";
+
+"_seek_backward_10_" = "Go back 10 seconds";
+"_seek_forward_10_" = "Go forward 10 seconds";
