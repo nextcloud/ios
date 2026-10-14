@@ -37,6 +37,7 @@ struct NCMediaAdaptiveControlsView: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: NCMediaViewerThumbnail.preferredHeight)
+            .ncAdaptiveThumbnailIsland()
             .fixedSize(horizontal: false, vertical: true)
             .layoutPriority(1)
         }
@@ -398,3 +399,82 @@ private final class NCMediaNormalControlsContainerView: UIView {
         return super.hitTest(point, with: event)
     }
 }
+
+// MARK: - Complete adaptive panel previews
+
+#if DEBUG
+#Preview("Image - Light") {
+    NCMediaAdaptiveControlsView.previewPanel(classFile: NKTypeClassFile.image.rawValue).preferredColorScheme(.light)
+}
+
+#Preview("Image - Dark") {
+    NCMediaAdaptiveControlsView.previewPanel(classFile: NKTypeClassFile.image.rawValue).preferredColorScheme(.dark)
+}
+
+#Preview("Audio - Light") {
+    NCMediaAdaptiveControlsView.previewPanel(classFile: NKTypeClassFile.audio.rawValue).preferredColorScheme(.light)
+}
+
+#Preview("Audio - Dark") {
+    NCMediaAdaptiveControlsView.previewPanel(classFile: NKTypeClassFile.audio.rawValue).preferredColorScheme(.dark)
+}
+
+#Preview("Video Cover - Light") {
+    NCMediaAdaptiveControlsView.previewPanel(classFile: NKTypeClassFile.video.rawValue).preferredColorScheme(.light)
+}
+
+#Preview("Video Cover - Dark") {
+    NCMediaAdaptiveControlsView.previewPanel(classFile: NKTypeClassFile.video.rawValue).preferredColorScheme(.dark)
+}
+
+#Preview("Video Cover - Loading") {
+    NCMediaAdaptiveControlsView.previewPanel(classFile: NKTypeClassFile.video.rawValue, isLoading: true).preferredColorScheme(.dark)
+}
+
+#Preview("Video - Playback Controls", traits: .fixedLayout(width: 430, height: 400)) {
+    let model = NCMediaViewerPreviewLoader.makeModel(classFile: NKTypeClassFile.video.rawValue)
+    let controls = NCVideoAdaptiveControlsView(state: NCVideoControlsState())
+    controls.configureAdaptiveActions(closeAction: UIAction { _ in }, moreButton: UIButton(type: .system))
+    controls.configurePaging(model: model, onSelectPage: { _ in })
+    controls.updatePlayPauseButton(isPlaying: true)
+    controls.updateProgress(progress: 0.42, elapsedText: "1:24", remainingText: "−2:31")
+    controls.backgroundColor = .black
+    controls.isUserInteractionEnabled = false
+    controls.frame = CGRect(x: 0, y: 0, width: 430, height: 400)
+    return controls
+}
+
+private extension NCMediaAdaptiveControlsView {
+    static func previewPanel(classFile: String, isLoading: Bool = false) -> some View {
+        let model = NCMediaViewerPreviewLoader.makeModel(classFile: classFile)
+        let state = NCMediaAdaptiveControlsState()
+        state.isFoldedLayout = true
+        if let metadata = model.selectedMetadata {
+            if classFile == NKTypeClassFile.image.rawValue {
+                var exif = ExifData()
+                exif.make = "Nikon"
+                exif.model = "D800E"
+                exif.iso = 200
+                exif.lensLength = 16
+                exif.apertureValue = 10
+                state.imageInformation = (ocId: metadata.ocId, exif: exif)
+            } else if classFile == NKTypeClassFile.video.rawValue {
+                let presentation = NCVideoPlaybackCoverPresentation(
+                    isPlayEnabled: !isLoading, isLoading: isLoading, isLaunchingPlayback: false,
+                    statusMessage: isLoading ? NSLocalizedString("_download_in_progress_", comment: "") : nil,
+                    onCancel: isLoading ? {} : nil, onPlay: {}
+                )
+                state.setVideoCoverControls(presentation, for: metadata.ocId, owner: UUID())
+            }
+        }
+        let actions = NCMediaAdaptiveActionsView(
+            closeAction: UIAction { _ in }, moreButton: UIButton(type: .system),
+            infoAction: classFile == NKTypeClassFile.image.rawValue ? UIAction { _ in } : nil
+        )
+        return NCMediaAdaptiveControlsView(model: model, state: state, makeActionsView: { actions })
+            .frame(width: 430, height: 400)
+            // Canvas is for graphics: no preference writes, page selection or playback.
+            .allowsHitTesting(false)
+    }
+}
+#endif

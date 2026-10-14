@@ -13,7 +13,7 @@ enum NCMediaAdaptiveControlsLayout {
     /// Shared Close/Info/More row; change here for paged media and both video engines.
     static let actionsHeight: CGFloat = 60
     /// Extra clearance above the Home indicator, in addition to the outer 5-point margin.
-    static let thumbnailBottomInset: CGFloat = 7
+    static let thumbnailBottomInset: CGFloat = 25
 
     /// Compact navigation row within the middle area, leaving a gap above it.
     /// The row shrinks in very small regions rather than exceeding available space.

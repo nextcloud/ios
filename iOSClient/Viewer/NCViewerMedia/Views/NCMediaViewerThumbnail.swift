@@ -47,6 +47,20 @@ struct NCMediaViewerThumbnailStrip: View {
     }
 }
 
+// MARK: - Adaptive thumbnail island
+
+extension View {
+    /// Shared decoration for paged media and presented video; keeps the lane's height
+    /// and selection gestures while matching the Previous/Next button background.
+    func ncAdaptiveThumbnailIsland() -> some View {
+        padding(.horizontal, NCMediaAdaptiveControlsLayout.spacing)
+            .frame(maxWidth: .infinity)
+            .background(Color.ncViewerAdaptiveControlBackground, in: RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(Color.ncViewerAdaptiveControlBorder, lineWidth: 0.5).allowsHitTesting(false))
+    }
+}
+
 // MARK: - Layout
 
 private enum NCMediaViewerThumbnailLayout {

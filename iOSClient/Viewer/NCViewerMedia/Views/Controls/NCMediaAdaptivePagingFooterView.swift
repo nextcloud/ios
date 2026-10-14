@@ -22,6 +22,7 @@ struct NCMediaAdaptivePagingFooterView: View {
                 }
             }
             .frame(height: NCMediaViewerThumbnail.preferredHeight)
+            .ncAdaptiveThumbnailIsland()
         }
         .padding(NCMediaAdaptiveControlsLayout.spacing)
         .padding(.bottom, NCMediaAdaptiveControlsLayout.thumbnailBottomInset)

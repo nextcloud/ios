@@ -37,6 +37,24 @@ these rules; the common lower panel applies the resolved appearance once.
 Presented folded video uses black across both regions with light controls;
 normal playback retains its existing appearance policy.
 
+## Previewing the adaptive graphics
+
+Open `Views/Controls/NCMediaAdaptiveControlsView.swift` in Xcode's canvas.
+Its previews show the complete lower region, including actions, Previous/Next and
+the rounded thumbnail island:
+
+- Image, Audio and Video Cover in light and dark appearance.
+- Video Cover while loading.
+- Video Playback Controls, including the persistent footer.
+
+These previews are independent of an active fold and use the current layout and
+color settings. `Helpers/NCMediaViewerPreviewLoader.swift` supplies DEBUG-only
+local sample metadata and the bundled `testimage` for thumbnails. No server,
+download, audio playback or video engine is started. Interaction is disabled so
+canvas exploration does not change saved playback preferences. These are graphics
+previews, not verification of playback or navigation. Xcode still compiles preview
+code; running/installing the complete app is unnecessary.
+
 ## State and ownership
 
 Keep these responsibilities separate when editing the viewer:
@@ -243,7 +261,11 @@ pages it remains visible in adaptive mode, even when the user hides normal
 chrome or opens information. Its height matches the normal thumbnail lane;
 the area remains reserved even with a single page, when no selection strip is
 needed. The lane retains its preferred height with 7 points of additional bottom clearance,
-configured by `NCMediaAdaptiveControlsLayout.thumbnailBottomInset`. Adaptive sections and
+configured by `NCMediaAdaptiveControlsLayout.thumbnailBottomInset`.
+`ncAdaptiveThumbnailIsland()` in `NCMediaViewerThumbnail.swift` supplies the shared
+rounded preview island, with the adaptive button background and a small horizontal
+inset. Both adaptive containers use it; normal thumbnails keep their existing
+appearance. The island adds no vertical height or new tap action. Adaptive sections and
 buttons use 5-point gaps; standalone actions are separate equally sized buttons
 with 60-point height, configured by `NCMediaAdaptiveControlsLayout.actionsHeight`. The middle content is clipped and scrolls independently. This shared
 area covers paged images, audio and video covers. Presented adaptive video uses
