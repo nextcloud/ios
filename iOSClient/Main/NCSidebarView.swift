@@ -21,6 +21,7 @@ struct NCSidebarView: View {
     let openRecent: () -> Void
     let openShares: () -> Void
     let openGroupfolders: () -> Void
+    let openCollectives: () -> Void
     let openTransfers: () -> Void
     let openOffline: () -> Void
     let openTrash: () -> Void
@@ -46,6 +47,9 @@ struct NCSidebarView: View {
     @State private var externalSites: [tableExternalSites] = []
     @State private var showsShares = false
     @State private var showsGroupfolders = false
+    @State private var showsCollectives = false
+    // The Collectives app has no capability, so availability is probed once per account and remembered.
+    private static var collectivesAvailability: [String: Bool] = [:]
     @State private var showsAssistant = false
     @State private var showsNotifications = false
     @State private var notificationCount: Int?
@@ -96,6 +100,10 @@ struct NCSidebarView: View {
                             if showsGroupfolders {
                                 sidebarItem("_group_folders_", systemImage: "folder.badge.person.crop", isSelected: selectedDestination == "sidebarGroupfolders", action: openGroupfolders)
                                     .accessibilityIdentifier("sidebarGroupfolders")
+                            }
+                            if showsCollectives {
+                                sidebarItem("_collectives_", systemImage: "books.vertical", isSelected: selectedDestination == "sidebarCollectives", action: openCollectives)
+                                    .accessibilityIdentifier("sidebarCollectives")
                             }
                             sidebarItem("_offline_files_", systemImage: "arrow.down.circle.dotted", isSelected: selectedDestination == "sidebarOffline", action: openOffline)
                                 .accessibilityIdentifier("sidebarOffline")
@@ -260,6 +268,7 @@ struct NCSidebarView: View {
             notificationCount = nil
             showsShares = false
             showsGroupfolders = false
+            showsCollectives = false
             capabilitiesRevision = UUID()
         }
         .onReceive(NotificationCenter.default.publisher(for: Notification.Name(NCGlobal.shared.notificationCenterServerDidUpdate))
@@ -302,6 +311,7 @@ struct NCSidebarView: View {
             }
             showsShares = capabilities?.fileSharingApiEnabled ?? false
             showsGroupfolders = capabilities?.groupfoldersEnabled ?? false
+            showsCollectives = Self.collectivesAvailability[activeAccount] ?? false
             showsAssistant = capabilities?.assistantEnabled ?? false
             showsNotifications = !(capabilities?.notification.isEmpty ?? true)
             if let tableAccount {
@@ -318,6 +328,13 @@ struct NCSidebarView: View {
             } else {
                 notificationCount = nil
             }
+        }
+        .task(id: "\(activeAccount)-\(capabilitiesRevision)-collectives") {
+            let account = activeAccount
+            let isAvailable = await NCCollectivesNetworking.shared.isAvailable(account: account)
+            guard !Task.isCancelled, activeAccount == account else { return }
+            Self.collectivesAvailability[account] = isAvailable
+            showsCollectives = isAvailable
         }
     }
 

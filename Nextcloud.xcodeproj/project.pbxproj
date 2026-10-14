@@ -7,6 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2F4B45B46393FC2A3699D5DD /* NCCollectivePageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F299376DF4343AD1B1F8298C /* NCCollectivePageTests.swift */; };
+		C23979384147BA75AB0A9785 /* NCCollective.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31E083BE569B57C326F14E45 /* NCCollective.swift */; };
+		C4967DBE569B791E8395CC8A /* NCCollectivePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AD925C149DD542C4092D31B /* NCCollectivePage.swift */; };
+		981739E87ED7FEF862F97BBA /* NCCollectivePageAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61A9052EFE41CAE15C3BC4C /* NCCollectivePageAction.swift */; };
+		2EB8E36B9709F2B41910AE35 /* NCCollectivePageDialogs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1599C74BBF1200737494550 /* NCCollectivePageDialogs.swift */; };
+		367D0DD2A7F54FA3F8493CC1 /* NCCollectivePageNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35E25D6EB171A0E1A12E5AB1 /* NCCollectivePageNode.swift */; };
+		5406B7BF91E64F1174F6BF50 /* NCCollectivePageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1730C89E3082A4EAD343143 /* NCCollectivePageRow.swift */; };
+		685D58D62B79E518CEA8F137 /* NCCollectivePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F058ABD2138D9103CF419BF /* NCCollectivePageView.swift */; };
+		C8519E02D616D88DE00A455C /* NCCollectivePagesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7145E2D358AE1D461EA057D /* NCCollectivePagesModel.swift */; };
+		9A3DD457DBA30BFAF26F40A2 /* NCCollectivePagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39C8B38CC9AF42B82831D22 /* NCCollectivePagesView.swift */; };
+		961E43DBBE77F689EC0CCDB5 /* NCCollectivesEmojiIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB2E106C2642F1E920E61CF /* NCCollectivesEmojiIcon.swift */; };
+		914ED45C6704A1D832C322DB /* NCCollectivesErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 755EEC54C1FB16058CA46F07 /* NCCollectivesErrorView.swift */; };
+		E67F798F611F52079E9ABE52 /* NCCollectivesMarkdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86B0D5C3ECADA311E956BE76 /* NCCollectivesMarkdownView.swift */; };
+		DE337BAADA212C945BEB1A3B /* NCCollectivesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 986E6609AB99319A08977F5C /* NCCollectivesModel.swift */; };
+		B0E6FD54CA2DCCF8DDBD6968 /* NCCollectivesNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51F99362667E76CED0B5976 /* NCCollectivesNavigationController.swift */; };
+		D9EA7942033B7FE8BD3A6DF0 /* NCCollectivesNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577A51733251B6B74CD3FB14 /* NCCollectivesNetworking.swift */; };
+		5CF671758E674CEB59602EA6 /* NCCollectivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282B7A59F249485E12C3018B /* NCCollectivesView.swift */; };
 		22BA14432CF44BDBA2E6C291 /* NCDocumentEditorSupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B74B947E07444CC9CFE0A6C /* NCDocumentEditorSupportTests.swift */; };
 		2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
@@ -1331,6 +1348,23 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F299376DF4343AD1B1F8298C /* NCCollectivePageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivePageTests.swift; sourceTree = "<group>"; };
+		31E083BE569B57C326F14E45 /* NCCollective.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollective.swift; sourceTree = "<group>"; };
+		6AD925C149DD542C4092D31B /* NCCollectivePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivePage.swift; sourceTree = "<group>"; };
+		B61A9052EFE41CAE15C3BC4C /* NCCollectivePageAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivePageAction.swift; sourceTree = "<group>"; };
+		D1599C74BBF1200737494550 /* NCCollectivePageDialogs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivePageDialogs.swift; sourceTree = "<group>"; };
+		35E25D6EB171A0E1A12E5AB1 /* NCCollectivePageNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivePageNode.swift; sourceTree = "<group>"; };
+		A1730C89E3082A4EAD343143 /* NCCollectivePageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivePageRow.swift; sourceTree = "<group>"; };
+		0F058ABD2138D9103CF419BF /* NCCollectivePageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivePageView.swift; sourceTree = "<group>"; };
+		A7145E2D358AE1D461EA057D /* NCCollectivePagesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivePagesModel.swift; sourceTree = "<group>"; };
+		B39C8B38CC9AF42B82831D22 /* NCCollectivePagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivePagesView.swift; sourceTree = "<group>"; };
+		EFB2E106C2642F1E920E61CF /* NCCollectivesEmojiIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivesEmojiIcon.swift; sourceTree = "<group>"; };
+		755EEC54C1FB16058CA46F07 /* NCCollectivesErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivesErrorView.swift; sourceTree = "<group>"; };
+		86B0D5C3ECADA311E956BE76 /* NCCollectivesMarkdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivesMarkdownView.swift; sourceTree = "<group>"; };
+		986E6609AB99319A08977F5C /* NCCollectivesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivesModel.swift; sourceTree = "<group>"; };
+		F51F99362667E76CED0B5976 /* NCCollectivesNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivesNavigationController.swift; sourceTree = "<group>"; };
+		577A51733251B6B74CD3FB14 /* NCCollectivesNetworking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivesNetworking.swift; sourceTree = "<group>"; };
+		282B7A59F249485E12C3018B /* NCCollectivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectivesView.swift; sourceTree = "<group>"; };
 		2C33C47F23E2C475005F963B /* Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C33C48123E2C475005F963B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		2C33C48A23E2CC26005F963B /* Notification_Service_Extension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Notification_Service_Extension-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -2401,6 +2435,7 @@
 				439616AAA50F4360A761E5EF /* NCAlbumsPersistenceTests.swift */,
 				C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */,
 				4B74B947E07444CC9CFE0A6C /* NCDocumentEditorSupportTests.swift */,
+				F299376DF4343AD1B1F8298C /* NCCollectivePageTests.swift */,
 			);
 			path = NextcloudUnitTests;
 			sourceTree = "<group>";
@@ -2973,6 +3008,29 @@
 				F75175DE307F52E60057C9B0 /* README.md */,
 			);
 			path = NCViewerMedia;
+			sourceTree = "<group>";
+		};
+		EB8BF3D6A50E02542895C961 /* Collectives */ = {
+			isa = PBXGroup;
+			children = (
+				31E083BE569B57C326F14E45 /* NCCollective.swift */,
+				6AD925C149DD542C4092D31B /* NCCollectivePage.swift */,
+				B61A9052EFE41CAE15C3BC4C /* NCCollectivePageAction.swift */,
+				D1599C74BBF1200737494550 /* NCCollectivePageDialogs.swift */,
+				35E25D6EB171A0E1A12E5AB1 /* NCCollectivePageNode.swift */,
+				A1730C89E3082A4EAD343143 /* NCCollectivePageRow.swift */,
+				0F058ABD2138D9103CF419BF /* NCCollectivePageView.swift */,
+				A7145E2D358AE1D461EA057D /* NCCollectivePagesModel.swift */,
+				B39C8B38CC9AF42B82831D22 /* NCCollectivePagesView.swift */,
+				EFB2E106C2642F1E920E61CF /* NCCollectivesEmojiIcon.swift */,
+				755EEC54C1FB16058CA46F07 /* NCCollectivesErrorView.swift */,
+				86B0D5C3ECADA311E956BE76 /* NCCollectivesMarkdownView.swift */,
+				986E6609AB99319A08977F5C /* NCCollectivesModel.swift */,
+				F51F99362667E76CED0B5976 /* NCCollectivesNavigationController.swift */,
+				577A51733251B6B74CD3FB14 /* NCCollectivesNetworking.swift */,
+				282B7A59F249485E12C3018B /* NCCollectivesView.swift */,
+			);
+			path = Collectives;
 			sourceTree = "<group>";
 		};
 		F757CC8929E82D0500F31428 /* Groupfolders */ = {
@@ -3955,6 +4013,7 @@
 				F3A0478E2BD2668800658E7B /* Assistant */,
 				F7AE00F6230E8191007ACF8A /* BrowserWeb */,
 				F70B866A2642A21300ED5349 /* Color */,
+				EB8BF3D6A50E02542895C961 /* Collectives */,
 				F7BAAD951ED5A63D00B7EAD4 /* Data */,
 				F7A7FDD92C2DBD6200E9A93A /* DeepLink */,
 				F7A0D14E259229FA008F8A13 /* Extensions */,
@@ -4863,6 +4922,7 @@
 				F0A1B2C430B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift in Sources */,
 				F0A1B2C630B6000100D4E5F6 /* NCImageZoomViewTests.swift in Sources */,
 				F34BDB3C2F574A58007A222C /* BidiSafeFilenameTests.swift in Sources */,
+				2F4B45B46393FC2A3699D5DD /* NCCollectivePageTests.swift in Sources */,
 				63563FE53573412998852DD3 /* NCAlbumsPersistenceTests.swift in Sources */,
 				C0DECA022F65000100C0D001 /* NCCameraRollTests.swift in Sources */,
 				22BA14432CF44BDBA2E6C291 /* NCDocumentEditorSupportTests.swift in Sources */,
@@ -5206,6 +5266,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C23979384147BA75AB0A9785 /* NCCollective.swift in Sources */,
+				C4967DBE569B791E8395CC8A /* NCCollectivePage.swift in Sources */,
+				981739E87ED7FEF862F97BBA /* NCCollectivePageAction.swift in Sources */,
+				2EB8E36B9709F2B41910AE35 /* NCCollectivePageDialogs.swift in Sources */,
+				367D0DD2A7F54FA3F8493CC1 /* NCCollectivePageNode.swift in Sources */,
+				5406B7BF91E64F1174F6BF50 /* NCCollectivePageRow.swift in Sources */,
+				685D58D62B79E518CEA8F137 /* NCCollectivePageView.swift in Sources */,
+				C8519E02D616D88DE00A455C /* NCCollectivePagesModel.swift in Sources */,
+				9A3DD457DBA30BFAF26F40A2 /* NCCollectivePagesView.swift in Sources */,
+				961E43DBBE77F689EC0CCDB5 /* NCCollectivesEmojiIcon.swift in Sources */,
+				914ED45C6704A1D832C322DB /* NCCollectivesErrorView.swift in Sources */,
+				E67F798F611F52079E9ABE52 /* NCCollectivesMarkdownView.swift in Sources */,
+				DE337BAADA212C945BEB1A3B /* NCCollectivesModel.swift in Sources */,
+				B0E6FD54CA2DCCF8DDBD6968 /* NCCollectivesNavigationController.swift in Sources */,
+				D9EA7942033B7FE8BD3A6DF0 /* NCCollectivesNetworking.swift in Sources */,
+				5CF671758E674CEB59602EA6 /* NCCollectivesView.swift in Sources */,
 				F76BED77306D0000002E1442 /* NCLocalDatabase.swift in Sources */,
 				F76BED78306D0000002E1442 /* NCLocalDatabaseMigrator.swift in Sources */,
 				F76BED7C306D0000002E1442 /* NCLocalDatabase+PhotoLibraryAsset.swift in Sources */,

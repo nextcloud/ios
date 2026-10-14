@@ -51,6 +51,9 @@ extension NCMainTabBarController {
         }, openGroupfolders: { [weak self] in
             self?.removeSidebar()
             self?.openSidebarCollection(storyboard: "NCGroupfolders")
+        }, openCollectives: { [weak self] in
+            self?.removeSidebar()
+            self?.openSidebarCollectives()
         }, openTransfers: { [weak self] in
             self?.removeSidebar()
             self?.openSidebarTransfers()
@@ -103,6 +106,8 @@ extension NCMainTabBarController {
             return "sidebarTrash"
         case is UIHostingController<TransfersView>:
             return "sidebarTransfers"
+        case is UIHostingController<NCCollectivesView>:
+            return "sidebarCollectives"
         default:
             return nil
         }
@@ -270,6 +275,10 @@ extension NCMainTabBarController {
         hostingController.navigationItem.largeTitleDisplayMode = .never
         let navigationController = NCMainNavigationController(rootViewController: hostingController)
         selectSidebarDestination(navigationController)
+    }
+
+    private func openSidebarCollectives() {
+        selectSidebarDestination(NCCollectivesNavigationController.make(controller: self))
     }
 }
 

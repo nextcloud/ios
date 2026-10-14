@@ -879,3 +879,21 @@
 
 "_seek_backward_10_" = "Go back 10 seconds";
 "_seek_forward_10_" = "Go forward 10 seconds";
+
+// Collectives
+"_collectives_" = "Collectives";
+"_collectives_empty_" = "No collectives";
+"_collectives_empty_description_" = "Collectives you are a member of appear here. New collectives can be created in the Collectives app on the web.";
+"_collectives_pages_" = "Pages";
+"_collectives_subpages_" = "Subpages";
+"_collectives_new_page_" = "New page";
+"_collectives_new_subpage_" = "New subpage";
+"_collectives_page_title_" = "Page title";
+"_collectives_rename_page_" = "Rename page";
+"_collectives_trash_page_" = "Move to trash";
+"_collectives_trash_page_message_" = "\"%@\" and its subpages will be moved to the trash of the collective, where they can be restored on the web.";
+"_collectives_last_edited_" = "Edited %@";
+"_collectives_last_edited_by_" = "Edited by %1$@ %2$@";
+"_collectives_search_prompt_" = "Search pages";
+"_collectives_empty_page_" = "This page is still empty.";
+"_collectives_load_error_" = "Unable to load";
