@@ -23,10 +23,6 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
     let bottomControlsView = UIView()
     let topActionsView = UIView()
 
-    // MARK: - Layout Constants
-
-    fileprivate static let topActionsButtonWidth: CGFloat = 44
-
     // MARK: - State
 
     // Keep the hosted hierarchy stable so playback updates do not dismiss an open menu.
@@ -35,6 +31,7 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
     private var topActionsWidthConstraint: NSLayoutConstraint?
 
     private lazy var hostingController = UIHostingController(rootView: makeRootView())
+    private lazy var playbackOptionsHostingController = UIHostingController(rootView: makeRootView(isTopActionsOnly: true, showsPlaybackOptions: true))
     private lazy var topActionsHostingController = UIHostingController(rootView: makeRootView(isTopActionsOnly: true))
 
     // MARK: - Init
@@ -165,18 +162,23 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
 
     func configureAdaptiveActions(closeAction: UIAction, moreButton: UIButton) {
         actionsContainerView.subviews.forEach { $0.removeFromSuperview() }
-        let actionsView = NCMediaAdaptiveActionsView(closeAction: closeAction, moreButton: moreButton, buttonWidth: Self.topActionsButtonWidth)
-        topActionsHostingController.overrideUserInterfaceStyle = .dark
-        topActionsHostingController.safeAreaRegions = []
-        let playbackActions = topActionsHostingController.view!
-        playbackActions.backgroundColor = .clear
-        playbackActions.translatesAutoresizingMaskIntoConstraints = false
-        actionsView.insertArrangedSubview(playbackActions, at: 1)
-        let widthConstraint = playbackActions.widthAnchor.constraint(equalToConstant: 0)
+        let actionsView = NCMediaAdaptiveActionsView(closeAction: closeAction, moreButton: moreButton)
+        for controller in [playbackOptionsHostingController, topActionsHostingController] {
+            controller.overrideUserInterfaceStyle = .dark
+            controller.safeAreaRegions = []
+            controller.view.backgroundColor = .clear
+            controller.view.translatesAutoresizingMaskIntoConstraints = false
+        }
+        let playbackOptions = playbackOptionsHostingController.view!
+        let playerOptions = topActionsHostingController.view!
+        actionsView.insertVideoActions(playbackOptions: playbackOptions, playerOptions: playerOptions)
+        let widthConstraint = playerOptions.widthAnchor.constraint(equalToConstant: 0)
         topActionsWidthConstraint = widthConstraint
         NSLayoutConstraint.activate([
+            playbackOptions.widthAnchor.constraint(equalToConstant: NCMediaAdaptiveControlsLayout.actionsHeight * 2 + NCMediaAdaptiveControlsLayout.spacing),
+            playbackOptions.heightAnchor.constraint(equalToConstant: NCMediaAdaptiveControlsLayout.actionsHeight),
             widthConstraint,
-            playbackActions.heightAnchor.constraint(equalToConstant: NCMediaAdaptiveControlsLayout.actionsHeight)
+            playerOptions.heightAnchor.constraint(equalToConstant: NCMediaAdaptiveControlsLayout.actionsHeight)
         ])
         updateTopActionsWidth()
         actionsView.overrideUserInterfaceStyle = .dark
@@ -280,15 +282,17 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
     }
 
     private func updateTopActionsWidth() {
-        let count: CGFloat = state.topActionsMode == .none ? 2 : 4
-        topActionsWidthConstraint?.constant = count * Self.topActionsButtonWidth + (count - 1) * NCMediaAdaptiveControlsLayout.spacing
+        let hasPlayerOptions = state.topActionsMode != .none
+        topActionsHostingController.view.isHidden = !hasPlayerOptions
+        topActionsWidthConstraint?.constant = hasPlayerOptions ? NCMediaAdaptiveControlsLayout.actionsHeight * 2 + NCMediaAdaptiveControlsLayout.spacing : 0
     }
 
-    private func makeRootView(isTopActionsOnly: Bool = false) -> NCVideoAdaptiveControlsSwiftUIView {
+    private func makeRootView(isTopActionsOnly: Bool = false, showsPlaybackOptions: Bool = false) -> NCVideoAdaptiveControlsSwiftUIView {
         NCVideoAdaptiveControlsSwiftUIView(
             state: state,
             layoutState: layoutState,
             isTopActionsOnly: isTopActionsOnly,
+            showsPlaybackOptions: showsPlaybackOptions,
             onSeekBackward: { [weak self] in
                 guard let self else {
                     return
@@ -373,6 +377,7 @@ private struct NCVideoAdaptiveControlsSwiftUIView: View {
     @ObservedObject var state: NCVideoControlsState
     @ObservedObject var layoutState: NCVideoControlsLayoutState
     let isTopActionsOnly: Bool
+    let showsPlaybackOptions: Bool
     let onSeekBackward: () -> Void
     let onPlayPause: () -> Void
     let onSeekForward: () -> Void
@@ -459,43 +464,49 @@ private struct NCVideoAdaptiveControlsSwiftUIView: View {
 
     private var topActions: some View {
         HStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
-            Button(action: onToggleRepeat) {
-                topActionIcon(systemName: state.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1", pointSize: 17)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(NSLocalizedString("_repeat_current_media_", comment: ""))
-
-            Button(action: onToggleAutoAdvance) {
-                topActionIcon(systemName: state.isAutoAdvanceEnabled ? "forward.end.fill" : "forward.end", pointSize: 17)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(NSLocalizedString("_play_next_media_automatically_", comment: ""))
-
-            switch state.topActionsMode {
-            case .none:
-                EmptyView()
-
-            case .pictureInPicture:
-                Button(action: onPictureInPicture) {
-                    topActionIcon(systemName: "pip.enter", pointSize: 18)
+            if showsPlaybackOptions {
+                Button(action: onToggleRepeat) {
+                    topActionIcon(systemName: state.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1", pointSize: 17)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(NSLocalizedString("_repeat_current_media_", comment: ""))
 
-                NCVideoAirPlayRoutePickerView()
-                    .frame(width: NCVideoAdaptiveControlsView.topActionsButtonWidth, height: NCMediaAdaptiveControlsLayout.actionsHeight)
-                    .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 12))
+                Button(action: onToggleAutoAdvance) {
+                    topActionIcon(systemName: state.isAutoAdvanceEnabled ? "forward.end.fill" : "forward.end", pointSize: 17)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(NSLocalizedString("_play_next_media_automatically_", comment: ""))
 
-            case .vlcTracks:
-                subtitleActionMenu(
-                    systemName: "captions.bubble",
-                    pointSize: 17,
-                    items: state.subtitleTrackItems,
-                    emptyTitle: "_no_subtitles_available_",
-                    onSelect: onSubtitleTrackSelected,
-                    onAddExternalSubtitle: onAddExternalSubtitle
-                )
+            } else {
+                switch state.topActionsMode {
+                case .none:
+                    EmptyView()
 
-                topActionMenu(systemName: "speaker.wave.2", pointSize: 17, items: state.audioTrackItems, emptyTitle: "_no_audio_tracks_available_", onSelect: onAudioTrackSelected)
+                case .pictureInPicture:
+                    Button(action: onPictureInPicture) {
+                        topActionIcon(systemName: "pip.enter", pointSize: 18)
+                    }
+                    .buttonStyle(.plain)
+
+                    NCVideoAirPlayRoutePickerView()
+                        .frame(width: NCMediaAdaptiveControlsLayout.actionsHeight, height: NCMediaAdaptiveControlsLayout.actionsHeight)
+                        .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 12))
+
+                case .vlcTracks:
+                    subtitleActionMenu(
+                        systemName: "captions.bubble",
+                        pointSize: 17,
+                        items: state.subtitleTrackItems,
+                        emptyTitle: "_no_subtitles_available_",
+                        onSelect: onSubtitleTrackSelected,
+                        onAddExternalSubtitle: onAddExternalSubtitle
+                    )
+
+                    topActionMenu(
+                        systemName: "speaker.wave.2", pointSize: 17, items: state.audioTrackItems,
+                        emptyTitle: "_no_audio_tracks_available_", onSelect: onAudioTrackSelected
+                    )
+                }
             }
         }
     }
@@ -575,7 +586,7 @@ private struct NCVideoAdaptiveControlsSwiftUIView: View {
         Image(systemName: systemName)
             .font(.system(size: pointSize, weight: .bold))
             .foregroundStyle(Color.ncViewerAdaptiveControlForeground)
-            .frame(width: NCVideoAdaptiveControlsView.topActionsButtonWidth, height: NCMediaAdaptiveControlsLayout.actionsHeight)
+            .frame(width: NCMediaAdaptiveControlsLayout.actionsHeight, height: NCMediaAdaptiveControlsLayout.actionsHeight)
             .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 12))
     }
 

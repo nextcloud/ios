@@ -267,9 +267,9 @@ the remaining width: a circular 32-point AppIcon avatar, an 8-point gap and a
 leading-aligned filename on one line, truncated at the end. The avatar reads the
 compiled primary AppIcon from the app bundle, following customer branding without
 creating a separate asset in `Brand/Custom.xcassets`. Image: Close, Name, Info, More. Audio:
-Close, Repeat, Name, Auto-advance, More. Playing video: Close, playback options,
-Name, More. Video header buttons are 44 points wide and retain the shared
-60-point height to leave room for the filename and player-specific options. The row height
+Close, Name, Repeat, Auto-advance, More. Playing video uses the same order,
+with player-specific options between Close and Name. All top buttons are square,
+using the shared 60-point `actionsHeight` for both width and height. The row height
 and the lower thumbnail/navigation positions are unchanged.
 `NCMediaAdaptiveActionsView.preferredHeight` supplies the shared button height for
 paged media and fullscreen video. Buttons and thumbnails have priority over the

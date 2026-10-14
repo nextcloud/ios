@@ -212,7 +212,7 @@ final class NCMediaAdaptiveActionsView: UIStackView {
     private let fileNameLabel = UILabel()
     private weak var playbackOptions: NCMediaPlaybackOptions?
 
-    init(closeAction: UIAction, moreButton: UIButton, infoAction: UIAction? = nil, buttonWidth: CGFloat? = nil) {
+    init(closeAction: UIAction, moreButton: UIButton, infoAction: UIAction? = nil) {
         super.init(frame: .zero)
         axis = .horizontal
         alignment = .center
@@ -226,11 +226,6 @@ final class NCMediaAdaptiveActionsView: UIStackView {
         closeButton.accessibilityLabel = NSLocalizedString("_close_", comment: "")
         closeButton.addAction(closeAction, for: .touchUpInside)
         addArrangedSubview(closeButton)
-
-        repeatButton.accessibilityLabel = NSLocalizedString("_repeat_current_media_", comment: "")
-        repeatButton.addAction(UIAction { [weak self] _ in self?.playbackOptions?.toggleRepeat() }, for: .touchUpInside)
-        repeatButton.isHidden = true
-        addArrangedSubview(repeatButton)
 
         fileNameIsland.backgroundColor = .ncViewerAdaptiveControlBackground
         fileNameIsland.layer.cornerRadius = 12
@@ -270,10 +265,16 @@ final class NCMediaAdaptiveActionsView: UIStackView {
             addArrangedSubview(infoButton)
             informationButton = infoButton
         }
+        repeatButton.accessibilityLabel = NSLocalizedString("_repeat_current_media_", comment: "")
+        repeatButton.addAction(UIAction { [weak self] _ in self?.playbackOptions?.toggleRepeat() }, for: .touchUpInside)
+        repeatButton.isHidden = true
+        addArrangedSubview(repeatButton)
+
         autoAdvanceButton.accessibilityLabel = NSLocalizedString("_play_next_media_automatically_", comment: "")
         autoAdvanceButton.addAction(UIAction { [weak self] _ in self?.playbackOptions?.toggleAutoAdvance() }, for: .touchUpInside)
         autoAdvanceButton.isHidden = true
         addArrangedSubview(autoAdvanceButton)
+
         moreButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         addArrangedSubview(moreButton)
         for button in arrangedSubviews.compactMap({ $0 as? UIButton }) {
@@ -288,9 +289,15 @@ final class NCMediaAdaptiveActionsView: UIStackView {
             button.configuration = configuration
             NSLayoutConstraint.activate([
                 button.heightAnchor.constraint(equalToConstant: Self.preferredHeight),
-                button.widthAnchor.constraint(equalToConstant: buttonWidth ?? Self.preferredHeight)
+                button.widthAnchor.constraint(equalToConstant: Self.preferredHeight)
             ])
         }
+    }
+
+    /// Video places player-specific options before the filename and playback options after it.
+    func insertVideoActions(playbackOptions: UIView, playerOptions: UIView) {
+        insertArrangedSubview(playerOptions, at: 1)
+        insertArrangedSubview(playbackOptions, at: arrangedSubviews.count - 1)
     }
 
     func setFileName(_ name: String) {
@@ -303,7 +310,7 @@ final class NCMediaAdaptiveActionsView: UIStackView {
         fileNameIsland.layer.borderColor = UIColor.ncViewerAdaptiveControlBorder.resolvedColor(with: traitCollection).cgColor
     }
 
-    /// Keeps audio options between Close and More without rebuilding the shared action row.
+    /// Keeps audio playback options after the filename without rebuilding the shared action row.
     func configureAudioOptions(_ options: NCMediaPlaybackOptions?) {
         playbackOptions = options
         repeatButton.isHidden = options == nil
@@ -525,11 +532,11 @@ private final class NCMediaNormalControlsContainerView: UIView {
     NCMediaAdaptiveControlsView.previewPanel(classFile: NKTypeClassFile.video.rawValue, isLoading: true).preferredColorScheme(.dark)
 }
 
-#Preview("Video - AVPlayer Controls", traits: .fixedLayout(width: 430, height: 400)) {
+#Preview("Video - AVPlayer Controls", traits: .fixedLayout(width: 600, height: 400)) {
     NCMediaAdaptiveControlsView.previewVideoControls(mode: .pictureInPicture)
 }
 
-#Preview("Video - VLC Controls", traits: .fixedLayout(width: 430, height: 400)) {
+#Preview("Video - VLC Controls", traits: .fixedLayout(width: 600, height: 400)) {
     NCMediaAdaptiveControlsView.previewVideoControls(mode: .vlcTracks)
 }
 
@@ -545,7 +552,7 @@ private extension NCMediaAdaptiveControlsView {
         controls.updateProgress(progress: 0.42, elapsedText: "1:24", remainingText: "−2:31")
         controls.backgroundColor = .black
         controls.isUserInteractionEnabled = false
-        controls.frame = CGRect(x: 0, y: 0, width: 430, height: 400)
+        controls.frame = CGRect(x: 0, y: 0, width: 600, height: 400)
         return controls
     }
 
