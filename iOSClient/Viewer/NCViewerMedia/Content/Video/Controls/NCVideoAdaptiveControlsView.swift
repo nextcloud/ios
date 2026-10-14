@@ -593,7 +593,8 @@ private struct NCVideoAdaptiveControlsSwiftUIView: View {
     private func controlButton(systemName: String, title: String, isEnabled: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: systemName)
-                .font(.system(size: 22, weight: .bold))
+                .font(.system(size: 44))
+                .fontWeight(.regular)
                 .foregroundStyle(Color.ncViewerAdaptiveControlForeground)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 16))

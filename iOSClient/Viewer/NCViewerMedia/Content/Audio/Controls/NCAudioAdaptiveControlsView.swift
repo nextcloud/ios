@@ -95,7 +95,8 @@ struct NCAudioAdaptiveControlsView: View {
     private func controlButton(systemName: String, title: String, isEnabled: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: systemName)
-                .font(.system(size: 22, weight: .bold))
+                .font(.system(size: 44))
+                .fontWeight(.regular)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 16))
         }
