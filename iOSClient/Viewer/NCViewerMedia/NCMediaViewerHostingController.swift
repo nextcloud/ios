@@ -78,7 +78,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                 model: model,
                 contextMenuController: contextMenuController,
                 navigationBar: nil,
-                onVisibleMetadataChanged: { _, _ in },
+                onVisibleMetadataChanged: { _ in },
                 onZoomChanged: onZoomChanged,
                 onClose: { _ in }
             )
@@ -121,7 +121,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        updateTitleLabel(metadata: model.selectedMetadata, backgroundColor: .ncViewerBackground(.system))
+        updateTitleLabel(metadata: model.selectedMetadata)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -171,8 +171,8 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             model: model,
             contextMenuController: contextMenuController,
             navigationBar: navigationBar,
-            onVisibleMetadataChanged: { [weak self] metadata, backgroundColor in
-                self?.updateTitleLabel(metadata: metadata, backgroundColor: backgroundColor)
+            onVisibleMetadataChanged: { [weak self] metadata in
+                self?.updateTitleLabel(metadata: metadata)
             },
             onZoomChanged: onZoomChanged,
             onClose: { [weak self] ocId in
@@ -258,7 +258,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     }
 
     /// Updates the floating title using the current media metadata.
-    private func updateTitleLabel(metadata: tableMetadata?, backgroundColor: UIColor) {
+    private func updateTitleLabel(metadata: tableMetadata?) {
         updateInformationNavigationItem(metadata: metadata)
         guard let metadata else {
             floatingTitleView.clear()
@@ -309,22 +309,6 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                 self.adaptiveControlsState.imageInformation = (ocId: ocId, exif: exif)
             }
         }
-    }
-
-    /// Returns a readable title color for the current background.
-    private func floatingTitleTextColor(for backgroundColor: UIColor) -> UIColor {
-        let resolvedColor = backgroundColor.resolvedColor(with: traitCollection)
-        var red: CGFloat = 0
-        var green: CGFloat = 0
-        var blue: CGFloat = 0
-        var alpha: CGFloat = 0
-
-        guard resolvedColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
-            return .white
-        }
-
-        let luminance = (0.299 * red) + (0.587 * green) + (0.114 * blue)
-        return luminance < 0.5 ? .white : .black
     }
 
     /// Builds the secondary floating title text.

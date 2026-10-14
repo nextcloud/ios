@@ -170,7 +170,6 @@ struct NCMediaViewerPageView: View {
                 isSelected: isSelected,
                 isChromeHidden: model.isChromeHidden,
                 contextMenuController: contextMenuController,
-                navigationBar: navigationBar,
                 canGoPrevious: canGoPrevious,
                 canGoNext: canGoNext,
                 shouldAutoPlay: effectiveShouldAutoPlay,

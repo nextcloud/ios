@@ -17,7 +17,6 @@ struct NCVideoViewerContentView: View {
     let isSelected: Bool
     let isChromeHidden: Bool
     let contextMenuController: NCMainTabBarController?
-    let navigationBar: UINavigationBar?
     let canGoPrevious: Bool
     let canGoNext: Bool
     let shouldAutoPlay: Bool
@@ -60,7 +59,6 @@ struct NCVideoViewerContentView: View {
         isSelected: Bool = true,
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController? = nil,
-        navigationBar: UINavigationBar? = nil,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
         shouldAutoPlay: Bool = false,
@@ -83,7 +81,6 @@ struct NCVideoViewerContentView: View {
         self.isSelected = isSelected
         self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
-        self.navigationBar = navigationBar
         self.canGoPrevious = canGoPrevious
         self.canGoNext = canGoNext
         self.shouldAutoPlay = shouldAutoPlay

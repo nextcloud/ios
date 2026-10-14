@@ -13,7 +13,7 @@ struct NCMediaViewerView: View {
 
     let contextMenuController: NCMainTabBarController?
     let navigationBar: UINavigationBar?
-    let onVisibleMetadataChanged: (_ metadata: tableMetadata?, _ backgroundColor: UIColor) -> Void
+    let onVisibleMetadataChanged: (_ metadata: tableMetadata?) -> Void
     let onZoomChanged: (Bool) -> Void
     let onClose: (_ ocId: String?) -> Void
     let adaptiveControlsState: NCMediaAdaptiveControlsState?
@@ -25,7 +25,7 @@ struct NCMediaViewerView: View {
         model: NCMediaViewerModel,
         contextMenuController: NCMainTabBarController? = nil,
         navigationBar: UINavigationBar? = nil,
-        onVisibleMetadataChanged: @escaping (_ metadata: tableMetadata?, _ backgroundColor: UIColor) -> Void = { _, _ in },
+        onVisibleMetadataChanged: @escaping (_ metadata: tableMetadata?) -> Void = { _ in },
         onZoomChanged: @escaping (Bool) -> Void = { _ in },
         onClose: @escaping (_ ocId: String?) -> Void = { _ in },
         adaptiveControlsState: NCMediaAdaptiveControlsState? = nil,

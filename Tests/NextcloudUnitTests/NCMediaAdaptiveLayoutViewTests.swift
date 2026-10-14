@@ -181,7 +181,7 @@ struct NCMediaAdaptiveLayoutViewTests {
                 model: model,
                 contextMenuController: nil,
                 navigationBar: nil,
-                onVisibleMetadataChanged: { _, _ in },
+                onVisibleMetadataChanged: { _ in },
                 onZoomChanged: { _ in },
                 onClose: { _ in }
             ),

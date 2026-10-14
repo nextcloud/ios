@@ -273,7 +273,10 @@ stops and dismisses the current player before selecting the target page, using
 the existing paging flow without auto-starting another video. Selecting the current
 thumbnail leaves playback running. Repeated selections are gated during dismissal.
 Footer selection does not invoke the viewer's Close action. Folding retains the
-player and footer host; resizing only updates the footer geometry. Player gestures
+player and footer host; resizing only updates the footer geometry. The video content
+view receives no navigation bar: each player controller owns its navigation.
+The visible-page callback carries metadata only; background rendering stays
+in the appearance/paging layers rather than being passed into title updates. Player gestures
 exclude the footer as well as the existing control hit frames.
 
 Audio keeps its `@StateObject` and playback lifecycle modifiers above the visual
