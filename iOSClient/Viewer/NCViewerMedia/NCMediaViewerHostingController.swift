@@ -249,6 +249,17 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     /// Observes model changes and refreshes navigation UI.
     private func observeModel() {
+        model.$revision
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                guard let self, self.isSelectedPageDeleted else { return }
+                self.closeDetail(animated: false)
+                self.adaptiveControlsState.imageInformation = nil
+                self.localImageInformationKey = nil
+                self.isAdaptiveImageLocal = false
+            }
+            .store(in: &cancellables)
+
         model.$isChromeHidden
             .receive(on: RunLoop.main)
             .sink { [weak self] isHidden in
@@ -281,6 +292,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     /// Read only an existing original; never download it just to populate the adaptive information island.
     private func updateLocalAdaptiveImageInformation() {
         guard NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled else { return }
+        guard !isSelectedPageDeleted else { return }
         guard isFoldedMediaLayout else {
             localImageInformationKey = nil
             isAdaptiveImageLocal = false
@@ -304,7 +316,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         localImageInformationKey = key
         NCUtility().getExif(metadata: metadata) { [weak self] exif in
             Task { @MainActor [weak self] in
-                guard let self, self.isFoldedMediaLayout, self.localImageInformationKey == key,
+                guard let self, self.isFoldedMediaLayout, !self.isSelectedPageDeleted, self.localImageInformationKey == key,
                       self.model.selectedMetadata?.ocId == ocId, self.model.selectedMetadata?.etag == etag else { return }
                 self.adaptiveControlsState.imageInformation = (ocId: ocId, exif: exif)
             }
@@ -409,6 +421,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             NCUtility().getExif(metadata: metadata) { exif in
                 Task { @MainActor in
                     guard self.isShowingDetail,
+                          !self.isSelectedPageDeleted,
                           self.detailHostingController == nil,
                           self.model.selectedMetadata?.ocId == selectedOcId else {
                         return

@@ -22,8 +22,8 @@ struct NCMediaAdaptiveControlsView: View {
         VStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
             NCMediaAdaptiveActionsHost(
                 makeActionsView: makeActionsView,
-                showsInformation: model.selectedMetadata?.classFile == NKTypeClassFile.image.rawValue,
-                showsAudioOptions: model.selectedMetadata?.classFile == NKTypeClassFile.audio.rawValue,
+                showsInformation: !isSelectedPageDeleted && model.selectedMetadata?.classFile == NKTypeClassFile.image.rawValue,
+                showsAudioOptions: !isSelectedPageDeleted && model.selectedMetadata?.classFile == NKTypeClassFile.audio.rawValue,
                 playbackOptions: model.playbackOptions,
                 fileName: model.selectedMetadata.map { $0.fileNameView.isEmpty ? $0.fileName : $0.fileNameView } ?? ""
             )
@@ -81,7 +81,19 @@ struct NCMediaAdaptiveControlsView: View {
     // Add media-specific lower controls here; the buttons and thumbnails stay shared.
     @ViewBuilder
     private var mediaControls: some View {
-        if let metadata = model.selectedMetadata, metadata.classFile == NKTypeClassFile.image.rawValue {
+        if isSelectedPageDeleted {
+            GeometryReader { geometry in
+                let navigationHeight = NCMediaAdaptiveControlsLayout.navigationHeight(availableHeight: geometry.size.height)
+                VStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
+                    Spacer(minLength: 0)
+                    NCMediaAdaptivePagingFooterView(model: model, navigationHeight: navigationHeight, onSelectPage: { index in
+                        selectAdjacentPage(offset: index - model.selectedIndex)
+                    })
+                    .pageNavigation
+                    .frame(height: navigationHeight)
+                }
+            }
+        } else if let metadata = model.selectedMetadata, metadata.classFile == NKTypeClassFile.image.rawValue {
             NCImageAdaptiveControlsView(
                 metadata: metadata,
                 exif: state.imageInformation?.ocId == metadata.ocId ? state.imageInformation?.exif : nil,
@@ -124,6 +136,11 @@ struct NCMediaAdaptiveControlsView: View {
         } else {
             Spacer(minLength: 0)
         }
+    }
+
+    private var isSelectedPageDeleted: Bool {
+        guard let page = model.selectedPageModel(), case .deleted = page.state else { return false }
+        return true
     }
 
     private var isSelectedAudioReady: Bool {
@@ -532,6 +549,10 @@ private final class NCMediaNormalControlsContainerView: UIView {
     NCMediaAdaptiveControlsView.previewPanel(classFile: NKTypeClassFile.video.rawValue, isLoading: true).preferredColorScheme(.dark)
 }
 
+#Preview("Deleted Image - Adaptive Controls") {
+    NCMediaAdaptiveControlsView.previewPanel(classFile: NKTypeClassFile.image.rawValue, isDeleted: true).preferredColorScheme(.light)
+}
+
 #Preview("Video - AVPlayer Controls", traits: .fixedLayout(width: 600, height: 400)) {
     NCMediaAdaptiveControlsView.previewVideoControls(mode: .pictureInPicture)
 }
@@ -556,8 +577,9 @@ private extension NCMediaAdaptiveControlsView {
         return controls
     }
 
-    static func previewPanel(classFile: String, isLoading: Bool = false) -> some View {
+    static func previewPanel(classFile: String, isLoading: Bool = false, isDeleted: Bool = false) -> some View {
         let model = NCMediaViewerPreviewLoader.makeModel(classFile: classFile)
+        if isDeleted { model.selectedPageModel()?.state = .deleted }
         let state = NCMediaAdaptiveControlsState()
         state.isFoldedLayout = true
         if let metadata = model.selectedMetadata {

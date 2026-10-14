@@ -231,6 +231,9 @@ EXIF loading delivers one result after reading the original and resolving any
 location, so the normal sheet cannot retain an earlier incomplete result. Previous/next buttons
 remain outside the fixed island and work while information is open. Map taps
 retain the existing Maps action.
+Deleted pages omit adaptive information and playback controls but keep Previous/Next
+and thumbnails. Deletion closes an open information sheet, clears cached EXIF and
+rejects late EXIF callbacks; retained file metadata is not rendered as live information.
 The two `Adaptive Image` canvas previews isolate these visual states. The adaptive
 image panel uses the standard viewer background and system-colored control
 islands, text and symbols. Previous/next buttons use a compact icon/text row and

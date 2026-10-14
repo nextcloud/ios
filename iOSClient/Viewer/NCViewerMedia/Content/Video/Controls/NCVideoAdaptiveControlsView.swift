@@ -494,7 +494,7 @@ private struct NCVideoAdaptiveControlsSwiftUIView: View {
 
                 case .vlcTracks:
                     subtitleActionMenu(
-                        systemName: "captions.bubble",
+                        systemName: "character.bubble",
                         pointSize: 17,
                         items: state.subtitleTrackItems,
                         emptyTitle: "_no_subtitles_available_",
