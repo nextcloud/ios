@@ -200,11 +200,19 @@ final class NCMediaAdaptiveActionsView: UIStackView {
     private let repeatButton = UIButton(type: .system)
     private let autoAdvanceButton = UIButton(type: .system)
     private let fileNameIsland = UIView()
-    private let fileNameIcon = UIImageView(image: UIImage(named: "ViewerAppIcon"))
+    private let fileNameIcon: UIImageView = {
+        // Use the compiled primary app icon, so customer branding needs no separate viewer asset.
+        let icons = Bundle.main.infoDictionary?["CFBundleIcons"] as? [String: Any]
+        let primaryIcon = icons?["CFBundlePrimaryIcon"] as? [String: Any]
+        let iconFiles = primaryIcon?["CFBundleIconFiles"] as? [String] ?? []
+        let iconName = primaryIcon?["CFBundleIconName"] as? String ?? "AppIcon"
+        let image = iconFiles.reversed().compactMap { UIImage(named: $0) }.first ?? UIImage(named: iconName)
+        return UIImageView(image: image)
+    }()
     private let fileNameLabel = UILabel()
     private weak var playbackOptions: NCMediaPlaybackOptions?
 
-    init(closeAction: UIAction, moreButton: UIButton, infoAction: UIAction? = nil) {
+    init(closeAction: UIAction, moreButton: UIButton, infoAction: UIAction? = nil, buttonWidth: CGFloat? = nil) {
         super.init(frame: .zero)
         axis = .horizontal
         alignment = .center
@@ -280,7 +288,7 @@ final class NCMediaAdaptiveActionsView: UIStackView {
             button.configuration = configuration
             NSLayoutConstraint.activate([
                 button.heightAnchor.constraint(equalToConstant: Self.preferredHeight),
-                button.widthAnchor.constraint(equalToConstant: Self.preferredHeight)
+                button.widthAnchor.constraint(equalToConstant: buttonWidth ?? Self.preferredHeight)
             ])
         }
     }
@@ -517,21 +525,30 @@ private final class NCMediaNormalControlsContainerView: UIView {
     NCMediaAdaptiveControlsView.previewPanel(classFile: NKTypeClassFile.video.rawValue, isLoading: true).preferredColorScheme(.dark)
 }
 
-#Preview("Video - Playback Controls", traits: .fixedLayout(width: 430, height: 400)) {
-    let model = NCMediaViewerPreviewLoader.makeModel(classFile: NKTypeClassFile.video.rawValue)
-    let controls = NCVideoAdaptiveControlsView(state: NCVideoControlsState())
-    controls.configureAdaptiveActions(closeAction: UIAction { _ in }, moreButton: UIButton(type: .system))
-    controls.configurePaging(model: model, onSelectPage: { _ in })
-    controls.setFileName("Waterfall.mp4")
-    controls.updatePlayPauseButton(isPlaying: true)
-    controls.updateProgress(progress: 0.42, elapsedText: "1:24", remainingText: "−2:31")
-    controls.backgroundColor = .black
-    controls.isUserInteractionEnabled = false
-    controls.frame = CGRect(x: 0, y: 0, width: 430, height: 400)
-    return controls
+#Preview("Video - AVPlayer Controls", traits: .fixedLayout(width: 430, height: 400)) {
+    NCMediaAdaptiveControlsView.previewVideoControls(mode: .pictureInPicture)
+}
+
+#Preview("Video - VLC Controls", traits: .fixedLayout(width: 430, height: 400)) {
+    NCMediaAdaptiveControlsView.previewVideoControls(mode: .vlcTracks)
 }
 
 private extension NCMediaAdaptiveControlsView {
+    static func previewVideoControls(mode: NCVideoControlsTopActionsMode) -> UIView {
+        let model = NCMediaViewerPreviewLoader.makeModel(classFile: NKTypeClassFile.video.rawValue)
+        let controls = NCVideoAdaptiveControlsView(state: NCVideoControlsState())
+        controls.configureAdaptiveActions(closeAction: UIAction { _ in }, moreButton: UIButton(type: .system))
+        controls.setTopActionsMode(mode)
+        controls.configurePaging(model: model, onSelectPage: { _ in })
+        controls.setFileName("Waterfall.mp4")
+        controls.updatePlayPauseButton(isPlaying: true)
+        controls.updateProgress(progress: 0.42, elapsedText: "1:24", remainingText: "−2:31")
+        controls.backgroundColor = .black
+        controls.isUserInteractionEnabled = false
+        controls.frame = CGRect(x: 0, y: 0, width: 430, height: 400)
+        return controls
+    }
+
     static func previewPanel(classFile: String, isLoading: Bool = false) -> some View {
         let model = NCMediaViewerPreviewLoader.makeModel(classFile: classFile)
         let state = NCMediaAdaptiveControlsState()

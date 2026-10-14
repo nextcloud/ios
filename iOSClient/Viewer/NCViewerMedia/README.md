@@ -45,7 +45,7 @@ the rounded thumbnail island:
 
 - Image, Audio and Video Cover in light and dark appearance.
 - Video Cover while loading.
-- Video Playback Controls, including the persistent footer.
+- Video AVPlayer/VLC Controls, including their header options and persistent footer.
 
 These previews are independent of an active fold and use the current layout and
 color settings. `Helpers/NCMediaViewerPreviewLoader.swift` supplies DEBUG-only
@@ -264,10 +264,12 @@ The deferred More menu uses the button itself as its popover anchor.
 The same row contains a filename island for every media type, including presented
 video. Buttons are square (`actionsHeight` wide/high), while the filename uses
 the remaining width: a circular 32-point AppIcon avatar, an 8-point gap and a
-leading-aligned filename on one line, truncated at the end. `ViewerAppIcon` in
-`Brand/Custom.xcassets` copies the AppIcon image into a regular image asset for
-the controls and Canvas previews. Image: Close, Name, Info, More. Audio:
-Close, Repeat, Name, Auto-advance, More. Video: Close, Name, More. The row height
+leading-aligned filename on one line, truncated at the end. The avatar reads the
+compiled primary AppIcon from the app bundle, following customer branding without
+creating a separate asset in `Brand/Custom.xcassets`. Image: Close, Name, Info, More. Audio:
+Close, Repeat, Name, Auto-advance, More. Playing video: Close, playback options,
+Name, More. Video header buttons are 44 points wide and retain the shared
+60-point height to leave room for the filename and player-specific options. The row height
 and the lower thumbnail/navigation positions are unchanged.
 `NCMediaAdaptiveActionsView.preferredHeight` supplies the shared button height for
 paged media and fullscreen video. Buttons and thumbnails have priority over the
@@ -345,6 +347,16 @@ only for images; audio/video show Close and More without an empty button slot.
 Normal mode also shows Info only for images. Its navigation items update when
 paging between media types, keeping More available for audio/video. Image
 information sheets retain their existing behavior.
+
+Adaptive video playback matches the audio middle layout: three independent,
+flexible-height islands for −10 seconds, Play/Pause and +10 seconds, followed by
+a 60-point progress island with the remaining time at the right and the account's
+brand color on the seek bar. Previous/Next and thumbnails retain their shared
+footer positions. Repeat and auto-advance are in the header together with
+PiP/AirPlay for AVPlayer or subtitle/audio-track menus for VLC. The header host
+remains stable while progress and menu items update; the existing delegates and
+shared playback state still drive both normal and adaptive controls. Hit-test
+proxy frames match the new layout so player gestures exclude these controls.
 
 ## Layout and compatibility
 

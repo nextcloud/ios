@@ -409,6 +409,8 @@ final class NCVideoControlsState: ObservableObject {
 @MainActor
 final class NCVideoControlsLayoutState: ObservableObject {
     @Published var topActionsTopOffset: CGFloat = 0
+    /// Account used only by the adaptive seek bar's branding color.
+    @Published var account = ""
 }
 
 // MARK: - SwiftUI Controls
