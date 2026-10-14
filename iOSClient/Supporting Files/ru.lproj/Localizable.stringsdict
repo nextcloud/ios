@@ -13,13 +13,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Осталась %d разрешённая загрузка</string>
+			<string>Осталось %d разрешённое скачивание</string>
 			<key>few</key>
-			<string>Осталось %d разрешённые загрузки</string>
+			<string>Осталось %d разрешённых скачивания</string>
 			<key>many</key>
-			<string>Осталось %d разрешённых загрузок</string>
+			<string>Осталось %d разрешённых скачиваний</string>
 			<key>other</key>
-			<string>Осталось %d разрешённых загрузок</string>
+			<string>Осталось %d разрешённого скачивания</string>
 		</dict>
 	</dict>
 	<key>_auto_upload_files_in_queue_</key>

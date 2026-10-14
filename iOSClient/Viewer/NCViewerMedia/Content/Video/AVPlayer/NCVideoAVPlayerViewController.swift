@@ -45,9 +45,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     // MARK: - Paging Callbacks
 
-    private var adaptivePagingModel: NCMediaViewerModel?
-    private var onSelectPage: ((_ index: Int) -> Void)?
-
     var onPrevious: (() -> Void)?
     var onNext: (() -> Void)?
     var onPlaybackEnded: NCMediaPlaybackAdvanceRequest?
@@ -56,17 +53,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
     var canGoPrevious = false
     var canGoNext = false
 
-    func configureAdaptivePaging(model: NCMediaViewerModel?, onSelectPage: ((_ index: Int) -> Void)?) {
-        adaptivePagingModel = model
-        self.onSelectPage = onSelectPage
-        updateAdaptivePagingIfFolded()
-    }
-
-    private func updateAdaptivePagingIfFolded() {
-        guard (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true else { return }
-        adaptiveControlsView.configurePaging(model: adaptivePagingModel, onSelectPage: { [weak self] index in self?.onSelectPage?(index) })
-    }
-
     // MARK: - Views
 
     internal let playerContainerView = NCVideoAVPlayerLayerView()
@@ -74,9 +60,10 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private lazy var adaptiveControlsView: NCVideoAdaptiveControlsView = {
         let controlsView = NCVideoAdaptiveControlsView(state: normalControlsView.state)
         controlsView.delegate = self
-        controlsView.configureAdaptiveActions(
+        controlsView.configureFoldedNavigation(
+            titleView: foldedTitleView,
             closeAction: UIAction { [weak self] _ in self?.close() },
-            moreButton: NCContextMenuViewer.mediaActionsButton(
+            moreItem: NCContextMenuViewer.mediaNavigationItem(
                 viewController: self,
                 metadataProvider: { [weak self] in self?.metadata },
                 controllerProvider: { [weak self] in self?.contextMenuController }
@@ -86,13 +73,14 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }()
 
     internal var controlsView: any NCVideoPlaybackControls {
-        if (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true {
+        if (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true {
             return adaptiveControlsView
         }
         return normalControlsView
     }
 
     private let floatingTitleView = NCMediaViewerFloatingTitleView()
+    private let foldedTitleView = NCMediaViewerFloatingTitleView()
 
     private lazy var moreNavigationItem = NCContextMenuViewer.mediaNavigationItem(
         viewController: self,
@@ -134,13 +122,16 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     internal var shouldKeepControlsVisible: Bool {
-        (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true ||
+        (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true ||
             player.timeControlStatus != .playing && !isPlaybackRequested
     }
 
     internal func setNavigationBarVisible(_ isVisible: Bool, animated: Bool) {
         guard let navigationController else { return }
-        navigationController.setNavigationBarHidden(!isVisible || (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true, animated: animated)
+        navigationController.setNavigationBarHidden(
+            !isVisible || (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true,
+            animated: animated
+        )
         navigationController.view.layoutIfNeeded()
         updateControlsNavigationBar()
         navigationController.transitionCoordinator?.animate(alongsideTransition: nil) { [weak self] _ in
@@ -169,9 +160,14 @@ final class NCVideoAVPlayerViewController: UIViewController {
         self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
         self.playbackOptions = playbackOptions
-        self.playbackPresentationContext = NCVideoPlaybackPresentationContext(startReason: playbackStartReason)
+        self.playbackPresentationContext = NCVideoPlaybackPresentationContext(
+            startReason: playbackStartReason
+        )
 
-        super.init(nibName: nil, bundle: nil)
+        super.init(
+            nibName: nil,
+            bundle: nil
+        )
 
         modalPresentationStyle = .fullScreen
     }
@@ -192,8 +188,8 @@ final class NCVideoAVPlayerViewController: UIViewController {
     override func loadView() {
         let initialBackgroundColor = viewerBackgroundColor
 
-        let rootView = NCMediaAdaptiveLayoutView(
-            mediaView: playerContainerView,
+        let rootView = NCVideoAdaptiveLayoutView(
+            videoView: playerContainerView,
             normalControlsView: normalControlsView,
             adaptiveControlsView: { [weak self] in self?.adaptiveControlsView }
         )
@@ -202,7 +198,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
                 return
             }
 
-            updateAdaptivePagingIfFolded()
             showControls(animated: false)
 
             if isFolded {
@@ -267,7 +262,10 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
+        super.viewWillTransition(
+            to: size,
+            with: coordinator
+        )
 
         coordinator.animate(alongsideTransition: { [weak self] _ in
             self?.view.layoutIfNeeded()
@@ -317,8 +315,12 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     private var viewerBackgroundColor: UIColor {
-        let isFolded = (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true
-        return .ncViewerBackground(ncViewerVideoPlaybackBackgroundStyle(for: metadata, isChromeHidden: isChromeHidden, isFoldedLayout: isFolded))
+        UIColor.ncViewerBackground(
+            ncViewerBackgroundStyle(
+                for: metadata,
+                isChromeHidden: isChromeHidden
+            )
+        )
     }
 
     @MainActor
@@ -337,7 +339,12 @@ final class NCVideoAVPlayerViewController: UIViewController {
         navigationItem.title = nil
         navigationItem.titleView = floatingTitleView
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), style: .plain, target: self, action: #selector(closeTapped))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "chevron.backward"),
+            style: .plain,
+            target: self,
+            action: #selector(closeTapped)
+        )
 
         navigationItem.rightBarButtonItem = moreNavigationItem
 
@@ -355,7 +362,12 @@ final class NCVideoAVPlayerViewController: UIViewController {
             ? metadata.fileName
             : metadata.fileNameView
 
-        floatingTitleView.update(primaryText: primaryTitle, secondaryText: floatingTitleDateFormatter.string(from: metadata.date as Date))
+        for titleView in [floatingTitleView, foldedTitleView] {
+            titleView.update(
+                primaryText: primaryTitle,
+                secondaryText: floatingTitleDateFormatter.string(from: metadata.date as Date)
+            )
+        }
     }
 
     @objc
@@ -383,17 +395,26 @@ final class NCVideoAVPlayerViewController: UIViewController {
     // MARK: - Swipe Navigation
 
     private func configureSwipeGestures() {
-        let previousGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+        let previousGesture = UISwipeGestureRecognizer(
+            target: self,
+            action: #selector(handleSwipe(_:))
+        )
         previousGesture.direction = .right
         previousGesture.delegate = self
         view.addGestureRecognizer(previousGesture)
 
-        let nextGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+        let nextGesture = UISwipeGestureRecognizer(
+            target: self,
+            action: #selector(handleSwipe(_:))
+        )
         nextGesture.direction = .left
         nextGesture.delegate = self
         view.addGestureRecognizer(nextGesture)
 
-        let closePanGesture = UIPanGestureRecognizer(target: self, action: #selector(handleClosePan(_:)))
+        let closePanGesture = UIPanGestureRecognizer(
+            target: self,
+            action: #selector(handleClosePan(_:))
+        )
         closePanGesture.delegate = self
         self.closePanGesture = closePanGesture
         view.addGestureRecognizer(closePanGesture)
@@ -465,7 +486,10 @@ final class NCVideoAVPlayerViewController: UIViewController {
     // MARK: - Gesture Handling
 
     private func configureTapGesture() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleSingleTap(_:)))
+        let tapGesture = UITapGestureRecognizer(
+            target: self,
+            action: #selector(handleSingleTap(_:))
+        )
         tapGesture.numberOfTapsRequired = 1
         tapGesture.cancelsTouchesInView = false
         tapGesture.delegate = self
@@ -594,7 +618,9 @@ final class NCVideoAVPlayerViewController: UIViewController {
         playerContainerView.playerLayer.frame = playerContainerView.bounds
 
         if pictureInPictureController == nil {
-            pictureInPictureController = AVPictureInPictureController(playerLayer: playerContainerView.playerLayer)
+            pictureInPictureController = AVPictureInPictureController(
+                playerLayer: playerContainerView.playerLayer
+            )
             pictureInPictureController?.delegate = self
         }
 
@@ -620,19 +646,28 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private func configureObservers() {
         cleanupObservers()
 
-        itemStatusObservation = player.currentItem?.observe(\.status, options: [.initial, .new]) { [weak self] _, _ in
+        itemStatusObservation = player.currentItem?.observe(
+            \.status,
+            options: [.initial, .new]
+        ) { [weak self] _, _ in
             Task { @MainActor in
                 self?.handleCurrentItemStatusChange()
             }
         }
 
-        timeControlStatusObservation = player.observe(\.timeControlStatus, options: [.initial, .new]) { [weak self] _, _ in
+        timeControlStatusObservation = player.observe(
+            \.timeControlStatus,
+            options: [.initial, .new]
+        ) { [weak self] _, _ in
             Task { @MainActor in
                 self?.handleTimeControlStatusChange()
             }
         }
 
-        timeObserverToken = player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.5, preferredTimescale: CMTimeScale(NSEC_PER_SEC)), queue: .main) { [weak self] _ in
+        timeObserverToken = player.addPeriodicTimeObserver(
+            forInterval: CMTime(seconds: 0.5, preferredTimescale: CMTimeScale(NSEC_PER_SEC)),
+            queue: .main
+        ) { [weak self] _ in
             guard let self,
                   !self.playbackPresentationContext.isSeeking else {
                 return
@@ -642,11 +677,19 @@ final class NCVideoAVPlayerViewController: UIViewController {
         }
 
         if let currentItem = player.currentItem {
-            playbackEndObserver = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: currentItem, queue: .main) { [weak self] _ in
+            playbackEndObserver = NotificationCenter.default.addObserver(
+                forName: .AVPlayerItemDidPlayToEndTime,
+                object: currentItem,
+                queue: .main
+            ) { [weak self] _ in
                 self?.handlePlaybackEnded()
             }
 
-            playbackFailureObserver = NotificationCenter.default.addObserver(forName: .AVPlayerItemFailedToPlayToEndTime, object: currentItem, queue: .main) { [weak self] _ in
+            playbackFailureObserver = NotificationCenter.default.addObserver(
+                forName: .AVPlayerItemFailedToPlayToEndTime,
+                object: currentItem,
+                queue: .main
+            ) { [weak self] _ in
                 Task { @MainActor in
                     self?.reportPlaybackErrorIfNeeded()
                 }
@@ -729,7 +772,12 @@ final class NCVideoAVPlayerViewController: UIViewController {
                 return
             }
 
-            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO AVPlayer playback startup timed out", consoleOnly: false)
+            nkLog(
+                tag: NCGlobal.shared.logTagViewer,
+                emoji: .error,
+                message: "VIDEO AVPlayer playback startup timed out",
+                consoleOnly: false
+            )
 
             self.reportPlaybackErrorIfNeeded()
         }
@@ -754,7 +802,12 @@ final class NCVideoAVPlayerViewController: UIViewController {
         let errorDomain = playerError?.domain ?? "unknown"
         let errorCode = playerError?.code ?? 0
 
-        nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO AVPlayer playback failed domain: \(errorDomain), code: \(errorCode)", consoleOnly: false)
+        nkLog(
+            tag: NCGlobal.shared.logTagViewer,
+            emoji: .error,
+            message: "VIDEO AVPlayer playback failed domain: \(errorDomain), code: \(errorCode)",
+            consoleOnly: false
+        )
 
         onPlaybackError?()
     }
@@ -847,7 +900,11 @@ final class NCVideoAVPlayerViewController: UIViewController {
         isPlaybackRequested = true
         updatePlayPauseButton()
 
-        player.seek(to: .zero, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self, weak player] didFinish in
+        player.seek(
+            to: .zero,
+            toleranceBefore: .zero,
+            toleranceAfter: .zero
+        ) { [weak self, weak player] didFinish in
             guard let self,
                   let player else {
                 return
@@ -874,7 +931,10 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     internal func updatePlaybackOptionsControls() {
-        controlsView.updatePlaybackOptions(isRepeatEnabled: playbackOptions.isRepeatEnabled, isAutoAdvanceEnabled: playbackOptions.isAutoAdvanceEnabled)
+        controlsView.updatePlaybackOptions(
+            isRepeatEnabled: playbackOptions.isRepeatEnabled,
+            isAutoAdvanceEnabled: playbackOptions.isAutoAdvanceEnabled
+        )
     }
 
     private func updateControlsNavigationBar() {
@@ -882,14 +942,25 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     internal func controlsHitFramesContain(_ location: CGPoint) -> Bool {
-        let topActionsFrame = controlsView.topActionsView.convert(controlsView.topActionsView.bounds, to: view)
-        let centerControlsFrame = controlsView.centerControlsView.convert(controlsView.centerControlsView.bounds, to: view)
-        let bottomControlsFrame = controlsView.bottomControlsView.convert(controlsView.bottomControlsView.bounds, to: view)
+        let topActionsFrame = controlsView.topActionsView.convert(
+            controlsView.topActionsView.bounds,
+            to: view
+        )
+        let centerControlsFrame = controlsView.centerControlsView.convert(
+            controlsView.centerControlsView.bounds,
+            to: view
+        )
+        let bottomControlsFrame = controlsView.bottomControlsView.convert(
+            controlsView.bottomControlsView.bounds,
+            to: view
+        )
 
-        if (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true {
-            let adaptiveActionsFrame = adaptiveControlsView.actionsContainerView.convert(adaptiveControlsView.actionsContainerView.bounds, to: view)
-            let footerFrame = adaptiveControlsView.pagingFooterView.convert(adaptiveControlsView.pagingFooterView.bounds, to: view)
-            if !adaptiveControlsView.isHidden && (adaptiveActionsFrame.contains(location) || footerFrame.contains(location)) {
+        if (viewIfLoaded as? NCVideoAdaptiveLayoutView)?.isFoldedLayout == true {
+            let foldedNavigationFrame = adaptiveControlsView.foldedNavigationBar.convert(
+                adaptiveControlsView.foldedNavigationBar.bounds,
+                to: view
+            )
+            if !adaptiveControlsView.isHidden && foldedNavigationFrame.contains(location) {
                 return true
             }
         }
@@ -938,18 +1009,28 @@ final class NCVideoAVPlayerViewController: UIViewController {
         guard currentTime.isFinite,
               duration.isFinite,
               duration > 0 else {
-            controlsView.updateProgress(progress: 0, elapsedText: "0:00", remainingText: "−0:00")
+            controlsView.updateProgress(
+                progress: 0,
+                elapsedText: "0:00",
+                remainingText: "−0:00"
+            )
             return
         }
 
         let progress = Float(max(0, min(1, currentTime / duration)))
         let remainingTime = max(0, duration - currentTime)
 
-        controlsView.updateProgress(progress: progress, elapsedText: Self.formatTime(currentTime), remainingText: "−\(Self.formatTime(remainingTime))")
+        controlsView.updateProgress(
+            progress: progress,
+            elapsedText: Self.formatTime(currentTime),
+            remainingText: "−\(Self.formatTime(remainingTime))"
+        )
     }
 
     internal func updateSeekingState() {
-        controlsView.setSeekingEnabled(player.currentItem?.duration.seconds.isFinite == true)
+        controlsView.setSeekingEnabled(
+            player.currentItem?.duration.seconds.isFinite == true
+        )
     }
 
     internal static func formatTime(_ seconds: Double) -> String {
@@ -993,7 +1074,12 @@ extension NCVideoAVPlayerViewController: AVPictureInPictureControllerDelegate {
     }
 
     func pictureInPictureController(_ pictureInPictureController: AVPictureInPictureController, failedToStartPictureInPictureWithError error: Error) {
-        nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO AVPlayer PiP failed to start: \(error.localizedDescription)", consoleOnly: true)
+        nkLog(
+            tag: NCGlobal.shared.logTagViewer,
+            emoji: .error,
+            message: "VIDEO AVPlayer PiP failed to start: \(error.localizedDescription)",
+            consoleOnly: true
+        )
 
         updatePlayPauseButton()
         updateProgressControls()
