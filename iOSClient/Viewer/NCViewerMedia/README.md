@@ -37,6 +37,26 @@ these rules; the common lower panel applies the resolved appearance once.
 Presented folded video uses black across both regions with light controls;
 normal playback retains its existing appearance policy.
 
+## State and ownership
+
+Keep these responsibilities separate when editing the viewer:
+
+| Data/state | Owner | Purpose |
+| --- | --- | --- |
+| File list, selected page and thumbnails | `NCMediaViewerModel` | One model shared by the pager and adaptive player footer. Video receives it as `mediaViewerModel`; no model is created for folding. |
+| Metadata of a specific page | `NCMediaViewerPageModel` / content view `metadata` | Identifies that page's file, including neighboring pages; do not replace it with `selectedMetadata`. |
+| Audio playback | `NCAudioViewerPlaybackRegistry` / `NCAudioViewerModel` | Existing audio player and position, observed by both normal and adaptive controls. |
+| Video playback | Prepared AVPlayer/VLC playback and their controllers | Existing player engine; the adaptive footer adds paging data and selection callbacks only. |
+| Feature enabled | `NCMediaAdaptiveLayoutConfiguration` | Central experimental switch. |
+| Currently folded | `NCMediaAdaptiveLayoutView` | Geometry determines the active mode; SwiftUI content receives it through `mediaViewerIsFoldedLayout`. |
+| Lower control heights and spacing | `NCMediaAdaptiveControlsLayout` | One set of unchanged geometry rules for image/audio/video. |
+| Colors and appearance | `NCMediaViewerAppearance.swift` | Background and control palettes, independent of playback and geometry. |
+
+The legacy `NCVideoAdaptiveLayoutView` and its excluded tests have been removed.
+Images, audio and both video engines use the shared container. Normal control
+compositions remain separate. Cleanup must preserve player lifecycle, selection
+ordering and dismissal callbacks; graphical changes belong in the lower views.
+
 ## Changing colors and appearance
 
 Start in [Helpers/NCMediaViewerAppearance.swift](Helpers/NCMediaViewerAppearance.swift).
@@ -102,6 +122,7 @@ video playback behavior. Local builds and tests remain user-run in Xcode.
 
 | Component | Responsibility |
 | --- | --- |
+| `Helpers/NCMediaAdaptiveControlsLayout.swift` | Shared spacing, middle-area budget and navigation/footer heights for all adaptive media. |
 | `Views/NCMediaAdaptiveLayoutView.swift` | Shared UIKit geometry, normal/adaptive visibility and layout change callback. Keeps the media view in place. |
 | `Content/Image/Controls/NCImageControlsView.swift` | Normal thumbnail overlay, with the existing visibility, spacing and selection actions. Normal navigation and the information sheet remain in the hosting controller. |
 | `Content/Image/Controls/NCImageAdaptiveControlsView.swift` | Always hosts the shared information view inside its fixed island, plus previous/next buttons; the shared panel owns actions and thumbnails. |

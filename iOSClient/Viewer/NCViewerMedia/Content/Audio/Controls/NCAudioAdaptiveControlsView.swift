@@ -16,9 +16,9 @@ struct NCAudioAdaptiveControlsView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let navigationHeight = min(max(0, geometry.size.height - 5), max(44, geometry.size.height * 0.18))
-            let playbackHeight = max(0, geometry.size.height - navigationHeight - 5)
-            VStack(spacing: 5) {
+            let navigationHeight = NCMediaAdaptiveControlsLayout.navigationHeight(availableHeight: geometry.size.height)
+            let playbackHeight = max(0, geometry.size.height - navigationHeight - NCMediaAdaptiveControlsLayout.spacing)
+            VStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
                 playbackControls
                     .frame(height: playbackHeight)
                     .background {
@@ -28,7 +28,7 @@ struct NCAudioAdaptiveControlsView: View {
                     }
                     .clipped()
 
-                HStack(spacing: 5) {
+                HStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
                     pageButton(systemName: "chevron.left", title: "_previous_media_", isEnabled: canGoPrevious, action: onPrevious)
                     pageButton(systemName: "chevron.right", title: "_next_media_", isEnabled: canGoNext, action: onNext)
                 }
@@ -42,8 +42,8 @@ struct NCAudioAdaptiveControlsView: View {
     }
 
     private var playbackControls: some View {
-        VStack(spacing: 5) {
-            HStack(spacing: 5) {
+        VStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
+            HStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
                 controlButton(
                     systemName: playbackOptions.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1",
                     title: "_repeat_current_media_", isEnabled: true, action: playbackOptions.toggleRepeat

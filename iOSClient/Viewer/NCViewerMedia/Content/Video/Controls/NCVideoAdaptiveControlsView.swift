@@ -189,7 +189,11 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        actionsContainerView.frame = CGRect(x: 5, y: safeAreaInsets.top + 5, width: max(0, bounds.width - 10), height: NCMediaAdaptiveActionsView.preferredHeight)
+        let spacing = NCMediaAdaptiveControlsLayout.spacing
+        actionsContainerView.frame = CGRect(
+            x: spacing, y: safeAreaInsets.top + spacing,
+            width: max(0, bounds.width - spacing * 2), height: NCMediaAdaptiveActionsView.preferredHeight
+        )
         updatePagingFooterLayout()
         updateTopActionsPosition()
     }
@@ -198,9 +202,9 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
         var footerHeight: CGFloat = 0
         if let model = pagingModel, let onSelectPage, let controller = pagingFooterController {
             // Same middle-area budget and navigation height as paged image/audio controls.
-            let middleHeight = max(0, bounds.height - NCMediaAdaptiveActionsView.preferredHeight - NCMediaViewerThumbnail.preferredHeight - 20)
-            let navigationHeight = min(max(0, middleHeight - 5), max(44, middleHeight * 0.18))
-            footerHeight = navigationHeight + NCMediaViewerThumbnail.preferredHeight + 15
+            let middleHeight = NCMediaAdaptiveControlsLayout.middleHeight(panelHeight: bounds.height)
+            let navigationHeight = NCMediaAdaptiveControlsLayout.navigationHeight(availableHeight: middleHeight)
+            footerHeight = NCMediaAdaptiveControlsLayout.footerHeight(navigationHeight: navigationHeight)
             if controller.rootView.navigationHeight != navigationHeight {
                 controller.rootView = NCMediaAdaptivePagingFooterView(model: model, navigationHeight: navigationHeight, onSelectPage: onSelectPage)
             }

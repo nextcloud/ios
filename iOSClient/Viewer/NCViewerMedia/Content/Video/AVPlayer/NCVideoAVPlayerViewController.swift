@@ -45,7 +45,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     // MARK: - Paging Callbacks
 
-    private var adaptivePagingModel: NCMediaViewerModel?
+    private var mediaViewerModel: NCMediaViewerModel?
     private var onSelectPage: ((_ index: Int) -> Void)?
 
     var onPrevious: (() -> Void)?
@@ -57,14 +57,14 @@ final class NCVideoAVPlayerViewController: UIViewController {
     var canGoNext = false
 
     func configureAdaptivePaging(model: NCMediaViewerModel?, onSelectPage: ((_ index: Int) -> Void)?) {
-        adaptivePagingModel = model
+        mediaViewerModel = model
         self.onSelectPage = onSelectPage
         updateAdaptivePagingIfFolded()
     }
 
     private func updateAdaptivePagingIfFolded() {
         guard (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true else { return }
-        adaptiveControlsView.configurePaging(model: adaptivePagingModel, onSelectPage: { [weak self] index in self?.onSelectPage?(index) })
+        adaptiveControlsView.configurePaging(model: mediaViewerModel, onSelectPage: { [weak self] index in self?.onSelectPage?(index) })
     }
 
     // MARK: - Views

@@ -19,7 +19,7 @@ struct NCMediaAdaptiveControlsView: View {
     var body: some View {
         let contentStyle = ncViewerBackgroundStyle(for: model.selectedMetadata, isChromeHidden: model.isChromeHidden)
         let backgroundStyle = ncViewerAdaptivePanelBackgroundStyle(contentStyle: contentStyle)
-        VStack(spacing: 5) {
+        VStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
             NCMediaAdaptiveActionsHost(makeActionsView: makeActionsView, showsInformation: model.selectedMetadata?.classFile == NKTypeClassFile.image.rawValue)
                 .frame(height: NCMediaAdaptiveActionsView.preferredHeight)
                 .layoutPriority(1)
@@ -40,7 +40,7 @@ struct NCMediaAdaptiveControlsView: View {
             .fixedSize(horizontal: false, vertical: true)
             .layoutPriority(1)
         }
-        .padding(5)
+        .padding(NCMediaAdaptiveControlsLayout.spacing)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.ncViewerBackground(backgroundStyle))
         .foregroundStyle(Color.ncViewerAdaptiveControlForeground)
@@ -95,8 +95,8 @@ struct NCMediaAdaptiveControlsView: View {
             )
         } else if let metadata = model.selectedMetadata, metadata.classFile == NKTypeClassFile.video.rawValue {
             GeometryReader { geometry in
-                let navigationHeight = min(max(0, geometry.size.height - 5), max(44, geometry.size.height * 0.18))
-                VStack(spacing: 5) {
+                let navigationHeight = NCMediaAdaptiveControlsLayout.navigationHeight(availableHeight: geometry.size.height)
+                VStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
                     Group {
                         if let controls = state.videoCoverControls(for: metadata.ocId) {
                             NCVideoAdaptivePlaybackCoverControlsView(presentation: controls)
@@ -195,7 +195,7 @@ final class NCMediaAdaptiveActionsView: UIStackView {
         axis = .horizontal
         alignment = .center
         distribution = .fillEqually
-        spacing = 5
+        spacing = NCMediaAdaptiveControlsLayout.spacing
         layoutMargins = .zero
         isLayoutMarginsRelativeArrangement = true
 

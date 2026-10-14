@@ -12,7 +12,7 @@ struct NCMediaAdaptivePagingFooterView: View {
     let onSelectPage: (_ index: Int) -> Void
 
     var body: some View {
-        VStack(spacing: 5) {
+        VStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
             pageNavigation
                 .frame(height: navigationHeight)
 
@@ -23,7 +23,7 @@ struct NCMediaAdaptivePagingFooterView: View {
             }
             .frame(height: NCMediaViewerThumbnail.preferredHeight)
         }
-        .padding(5)
+        .padding(NCMediaAdaptiveControlsLayout.spacing)
         .foregroundStyle(Color.ncViewerAdaptiveControlForeground)
         .tint(Color.ncViewerAdaptiveControlForeground)
         .fontWeight(.bold)
@@ -31,7 +31,7 @@ struct NCMediaAdaptivePagingFooterView: View {
 
     /// Also used by the video cover so the row stays in place when playback starts.
     var pageNavigation: some View {
-        HStack(spacing: 5) {
+        HStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
             pageButton(offset: -1, systemName: "chevron.left", title: "_previous_media_")
             pageButton(offset: 1, systemName: "chevron.right", title: "_next_media_")
         }

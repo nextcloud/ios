@@ -29,7 +29,7 @@ extension NCVideoViewerContentView {
             isChromeHidden: isChromeHidden,
             contextMenuController: contextMenuController,
             playbackOptions: playbackOptions,
-            adaptivePagingModel: adaptivePagingModel,
+            mediaViewerModel: mediaViewerModel,
             onSelectPage: selectPageFromAVPlayer,
             canGoPrevious: canGoPrevious,
             canGoNext: canGoNext,
@@ -76,7 +76,7 @@ extension NCVideoViewerContentView {
     }
     @MainActor
     func selectPageFromAVPlayer(_ index: Int) {
-        guard !isSelectingPlaybackPage, let model = adaptivePagingModel,
+        guard !isSelectingPlaybackPage, let model = mediaViewerModel,
               model.pageTransition.isIdle, index != model.selectedIndex,
               index >= 0, index < model.numberOfPages else { return }
         isSelectingPlaybackPage = true

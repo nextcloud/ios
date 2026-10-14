@@ -17,9 +17,9 @@ struct NCImageAdaptiveControlsView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let navigationHeight = min(max(0, geometry.size.height - 5), max(44, geometry.size.height * 0.18))
-            let informationHeight = max(0, geometry.size.height - navigationHeight - 5)
-            VStack(spacing: 5) {
+            let navigationHeight = NCMediaAdaptiveControlsLayout.navigationHeight(availableHeight: geometry.size.height)
+            let informationHeight = max(0, geometry.size.height - navigationHeight - NCMediaAdaptiveControlsLayout.spacing)
+            VStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
                 NCMediaViewerDetailView(metadata: detailView?.metadata ?? metadata, exif: availableExif, showsOnlyAvailableData: true, backgroundStyle: .custom(.clear))
                     .frame(height: informationHeight)
                     .background(Color.ncViewerAdaptiveControlBackground, in: RoundedRectangle(cornerRadius: 16))
@@ -38,7 +38,7 @@ struct NCImageAdaptiveControlsView: View {
     }
 
     private var pageActions: some View {
-        HStack(spacing: 5) {
+        HStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
             pageButton(systemName: "chevron.left", title: "_previous_media_", isEnabled: canGoPrevious, action: onPrevious)
             pageButton(systemName: "chevron.right", title: "_next_media_", isEnabled: canGoNext, action: onNext)
         }
@@ -46,7 +46,7 @@ struct NCImageAdaptiveControlsView: View {
 
     private func pageButton(systemName: String, title: String, isEnabled: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            HStack(spacing: 5) {
+            HStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
                 Image(systemName: systemName)
                     .font(.system(size: 18, weight: .bold))
                 Text(NSLocalizedString(title, comment: ""))

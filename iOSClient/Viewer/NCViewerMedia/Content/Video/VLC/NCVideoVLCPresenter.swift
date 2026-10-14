@@ -26,7 +26,7 @@ enum NCVideoVLCPresenter {
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?,
         playbackOptions: NCMediaPlaybackOptions,
-        adaptivePagingModel: NCMediaViewerModel? = nil,
+        mediaViewerModel: NCMediaViewerModel? = nil,
         onSelectPage: ((_ index: Int) -> Void)? = nil,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
@@ -55,7 +55,7 @@ enum NCVideoVLCPresenter {
                 contextMenuController: contextMenuController,
                 playbackOptions: playbackOptions
             )
-            currentViewController.configureAdaptivePaging(model: adaptivePagingModel, onSelectPage: onSelectPage)
+            currentViewController.configureAdaptivePaging(model: mediaViewerModel, onSelectPage: onSelectPage)
             currentViewController.onPrevious = onPrevious
             currentViewController.onNext = onNext
             currentViewController.onPlaybackEnded = onPlaybackEnded
@@ -82,7 +82,7 @@ enum NCVideoVLCPresenter {
                 contextMenuController: contextMenuController,
                 playbackOptions: playbackOptions
             )
-            currentViewController.configureAdaptivePaging(model: adaptivePagingModel, onSelectPage: onSelectPage)
+            currentViewController.configureAdaptivePaging(model: mediaViewerModel, onSelectPage: onSelectPage)
             currentViewController.onPrevious = onPrevious
             currentViewController.onNext = onNext
             currentViewController.onPlaybackEnded = onPlaybackEnded
@@ -123,7 +123,7 @@ enum NCVideoVLCPresenter {
             contextMenuController: contextMenuController,
             playbackOptions: playbackOptions
         )
-        viewController.configureAdaptivePaging(model: adaptivePagingModel, onSelectPage: onSelectPage)
+        viewController.configureAdaptivePaging(model: mediaViewerModel, onSelectPage: onSelectPage)
         viewController.onPrevious = onPrevious
         viewController.onNext = onNext
         viewController.onPlaybackEnded = onPlaybackEnded

@@ -11,6 +11,16 @@ import NextcloudKit
 @Suite("Adaptive media layout")
 @MainActor
 struct NCMediaAdaptiveLayoutViewTests {
+    @Test("Adaptive navigation remains within the available middle area", arguments: [CGFloat(-1), 0, 20, 49, 100, 330, 500])
+    func navigationFitsSmallAndLargeRegions(height: CGFloat) {
+        let navigationHeight = NCMediaAdaptiveControlsLayout.navigationHeight(availableHeight: height)
+        #expect(navigationHeight >= 0)
+        #expect(navigationHeight <= max(0, height - NCMediaAdaptiveControlsLayout.spacing))
+        if height >= 49 {
+            #expect(navigationHeight >= 44)
+        }
+    }
+
     @Test("Folded video playback stays black and unfolded playback retains its policy", arguments: [false, true])
     func videoPlaybackBackground(isChromeHidden: Bool) {
         let folded = ncViewerVideoPlaybackBackgroundStyle(for: nil, isChromeHidden: isChromeHidden, isFoldedLayout: true)
