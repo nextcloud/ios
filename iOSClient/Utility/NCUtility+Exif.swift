@@ -46,15 +46,19 @@ public struct ExifData {
 extension NCUtility {
     func getExif(metadata: tableMetadata, completion: @escaping (ExifData) -> Void) {
         var data = ExifData()
-
-        writeExifFromMetadata(metadata: metadata, data: &data)
-
-        if let latitude = data.latitude, let longitude = data.longitude {
-            getLocation(latitude: latitude, longitude: longitude) { location in
-                data.location = location
+        // Deliver one complete result, including local EXIF and any resolved location.
+        defer {
+            if let latitude = data.latitude, let longitude = data.longitude {
+                getLocation(latitude: latitude, longitude: longitude) { location in
+                    data.location = location
+                    completion(data)
+                }
+            } else {
                 completion(data)
             }
         }
+
+        writeExifFromMetadata(metadata: metadata, data: &data)
 
         if metadata.classFile != "image" || !utilityFileSystem.fileProviderStorageExists(metadata) {
             print("Storage exists or file is not an image")
@@ -68,7 +72,6 @@ extension NCUtility {
         guard let originalSource = CGImageSourceCreateWithURL(url as CFURL, nil),
               let imageProperties = CGImageSourceCopyPropertiesAtIndex(originalSource, 0, nil) as NSDictionary? else {
             print("Could not get image properties")
-            completion(data)
             return
         }
 
@@ -127,15 +130,6 @@ extension NCUtility {
         }
 
         writeExifFromMetadata(metadata: metadata, data: &data)
-
-        if let latitude = data.latitude, let longitude = data.longitude {
-            getLocation(latitude: latitude, longitude: longitude) { location in
-                data.location = location
-                completion(data)
-            }
-        }
-
-        completion(data)
     }
 
     /**

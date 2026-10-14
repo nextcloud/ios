@@ -20,13 +20,7 @@ struct NCMediaViewerDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(metadata.fileNameView.isEmpty ? metadata.fileName : metadata.fileNameView)
-                        .font(.headline)
-                        .textSelection(.enabled)
-                        .fixedSize(horizontal: false, vertical: true)
-                    dateSection
-                }
+                dateSection
                 mediaSummaryCard
                 locationSection
             }
@@ -104,17 +98,12 @@ struct NCMediaViewerDetailView: View {
 
     // MARK: - Sections
 
-    @ViewBuilder
     private var dateSection: some View {
-        if let date = exif.date ?? (showsOnlyAvailableData ? metadata.date as Date : nil) {
-            Text("\(dayString(from: date)), \(dateString(from: date)) \(timeString(from: date))")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        } else {
-            Text(NSLocalizedString("_no_date_information_", comment: ""))
-                .font(.headline)
-                .foregroundStyle(.secondary)
-        }
+        // Both presentations prefer the EXIF date, then use the file date.
+        let date = exif.date ?? (metadata.date as Date)
+        return Text("\(dayString(from: date)), \(dateString(from: date)) \(timeString(from: date))")
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
     }
 
     private var cameraSection: some View {

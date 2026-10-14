@@ -56,7 +56,7 @@ SPDX-License-Identifier = "GPL-3.0-or-later"
 
 # The Nextcloud name and logo are trademarks; see LICENSES/LicenseRef-NextcloudTrademarks.txt
 [[annotations]]
-path = ["AppIcon.icon/**", "Brand/Custom.xcassets/AppIcon.appiconset/**", "Brand/Custom.xcassets/logo.imageset/**", "Action Assistant/Images.xcassets/AppIcon.appiconset/**", "Widget/Assets.xcassets/AppIcon.imageset/**", "iOSClient/Images.xcassets/logo.imageset/**"]
+path = ["AppIcon.icon/**", "Brand/Custom.xcassets/AppIcon.appiconset/**", "Brand/Custom.xcassets/ViewerAppIcon.imageset/**", "Brand/Custom.xcassets/logo.imageset/**", "Action Assistant/Images.xcassets/AppIcon.appiconset/**", "Widget/Assets.xcassets/AppIcon.imageset/**", "iOSClient/Images.xcassets/logo.imageset/**"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Nextcloud GmbH"
 SPDX-License-Identifier = "LicenseRef-NextcloudTrademarks"

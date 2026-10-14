@@ -155,6 +155,8 @@ final class NCUtility: NSObject, Sendable {
 
                     NCManageDatabase.shared.addGeocoderLocation(location, latitude: latitude, longitude: longitude)
                     completion(location)
+                } else {
+                    completion(nil)
                 }
             }
         }

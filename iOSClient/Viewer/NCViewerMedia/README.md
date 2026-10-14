@@ -223,9 +223,12 @@ the same panel, then disables Info once the original is local. Normal-mode Info
 behavior is unchanged. Data is retained for the last inspected image only,
 matched by media ID, and remains visible after closing Info. The adaptive caller
 sets `showsOnlyAvailableData` to omit missing camera/lens/exposure fields; the
-default remains false for normal sheets. The selectable filename appears at
-the top in both modes, wrapping long names instead of truncating them.
-The file date is used when an EXIF date is unavailable. Previous/next buttons
+default remains false for normal sheets. The filename is displayed by the viewer
+header, not repeated inside the information panel. Both information presentations
+prefer the EXIF date and use the file date when it is unavailable. The normal
+viewer header uses the file date, which may differ from the EXIF capture date.
+EXIF loading delivers one result after reading the original and resolving any
+location, so the normal sheet cannot retain an earlier incomplete result. Previous/next buttons
 remain outside the fixed island and work while information is open. Map taps
 retain the existing Maps action.
 The two `Adaptive Image` canvas previews isolate these visual states. The adaptive
@@ -260,7 +263,10 @@ More buttons; rearrange or replace them independently of the normal navigation.
 The deferred More menu uses the button itself as its popover anchor.
 The same row contains a filename island for every media type, including presented
 video. Buttons are square (`actionsHeight` wide/high), while the filename uses
-the remaining width with up to two lines. Image: Close, Name, Info, More. Audio:
+the remaining width: a circular 32-point AppIcon avatar, an 8-point gap and a
+leading-aligned filename on one line, truncated at the end. `ViewerAppIcon` in
+`Brand/Custom.xcassets` copies the AppIcon image into a regular image asset for
+the controls and Canvas previews. Image: Close, Name, Info, More. Audio:
 Close, Repeat, Name, Auto-advance, More. Video: Close, Name, More. The row height
 and the lower thumbnail/navigation positions are unchanged.
 `NCMediaAdaptiveActionsView.preferredHeight` supplies the shared button height for
