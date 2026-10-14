@@ -91,13 +91,16 @@ default, but has its own customization entry.
 | Mapping a background style to a color | `UIColor.ncViewerBackground(_:)` | UIKit backgrounds and the SwiftUI `Color` wrapper. |
 | Control island/button fill | `UIColor.ncViewerAdaptiveControlBackground` | Adaptive image/audio islands, video-cover status controls and shared Close/Info/More buttons. |
 | Control text and icon color | `UIColor.ncViewerAdaptiveControlForeground` | Adaptive image/audio and video-cover controls, the common lower panel and shared action buttons. |
-| Control border color | `UIColor.ncViewerAdaptiveControlBorder` | Image island borders and shared action button borders. |
+| Control border color/width | `UIColor.ncViewerAdaptiveControlBorder` / `ncViewerAdaptiveControlBorderWidth` | All adaptive control islands and buttons, including thumbnails and video playback controls. |
 | Control contrast in light/dark appearance | `ncViewerAdaptiveControlsColorScheme(for:inherited:)` | The common lower panel: black uses dark appearance, white uses light, system/custom inherit. |
 | Loading indicator tint | `Color.ncViewerProgressTint(_:)` | Media loading indicators. |
 
 For example, changing an island fill requires editing only
 `UIColor.ncViewerAdaptiveControlBackground`. Its SwiftUI counterpart forwards to that
 same entry, so image/audio islands and UIKit action buttons stay consistent.
+SwiftUI controls use `ncAdaptiveControlSurface(shape:)` for the shared fill and
+border; UIKit action buttons read the same palette and border width. Circular and
+capsule video controls use this surface too, rather than a separate glass style.
 Keep dynamic system colors unresolved until rendering, so appearance changes
 continue to work. A custom background must contrast with its inherited controls.
 
@@ -146,7 +149,7 @@ video playback behavior. Local builds and tests remain user-run in Xcode.
 | `Content/Image/Controls/NCImageAdaptiveControlsView.swift` | Always hosts the shared information view inside its fixed island, plus previous/next buttons; the shared panel owns actions and thumbnails. |
 | `Views/Controls/NCMediaAdaptivePagingFooterView.swift` | Presented adaptive video footer: persistent previous/next and thumbnails sharing the viewer model, with dismissal-aware selection. |
 | `Views/Controls/NCMediaAdaptiveControlsView.swift` | Lower composition for paged images, audio and video covers: standalone buttons, image-only inline information, playback/cover actions and thumbnails. Also contains the SwiftUI/UIKit bridge and its hosting support types. |
-| `Content/Audio/Controls/NCAudioAdaptiveControlsView.swift` | Independent lower audio controls: repeat/seek backward/play/pause/seek forward/auto-advance, seeking and previous/next; no information island. Observes the existing playback model. |
+| `Content/Audio/Controls/NCAudioAdaptiveControlsView.swift` | Independent lower audio controls: ±10 seconds, Play/Pause, seeking and Previous/Next; Repeat/Auto-advance belong to the shared top row, with no information island. Observes the existing playback model. |
 | `NCMediaViewerHostingController.swift` | Owns paged-media navigation actions, title updates and information loading. Hides the upper navigation bar when folded and routes information into the lower controls. |
 | `Core/NCMediaViewerView.swift` | Selects the normal composition or experimental paging bridge using the central switch. |
 | `Views/NCMediaViewerThumbnail.swift` | Shared thumbnail strip and collection implementation for all media; callers own normal/adaptive visibility and spacing. |
@@ -313,7 +316,14 @@ Folding changes the composition, preserving playback position and repeat/advance
 options. Normal audio geometry and playback lifecycle remain unchanged.
 
 Audio and video do not reserve an inline information island in adaptive mode.
-Audio uses the middle area for playback and previous/next controls. Video covers
+Audio uses the middle area for playback and previous/next controls.
+Its top action row is Close, Repeat, Auto-advance and More. Only audio shows
+these two options there; the middle playback row is −10 seconds, Play/Pause and
++10 seconds, each in its own button island directly below the header. These three
+buttons fill the remaining middle area and absorb changes in available height.
+A separate 60-point island above Previous/Next contains only the seek slider;
+elapsed/duration labels stay in normal mode. There is no empty spacer between the
+rows. The slider island shrinks only when the region cannot accommodate it. The header observes the existing playback options for icon updates. Video covers
 keep their playback/download controls visible. The adaptive Info button is shown
 only for images; audio/video show Close and More without an empty button slot.
 Normal mode also shows Info only for images. Its navigation items update when

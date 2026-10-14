@@ -22,9 +22,7 @@ struct NCImageAdaptiveControlsView: View {
             VStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
                 NCMediaViewerDetailView(metadata: detailView?.metadata ?? metadata, exif: availableExif, showsOnlyAvailableData: true, backgroundStyle: .custom(.clear))
                     .frame(height: informationHeight)
-                    .background(Color.ncViewerAdaptiveControlBackground, in: RoundedRectangle(cornerRadius: 16))
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(Color.ncViewerAdaptiveControlBorder, lineWidth: 0.5))
+                    .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 16))
 
                 // Both islands depend only on available space, never on Info visibility or metadata content.
                 pageActions
@@ -53,8 +51,7 @@ struct NCImageAdaptiveControlsView: View {
                     .font(.subheadline)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.ncViewerAdaptiveControlBackground, in: RoundedRectangle(cornerRadius: 16))
-            .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(Color.ncViewerAdaptiveControlBorder, lineWidth: 0.5))
+            .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 16))
             .contentShape(RoundedRectangle(cornerRadius: 16))
         }
         .buttonStyle(.plain)

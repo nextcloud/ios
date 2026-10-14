@@ -476,7 +476,7 @@ private struct NCVideoAdaptiveControlsSwiftUIView: View {
                 }
             )
             .disabled(!state.isSeekingEnabled)
-            .tint(.gray)
+            .tint(Color.ncViewerAdaptiveControlForeground)
             .opacity(state.isSeekingEnabled ? 1 : 0.45)
 
             timeLabel(state.remainingText)
@@ -484,7 +484,7 @@ private struct NCVideoAdaptiveControlsSwiftUIView: View {
         }
         .padding(.horizontal, 18)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .controlGlassBackground(shape: Capsule(), isInteractive: false)
+        .ncAdaptiveControlSurface(shape: Capsule())
         .contentShape(Capsule())
     }
 
@@ -514,7 +514,7 @@ private struct NCVideoAdaptiveControlsSwiftUIView: View {
 
                 NCVideoAirPlayRoutePickerView()
                     .frame(width: NCVideoAdaptiveControlsView.topActionsButtonSize, height: NCVideoAdaptiveControlsView.topActionsButtonSize)
-                    .controlGlassBackground(shape: Circle())
+                    .ncAdaptiveControlSurface(shape: Circle())
 
             case .vlcTracks:
                 subtitleActionMenu(
@@ -605,9 +605,9 @@ private struct NCVideoAdaptiveControlsSwiftUIView: View {
     private func topActionIcon(systemName: String, pointSize: CGFloat) -> some View {
         Image(systemName: systemName)
             .font(.system(size: pointSize, weight: .regular))
-            .foregroundStyle(.primary)
+            .foregroundStyle(Color.ncViewerAdaptiveControlForeground)
             .frame(width: NCVideoAdaptiveControlsView.topActionsButtonSize, height: NCVideoAdaptiveControlsView.topActionsButtonSize)
-            .controlGlassBackground(shape: Circle())
+            .ncAdaptiveControlSurface(shape: Circle())
     }
 
     private func circleButton(systemName: String, size: CGFloat, pointSize: CGFloat, isEnabled: Bool, action: @escaping () -> Void) -> some View {
@@ -620,9 +620,9 @@ private struct NCVideoAdaptiveControlsSwiftUIView: View {
         } label: {
             Image(systemName: systemName)
                 .font(.system(size: pointSize, weight: .regular))
-                .foregroundStyle(.primary)
+                .foregroundStyle(Color.ncViewerAdaptiveControlForeground)
                 .frame(width: size, height: size)
-                .controlGlassBackground(shape: Circle())
+                .ncAdaptiveControlSurface(shape: Circle())
         }
         .buttonStyle(.plain)
         .transaction { transaction in
@@ -636,19 +636,5 @@ private struct NCVideoAdaptiveControlsSwiftUIView: View {
             .foregroundStyle(.secondary)
             .lineLimit(1)
             .minimumScaleFactor(0.85)
-    }
-}
-
-private extension View {
-    @ViewBuilder
-    func controlGlassBackground<BackgroundShape: Shape>(shape: BackgroundShape, isInteractive: Bool = true) -> some View {
-        if #available(iOS 26.0, *) {
-            self
-                .glassEffect(.regular.interactive(isInteractive), in: shape)
-        } else {
-            self
-                .background(.regularMaterial)
-                .clipShape(shape)
-        }
     }
 }

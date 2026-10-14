@@ -123,6 +123,7 @@ extension UIColor {
     static var ncViewerAdaptiveControlBackground: UIColor { .secondarySystemBackground }
     static var ncViewerAdaptiveControlForeground: UIColor { .label }
     static var ncViewerAdaptiveControlBorder: UIColor { .separator }
+    static var ncViewerAdaptiveControlBorderWidth: CGFloat { 0.5 }
 }
 
 extension Color {
@@ -130,6 +131,15 @@ extension Color {
     static var ncViewerAdaptiveControlBackground: Color { Color(uiColor: .ncViewerAdaptiveControlBackground) }
     static var ncViewerAdaptiveControlForeground: Color { Color(uiColor: .ncViewerAdaptiveControlForeground) }
     static var ncViewerAdaptiveControlBorder: Color { Color(uiColor: .ncViewerAdaptiveControlBorder) }
+}
+
+extension View {
+    /// Shared adaptive fill/border; shape and geometry remain owned by each control.
+    func ncAdaptiveControlSurface<Surface: InsettableShape>(shape: Surface) -> some View {
+        background(Color.ncViewerAdaptiveControlBackground, in: shape)
+            .clipShape(shape)
+            .overlay(shape.strokeBorder(Color.ncViewerAdaptiveControlBorder, lineWidth: UIColor.ncViewerAdaptiveControlBorderWidth).allowsHitTesting(false))
+    }
 }
 
 private struct NCMediaViewerFoldedLayoutKey: EnvironmentKey {

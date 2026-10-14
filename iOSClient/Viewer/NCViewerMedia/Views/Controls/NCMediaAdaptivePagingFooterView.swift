@@ -49,7 +49,7 @@ struct NCMediaAdaptivePagingFooterView: View {
             Label(NSLocalizedString(title, comment: ""), systemImage: systemName)
                 .font(.subheadline)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.ncViewerAdaptiveControlBackground, in: RoundedRectangle(cornerRadius: 16))
+                .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 16))
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled)

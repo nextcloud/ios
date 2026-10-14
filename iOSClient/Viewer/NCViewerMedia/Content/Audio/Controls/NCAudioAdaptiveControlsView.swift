@@ -7,7 +7,6 @@ import SwiftUI
 /// Lower audio panel. Observes the existing player model; never owns player creation or loading.
 struct NCAudioAdaptiveControlsView: View {
     @ObservedObject var playbackModel: NCAudioViewerModel
-    @ObservedObject var playbackOptions: NCMediaPlaybackOptions
     let isSelected: Bool
     let canGoPrevious: Bool
     let canGoNext: Bool
@@ -19,13 +18,9 @@ struct NCAudioAdaptiveControlsView: View {
             let navigationHeight = NCMediaAdaptiveControlsLayout.navigationHeight(availableHeight: geometry.size.height)
             let playbackHeight = max(0, geometry.size.height - navigationHeight - NCMediaAdaptiveControlsLayout.spacing)
             VStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
-                playbackControls
+                playbackControls(progressHeight: min(NCMediaAdaptiveControlsLayout.actionsHeight, max(0, playbackHeight - NCMediaAdaptiveControlsLayout.spacing)))
                     .frame(height: playbackHeight)
-                    .background {
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.ncViewerAdaptiveControlBackground)
-                            .gesture(pageSwipe)
-                    }
+                    .background { Color.clear.contentShape(Rectangle()).gesture(pageSwipe) }
                     .clipped()
 
                 HStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
@@ -41,13 +36,9 @@ struct NCAudioAdaptiveControlsView: View {
         .tint(Color.ncViewerAdaptiveControlForeground)
     }
 
-    private var playbackControls: some View {
+    private func playbackControls(progressHeight: CGFloat) -> some View {
         VStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
             HStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
-                controlButton(
-                    systemName: playbackOptions.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1",
-                    title: "_repeat_current_media_", isEnabled: true, action: playbackOptions.toggleRepeat
-                )
                 controlButton(systemName: "gobackward.10", title: "_seek_backward_10_", isEnabled: isSelected && playbackModel.duration > 0) {
                     playbackModel.seek(to: playbackModel.currentTime - 10)
                 }
@@ -58,28 +49,19 @@ struct NCAudioAdaptiveControlsView: View {
                 controlButton(systemName: "goforward.10", title: "_seek_forward_10_", isEnabled: isSelected && playbackModel.duration > 0) {
                     playbackModel.seek(to: playbackModel.currentTime + 10)
                 }
-                controlButton(
-                    systemName: playbackOptions.isAutoAdvanceEnabled ? "forward.end.fill" : "forward.end",
-                    title: "_play_next_media_automatically_", isEnabled: true, action: playbackOptions.toggleAutoAdvance
-                )
             }
+            .frame(maxHeight: .infinity)
             .contentShape(Rectangle())
             .simultaneousGesture(pageSwipe)
 
             // No page gesture on this row: horizontal drags seek within the current audio.
             Slider(value: Binding(get: { playbackModel.currentTime }, set: { playbackModel.seek(to: $0) }), in: 0...max(playbackModel.duration, 1))
                 .disabled(!isSelected || playbackModel.duration <= 0)
-
-            HStack {
-                Text(formatTime(playbackModel.currentTime))
-                Spacer()
-                Text(formatTime(playbackModel.duration))
-            }
-            .font(.caption.monospacedDigit())
-            .contentShape(Rectangle())
-            .simultaneousGesture(pageSwipe)
+                .padding(.horizontal, 12)
+                .frame(height: progressHeight)
+                .layoutPriority(1)
+                .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 16))
         }
-        .padding(.horizontal, 12)
     }
 
     private var pageSwipe: some Gesture {
@@ -99,7 +81,8 @@ struct NCAudioAdaptiveControlsView: View {
         Button(action: action) {
             Image(systemName: systemName)
                 .font(.system(size: 22, weight: .bold))
-                .frame(maxWidth: .infinity, minHeight: 44)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 16))
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled)
@@ -112,25 +95,19 @@ struct NCAudioAdaptiveControlsView: View {
             Label(NSLocalizedString(title, comment: ""), systemImage: systemName)
                 .font(.subheadline)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.ncViewerAdaptiveControlBackground, in: RoundedRectangle(cornerRadius: 16))
+                .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 16))
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled)
         .opacity(isEnabled ? 1 : 0.45)
     }
 
-    private func formatTime(_ seconds: Double) -> String {
-        guard seconds.isFinite, seconds >= 0, seconds < Double(Int.max) else { return "00:00" }
-        let totalSeconds = Int(seconds.rounded(.down))
-        return String(format: "%02d:%02d", totalSeconds / 60, totalSeconds % 60)
-    }
 }
 
 #if DEBUG
 #Preview("Adaptive Audio - Controls") {
     return NCAudioAdaptiveControlsView(
         playbackModel: NCAudioViewerModel(),
-        playbackOptions: NCMediaPlaybackOptions(preferences: nil),
         isSelected: true,
         canGoPrevious: true,
         canGoNext: true,

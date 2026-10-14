@@ -55,9 +55,7 @@ extension View {
     func ncAdaptiveThumbnailIsland() -> some View {
         padding(.horizontal, NCMediaAdaptiveControlsLayout.spacing)
             .frame(maxWidth: .infinity)
-            .background(Color.ncViewerAdaptiveControlBackground, in: RoundedRectangle(cornerRadius: 16))
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(Color.ncViewerAdaptiveControlBorder, lineWidth: 0.5).allowsHitTesting(false))
+            .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 16))
     }
 }
 

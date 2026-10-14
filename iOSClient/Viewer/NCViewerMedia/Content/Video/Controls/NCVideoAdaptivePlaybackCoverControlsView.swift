@@ -33,7 +33,7 @@ struct NCVideoAdaptivePlaybackCoverControlsView: View {
                     }
                 }
                 .frame(width: 62, height: 62)
-                .adaptiveCoverPlayButtonBackground()
+                .ncAdaptiveControlSurface(shape: Circle())
             }
             .disabled(!presentation.isPlayEnabled || presentation.isLoading || presentation.isLaunchingPlayback)
             .scaleEffect(presentation.isLaunchingPlayback ? 1.06 : 1)
@@ -53,29 +53,16 @@ struct NCVideoAdaptivePlaybackCoverControlsView: View {
                             onCancel()
                         }
                         .font(.subheadline.weight(.semibold))
-                        .buttonStyle(.borderedProminent)
-                        .tint(Color.ncViewerAdaptiveControlForeground)
-                        .foregroundStyle(Color.ncViewerAdaptiveControlBackground)
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 10))
                     }
                 }
                 .padding(.horizontal, 14)
                 .padding(.vertical, 10)
-                .background(Color.ncViewerAdaptiveControlBackground, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
-        }
-    }
-}
-
-private extension View {
-    @ViewBuilder
-    func adaptiveCoverPlayButtonBackground() -> some View {
-        if #available(iOS 26.0, *) {
-            self
-                .glassEffect(.regular.interactive(), in: .circle)
-        } else {
-            self
-                .background(.regularMaterial)
-                .clipShape(Circle())
         }
     }
 }

@@ -20,7 +20,12 @@ struct NCMediaAdaptiveControlsView: View {
         let contentStyle = ncViewerBackgroundStyle(for: model.selectedMetadata, isChromeHidden: model.isChromeHidden)
         let backgroundStyle = ncViewerAdaptivePanelBackgroundStyle(contentStyle: contentStyle)
         VStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
-            NCMediaAdaptiveActionsHost(makeActionsView: makeActionsView, showsInformation: model.selectedMetadata?.classFile == NKTypeClassFile.image.rawValue)
+            NCMediaAdaptiveActionsHost(
+                makeActionsView: makeActionsView,
+                showsInformation: model.selectedMetadata?.classFile == NKTypeClassFile.image.rawValue,
+                showsAudioOptions: model.selectedMetadata?.classFile == NKTypeClassFile.audio.rawValue,
+                playbackOptions: model.playbackOptions
+            )
                 .frame(height: NCMediaAdaptiveActionsView.preferredHeight)
                 .layoutPriority(1)
 
@@ -88,7 +93,6 @@ struct NCMediaAdaptiveControlsView: View {
         } else if let metadata = model.selectedMetadata, metadata.classFile == NKTypeClassFile.audio.rawValue {
             NCAudioAdaptiveControlsView(
                 playbackModel: NCAudioViewerPlaybackRegistry.shared.model(for: metadata.ocId),
-                playbackOptions: model.playbackOptions,
                 isSelected: isSelectedAudioReady,
                 canGoPrevious: model.selectedIndex > 0,
                 canGoNext: model.selectedIndex < model.numberOfPages - 1,
@@ -191,6 +195,9 @@ extension EnvironmentValues {
 /// Standalone actions, without navigation items, title or navigation-bar appearance.
 final class NCMediaAdaptiveActionsView: UIStackView {
     static var preferredHeight: CGFloat { NCMediaAdaptiveControlsLayout.actionsHeight }
+    private let repeatButton = UIButton(type: .system)
+    private let autoAdvanceButton = UIButton(type: .system)
+    private weak var playbackOptions: NCMediaPlaybackOptions?
 
     init(closeAction: UIAction, moreButton: UIButton, infoAction: UIAction? = nil) {
         super.init(frame: .zero)
@@ -215,6 +222,14 @@ final class NCMediaAdaptiveActionsView: UIStackView {
             addArrangedSubview(infoButton)
             informationButton = infoButton
         }
+        repeatButton.accessibilityLabel = NSLocalizedString("_repeat_current_media_", comment: "")
+        repeatButton.addAction(UIAction { [weak self] _ in self?.playbackOptions?.toggleRepeat() }, for: .touchUpInside)
+        autoAdvanceButton.accessibilityLabel = NSLocalizedString("_play_next_media_automatically_", comment: "")
+        autoAdvanceButton.addAction(UIAction { [weak self] _ in self?.playbackOptions?.toggleAutoAdvance() }, for: .touchUpInside)
+        for button in [repeatButton, autoAdvanceButton] {
+            button.isHidden = true
+            addArrangedSubview(button)
+        }
         moreButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         addArrangedSubview(moreButton)
         for button in arrangedSubviews.compactMap({ $0 as? UIButton }) {
@@ -224,13 +239,31 @@ final class NCMediaAdaptiveActionsView: UIStackView {
             configuration.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(weight: .bold)
             configuration.background.backgroundColor = .ncViewerAdaptiveControlBackground
             configuration.background.strokeColor = .ncViewerAdaptiveControlBorder
-            configuration.background.strokeWidth = 0.5
+            configuration.background.strokeWidth = UIColor.ncViewerAdaptiveControlBorderWidth
             configuration.background.cornerRadius = 12
             button.configuration = configuration
             NSLayoutConstraint.activate([
                 button.heightAnchor.constraint(equalToConstant: Self.preferredHeight)
             ])
         }
+    }
+
+    /// Keeps audio options between Close and More without rebuilding the shared action row.
+    func configureAudioOptions(_ options: NCMediaPlaybackOptions?) {
+        playbackOptions = options
+        repeatButton.isHidden = options == nil
+        autoAdvanceButton.isHidden = options == nil
+        let symbols = [
+            options?.isRepeatEnabled == true ? "repeat.1.circle.fill" : "repeat.1",
+            options?.isAutoAdvanceEnabled == true ? "forward.end.fill" : "forward.end"
+        ]
+        for (button, symbol) in zip([repeatButton, autoAdvanceButton], symbols) {
+            var configuration = button.configuration
+            configuration?.image = UIImage(systemName: symbol)
+            button.configuration = configuration
+        }
+        repeatButton.isSelected = options?.isRepeatEnabled == true
+        autoAdvanceButton.isSelected = options?.isAutoAdvanceEnabled == true
     }
 
     private(set) var informationButton: UIButton?
@@ -243,6 +276,8 @@ final class NCMediaAdaptiveActionsView: UIStackView {
 private struct NCMediaAdaptiveActionsHost: UIViewRepresentable {
     let makeActionsView: () -> UIView
     let showsInformation: Bool
+    let showsAudioOptions: Bool
+    @ObservedObject var playbackOptions: NCMediaPlaybackOptions
 
     func makeUIView(context: Context) -> UIView {
         makeActionsView()
@@ -252,7 +287,9 @@ private struct NCMediaAdaptiveActionsHost: UIViewRepresentable {
         // Keep UIKit action colors in sync with the lower panel's SwiftUI appearance.
         uiView.overrideUserInterfaceStyle = context.environment.colorScheme == .dark ? .dark : .light
         // UIStackView removes the hidden image-only button from its layout and accessibility.
-        (uiView as? NCMediaAdaptiveActionsView)?.informationButton?.isHidden = !showsInformation
+        guard let actions = uiView as? NCMediaAdaptiveActionsView else { return }
+        actions.informationButton?.isHidden = !showsInformation
+        actions.configureAudioOptions(showsAudioOptions ? playbackOptions : nil)
     }
 }
 
