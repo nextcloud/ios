@@ -44,12 +44,15 @@ final class NCCollectivesNetworking: Sendable {
         await request(account: account, path: "", method: .get, as: CollectivesPayload.self).map(\.collectives)
     }
 
-    /// Whether the Collectives app is enabled for the account. The app does not publish capabilities.
-    func isAvailable(account: String) async -> Bool {
-        if case .success = await getCollectives(account: account) {
+    /// Whether the Collectives app is enabled for the account, `nil` if that could not be determined yet.
+    /// The app does not publish capabilities; its API answers 404 when it is disabled.
+    func isAvailable(account: String) async -> Bool? {
+        switch await getCollectives(account: account) {
+        case .success:
             return true
+        case .failure(let error):
+            return error.errorCode == 404 ? false : nil
         }
-        return false
     }
 
     // MARK: - Pages

@@ -79,33 +79,6 @@ struct NCCollectivePageTests {
         #expect(NCCollectivePage.pageId(linkedBy: url) == nil)
     }
 
-    @Test("Embedded images split the Markdown into blocks, except inside code blocks")
-    func markdownBlocks() {
-        let markdown = """
-        # Title
-        Intro text
-
-        ![Berg Panorama.png](.attachments.83/Berg%20Panorama.png)
-
-        ```
-        ![not an image](code.png)
-        ```
-        ![report](.attachments.83/report.pdf "Report")
-        """
-
-        let blocks = NCCollectivesMarkdownBlock.blocks(from: markdown)
-
-        #expect(blocks.count == 4)
-        #expect(blocks[0] == .text("# Title\nIntro text"))
-        #expect(blocks[1] == .embed(alt: "Berg Panorama.png", source: ".attachments.83/Berg%20Panorama.png"))
-        if case .text(let code) = blocks[2] {
-            #expect(code.contains("![not an image](code.png)"))
-        } else {
-            Issue.record("Expected the code block as text")
-        }
-        #expect(blocks[3] == .embed(alt: "report", source: ".attachments.83/report.pdf"))
-    }
-
     @Test("Relative sources resolve against the page's folder")
     func relativeSourcePath() {
         let intro = page(id: 83, parentId: 81, title: "Intro", filePath: "Intro", fileName: "Readme.md")

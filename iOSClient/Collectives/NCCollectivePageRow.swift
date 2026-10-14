@@ -18,7 +18,7 @@ struct NCCollectivePageRow: View {
                 Text(title)
                     .font(.body)
                     .lineLimit(2)
-                Text(page.modificationDate, format: .relative(presentation: .named))
+                Text(page.relativeModificationDate)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

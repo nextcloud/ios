@@ -13,6 +13,7 @@ struct NCCollectivePageView: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var markdown: String?
+    @State private var nodes: [NCCollectivesMarkdownNode] = []
     @State private var error: NKError?
     @State private var action: NCCollectivePageAction?
     @State private var destination: NCCollectivePage?
@@ -81,7 +82,7 @@ struct NCCollectivePageView: View {
     }
 
     private var lastEdited: String {
-        let date = current.modificationDate.formatted(.relative(presentation: .named))
+        let date = current.relativeModificationDate
         if let user = current.lastUserDisplayName, !user.isEmpty {
             return String(format: NSLocalizedString("_collectives_last_edited_by_", comment: ""), user, date)
         }
@@ -95,16 +96,12 @@ struct NCCollectivePageView: View {
                 Text("_collectives_empty_page_")
                     .foregroundStyle(.secondary)
             } else {
-                VStack(alignment: .leading, spacing: 16) {
-                    ForEach(Array(NCCollectivesMarkdownBlock.blocks(from: markdown).enumerated()), id: \.offset) { _, block in
-                        switch block {
-                        case .text(let text):
-                            NCCollectivesMarkdownView(markdown: text, openLink: openLink)
-                        case .embed(let alt, let source):
-                            embedView(NCCollectivesEmbed(alt: alt, source: source, page: current, attachments: attachments))
-                        }
-                    }
+                NCCollectivesMarkdownContentView(nodes: nodes) { alt, source in
+                    AnyView(embedView(NCCollectivesEmbed(alt: alt, source: source, page: current, attachments: attachments)))
                 }
+                .environment(\.openURL, OpenURLAction { url in
+                    openLink(url) ? .handled : .systemAction
+                })
             }
         } else if let error {
             NCCollectivesErrorView(error: error) {
@@ -133,10 +130,7 @@ struct NCCollectivePageView: View {
     /// Attachments that the page content does not show, like files uploaded in the web sidebar.
     @ViewBuilder
     private var otherAttachments: some View {
-        let sources = Set((markdown.map(NCCollectivesMarkdownBlock.blocks(from:)) ?? []).compactMap { block -> String? in
-            if case .embed(_, let source) = block { return source.removingPercentEncoding ?? source }
-            return nil
-        })
+        let sources = Set(NCCollectivesMarkdownNode.embedSources(in: nodes).map { $0.removingPercentEncoding ?? $0 })
         let others = attachments.filter { !sources.contains($0.src.removingPercentEncoding ?? $0.src) }
         if !others.isEmpty {
             VStack(alignment: .leading, spacing: 8) {
@@ -259,6 +253,7 @@ struct NCCollectivePageView: View {
         self.attachments = await attachments
         switch content {
         case .success(let markdown):
+            self.nodes = NCCollectivesMarkdownParser.parse(markdown)
             self.markdown = markdown
             error = nil
         case .failure(let error):

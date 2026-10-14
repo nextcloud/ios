@@ -28,6 +28,12 @@ struct NCCollectivePage: Decodable, Identifiable, Hashable, Sendable {
         Date(timeIntervalSince1970: TimeInterval(timestamp))
     }
 
+    /// "5 minutes ago" in the app's language, which can differ from `Locale.current`.
+    var relativeModificationDate: String {
+        let locale = Locale(identifier: Bundle.main.preferredLocalizations.first ?? "en")
+        return modificationDate.formatted(.relative(presentation: .named).locale(locale))
+    }
+
     /// The page file path relative to the user's root folder, e.g. `.Collectives/Handbook/Intro/Readme.md`.
     var relativeFilePath: String? {
         guard let collectivePath, !collectivePath.isEmpty else { return nil }

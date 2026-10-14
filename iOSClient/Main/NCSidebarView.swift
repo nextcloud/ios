@@ -331,10 +331,19 @@ struct NCSidebarView: View {
         }
         .task(id: "\(activeAccount)-\(capabilitiesRevision)-collectives") {
             let account = activeAccount
-            let isAvailable = await NCCollectivesNetworking.shared.isAvailable(account: account)
-            guard !Task.isCancelled, activeAccount == account else { return }
-            Self.collectivesAvailability[account] = isAvailable
-            showsCollectives = isAvailable
+            // Retry while the answer is unknown, e.g. right after launch or without network.
+            for attempt in 0..<5 {
+                if attempt > 0 {
+                    do { try await Task.sleep(for: .seconds(2)) } catch { return }
+                }
+                let isAvailable = await NCCollectivesNetworking.shared.isAvailable(account: account)
+                guard !Task.isCancelled, activeAccount == account else { return }
+                if let isAvailable {
+                    Self.collectivesAvailability[account] = isAvailable
+                    showsCollectives = isAvailable
+                    return
+                }
+            }
         }
     }
 
