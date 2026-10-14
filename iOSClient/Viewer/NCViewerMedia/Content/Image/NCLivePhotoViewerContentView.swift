@@ -11,6 +11,9 @@ import NextcloudKit
 // MARK: - Live Photo Viewer Content View
 
 struct NCLivePhotoViewerContentView: View {
+    @Environment(\.mediaViewerIsFoldedLayout) private var isFoldedLayout
+    @Environment(\.layoutDirection) private var layoutDirection
+    @State private var overlaySafeInsets: UIEdgeInsets?
     private final class ZoomStateStore {
         var value: NCImageZoomView.ZoomState?
 
@@ -77,25 +80,11 @@ struct NCLivePhotoViewerContentView: View {
 
             if isPlayingLivePhoto, let livePhoto {
                 GeometryReader { proxy in
-                    let layout = NCLivePhotoPlaybackLayout(
-                        containerSize: proxy.size,
-                        photoSize: livePhoto.size,
-                        zoomState: playbackZoomState
-                    )
+                    let layout = NCLivePhotoPlaybackLayout(containerSize: proxy.size, photoSize: livePhoto.size, zoomState: playbackZoomState)
 
-                    NCLivePhotoViewRepresentable(
-                        livePhoto: livePhoto,
-                        backgroundStyle: backgroundStyle,
-                        isPlaying: $isPlayingLivePhoto
-                    )
-                    .frame(
-                        width: layout.frame.width,
-                        height: layout.frame.height
-                    )
-                    .position(
-                        x: layout.frame.midX,
-                        y: layout.frame.midY
-                    )
+                    NCLivePhotoViewRepresentable(livePhoto: livePhoto, backgroundStyle: backgroundStyle, isPlaying: $isPlayingLivePhoto)
+                    .frame(width: layout.frame.width, height: layout.frame.height)
+                    .position(x: layout.frame.midX, y: layout.frame.midY)
                 }
                 .clipped()
                 .id(playbackViewIdentifier)
@@ -194,7 +183,10 @@ struct NCLivePhotoViewerContentView: View {
         GeometryReader { proxy in
             let isLandscape = proxy.size.width > proxy.size.height
             let isPad = UIDevice.current.userInterfaceIdiom == .pad
-            let topInset = isLandscape && !isPad ? max(topOverlayInset, 76) : topOverlayInset
+            let fallbackTopInset = isLandscape && !isPad ? max(topOverlayInset, 76) : topOverlayInset
+            let topInset = isFoldedLayout ? 12 : overlaySafeInsets.map { $0.top + 8 } ?? fallbackTopInset
+            let leadingSafeInset = layoutDirection == .leftToRight ? overlaySafeInsets?.left : overlaySafeInsets?.right
+            let leadingInset = isFoldedLayout ? 12 : (leadingSafeInset ?? 0) + 12
 
             VStack {
                 HStack {
@@ -216,13 +208,10 @@ struct NCLivePhotoViewerContentView: View {
                     .padding(.horizontal, 9)
                     .padding(.vertical, 5)
                     .background(livePhotoBadgeBackground)
-                    .overlay(
-                        Capsule()
-                            .stroke(livePhotoBadgeStroke, lineWidth: 1)
-                    )
+                    .overlay(Capsule() .stroke(livePhotoBadgeStroke, lineWidth: 1))
                     .clipShape(Capsule())
                     .shadow(color: .black.opacity(0.08), radius: 2, x: 0, y: 1)
-                    .padding(.leading, 12)
+                    .padding(.leading, leadingInset)
                     .padding(.top, topInset)
 
                     Spacer()
@@ -231,16 +220,62 @@ struct NCLivePhotoViewerContentView: View {
                 Spacer()
             }
         }
+        .background(OverlaySafeAreaReader { overlaySafeInsets = $0 })
         .allowsHitTesting(false)
+    }
+
+    /// Read the owning viewer's safe area in badge coordinates, including bars that move to a side.
+    private struct OverlaySafeAreaReader: UIViewRepresentable {
+        let onChange: (UIEdgeInsets) -> Void
+
+        func makeUIView(context: Context) -> ReaderView {
+            let view = ReaderView()
+            view.isUserInteractionEnabled = false
+            view.onChange = onChange
+            return view
+        }
+
+        func updateUIView(_ view: ReaderView, context: Context) {
+            view.onChange = onChange
+            view.setNeedsLayout()
+        }
+
+        final class ReaderView: UIView {
+            var onChange: ((UIEdgeInsets) -> Void)?
+            private var lastInsets: UIEdgeInsets?
+
+            override func layoutSubviews() {
+                super.layoutSubviews()
+                guard window != nil, bounds.width > 0, bounds.height > 0 else { return }
+                var ancestor: UIView? = self
+                while let view = ancestor {
+                    if let owner = view.next as? NCMediaViewerHostingController {
+                        let safeFrame = owner.view.convert(owner.view.safeAreaLayoutGuide.layoutFrame, to: self)
+                        let insets = UIEdgeInsets(
+                            top: max(0, safeFrame.minY - bounds.minY),
+                            left: max(0, safeFrame.minX - bounds.minX),
+                            bottom: max(0, bounds.maxY - safeFrame.maxY),
+                            right: max(0, bounds.maxX - safeFrame.maxX)
+                        )
+                        guard lastInsets != insets else { return }
+                        lastInsets = insets
+                        // Publish after UIKit layout, rather than changing SwiftUI state during its update.
+                        DispatchQueue.main.async { [weak self] in
+                            guard let self, self.lastInsets == insets, self.window != nil else { return }
+                            self.onChange?(insets)
+                        }
+                        return
+                    }
+                    ancestor = view.superview
+                }
+            }
+        }
     }
 
     // MARK: - Identifiers
 
     private var taskIdentifier: String {
-        resourceIdentifier(
-            imageURL: fullURL,
-            videoURL: videoURL
-        )
+        resourceIdentifier(imageURL: fullURL, videoURL: videoURL)
     }
 
     private var playbackViewIdentifier: String {
@@ -276,10 +311,7 @@ struct NCLivePhotoViewerContentView: View {
             isLoadingResources = false
         }
 
-        await loadLivePhoto(
-            imageURL: fullURL,
-            videoURL: videoURL
-        )
+        await loadLivePhoto(imageURL: fullURL, videoURL: videoURL)
     }
 
     @MainActor
@@ -319,19 +351,13 @@ struct NCLivePhotoViewerContentView: View {
                 return
             }
 
-            await loadLivePhoto(
-                imageURL: resourceURLs.imageURL,
-                videoURL: resourceURLs.videoURL
-            )
+            await loadLivePhoto(imageURL: resourceURLs.imageURL, videoURL: resourceURLs.videoURL)
         }
     }
 
     @MainActor
     private func loadLivePhoto(imageURL: URL, videoURL: URL) async {
-        let expectedIdentifier = resourceIdentifier(
-            imageURL: imageURL,
-            videoURL: videoURL
-        )
+        let expectedIdentifier = resourceIdentifier(imageURL: imageURL, videoURL: videoURL)
 
         if loadedTaskIdentifier != expectedIdentifier {
             livePhoto = nil
@@ -438,26 +464,15 @@ struct NCLivePhotoViewerContentView: View {
 
             let resumeBox = ResumeBox()
 
-            PHLivePhoto.request(
-                withResourceFileURLs: resourceURLs,
-                placeholderImage: nil,
-                targetSize: .zero,
-                contentMode: .aspectFit
-            ) { livePhoto, info in
+            PHLivePhoto.request(withResourceFileURLs: resourceURLs, placeholderImage: nil, targetSize: .zero, contentMode: .aspectFit) { livePhoto, info in
                 if let cancelled = info[PHLivePhotoInfoCancelledKey] as? Bool,
                    cancelled {
-                    resumeBox.resumeOnce(
-                        continuation,
-                        returning: nil
-                    )
+                    resumeBox.resumeOnce(continuation, returning: nil)
                     return
                 }
 
                 if info[PHLivePhotoInfoErrorKey] != nil {
-                    resumeBox.resumeOnce(
-                        continuation,
-                        returning: nil
-                    )
+                    resumeBox.resumeOnce(continuation, returning: nil)
                     return
                 }
 
@@ -471,10 +486,7 @@ struct NCLivePhotoViewerContentView: View {
                     return
                 }
 
-                resumeBox.resumeOnce(
-                    continuation,
-                    returning: livePhoto
-                )
+                resumeBox.resumeOnce(continuation, returning: livePhoto)
             }
         }
     }
@@ -494,35 +506,18 @@ struct NCLivePhotoPlaybackLayout {
             return
         }
 
-        let fitScale = min(
-            containerSize.width / photoSize.width,
-            containerSize.height / photoSize.height
-        )
+        let fitScale = min(containerSize.width / photoSize.width, containerSize.height / photoSize.height)
         let zoomScale = min(
-            max(
-                zoomState?.zoomScale ?? NCImageZoomView.supportedZoomScaleRange.lowerBound,
-                NCImageZoomView.supportedZoomScaleRange.lowerBound
-            ),
+            max(zoomState?.zoomScale ?? NCImageZoomView.supportedZoomScaleRange.lowerBound, NCImageZoomView.supportedZoomScaleRange.lowerBound),
             NCImageZoomView.supportedZoomScaleRange.upperBound
         )
-        let contentSize = CGSize(
-            width: photoSize.width * fitScale * zoomScale,
-            height: photoSize.height * fitScale * zoomScale
-        )
+        let contentSize = CGSize(width: photoSize.width * fitScale * zoomScale, height: photoSize.height * fitScale * zoomScale)
         let normalizedCenter = zoomState?.normalizedCenter ?? CGPoint(x: 0.5, y: 0.5)
 
         self.frame = CGRect(
             origin: CGPoint(
-                x: Self.contentOrigin(
-                    containerLength: containerSize.width,
-                    contentLength: contentSize.width,
-                    normalizedCenter: normalizedCenter.x
-                ),
-                y: Self.contentOrigin(
-                    containerLength: containerSize.height,
-                    contentLength: contentSize.height,
-                    normalizedCenter: normalizedCenter.y
-                )
+                x: Self.contentOrigin(containerLength: containerSize.width, contentLength: contentSize.width, normalizedCenter: normalizedCenter.x),
+                y: Self.contentOrigin(containerLength: containerSize.height, contentLength: contentSize.height, normalizedCenter: normalizedCenter.y)
             ),
             size: contentSize
         )

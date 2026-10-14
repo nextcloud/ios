@@ -29,12 +29,14 @@ extension NCVideoViewerContentView {
             isChromeHidden: isChromeHidden,
             contextMenuController: contextMenuController,
             playbackOptions: playbackOptions,
+            mediaViewerModel: mediaViewerModel,
+            onSelectPage: { index in selectPageFromPlayback(index, usingVLC: false) },
             canGoPrevious: canGoPrevious,
             canGoNext: canGoNext,
             onPrevious: goToPreviousPageFromAVPlayer,
             onNext: goToNextPageFromAVPlayer,
             onPlaybackEnded: onPlayNextMedia,
-            onClose: closeFromFullscreenVideo,
+            onClose: onClose,
             onPlaybackError: handleAVPlayerPlaybackError
         )
 

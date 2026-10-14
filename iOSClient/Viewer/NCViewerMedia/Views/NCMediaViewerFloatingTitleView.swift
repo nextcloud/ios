@@ -39,14 +39,8 @@ final class NCMediaViewerFloatingTitleView: UIView {
         titleButton.clipsToBounds = true
         titleButton.titleLabel?.numberOfLines = 1
         titleButton.titleLabel?.lineBreakMode = .byTruncatingMiddle
-        titleButton.titleLabel?.setContentCompressionResistancePriority(
-            .defaultLow,
-            for: .horizontal
-        )
-        titleButton.titleLabel?.setContentHuggingPriority(
-            .defaultLow,
-            for: .horizontal
-        )
+        titleButton.titleLabel?.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        titleButton.titleLabel?.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
         addSubview(titleButton)
 
@@ -66,10 +60,7 @@ final class NCMediaViewerFloatingTitleView: UIView {
     }
 
     override var intrinsicContentSize: CGSize {
-        CGSize(
-            width: maximumWidth,
-            height: preferredHeight
-        )
+        CGSize(width: maximumWidth, height: preferredHeight)
     }
 
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
@@ -87,26 +78,17 @@ final class NCMediaViewerFloatingTitleView: UIView {
 
         let leadingInset = titleButton.configuration?.contentInsets.leading ?? 0
         let trailingInset = titleButton.configuration?.contentInsets.trailing ?? 0
-        let availableWidth = max(
-            0,
-            bounds.width - leadingInset - trailingInset
-        )
+        let availableWidth = max(0, bounds.width - leadingInset - trailingInset)
 
         titleButton.titleLabel?.preferredMaxLayoutWidth = availableWidth
         titleButton.titleLabel?.numberOfLines = 1
         titleButton.titleLabel?.lineBreakMode = .byTruncatingMiddle
-        titleButton.titleLabel?.setContentCompressionResistancePriority(
-            .defaultLow,
-            for: .horizontal
-        )
+        titleButton.titleLabel?.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
         titleButton.subtitleLabel?.preferredMaxLayoutWidth = availableWidth
         titleButton.subtitleLabel?.numberOfLines = 1
         titleButton.subtitleLabel?.lineBreakMode = .byTruncatingMiddle
-        titleButton.subtitleLabel?.setContentCompressionResistancePriority(
-            .defaultLow,
-            for: .horizontal
-        )
+        titleButton.subtitleLabel?.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
         var configuration = titleButton.configuration
         configuration?.titleAlignment = .center
@@ -116,10 +98,7 @@ final class NCMediaViewerFloatingTitleView: UIView {
     }
 
     func clear() {
-        update(
-            primaryText: nil,
-            secondaryText: nil
-        )
+        update(primaryText: nil, secondaryText: nil)
     }
 
     func update(primaryText: String?, secondaryText: String?) {
@@ -128,10 +107,7 @@ final class NCMediaViewerFloatingTitleView: UIView {
         configuration?.titleTextAttributesTransformer =
             UIConfigurationTextAttributesTransformer { incoming in
                 var outgoing = incoming
-                outgoing.font = UIFont.systemFont(
-                    ofSize: 13,
-                    weight: .semibold
-                )
+                outgoing.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
                 return outgoing
             }
 
@@ -141,10 +117,7 @@ final class NCMediaViewerFloatingTitleView: UIView {
             configuration?.subtitleTextAttributesTransformer =
                 UIConfigurationTextAttributesTransformer { incoming in
                     var outgoing = incoming
-                    outgoing.font = UIFont.systemFont(
-                        ofSize: 11,
-                        weight: .regular
-                    )
+                    outgoing.font = UIFont.systemFont(ofSize: 11, weight: .regular)
                     return outgoing
                 }
         } else {

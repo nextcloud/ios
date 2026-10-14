@@ -97,6 +97,13 @@ import UIKit
 ///     -> `NCMediaViewerDetailView`.
 ///     Displays file information, camera/lens metadata, EXIF values, and location.
 ///
+/// 16. Experimental adaptive layout:
+///     `NCMediaAdaptiveLayoutConfiguration` supplies one shared experimental switch.
+///     `NCMediaAdaptiveLayoutView` keeps the media surface and arranges independent
+///     normal/adaptive controls. Images bridge through `NCMediaAdaptiveLayoutHost`;
+///     fullscreen AVPlayer and VLC use the same container directly.
+///     See README.md in this directory for the component map and verification scope.
+///
 /// High-level rule:
 /// `NCMediaViewerPresenter` starts and closes the viewer, but it does not resolve,
 /// download, classify, or play media. Those responsibilities belong to the model,
@@ -172,9 +179,7 @@ final class NCMediaViewerPresenter: NSObject {
             }
         )
 
-        let navigationController = UINavigationController(
-            rootViewController: hostingController
-        )
+        let navigationController = UINavigationController(rootViewController: hostingController)
 
         configureNavigationController(navigationController)
 
@@ -194,11 +199,7 @@ final class NCMediaViewerPresenter: NSObject {
             navigationController.view.alpha = 0
             window.addSubview(navigationController.view)
 
-            animateOpening(
-                viewerTransitionSource: viewerTransitionSource,
-                in: window,
-                viewerView: navigationController.view
-            )
+            animateOpening(viewerTransitionSource: viewerTransitionSource, in: window, viewerView: navigationController.view)
         } else {
             navigationController.view.alpha = 1
             window.addSubview(navigationController.view)
@@ -231,20 +232,11 @@ final class NCMediaViewerPresenter: NSObject {
             let closingImage = currentClosingImage()
                 ?? closingTransitionSource.image
 
-            animateClosing(
-                viewerTransitionSource: closingTransitionSource,
-                closingImage: closingImage,
-                in: window,
-                viewerView: viewerContainerView
-            )
+            animateClosing(viewerTransitionSource: closingTransitionSource, closingImage: closingImage, in: window, viewerView: viewerContainerView)
             return
         }
 
-        UIView.animate(
-            withDuration: closingAnimationDuration,
-            delay: 0,
-            options: [.curveEaseInOut]
-        ) {
+        UIView.animate(withDuration: closingAnimationDuration, delay: 0, options: [.curveEaseInOut]) {
             viewerContainerView.alpha = 0
         } completion: { [weak self] _ in
             viewerContainerView.removeFromSuperview()
@@ -282,10 +274,7 @@ final class NCMediaViewerPresenter: NSObject {
     private func installDismissPanGesture(on view: UIView) {
         removeDismissPanGesture()
 
-        let gesture = UIPanGestureRecognizer(
-            target: self,
-            action: #selector(handleDismissPanGesture(_:))
-        )
+        let gesture = UIPanGestureRecognizer(target: self, action: #selector(handleDismissPanGesture(_:)))
 
         gesture.cancelsTouchesInView = false
         gesture.delegate = self
@@ -387,18 +376,11 @@ final class NCMediaViewerPresenter: NSObject {
         window.addSubview(dimView)
         window.addSubview(imageView)
 
-        let destinationFrame = aspectFitFrame(
-            imageSize: viewerTransitionSource.image.size,
-            containerSize: window.bounds.size
-        )
+        let destinationFrame = aspectFitFrame(imageSize: viewerTransitionSource.image.size, containerSize: window.bounds.size)
 
         viewerView.alpha = 0
 
-        UIView.animate(
-            withDuration: openingAnimationDuration,
-            delay: 0,
-            options: [.curveEaseInOut]
-        ) {
+        UIView.animate(withDuration: openingAnimationDuration, delay: 0, options: [.curveEaseInOut]) {
             dimView.alpha = 1
             imageView.frame = destinationFrame
             imageView.layer.cornerRadius = 0
@@ -413,10 +395,7 @@ final class NCMediaViewerPresenter: NSObject {
 
     /// Animates the fullscreen viewer back into the current thumbnail frame.
     private func animateClosing(viewerTransitionSource: NCMediaViewerTransitionSource, closingImage: UIImage, in window: UIWindow, viewerView: UIView) {
-        let startFrame = aspectFitFrame(
-            imageSize: closingImage.size,
-            containerSize: window.bounds.size
-        )
+        let startFrame = aspectFitFrame(imageSize: closingImage.size, containerSize: window.bounds.size)
 
         let imageView = UIImageView(image: closingImage)
         imageView.contentMode = .scaleAspectFill
@@ -428,11 +407,7 @@ final class NCMediaViewerPresenter: NSObject {
 
         viewerView.alpha = 0
 
-        UIView.animate(
-            withDuration: closingAnimationDuration,
-            delay: 0,
-            options: [.curveEaseInOut]
-        ) {
+        UIView.animate(withDuration: closingAnimationDuration, delay: 0, options: [.curveEaseInOut]) {
             imageView.frame = viewerTransitionSource.sourceFrame
             imageView.layer.cornerRadius = viewerTransitionSource.cornerRadius
         } completion: { [weak self] _ in
@@ -505,10 +480,7 @@ final class NCMediaViewerPresenter: NSObject {
     /// Clears retained presenter state after the viewer has been removed.
     private func cleanup() {
         // Stop any remaining media playback before releasing the viewer hierarchy.
-        NotificationCenter.default.post(
-            name: .ncMediaViewerStopPlayback,
-            object: nil
-        )
+        NotificationCenter.default.post(name: .ncMediaViewerStopPlayback, object: nil)
 
         navigationController = nil
         viewerContainerView = nil
@@ -543,17 +515,9 @@ final class NCMediaViewerPresenter: NSObject {
         let heightRatio = containerSize.height / imageSize.height
         let ratio = min(widthRatio, heightRatio)
 
-        let fittedSize = CGSize(
-            width: imageSize.width * ratio,
-            height: imageSize.height * ratio
-        )
+        let fittedSize = CGSize(width: imageSize.width * ratio, height: imageSize.height * ratio)
 
-        return CGRect(
-            x: (containerSize.width - fittedSize.width) * 0.5,
-            y: (containerSize.height - fittedSize.height) * 0.5,
-            width: fittedSize.width,
-            height: fittedSize.height
-        )
+        return CGRect(x: (containerSize.width - fittedSize.width) * 0.5, y: (containerSize.height - fittedSize.height) * 0.5, width: fittedSize.width, height: fittedSize.height)
     }
 }
 

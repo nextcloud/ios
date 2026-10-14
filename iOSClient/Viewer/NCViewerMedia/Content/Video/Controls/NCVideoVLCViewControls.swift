@@ -15,13 +15,7 @@ extension NCVideoVLCViewController {
         }
 
         let currentTime = mediaPlayer.time.intValue
-        let targetTime = max(
-            0,
-            min(
-                Int(duration),
-                Int(currentTime + deltaMilliseconds)
-            )
-        )
+        let targetTime = max(0, min(Int(duration), Int(currentTime + deltaMilliseconds)))
 
         mediaPlayer.time = VLCTime(int: Int32(targetTime))
         updateProgressControls()
@@ -40,10 +34,7 @@ extension NCVideoVLCViewController {
     func startProgressTimer() {
         stopProgressTimer()
 
-        let timer = Timer(
-            timeInterval: 0.35,
-            repeats: true
-        ) { [weak self] _ in
+        let timer = Timer(timeInterval: 0.35, repeats: true) { [weak self] _ in
             self?.updateProgressControls()
         }
 
@@ -82,11 +73,7 @@ extension NCVideoVLCViewController {
         let elapsed = Int(Float(duration) * position)
         let remaining = max(0, Int(duration) - elapsed)
 
-        controlsView.updateProgress(
-            progress: position,
-            elapsedText: formatPlaybackTime(milliseconds: elapsed),
-            remainingText: "−" + formatPlaybackTime(milliseconds: remaining)
-        )
+        controlsView.updateProgress(progress: position, elapsedText: formatPlaybackTime(milliseconds: elapsed), remainingText: "−" + formatPlaybackTime(milliseconds: remaining))
     }
 
     func formatPlaybackTime(milliseconds: Int) -> String {
@@ -106,10 +93,7 @@ extension NCVideoVLCViewController {
 // MARK: - Controls Visibility
 extension NCVideoVLCViewController {
     internal func showControls(animated: Bool) {
-        setNavigationBarVisible(
-            true,
-            animated: animated
-        )
+        setNavigationBarVisible(true, animated: animated)
         controlsVisible = true
         setControlsVisible(true, animated: animated)
     }
@@ -121,10 +105,7 @@ extension NCVideoVLCViewController {
             return
         }
 
-        setNavigationBarVisible(
-            false,
-            animated: animated
-        )
+        setNavigationBarVisible(false, animated: animated)
         controlsVisible = false
         stopControlsHideTimer()
         setControlsVisible(false, animated: animated)
@@ -150,13 +131,7 @@ extension NCVideoVLCViewController {
             return
         }
 
-        UIView.animate(
-            withDuration: 0.22,
-            delay: 0,
-            options: [.beginFromCurrentState, .curveEaseInOut],
-            animations: changes,
-            completion: completion
-        )
+        UIView.animate(withDuration: 0.22, delay: 0, options: [.beginFromCurrentState, .curveEaseInOut], animations: changes, completion: completion)
     }
 
     internal func scheduleControlsHide() {
@@ -170,10 +145,7 @@ extension NCVideoVLCViewController {
             return
         }
 
-        controlsHideTimer = Timer.scheduledTimer(
-            withTimeInterval: 3.0,
-            repeats: false
-        ) { [weak self] _ in
+        controlsHideTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { [weak self] _ in
             Task { @MainActor in
                 guard let self,
                       !self.playbackPresentationContext.isSeeking else {
@@ -285,9 +257,7 @@ extension NCVideoVLCViewController: NCVideoControlsViewDelegate {
         let duration = mediaPlayer.media?.length.intValue ?? 0
 
         if duration > 0 {
-            let targetTime = Int32(
-                (Float(duration) * progress).rounded()
-            )
+            let targetTime = Int32((Float(duration) * progress).rounded())
             mediaPlayer.time = VLCTime(int: targetTime)
         } else {
             mediaPlayer.position = progress

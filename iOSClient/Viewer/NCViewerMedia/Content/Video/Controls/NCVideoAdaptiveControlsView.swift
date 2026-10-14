@@ -10,7 +10,12 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
     // MARK: - Public
 
     weak var delegate: NCVideoControlsViewDelegate?
-    let foldedNavigationBar = UINavigationBar()
+    let actionsContainerView = UIView()
+    let pagingFooterView = UIView()
+    private var pagingModel: NCMediaViewerModel?
+    private var onSelectPage: ((_ index: Int) -> Void)?
+    private var pagingFooterController: UIHostingController<NCMediaAdaptivePagingFooterView>?
+    private var hostingBottomConstraint: NSLayoutConstraint?
 
     // MARK: - Hit Test Proxies
 
@@ -18,28 +23,16 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
     let bottomControlsView = UIView()
     let topActionsView = UIView()
 
-    // MARK: - Layout Constants
-
-    fileprivate static let centerControlsWidth: CGFloat = 220
-    fileprivate static let centerControlsHeight: CGFloat = 76
-    fileprivate static let bottomControlsHeight: CGFloat = 45
-    fileprivate static let bottomControlsHorizontalInset: CGFloat = 28
-    fileprivate static let bottomControlsBottomInset: CGFloat = 30
-    fileprivate static let topActionsHeight: CGFloat = 46
-    fileprivate static let topActionsHorizontalInset: CGFloat = 28
-    fileprivate static let topActionsButtonSize: CGFloat = 38
-    fileprivate static let topActionsSpacing: CGFloat = 8
-
     // MARK: - State
 
     // Keep the hosted hierarchy stable so playback updates do not dismiss an open menu.
     let state: NCVideoControlsState
     private let layoutState = NCVideoControlsLayoutState()
-    private var topActionsTopConstraint: NSLayoutConstraint?
+    private var topActionsWidthConstraint: NSLayoutConstraint?
 
-    private lazy var hostingController = UIHostingController(
-        rootView: makeRootView()
-    )
+    private lazy var hostingController = UIHostingController(rootView: makeRootView())
+    private lazy var playbackOptionsHostingController = UIHostingController(rootView: makeRootView(isTopActionsOnly: true, showsPlaybackOptions: true))
+    private lazy var topActionsHostingController = UIHostingController(rootView: makeRootView(isTopActionsOnly: true))
 
     // MARK: - Init
 
@@ -59,6 +52,30 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
         state = NCVideoControlsState()
         super.init(coder: coder)
         configureLayout()
+    }
+
+    /// Called only for the folded player; normal controls never create this footer.
+    func configurePaging(model: NCMediaViewerModel?, onSelectPage: @escaping (_ index: Int) -> Void) {
+        pagingModel = model
+        self.onSelectPage = onSelectPage
+        guard let model else {
+            pagingFooterController?.view.removeFromSuperview()
+            pagingFooterController = nil
+            setNeedsLayout()
+            return
+        }
+        let root = NCMediaAdaptivePagingFooterView(model: model, navigationHeight: NCMediaAdaptiveControlsLayout.actionsHeight, onSelectPage: onSelectPage)
+        if let pagingFooterController {
+            pagingFooterController.rootView = root
+        } else {
+            let controller = UIHostingController(rootView: root)
+            controller.overrideUserInterfaceStyle = .dark
+            controller.safeAreaRegions = []
+            controller.view.backgroundColor = .clear
+            pagingFooterView.addSubview(controller.view)
+            pagingFooterController = controller
+        }
+        setNeedsLayout()
     }
 
     // MARK: - Public Updates
@@ -119,6 +136,8 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
             state.topActionsMode = mode
         }
 
+        updateTopActionsWidth()
+
         if mode != .vlcTracks, hasTrackItems {
             state.subtitleTrackItems = []
             state.audioTrackItems = []
@@ -141,57 +160,116 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
         state.audioTrackItems = items
     }
 
-    func configureFoldedNavigation(titleView: UIView, closeAction: UIAction, moreItem: UIBarButtonItem) {
-        let item = UINavigationItem()
-        item.titleView = titleView
-        item.leftBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "chevron.backward"),
-            primaryAction: closeAction
-        )
-        item.rightBarButtonItem = moreItem
-        foldedNavigationBar.setItems([item], animated: false)
+    func configureAdaptiveActions(closeAction: UIAction, moreButton: UIButton) {
+        actionsContainerView.subviews.forEach { $0.removeFromSuperview() }
+        let actionsView = NCMediaAdaptiveActionsView(closeAction: closeAction, moreButton: moreButton)
+        for controller in [playbackOptionsHostingController, topActionsHostingController] {
+            controller.overrideUserInterfaceStyle = .dark
+            controller.safeAreaRegions = []
+            controller.view.backgroundColor = .clear
+            controller.view.translatesAutoresizingMaskIntoConstraints = false
+        }
+        let playbackOptions = playbackOptionsHostingController.view!
+        let playerOptions = topActionsHostingController.view!
+        actionsView.insertVideoActions(playbackOptions: playbackOptions, playerOptions: playerOptions)
+        let widthConstraint = playerOptions.widthAnchor.constraint(equalToConstant: 0)
+        topActionsWidthConstraint = widthConstraint
+        NSLayoutConstraint.activate([
+            playbackOptions.widthAnchor.constraint(equalToConstant: NCMediaAdaptiveControlsLayout.actionsHeight * 2 + NCMediaAdaptiveControlsLayout.spacing),
+            playbackOptions.heightAnchor.constraint(equalToConstant: NCMediaAdaptiveControlsLayout.actionsHeight),
+            widthConstraint,
+            playerOptions.heightAnchor.constraint(equalToConstant: NCMediaAdaptiveControlsLayout.actionsHeight)
+        ])
+        updateTopActionsWidth()
+        actionsView.overrideUserInterfaceStyle = .dark
+        actionsView.translatesAutoresizingMaskIntoConstraints = false
+        actionsContainerView.addSubview(actionsView)
+        NSLayoutConstraint.activate([
+            actionsView.leadingAnchor.constraint(equalTo: actionsContainerView.leadingAnchor),
+            actionsView.trailingAnchor.constraint(equalTo: actionsContainerView.trailingAnchor),
+            actionsView.topAnchor.constraint(equalTo: actionsContainerView.topAnchor),
+            actionsView.bottomAnchor.constraint(equalTo: actionsContainerView.bottomAnchor)
+        ])
     }
 
-    // Keeps top actions aligned below the real navigation bar.
+    func setFileName(_ name: String, account: String = "") {
+        (actionsContainerView.subviews.first as? NCMediaAdaptiveActionsView)?.setFileName(name)
+        if layoutState.account != account { layoutState.account = account }
+    }
+
+    // Adaptive actions are already in the standalone header.
     func setTopActionsNavigationBar(_ navigationBar: UINavigationBar?) {
-        updateTopActionsPosition()
+        setNeedsLayout()
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        foldedNavigationBar.frame = CGRect(
-            x: 0,
-            y: safeAreaInsets.top,
-            width: bounds.width,
-            height: 44
+        let spacing = NCMediaAdaptiveControlsLayout.spacing
+        actionsContainerView.frame = CGRect(
+            x: spacing, y: safeAreaInsets.top + spacing,
+            width: max(0, bounds.width - spacing * 2), height: NCMediaAdaptiveActionsView.preferredHeight
         )
-        updateTopActionsPosition()
+        updatePagingFooterLayout()
+        updateTopActionsWidth()
+        let contentTop = actionsContainerView.frame.maxY + spacing
+        if layoutState.topActionsTopOffset != contentTop { layoutState.topActionsTopOffset = contentTop }
+        let contentBottom = max(contentTop, bounds.height - (hostingBottomConstraint.map { -$0.constant } ?? 0))
+        let contentHeight = max(0, contentBottom - contentTop)
+        let progressHeight = min(NCMediaAdaptiveControlsLayout.actionsHeight, max(0, contentHeight - spacing))
+        centerControlsView.frame = CGRect(x: spacing, y: contentTop, width: max(0, bounds.width - spacing * 2), height: max(0, contentHeight - progressHeight - spacing))
+        bottomControlsView.frame = CGRect(x: spacing, y: contentBottom - progressHeight, width: max(0, bounds.width - spacing * 2), height: progressHeight)
+        topActionsView.frame = actionsContainerView.frame
+    }
+
+    private func updatePagingFooterLayout() {
+        var footerHeight: CGFloat = 0
+        if let model = pagingModel, let onSelectPage, let controller = pagingFooterController {
+            // Same middle-area budget and navigation height as paged image/audio controls.
+            let middleHeight = NCMediaAdaptiveControlsLayout.middleHeight(panelHeight: bounds.height)
+            let navigationHeight = NCMediaAdaptiveControlsLayout.navigationHeight(availableHeight: middleHeight)
+            footerHeight = NCMediaAdaptiveControlsLayout.footerHeight(navigationHeight: navigationHeight)
+            if controller.rootView.navigationHeight != navigationHeight {
+                controller.rootView = NCMediaAdaptivePagingFooterView(model: model, navigationHeight: navigationHeight, onSelectPage: onSelectPage)
+            }
+            pagingFooterView.frame = CGRect(x: 0, y: max(0, bounds.height - footerHeight), width: bounds.width, height: footerHeight)
+            controller.view.frame = pagingFooterView.bounds
+        } else {
+            pagingFooterView.frame = .zero
+        }
+        hostingBottomConstraint?.constant = -footerHeight
     }
 
     // MARK: - Configuration
 
     private func configureLayout() {
+        // Presented adaptive video always uses black, including when controls are visible.
+        overrideUserInterfaceStyle = .dark
         backgroundColor = .clear
         translatesAutoresizingMaskIntoConstraints = false
 
         configureHostingView()
         configureHitTestProxyViews()
-        foldedNavigationBar.isHidden = false
-        addSubview(foldedNavigationBar)
+        actionsContainerView.isHidden = false
+        addSubview(actionsContainerView)
+        addSubview(pagingFooterView)
     }
 
     private func configureHostingView() {
+        hostingController.overrideUserInterfaceStyle = .dark
+        hostingController.safeAreaRegions = []
         let hostingView = hostingController.view!
         hostingView.backgroundColor = .clear
         hostingView.translatesAutoresizingMaskIntoConstraints = false
 
         addSubview(hostingView)
 
+        let bottomConstraint = hostingView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        hostingBottomConstraint = bottomConstraint
         NSLayoutConstraint.activate([
             hostingView.leadingAnchor.constraint(equalTo: leadingAnchor),
             hostingView.trailingAnchor.constraint(equalTo: trailingAnchor),
             hostingView.topAnchor.constraint(equalTo: topAnchor),
-            hostingView.bottomAnchor.constraint(equalTo: bottomAnchor)
+            bottomConstraint
         ])
     }
 
@@ -199,61 +277,22 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
         [centerControlsView, bottomControlsView, topActionsView].forEach { proxyView in
             proxyView.backgroundColor = .clear
             proxyView.isUserInteractionEnabled = false
-            proxyView.translatesAutoresizingMaskIntoConstraints = false
             addSubview(proxyView)
         }
-
-        let topActionsTopConstraint = topActionsView.topAnchor.constraint(equalTo: topAnchor)
-        self.topActionsTopConstraint = topActionsTopConstraint
-
-        NSLayoutConstraint.activate([
-            centerControlsView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            centerControlsView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            centerControlsView.widthAnchor.constraint(equalToConstant: Self.centerControlsWidth),
-            centerControlsView.heightAnchor.constraint(equalToConstant: Self.centerControlsHeight),
-
-            bottomControlsView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Self.bottomControlsHorizontalInset),
-            bottomControlsView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Self.bottomControlsHorizontalInset),
-            bottomControlsView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -Self.bottomControlsBottomInset),
-            bottomControlsView.heightAnchor.constraint(equalToConstant: Self.bottomControlsHeight),
-
-            topActionsView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            topActionsView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            topActionsTopConstraint,
-            topActionsView.heightAnchor.constraint(equalToConstant: Self.topActionsHeight)
-        ])
     }
 
-    private func updateTopActionsPosition() {
-        guard let topActionsTopConstraint else {
-            return
-        }
-
-        let topOffset: CGFloat
-
-        let navigationBar = foldedNavigationBar
-        if !navigationBar.isHidden {
-            let navigationFrame = navigationBar.convert(
-                navigationBar.bounds,
-                to: self
-            )
-            topOffset = max(safeAreaInsets.top, navigationFrame.maxY)
-        } else {
-            topOffset = safeAreaInsets.top
-        }
-
-        guard layoutState.topActionsTopOffset != topOffset else {
-            return
-        }
-
-        layoutState.topActionsTopOffset = topOffset
-        topActionsTopConstraint.constant = topOffset
+    private func updateTopActionsWidth() {
+        let hasPlayerOptions = state.topActionsMode != .none
+        topActionsHostingController.view.isHidden = !hasPlayerOptions
+        topActionsWidthConstraint?.constant = hasPlayerOptions ? NCMediaAdaptiveControlsLayout.actionsHeight * 2 + NCMediaAdaptiveControlsLayout.spacing : 0
     }
 
-    private func makeRootView() -> NCVideoAdaptiveControlsSwiftUIView {
+    private func makeRootView(isTopActionsOnly: Bool = false, showsPlaybackOptions: Bool = false) -> NCVideoAdaptiveControlsSwiftUIView {
         NCVideoAdaptiveControlsSwiftUIView(
             state: state,
             layoutState: layoutState,
+            isTopActionsOnly: isTopActionsOnly,
+            showsPlaybackOptions: showsPlaybackOptions,
             onSeekBackward: { [weak self] in
                 guard let self else {
                     return
@@ -337,6 +376,8 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
 private struct NCVideoAdaptiveControlsSwiftUIView: View {
     @ObservedObject var state: NCVideoControlsState
     @ObservedObject var layoutState: NCVideoControlsLayoutState
+    let isTopActionsOnly: Bool
+    let showsPlaybackOptions: Bool
     let onSeekBackward: () -> Void
     let onPlayPause: () -> Void
     let onSeekForward: () -> Void
@@ -353,87 +394,39 @@ private struct NCVideoAdaptiveControlsSwiftUIView: View {
     @State private var currentScrubProgress: Double?
 
     var body: some View {
-        GeometryReader { proxy in
-            ZStack {
-                centerControls
-                    .position(
-                        x: proxy.size.width / 2,
-                        y: proxy.size.height / 2
-                    )
-
-                bottomControls
-                    .frame(height: NCVideoAdaptiveControlsView.bottomControlsHeight)
-                    .padding(.horizontal, NCVideoAdaptiveControlsView.bottomControlsHorizontalInset)
-                    .position(
-                        x: proxy.size.width / 2,
-                        y: proxy.size.height - proxy.safeAreaInsets.bottom - NCVideoAdaptiveControlsView.bottomControlsBottomInset - (NCVideoAdaptiveControlsView.bottomControlsHeight / 2)
-                    )
-
-                topActions
-                    .frame(height: NCVideoAdaptiveControlsView.topActionsHeight)
-                    .position(
-                        x: topActionsCenterX,
-                        y: layoutState.topActionsTopOffset + (NCVideoAdaptiveControlsView.topActionsHeight / 2)
-                    )
+        if isTopActionsOnly {
+            topActions
+        } else {
+            GeometryReader { proxy in
+                let spacing = NCMediaAdaptiveControlsLayout.spacing
+                let contentTop = layoutState.topActionsTopOffset
+                let contentHeight = max(0, proxy.size.height - contentTop)
+                let progressHeight = min(NCMediaAdaptiveControlsLayout.actionsHeight, max(0, contentHeight - spacing))
+                VStack(spacing: spacing) {
+                    centerControls
+                        .frame(maxHeight: .infinity)
+                    bottomControls
+                        .frame(height: progressHeight)
+                        .layoutPriority(1)
+                }
+                .frame(height: contentHeight)
+                .padding(.horizontal, spacing)
+                .padding(.top, contentTop)
+                .clipped()
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .background(Color.clear)
-    }
-
-    private var topActionsCenterX: CGFloat {
-        let visibleButtonsCount: CGFloat
-
-        switch state.topActionsMode {
-        case .none:
-            visibleButtonsCount = 2
-        case .pictureInPicture:
-            visibleButtonsCount = 4
-        case .vlcTracks:
-            visibleButtonsCount = 4
-        }
-
-        let totalWidth = (visibleButtonsCount * NCVideoAdaptiveControlsView.topActionsButtonSize) + (max(0, visibleButtonsCount - 1) * NCVideoAdaptiveControlsView.topActionsSpacing)
-        return NCVideoAdaptiveControlsView.topActionsHorizontalInset + (totalWidth / 2)
     }
 
     private var centerControls: some View {
-        HStack(spacing: 28) {
-            circleButton(
-                systemName: "gobackward.10",
-                size: 44,
-                pointSize: 22,
-                isEnabled: state.isSeekingEnabled,
-                action: onSeekBackward
-            )
-
-            circleButton(
-                systemName: state.isPlaying ? "pause.fill" : "play.fill",
-                size: 62,
-                pointSize: 36,
-                isEnabled: true,
-                action: onPlayPause
-            )
-
-            circleButton(
-                systemName: "goforward.10",
-                size: 44,
-                pointSize: 22,
-                isEnabled: state.isSeekingEnabled,
-                action: onSeekForward
-            )
+        HStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
+            controlButton(systemName: "gobackward.10", title: "_seek_backward_10_", isEnabled: state.isSeekingEnabled, action: onSeekBackward)
+            controlButton(systemName: state.isPlaying ? "pause.fill" : "play.fill", title: state.isPlaying ? "_pause_" : "_play_", isEnabled: true, action: onPlayPause)
+            controlButton(systemName: "goforward.10", title: "_seek_forward_10_", isEnabled: state.isSeekingEnabled, action: onSeekForward)
         }
-        .frame(
-            width: NCVideoAdaptiveControlsView.centerControlsWidth,
-            height: NCVideoAdaptiveControlsView.centerControlsHeight
-        )
     }
 
     private var bottomControls: some View {
-        HStack(spacing: NCVideoAdaptiveControlsView.topActionsSpacing) {
-            timeLabel(state.elapsedText)
-                .frame(width: 54)
-
+        HStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
             Slider(
                 value: Binding(
                     get: {
@@ -457,75 +450,63 @@ private struct NCVideoAdaptiveControlsSwiftUIView: View {
                 }
             )
             .disabled(!state.isSeekingEnabled)
-            .tint(.gray)
+            .tint(Color.ncViewerPlaybackProgressTint(account: layoutState.account))
             .opacity(state.isSeekingEnabled ? 1 : 0.45)
 
-            timeLabel(state.remainingText)
-                .frame(width: 58)
+            timeLabel(state.remainingText.trimmingCharacters(in: CharacterSet(charactersIn: "−-")))
+                .fixedSize()
         }
-        .padding(.horizontal, 18)
+        .padding(.horizontal, 12)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .controlGlassBackground(shape: Capsule(), isInteractive: false)
-        .contentShape(Capsule())
+        .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 16))
+        .contentShape(RoundedRectangle(cornerRadius: 16))
     }
 
     private var topActions: some View {
-        HStack(spacing: NCVideoAdaptiveControlsView.topActionsSpacing) {
-            Button(action: onToggleRepeat) {
-                topActionIcon(
-                    systemName: state.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1",
-                    pointSize: 17
-                )
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(NSLocalizedString("_repeat_current_media_", comment: ""))
-
-            Button(action: onToggleAutoAdvance) {
-                topActionIcon(
-                    systemName: state.isAutoAdvanceEnabled ? "forward.end.fill" : "forward.end",
-                    pointSize: 17
-                )
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(NSLocalizedString("_play_next_media_automatically_", comment: ""))
-
-            switch state.topActionsMode {
-            case .none:
-                EmptyView()
-
-            case .pictureInPicture:
-                Button(action: onPictureInPicture) {
-                    topActionIcon(
-                        systemName: "pip.enter",
-                        pointSize: 18
-                    )
+        HStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
+            if showsPlaybackOptions {
+                Button(action: onToggleRepeat) {
+                    topActionIcon(systemName: state.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1", pointSize: 17)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(NSLocalizedString("_repeat_current_media_", comment: ""))
 
-                NCVideoAirPlayRoutePickerView()
-                    .frame(
-                        width: NCVideoAdaptiveControlsView.topActionsButtonSize,
-                        height: NCVideoAdaptiveControlsView.topActionsButtonSize
+                Button(action: onToggleAutoAdvance) {
+                    topActionIcon(systemName: state.isAutoAdvanceEnabled ? "forward.end.fill" : "forward.end", pointSize: 17)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(NSLocalizedString("_play_next_media_automatically_", comment: ""))
+
+            } else {
+                switch state.topActionsMode {
+                case .none:
+                    EmptyView()
+
+                case .pictureInPicture:
+                    Button(action: onPictureInPicture) {
+                        topActionIcon(systemName: "pip.enter", pointSize: 18)
+                    }
+                    .buttonStyle(.plain)
+
+                    NCVideoAirPlayRoutePickerView()
+                        .frame(width: NCMediaAdaptiveControlsLayout.actionsHeight, height: NCMediaAdaptiveControlsLayout.actionsHeight)
+                        .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 12))
+
+                case .vlcTracks:
+                    subtitleActionMenu(
+                        systemName: "character.bubble",
+                        pointSize: 17,
+                        items: state.subtitleTrackItems,
+                        emptyTitle: "_no_subtitles_available_",
+                        onSelect: onSubtitleTrackSelected,
+                        onAddExternalSubtitle: onAddExternalSubtitle
                     )
-                    .controlGlassBackground(shape: Circle())
 
-            case .vlcTracks:
-                subtitleActionMenu(
-                    systemName: "captions.bubble",
-                    pointSize: 17,
-                    items: state.subtitleTrackItems,
-                    emptyTitle: "_no_subtitles_available_",
-                    onSelect: onSubtitleTrackSelected,
-                    onAddExternalSubtitle: onAddExternalSubtitle
-                )
-
-                topActionMenu(
-                    systemName: "speaker.wave.2",
-                    pointSize: 17,
-                    items: state.audioTrackItems,
-                    emptyTitle: "_no_audio_tracks_available_",
-                    onSelect: onAudioTrackSelected
-                )
+                    topActionMenu(
+                        systemName: "speaker.wave.2", pointSize: 17, items: state.audioTrackItems,
+                        emptyTitle: "_no_audio_tracks_available_", onSelect: onAudioTrackSelected
+                    )
+                }
             }
         }
     }
@@ -562,16 +543,10 @@ private struct NCVideoAdaptiveControlsSwiftUIView: View {
             Button {
                 onAddExternalSubtitle()
             } label: {
-                Label(
-                    NSLocalizedString("_add_external_subtitle_", comment: ""),
-                    systemImage: "plus"
-                )
+                Label(NSLocalizedString("_add_external_subtitle_", comment: ""), systemImage: "plus")
             }
         } label: {
-            topActionIcon(
-                systemName: systemName,
-                pointSize: pointSize
-            )
+            topActionIcon(systemName: systemName, pointSize: pointSize)
         }
         .buttonStyle(.plain)
     }
@@ -602,64 +577,41 @@ private struct NCVideoAdaptiveControlsSwiftUIView: View {
                 }
             }
         } label: {
-            topActionIcon(
-                systemName: systemName,
-                pointSize: pointSize
-            )
+            topActionIcon(systemName: systemName, pointSize: pointSize)
         }
         .buttonStyle(.plain)
     }
 
     private func topActionIcon(systemName: String, pointSize: CGFloat) -> some View {
         Image(systemName: systemName)
-            .font(.system(size: pointSize, weight: .regular))
-            .foregroundStyle(.primary)
-            .frame(
-                width: NCVideoAdaptiveControlsView.topActionsButtonSize,
-                height: NCVideoAdaptiveControlsView.topActionsButtonSize
-            )
-            .controlGlassBackground(shape: Circle())
+            .font(.system(size: pointSize, weight: .bold))
+            .foregroundStyle(Color.ncViewerAdaptiveControlForeground)
+            .frame(width: NCMediaAdaptiveControlsLayout.actionsHeight, height: NCMediaAdaptiveControlsLayout.actionsHeight)
+            .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 12))
     }
 
-    private func circleButton(systemName: String, size: CGFloat, pointSize: CGFloat, isEnabled: Bool, action: @escaping () -> Void) -> some View {
-        Button {
-            guard isEnabled else {
-                return
-            }
-
-            action()
-        } label: {
+    private func controlButton(systemName: String, title: String, isEnabled: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
             Image(systemName: systemName)
-                .font(.system(size: pointSize, weight: .regular))
-                .foregroundStyle(.primary)
-                .frame(width: size, height: size)
-                .controlGlassBackground(shape: Circle())
+                .font(.system(size: 44))
+                .fontWeight(.regular)
+                .foregroundStyle(Color.ncViewerAdaptiveControlForeground)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 16))
         }
         .buttonStyle(.plain)
-        .transaction { transaction in
-            transaction.animation = nil
-        }
+        .disabled(!isEnabled)
+        .opacity(isEnabled ? 1 : 0.45)
+        .accessibilityLabel(NSLocalizedString(title, comment: ""))
+        .transaction { $0.animation = nil }
     }
 
     private func timeLabel(_ text: String) -> some View {
         Text(text)
-            .font(.system(size: 15, weight: .medium, design: .rounded).monospacedDigit())
-            .foregroundStyle(.secondary)
+            .font(.subheadline.monospacedDigit())
+            .fontWeight(.bold)
+            .foregroundStyle(Color.ncViewerAdaptiveControlForeground)
             .lineLimit(1)
             .minimumScaleFactor(0.85)
-    }
-}
-
-private extension View {
-    @ViewBuilder
-    func controlGlassBackground<BackgroundShape: Shape>(shape: BackgroundShape, isInteractive: Bool = true) -> some View {
-        if #available(iOS 26.0, *) {
-            self
-                .glassEffect(.regular.interactive(isInteractive), in: shape)
-        } else {
-            self
-                .background(.regularMaterial)
-                .clipShape(shape)
-        }
     }
 }

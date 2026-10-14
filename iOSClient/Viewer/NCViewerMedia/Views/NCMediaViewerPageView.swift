@@ -17,10 +17,7 @@ struct NCMediaViewerPageView: View {
     let canGoNext: Bool
     let onPreviousPage: (_ shouldAutoPlay: Bool) -> Void
     let onNextPage: (_ shouldAutoPlay: Bool) -> Void
-    let onNextMediaOfSameType: (
-        _ classFile: String,
-        _ completion: @escaping NCMediaPlaybackAdvanceCompletion
-    ) -> Void
+    let onNextMediaOfSameType: (_ classFile: String, _ completion: @escaping NCMediaPlaybackAdvanceCompletion) -> Void
     let onClose: (_ ocId: String?) -> Void
     let onAutoPlayConsumed: () -> Void
     let onZoomChanged: (Bool) -> Void
@@ -50,35 +47,19 @@ struct NCMediaViewerPageView: View {
                 metadataMissingView
 
             case .image(let previewURL, let localURL, let livePhotoURL, _):
-                imageStateView(
-                    previewURL: previewURL,
-                    localURL: localURL,
-                    livePhotoURL: livePhotoURL
-                )
+                imageStateView(previewURL: previewURL, localURL: localURL, livePhotoURL: livePhotoURL)
 
             case .video(let localURL, let previewURL):
-                videoStateView(
-                    localURL: localURL,
-                    previewURL: previewURL
-                )
+                videoStateView(localURL: localURL, previewURL: previewURL)
 
             case .audio(let localURL, let previewURL):
-                audioStateView(
-                    localURL: localURL,
-                    previewURL: previewURL
-                )
+                audioStateView(localURL: localURL, previewURL: previewURL)
 
             case .downloading(let previewURL, let progress):
-                downloadingStateView(
-                    previewURL: previewURL,
-                    progress
-                )
+                downloadingStateView(previewURL: previewURL, progress)
 
             case .ready(let localURL, let previewURL):
-                genericReadyStateView(
-                    localURL: localURL,
-                    previewURL: previewURL
-                )
+                genericReadyStateView(localURL: localURL, previewURL: previewURL)
 
             case .deleted:
                 deletedView
@@ -87,10 +68,7 @@ struct NCMediaViewerPageView: View {
                     .gesture(chromeToggleGesture())
 
             case .failed(let previewURL, let message):
-                failedStateView(
-                    previewURL: previewURL,
-                    message
-                )
+                failedStateView(previewURL: previewURL, message)
             }
         }
         .background(Color.ncViewerBackground(backgroundStyle))
@@ -98,10 +76,7 @@ struct NCMediaViewerPageView: View {
     }
 
     private var backgroundStyle: NCViewerBackgroundStyle {
-        ncViewerBackgroundStyle(
-            for: page.metadata,
-            isChromeHidden: model.isChromeHidden
-        )
+        ncViewerBackgroundStyle(for: page.metadata, isChromeHidden: model.isChromeHidden)
     }
 
     // Neighbor pages must not consume auto-play.
@@ -114,9 +89,7 @@ struct NCMediaViewerPageView: View {
             return
         }
 
-        onPreviousPage(
-            isSelected && requestedAutoPlay
-        )
+        onPreviousPage(isSelected && requestedAutoPlay)
     }
 
     private func goToNextPage(_ requestedAutoPlay: Bool) {
@@ -124,9 +97,7 @@ struct NCMediaViewerPageView: View {
             return
         }
 
-        onNextPage(
-            isSelected && requestedAutoPlay
-        )
+        onNextPage(isSelected && requestedAutoPlay)
     }
 
     private func consumeAutoPlayIfNeeded() {
@@ -181,12 +152,7 @@ struct NCMediaViewerPageView: View {
     @ViewBuilder
     private func imageStateView(previewURL: URL?, localURL: URL?, livePhotoURL: URL?) -> some View {
         if previewURL != nil || localURL != nil {
-            imageContentView(
-                previewURL: previewURL,
-                localURL: localURL,
-                livePhotoURL: livePhotoURL,
-                backgroundStyle: backgroundStyle
-            )
+            imageContentView(previewURL: previewURL, localURL: localURL, livePhotoURL: livePhotoURL, backgroundStyle: backgroundStyle)
         } else {
             imagePlaceholderView
         }
@@ -197,13 +163,13 @@ struct NCMediaViewerPageView: View {
         if let metadata = page.metadata {
             NCVideoViewerContentView(
                 metadata: metadata,
+                mediaViewerModel: model,
                 localURL: localURL,
                 previewURL: previewURL,
                 userAgent: userAgent,
                 isSelected: isSelected,
                 isChromeHidden: model.isChromeHidden,
                 contextMenuController: contextMenuController,
-                navigationBar: navigationBar,
                 canGoPrevious: canGoPrevious,
                 canGoNext: canGoNext,
                 shouldAutoPlay: effectiveShouldAutoPlay,
@@ -212,10 +178,7 @@ struct NCMediaViewerPageView: View {
                 onPreviousPage: goToPreviousPageFromVideo,
                 onNextPage: goToNextPageFromVideo,
                 onPlayNextMedia: { [onNextMediaOfSameType] completion in
-                    onNextMediaOfSameType(
-                        NKTypeClassFile.video.rawValue,
-                        completion
-                    )
+                    onNextMediaOfSameType(NKTypeClassFile.video.rawValue, completion)
                 },
                 onAutoPlayConsumed: consumeAutoPlayIfNeeded,
                 onToggleChrome: onToggleChrome,
@@ -251,10 +214,7 @@ struct NCMediaViewerPageView: View {
                 onPrevious: goToPreviousPage,
                 onNext: goToNextPage,
                 onPlayNextMedia: { [onNextMediaOfSameType] completion in
-                    onNextMediaOfSameType(
-                        NKTypeClassFile.audio.rawValue,
-                        completion
-                    )
+                    onNextMediaOfSameType(NKTypeClassFile.audio.rawValue, completion)
                 },
                 onAutoPlayConsumed: consumeAutoPlayIfNeeded,
                 onToggleChrome: onToggleChrome
@@ -270,10 +230,7 @@ struct NCMediaViewerPageView: View {
         switch page.metadata?.classFile {
         case NKTypeClassFile.video.rawValue:
             if isSelected {
-                videoStateView(
-                    localURL: nil,
-                    previewURL: previewURL
-                )
+                videoStateView(localURL: nil, previewURL: previewURL)
             } else {
                 Color.ncViewerBackground(backgroundStyle)
                     .ignoresSafeArea()
@@ -300,24 +257,13 @@ struct NCMediaViewerPageView: View {
         if let metadata = page.metadata {
             switch metadata.classFile {
             case NKTypeClassFile.video.rawValue:
-                videoStateView(
-                    localURL: localURL,
-                    previewURL: previewURL
-                )
+                videoStateView(localURL: localURL, previewURL: previewURL)
 
             case NKTypeClassFile.audio.rawValue:
-                audioStateView(
-                    localURL: localURL,
-                    previewURL: previewURL
-                )
+                audioStateView(localURL: localURL, previewURL: previewURL)
 
             default:
-                imageContentView(
-                    previewURL: previewURL,
-                    localURL: localURL,
-                    livePhotoURL: nil,
-                    backgroundStyle: backgroundStyle
-                )
+                imageContentView(previewURL: previewURL, localURL: localURL, livePhotoURL: nil, backgroundStyle: backgroundStyle)
             }
         } else {
             metadataMissingView
@@ -408,9 +354,7 @@ struct NCMediaViewerPageView: View {
                         return nil
                     }
 
-                    return await model.downloadLivePhotoResources(
-                        for: metadata
-                    )
+                    return await model.downloadLivePhotoResources(for: metadata)
                 },
                 cancelResourceDownload: {
                     guard let metadata = page.metadata else {
@@ -456,9 +400,7 @@ struct NCMediaViewerPageView: View {
     // Keep double tap reserved for image zoom.
     private func chromeToggleGesture() -> some Gesture {
         TapGesture(count: 2)
-            .exclusively(
-                before: TapGesture(count: 1)
-            )
+            .exclusively(before: TapGesture(count: 1))
             .onEnded { value in
                 switch value {
                 case .first:

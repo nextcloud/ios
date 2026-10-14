@@ -16,21 +16,11 @@ extension NCVideoAVPlayerViewController {
         }
 
         let currentTime = player.currentTime().seconds
-        let targetSeconds = max(
-            0,
-            min(duration, currentTime + seconds)
-        )
+        let targetSeconds = max(0, min(duration, currentTime + seconds))
 
-        let targetTime = CMTime(
-            seconds: targetSeconds,
-            preferredTimescale: 600
-        )
+        let targetTime = CMTime(seconds: targetSeconds, preferredTimescale: 600)
 
-        player.seek(
-            to: targetTime,
-            toleranceBefore: .zero,
-            toleranceAfter: .zero
-        ) { [weak self] _ in
+        player.seek(to: targetTime, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] _ in
             Task { @MainActor in
                 self?.updateProgressControls()
                 self?.scheduleControlsHide()
@@ -46,27 +36,15 @@ extension NCVideoAVPlayerViewController {
     func showControls(animated: Bool) {
         guard !isPictureInPictureActive else {
             updateViewerBackground(isChromeHidden: true)
-            setControlsVisible(
-                false,
-                animated: false
-            )
-            setNavigationBarVisible(
-                false,
-                animated: false
-            )
+            setControlsVisible(false, animated: false)
+            setNavigationBarVisible(false, animated: false)
             return
         }
 
         updateViewerBackground(isChromeHidden: false)
 
-        setNavigationBarVisible(
-            true,
-            animated: animated
-        )
-        setControlsVisible(
-            true,
-            animated: animated
-        )
+        setNavigationBarVisible(true, animated: animated)
+        setControlsVisible(true, animated: animated)
     }
 
     func hideControls(animated: Bool) {
@@ -78,14 +56,8 @@ extension NCVideoAVPlayerViewController {
 
         updateViewerBackground(isChromeHidden: true)
 
-        setNavigationBarVisible(
-            false,
-            animated: animated
-        )
-        setControlsVisible(
-            false,
-            animated: animated
-        )
+        setNavigationBarVisible(false, animated: animated)
+        setControlsVisible(false, animated: animated)
     }
 
     private func setControlsVisible(_ visible: Bool, animated: Bool) {
@@ -110,11 +82,7 @@ extension NCVideoAVPlayerViewController {
         }
 
         if animated {
-            UIView.animate(
-                withDuration: 0.18,
-                animations: updates,
-                completion: completion
-            )
+            UIView.animate(withDuration: 0.18, animations: updates, completion: completion)
         } else {
             updates()
             completion(true)
@@ -136,10 +104,7 @@ extension NCVideoAVPlayerViewController {
             return
         }
 
-        controlsHideTimer = Timer.scheduledTimer(
-            withTimeInterval: 3,
-            repeats: false
-        ) { [weak self] _ in
+        controlsHideTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { [weak self] _ in
             Task { @MainActor in
                 guard let self,
                       !self.playbackPresentationContext.isSeeking else {
@@ -231,11 +196,7 @@ extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
 
         let targetTime = duration * Double(progress)
 
-        controlsView.updateProgress(
-            progress: progress,
-            elapsedText: Self.formatTime(targetTime),
-            remainingText: "−\(Self.formatTime(max(0, duration - targetTime)))"
-        )
+        controlsView.updateProgress(progress: progress, elapsedText: Self.formatTime(targetTime), remainingText: "−\(Self.formatTime(max(0, duration - targetTime)))")
     }
 
     func videoControlsDidEndScrubbing(_ controlsView: any NCVideoPlaybackControls, progress: Float) {
@@ -247,16 +208,9 @@ extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
             return
         }
 
-        let targetTime = CMTime(
-            seconds: duration * Double(progress),
-            preferredTimescale: 600
-        )
+        let targetTime = CMTime(seconds: duration * Double(progress), preferredTimescale: 600)
 
-        player.seek(
-            to: targetTime,
-            toleranceBefore: .zero,
-            toleranceAfter: .zero
-        ) { [weak self] _ in
+        player.seek(to: targetTime, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] _ in
             Task { @MainActor in
                 self?.playbackPresentationContext.finishSeeking()
                 self?.updateProgressControls()

@@ -160,6 +160,29 @@ class NCContextMenuViewer: NSObject {
         return item
     }
 
+    /// A standalone adaptive action; use its real button as the popover anchor.
+    static func mediaActionsButton(
+        viewController: UIViewController,
+        metadataProvider: @escaping () -> tableMetadata?,
+        controllerProvider: @escaping () -> NCMainTabBarController?
+    ) -> UIButton {
+        let button = UIButton(type: .system)
+        button.setImage(NCImageCache.shared.getImageButtonMore(), for: .normal)
+        button.accessibilityLabel = NSLocalizedString("_more_", comment: "")
+        button.showsMenuAsPrimaryAction = true
+        button.menu = UIMenu(children: [
+            UIDeferredMenuElement.uncached { [weak viewController, weak button] completion in
+                guard let viewController, let button, let metadata = metadataProvider() else {
+                    completion([])
+                    return
+                }
+                let contextMenu = NCContextMenuViewer(metadata: metadata, controller: controllerProvider(), viewController: viewController, webView: false, sender: button)
+                completion(contextMenu.mediaMenu().children)
+            }
+        ])
+        return button
+    }
+
     private func mediaMenu() -> UIMenu {
         var children = viewMenu()?.children ?? []
         if let videoPlayerMenu = makeVideoPlayerMenu() {

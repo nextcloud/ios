@@ -14,9 +14,10 @@ struct NCMediaViewerPagingView: UIViewRepresentable {
 
     let contextMenuController: NCMainTabBarController?
     let navigationBar: UINavigationBar?
-    let onVisibleMetadataChanged: (_ metadata: tableMetadata?, _ backgroundColor: UIColor) -> Void
+    let onVisibleMetadataChanged: (_ metadata: tableMetadata?) -> Void
     let onZoomChanged: (Bool) -> Void
     let onClose: (_ ocId: String?) -> Void
+    var adaptiveControlsState: NCMediaAdaptiveControlsState?
 
     // MARK: - UIViewRepresentable
 
@@ -26,12 +27,9 @@ struct NCMediaViewerPagingView: UIViewRepresentable {
         layout.minimumLineSpacing = 0
         layout.minimumInteritemSpacing = 0
 
-        let collectionView = NCMediaViewerCollectionView(
-            frame: .zero,
-            collectionViewLayout: layout
-        )
+        let collectionView = NCMediaViewerCollectionView(frame: .zero, collectionViewLayout: layout)
 
-        collectionView.backgroundColor = .black
+        collectionView.backgroundColor = .ncViewerBackground(ncViewerBackgroundStyle(for: model.selectedMetadata, isChromeHidden: model.isChromeHidden))
         collectionView.isPagingEnabled = true
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
@@ -42,10 +40,7 @@ struct NCMediaViewerPagingView: UIViewRepresentable {
         collectionView.dataSource = context.coordinator
         collectionView.delegate = context.coordinator
 
-        collectionView.register(
-            NCMediaViewerPagingCell.self,
-            forCellWithReuseIdentifier: NCMediaViewerPagingCell.reuseIdentifier
-        )
+        collectionView.register(NCMediaViewerPagingCell.self, forCellWithReuseIdentifier: NCMediaViewerPagingCell.reuseIdentifier)
 
         context.coordinator.collectionView = collectionView
 
@@ -64,6 +59,7 @@ struct NCMediaViewerPagingView: UIViewRepresentable {
 
     func updateUIView(_ collectionView: NCMediaViewerCollectionView, context: Context) {
         context.coordinator.model = model
+        context.coordinator.adaptiveControlsState = adaptiveControlsState
         context.coordinator.navigationBar = navigationBar
         context.coordinator.onVisibleMetadataChanged = onVisibleMetadataChanged
         context.coordinator.onZoomChanged = onZoomChanged
@@ -93,7 +89,8 @@ struct NCMediaViewerPagingView: UIViewRepresentable {
             navigationBar: navigationBar,
             onVisibleMetadataChanged: onVisibleMetadataChanged,
             onZoomChanged: onZoomChanged,
-            onClose: onClose
+            onClose: onClose,
+            adaptiveControlsState: adaptiveControlsState
         )
     }
 }
@@ -119,13 +116,20 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     weak var collectionView: UICollectionView?
     let contextMenuController: NCMainTabBarController?
     weak var navigationBar: UINavigationBar?
-    var onVisibleMetadataChanged: (_ metadata: tableMetadata?, _ backgroundColor: UIColor) -> Void
+    var onVisibleMetadataChanged: (_ metadata: tableMetadata?) -> Void
     var onZoomChanged: (Bool) -> Void
     var onClose: (_ ocId: String?) -> Void
+    var adaptiveControlsState: NCMediaAdaptiveControlsState? {
+        didSet {
+            guard adaptiveControlsState !== oldValue else { return }
+            observeAdaptiveBackground()
+        }
+    }
 
     private var didScrollToInitialIndex = false
     private var lastCollectionViewBoundsSize: CGSize = .zero
     private var cancellable: AnyCancellable?
+    private var adaptiveBackgroundCancellable: AnyCancellable?
     private var lastVisibleIndex: Int?
     private var isAdjustingLayout = false
 
@@ -135,9 +139,10 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         model: NCMediaViewerModel,
         contextMenuController: NCMainTabBarController?,
         navigationBar: UINavigationBar?,
-        onVisibleMetadataChanged: @escaping (_ metadata: tableMetadata?, _ backgroundColor: UIColor) -> Void,
+        onVisibleMetadataChanged: @escaping (_ metadata: tableMetadata?) -> Void,
         onZoomChanged: @escaping (Bool) -> Void,
-        onClose: @escaping (_ ocId: String?) -> Void
+        onClose: @escaping (_ ocId: String?) -> Void,
+        adaptiveControlsState: NCMediaAdaptiveControlsState? = nil
     ) {
         self.model = model
         self.contextMenuController = contextMenuController
@@ -145,8 +150,10 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         self.onVisibleMetadataChanged = onVisibleMetadataChanged
         self.onZoomChanged = onZoomChanged
         self.onClose = onClose
+        self.adaptiveControlsState = adaptiveControlsState
 
         super.init()
+        observeAdaptiveBackground()
 
         self.cancellable = model.$revision
             .receive(on: RunLoop.main)
@@ -158,6 +165,16 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                 self.refreshVisibleCells()
                 self.updateCollectionBackground()
                 self.updateVisibleMetadataTitle(for: self.model.selectedIndex)
+            }
+    }
+
+    private func observeAdaptiveBackground() {
+        adaptiveBackgroundCancellable = adaptiveControlsState?.$isFoldedLayout
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.updateCollectionBackground()
+                self?.refreshVisibleCells()
             }
     }
 
@@ -208,10 +225,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                 return
             }
 
-            self.scrollToIndex(
-                index,
-                animated: false
-            )
+            self.scrollToIndex(index, animated: false)
 
             DispatchQueue.main.async { [weak self] in
                 self?.isAdjustingLayout = false
@@ -222,12 +236,8 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     // MARK: - Background
 
     private func backgroundColor(for page: NCMediaViewerPageModel?) -> UIColor {
-        UIColor.ncViewerBackground(
-            ncViewerBackgroundStyle(
-                for: page?.metadata,
-                isChromeHidden: model.isChromeHidden
-            )
-        )
+        let style = ncViewerBackgroundStyle(for: page?.metadata, isChromeHidden: model.isChromeHidden)
+        return UIColor.ncViewerBackground(style)
     }
 
     func updateCollectionBackground(for index: Int? = nil) {
@@ -246,10 +256,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
         let page = model.pageModel(at: index)
 
-        onVisibleMetadataChanged(
-            page?.metadata,
-            backgroundColor(for: page)
-        )
+        onVisibleMetadataChanged(page?.metadata)
     }
 
     // MARK: - Initial Scroll
@@ -276,10 +283,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             return
         }
 
-        guard jumpToIndex(
-            index,
-            animated: animated
-        ) else {
+        guard jumpToIndex(index, animated: animated) else {
             return
         }
 
@@ -291,10 +295,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     }
 
     func scrollToCurrentIndex(animated: Bool) {
-        scrollToIndex(
-            model.selectedIndex,
-            animated: animated
-        )
+        scrollToIndex(model.selectedIndex, animated: animated)
     }
 
     func jumpToSelectedIndexIfNeeded(animated: Bool) {
@@ -319,10 +320,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             return
         }
 
-        scrollToIndex(
-            index,
-            animated: animated
-        )
+        scrollToIndex(index, animated: animated)
     }
 
     @discardableResult
@@ -351,10 +349,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         let shouldAnimate = animated &&
             abs(collectionView.contentOffset.x - targetOffsetX) > 0.5
 
-        guard jumpToIndex(
-            index,
-            animated: shouldAnimate
-        ) else {
+        guard jumpToIndex(index, animated: shouldAnimate) else {
             return false
         }
 
@@ -393,21 +388,11 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         }
 
         if animated {
-            collectionView.scrollToItem(
-                at: IndexPath(item: index, section: 0),
-                at: .centeredHorizontally,
-                animated: true
-            )
+            collectionView.scrollToItem(at: IndexPath(item: index, section: 0), at: .centeredHorizontally, animated: true)
         } else {
-            let targetOffset = CGPoint(
-                x: CGFloat(index) * collectionView.bounds.width,
-                y: 0
-            )
+            let targetOffset = CGPoint(x: CGFloat(index) * collectionView.bounds.width, y: 0)
 
-            collectionView.setContentOffset(
-                targetOffset,
-                animated: false
-            )
+            collectionView.setContentOffset(targetOffset, animated: false)
         }
 
         return true
@@ -427,10 +412,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                 continue
             }
 
-            configure(
-                cell: cell,
-                page: page
-            )
+            configure(cell: cell, page: page)
         }
     }
 
@@ -440,10 +422,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     private func moveToPage(offset: Int, shouldAutoPlay: Bool) -> Bool {
         let targetIndex = model.selectedIndex + offset
 
-        return moveToPage(
-            at: targetIndex,
-            shouldAutoPlay: shouldAutoPlay
-        )
+        return moveToPage(at: targetIndex, shouldAutoPlay: shouldAutoPlay)
     }
 
     @discardableResult
@@ -479,27 +458,18 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
         // Deactivate the source before publishing the viewer-wide stop. This
         // prevents synchronous player cleanup from reloading the source page.
-        model.beginPageTransition(
-            to: targetIndex,
-            shouldAutoPlay: shouldAutoPlay
-        )
+        model.beginPageTransition(to: targetIndex, shouldAutoPlay: shouldAutoPlay)
 
         // Stop the current media playback before programmatic page navigation.
         // This is intentionally broad because previous/next can move across image,
         // audio, AVPlayer, and VLC pages.
-        NotificationCenter.default.post(
-            name: .ncMediaViewerStopPlayback,
-            object: nil
-        )
+        NotificationCenter.default.post(name: .ncMediaViewerStopPlayback, object: nil)
 
         updateCollectionBackground(for: targetIndex)
         updateVisibleMetadataTitle(for: targetIndex)
         refreshVisibleCells()
 
-        guard scrollToIndex(
-            targetIndex,
-            animated: shouldAnimateTransition
-        ) else {
+        guard scrollToIndex(targetIndex, animated: shouldAnimateTransition) else {
             model.finishPageTransition(at: sourceIndex)
             updateCollectionBackground(for: sourceIndex)
             updateVisibleMetadataTitle(for: sourceIndex)
@@ -525,10 +495,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                 return
             }
 
-            guard let targetIndex = await model.nextMediaIndex(
-                after: sourceIndex,
-                matchingClassFile: classFile
-            ) else {
+            guard let targetIndex = await model.nextMediaIndex(after: sourceIndex, matchingClassFile: classFile) else {
                 completion(false)
                 return
             }
@@ -544,10 +511,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             }
 
             guard classFile == NKTypeClassFile.video.rawValue else {
-                let didMove = self.moveToPage(
-                    at: targetIndex,
-                    shouldAutoPlay: true
-                )
+                let didMove = self.moveToPage(at: targetIndex, shouldAutoPlay: true)
                 completion(didMove)
                 return
             }
@@ -577,10 +541,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                         return
                     }
 
-                    let didMove = self.moveToPage(
-                        at: targetIndex,
-                        shouldAutoPlay: true
-                    )
+                    let didMove = self.moveToPage(at: targetIndex, shouldAutoPlay: true)
 
                     if !didMove {
                         model.setChromeHidden(wasChromeHidden)
@@ -605,16 +566,10 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                 model?.toggleChromeVisibility()
             },
             onPreviousPage: { [weak self] shouldAutoPlay in
-                self?.moveToPage(
-                    offset: -1,
-                    shouldAutoPlay: shouldAutoPlay
-                )
+                self?.moveToPage(offset: -1, shouldAutoPlay: shouldAutoPlay)
             },
             onNextPage: { [weak self] shouldAutoPlay in
-                self?.moveToPage(
-                    offset: 1,
-                    shouldAutoPlay: shouldAutoPlay
-                )
+                self?.moveToPage(offset: 1, shouldAutoPlay: shouldAutoPlay)
             },
             onNextMediaOfSameType: { [weak self] classFile, completion in
                 guard let self else {
@@ -622,11 +577,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                     return
                 }
 
-                self.moveToNextMediaOfSameType(
-                    classFile: classFile,
-                    after: page.index,
-                    completion: completion
-                )
+                self.moveToNextMediaOfSameType(classFile: classFile, after: page.index, completion: completion)
             },
             onAutoPlayConsumed: { [weak model] in
                 model?.clearAutoPlayIfNeeded(for: page.index)
@@ -644,7 +595,8 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                 self?.onClose(ocId)
             },
             contextMenuController: contextMenuController,
-            navigationBar: navigationBar
+            navigationBar: navigationBar,
+            adaptiveControlsState: adaptiveControlsState
         )
     }
 
@@ -655,24 +607,16 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: NCMediaViewerPagingCell.reuseIdentifier,
-            for: indexPath
-        )
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NCMediaViewerPagingCell.reuseIdentifier, for: indexPath)
 
         guard let pagingCell = cell as? NCMediaViewerPagingCell else {
             return cell
         }
 
         if let page = model.pageModel(at: indexPath.item) {
-            configure(
-                cell: pagingCell,
-                page: page
-            )
+            configure(cell: pagingCell, page: page)
         } else {
-            pagingCell.configureEmpty(
-                backgroundColor: backgroundColor(for: nil)
-            )
+            pagingCell.configureEmpty(backgroundColor: backgroundColor(for: nil))
         }
 
         return pagingCell
@@ -689,18 +633,12 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         // A user drag takes ownership of any in-flight transition and clears a
         // pending autoplay request until the settled page is known.
-        model.beginPageTransition(
-            to: nil,
-            shouldAutoPlay: false
-        )
+        model.beginPageTransition(to: nil, shouldAutoPlay: false)
 
         // Stop the current media playback before manual page navigation.
         // This is intentionally broad because dragging can move across image,
         // audio, AVPlayer, and VLC pages.
-        NotificationCenter.default.post(
-            name: .ncMediaViewerStopPlayback,
-            object: nil
-        )
+        NotificationCenter.default.post(name: .ncMediaViewerStopPlayback, object: nil)
 
         refreshVisibleCells()
     }
@@ -710,10 +648,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             return
         }
 
-        guard let index = pageIndex(
-            forContentOffsetX: targetContentOffset.pointee.x,
-            width: scrollView.bounds.width
-        ) else {
+        guard let index = pageIndex(forContentOffsetX: targetContentOffset.pointee.x, width: scrollView.bounds.width) else {
             return
         }
 
@@ -745,10 +680,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     }
 
     private func pageIndex(for scrollView: UIScrollView) -> Int? {
-        pageIndex(
-            forContentOffsetX: scrollView.contentOffset.x,
-            width: scrollView.bounds.width
-        )
+        pageIndex(forContentOffsetX: scrollView.contentOffset.x, width: scrollView.bounds.width)
     }
 
     private func pageIndex(forContentOffsetX contentOffsetX: CGFloat, width: CGFloat) -> Int? {
@@ -890,35 +822,43 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
         onToggleChrome: @escaping () -> Void,
         onPreviousPage: @escaping (_ shouldAutoPlay: Bool) -> Void,
         onNextPage: @escaping (_ shouldAutoPlay: Bool) -> Void,
-        onNextMediaOfSameType: @escaping (
-            _ classFile: String,
-            _ completion: @escaping NCMediaPlaybackAdvanceCompletion
-        ) -> Void,
+        onNextMediaOfSameType: @escaping (_ classFile: String, _ completion: @escaping NCMediaPlaybackAdvanceCompletion) -> Void,
         onAutoPlayConsumed: @escaping () -> Void,
         onZoomChanged: @escaping (Bool) -> Void,
         onClose: @escaping (_ ocId: String?) -> Void,
         contextMenuController: NCMainTabBarController?,
-        navigationBar: UINavigationBar?
+        navigationBar: UINavigationBar?,
+        adaptiveControlsState: NCMediaAdaptiveControlsState? = nil
     ) {
         self.backgroundColor = backgroundColor
         contentView.backgroundColor = backgroundColor
 
+        let pageView = NCMediaViewerPageView(
+            model: model,
+            page: page,
+            onToggleChrome: onToggleChrome,
+            canGoPrevious: canGoPrevious,
+            canGoNext: canGoNext,
+            onPreviousPage: onPreviousPage,
+            onNextPage: onNextPage,
+            onNextMediaOfSameType: onNextMediaOfSameType,
+            onClose: onClose,
+            onAutoPlayConsumed: onAutoPlayConsumed,
+            onZoomChanged: onZoomChanged,
+            contextMenuController: contextMenuController,
+            navigationBar: navigationBar
+        )
         let view = AnyView(
-            NCMediaViewerPageView(
-                model: model,
-                page: page,
-                onToggleChrome: onToggleChrome,
-                canGoPrevious: canGoPrevious,
-                canGoNext: canGoNext,
-                onPreviousPage: onPreviousPage,
-                onNextPage: onNextPage,
-                onNextMediaOfSameType: onNextMediaOfSameType,
-                onClose: onClose,
-                onAutoPlayConsumed: onAutoPlayConsumed,
-                onZoomChanged: onZoomChanged,
-                contextMenuController: contextMenuController,
-                navigationBar: navigationBar
-            )
+            Group {
+                if let adaptiveControlsState {
+                    NCMediaAdaptivePageSurface(state: adaptiveControlsState, content: pageView)
+                } else {
+                    pageView
+                }
+            }
+            .environment(\.mediaAdaptiveCoverContext, adaptiveControlsState.map {
+                NCMediaAdaptiveCoverContext(state: $0, ocId: page.ocId)
+            })
             .id(page.ocId)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .ignoresSafeArea()
@@ -957,10 +897,7 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
         hostingController?.view.removeFromSuperview()
         hostingController = nil
 
-        let view = AnyView(
-            Color(backgroundColor)
-                .ignoresSafeArea()
-        )
+        let view = AnyView(Color(backgroundColor) .ignoresSafeArea())
 
         let hostingController = UIHostingController(rootView: view)
         hostingController.view.backgroundColor = backgroundColor
@@ -972,5 +909,15 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
 
         contentView.addSubview(hostingController.view)
         self.hostingController = hostingController
+    }
+}
+
+/// Observe fold changes inside each retained cell host without replacing image or playback content.
+private struct NCMediaAdaptivePageSurface: View {
+    @ObservedObject var state: NCMediaAdaptiveControlsState
+    let content: NCMediaViewerPageView
+
+    var body: some View {
+        content.environment(\.mediaViewerIsFoldedLayout, state.isFoldedLayout)
     }
 }
