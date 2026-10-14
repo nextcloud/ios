@@ -81,7 +81,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             if results.nkError == .success || results.nkError == .cancelled {
                 print("ok")
             } else {
-                await showErrorBanner(windowScene: windowScene, text: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
+                await showErrorBanner(windowScene: windowScene, error: results.nkError, context: .download(fileName: metadata.fileNameView))
             }
         }
 

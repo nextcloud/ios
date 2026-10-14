@@ -846,7 +846,7 @@ extension NCCollectionViewCommon: NCTransferDelegate {
         Task {
             if error != .success,
                error.errorCode != global.errorResourceNotFound {
-                await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                await showErrorBanner(windowScene: windowScene, error: error, context: NCErrorContext(networkingStatus: networkingStatus, fileName: fileName))
             }
 
             guard session.account == account else {

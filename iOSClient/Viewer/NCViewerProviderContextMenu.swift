@@ -296,7 +296,7 @@ extension NCViewerProviderContextMenu: NCTransferDelegate {
         if error != .success {
             Task {
                 let windowScene = SceneManager.shared.getWindow(sceneIdentifier: self.sceneIdentifier)?.windowScene
-                await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                await showErrorBanner(windowScene: windowScene, error: error, context: NCErrorContext(networkingStatus: networkingStatus, fileName: fileName))
             }
         }
 

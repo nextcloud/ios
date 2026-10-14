@@ -179,7 +179,7 @@ final class NCAutoUploadCounter {
                 ascending: false,
                 limit: 1
             )?.first
-            let error = metadata?.sessionError.trimmingCharacters(in: .whitespacesAndNewlines)
+            let error = metadata?.sessionErrorMessage.trimmingCharacters(in: .whitespacesAndNewlines)
 
             if let error, !error.isEmpty {
                 suspensionError = error

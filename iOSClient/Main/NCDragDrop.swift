@@ -243,8 +243,8 @@ class NCDragDrop: NSObject {
                 }
                 guard results.nkError == .success else {
                     await showErrorBanner(windowScene: windowScene,
-                                          text: results.nkError.errorDescription,
-                                          errorCode: results.nkError.errorCode)
+                                          error: results.nkError,
+                                          context: .download(fileName: metadata.fileNameView))
                     break
                 }
             }
@@ -276,7 +276,8 @@ class NCDragDrop: NSObject {
             }
             guard results.error == .success else {
                 await showErrorBanner(windowScene: windowScene,
-                                      text: results.error.errorDescription, errorCode: results.error.errorCode)
+                                      error: results.error,
+                                      context: .upload(fileName: metadata.fileNameView))
                 break
             }
 

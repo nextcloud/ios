@@ -446,7 +446,7 @@ extension NCCollectionViewCommon {
             cell.labelSubinfo?.isHidden = true
         } else if !metadata.sessionError.isEmpty, metadata.status != global.metadataStatusNormal {
             cell.labelSubinfo?.isHidden = false
-            cell.labelInfo?.text = metadata.sessionError
+            cell.labelInfo?.text = metadata.sessionErrorMessage
         } else {
             cell.labelSubinfo?.isHidden = false
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
