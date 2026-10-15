@@ -4,7 +4,6 @@
 
 import Foundation
 import NextcloudKit
-import NextcloudKitUI
 
 extension NKError {
     /// The message to show people for this error, or `nil` when nothing should be shown (success or cancellation).

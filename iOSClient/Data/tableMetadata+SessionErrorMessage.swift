@@ -4,7 +4,6 @@
 
 import Foundation
 import NextcloudKit
-import NextcloudKitUI
 
 extension tableMetadata {
     /// The saved `sessionError`, worded for people from its `errorCode` and the operation the item failed at.
