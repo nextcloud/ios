@@ -63,12 +63,22 @@ struct NCMediaAdaptiveLayoutViewTests {
             session: NCSession().getSession(account: ""), loader: NCMediaViewerLoader()
         )
         let controls = NCVideoAdaptiveControlsView(state: NCVideoControlsState())
+        // Give Auto Layout a fixed container; the hosted SwiftUI content must not size the test root.
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: 430, height: 330))
+        container.addSubview(controls)
+        NSLayoutConstraint.activate([
+            controls.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            controls.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            controls.topAnchor.constraint(equalTo: container.topAnchor),
+            controls.bottomAnchor.constraint(equalTo: container.bottomAnchor)
+        ])
         controls.configurePaging(model: model, onSelectPage: { _ in })
         let host = try #require(controls.pagingFooterView.subviews.first)
         for height in [CGFloat(330), 500] {
-            controls.frame = CGRect(x: 0, y: 0, width: 430, height: height)
-            controls.setNeedsLayout()
-            controls.layoutIfNeeded()
+            container.frame.size.height = height
+            container.setNeedsLayout()
+            container.layoutIfNeeded()
+            #expect(controls.bounds.size == CGSize(width: 430, height: height))
             let middleHeight = max(
                 0, height - NCMediaAdaptiveActionsView.preferredHeight - NCMediaViewerThumbnail.preferredHeight - 20 - NCMediaAdaptiveControlsLayout.thumbnailBottomInset
             )
@@ -79,7 +89,7 @@ struct NCMediaAdaptiveLayoutViewTests {
             #expect(controls.bottomControlsView.frame.maxY <= controls.pagingFooterView.frame.minY)
         }
         controls.configurePaging(model: nil, onSelectPage: { _ in })
-        controls.layoutIfNeeded()
+        container.layoutIfNeeded()
         #expect(controls.pagingFooterView.subviews.isEmpty)
         #expect(controls.pagingFooterView.frame == .zero)
     }

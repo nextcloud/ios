@@ -263,8 +263,8 @@ class NCAutoUpload: NSObject {
             mediaPredicates.append(NSPredicate(format: "mediaType == %i", PHAssetMediaType.video.rawValue))
         }
 
-        if let autoUploadSinceDate = tblAccount.autoUploadSinceDate {
-            datePredicates.append(NSPredicate(format: "creationDate >= %@", autoUploadSinceDate as NSDate))
+        if let datePredicate = tblAccount.autoUploadDatePredicate {
+            datePredicates.append(datePredicate)
         }
 
         fetchOptions.predicate = {
