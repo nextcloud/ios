@@ -39,6 +39,8 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
 
     weak var delegate: NCListCellDelegate?
 
+    private var favoriteOutlineView: UIImageView?
+
     // Cell Protocol
     var metadata: tableMetadata? {
         didSet {
@@ -103,6 +105,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         imageItem.layer.masksToBounds = true
         imageStatus.image = nil
         imageFavorite.image = nil
+        favoriteOutlineView?.isHidden = true
         imageLocal.image = nil
 
         buttonShared.setImage(nil, for: .normal)
@@ -337,7 +340,8 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
             imageView.makeCircularBackground(withColor: imageView.image != nil ? .systemBackground : .clear)
         }
 
-        if imageFavorite.image != nil {
+        // Keep one outline and its constraints across cell reuse.
+        if imageFavorite.image != nil, favoriteOutlineView == nil {
             let outlineView = UIImageView()
             outlineView.translatesAutoresizingMaskIntoConstraints = false
             outlineView.image = UIImage(systemName: "star")
@@ -352,11 +356,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
                 outlineView.bottomAnchor.constraint(equalTo: imageFavorite.bottomAnchor, constant: 1)
             ])
             imageFavorite.sendSubviewToBack(outlineView)
-        } else {
-            imageFavorite.subviews.forEach { view in
-                view.removeFromSuperview()
-            }
+            favoriteOutlineView = outlineView
         }
+
+        favoriteOutlineView?.isHidden = imageFavorite.image == nil
     }
 
     override func layoutSubviews() {
