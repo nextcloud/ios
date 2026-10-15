@@ -156,7 +156,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         }
     }
 
-    /// Changes the selection without discarding progress before Start is pressed.
+    /// Selecting the whole library clears the previous date; uploaded resources remain in history.
     @MainActor
     func handleAutoUploadTimespan(_ timespan: AutoUploadTimespan) {
         guard !isChangingAutoUpload, !autoUploadStart else { return }

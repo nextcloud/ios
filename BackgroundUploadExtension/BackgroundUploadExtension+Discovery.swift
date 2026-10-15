@@ -35,10 +35,8 @@ extension BackgroundUploadExtension {
 
         var predicates: [NSPredicate] = [NSCompoundPredicate(orPredicateWithSubpredicates: mediaPredicates)]
 
-        let discoveryStartDate = account.autoUploadSinceDate
-
-        if let discoveryStartDate {
-            predicates.append(NSPredicate(format: "creationDate >= %@", discoveryStartDate as NSDate))
+        if let datePredicate = account.autoUploadDatePredicate {
+            predicates.append(datePredicate)
         }
 
         fetchOptions.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)

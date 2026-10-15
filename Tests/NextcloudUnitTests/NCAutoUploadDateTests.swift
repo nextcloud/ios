@@ -9,6 +9,31 @@ import Testing
 @Suite("Auto Upload incremental date backup compatibility")
 @MainActor
 struct NCAutoUploadDateTests {
+    @Test("Whole-library discovery stays unfiltered as upload progress advances")
+    func wholeLibraryDiscoveryIgnoresProgress() {
+        let account = tableAccount()
+        account.autoUploadAllPhotos = true
+        for date in [nil, Date(timeIntervalSince1970: 100), Date(timeIntervalSince1970: 200)] {
+            account.autoUploadSinceDate = date
+            #expect(account.autoUploadDatePredicate == nil)
+        }
+    }
+
+    @Test("Date-limited discovery includes the boundary and newer assets, and switching to all removes the filter")
+    func dateLimitedDiscovery() throws {
+        let account = tableAccount()
+        account.autoUploadSinceDate = Date(timeIntervalSince1970: 100)
+        let predicate = try #require(account.autoUploadDatePredicate)
+        #expect(!predicate.evaluate(with: ["creationDate": Date(timeIntervalSince1970: 99)]))
+        #expect(predicate.evaluate(with: ["creationDate": Date(timeIntervalSince1970: 100)]))
+        #expect(predicate.evaluate(with: ["creationDate": Date(timeIntervalSince1970: 101)]))
+
+        account.autoUploadAllPhotos = true
+        #expect(account.autoUploadDatePredicate == nil)
+        account.autoUploadAllPhotos = false
+        #expect(account.autoUploadDatePredicate != nil)
+    }
+
     @Test("Account backup preserves the incremental restart date")
     func backupRoundTrip() throws {
         let account = tableAccount()
@@ -21,6 +46,7 @@ struct NCAutoUploadDateTests {
     @Test("A whole-library selection remains unfiltered after account restore")
     func wholeLibraryRoundTrip() throws {
         let account = tableAccount()
+        account.autoUploadAllPhotos = true
         let data = try JSONEncoder().encode(account.tableAccountToCodable())
         let decoded = try JSONDecoder().decode(tableAccountCodable.self, from: data)
         #expect(tableAccount(codableObject: decoded).autoUploadSinceDate == nil)
@@ -49,6 +75,7 @@ struct NCAutoUploadDateTests {
         let restored = tableAccount(codableObject: decoded)
         #expect(restored.autoUploadAllPhotos)
         #expect(restored.autoUploadSinceDate == account.autoUploadSinceDate)
+        #expect(restored.autoUploadDatePredicate == nil)
     }
 
     @Test("Older backups infer the library selection from their existing date")

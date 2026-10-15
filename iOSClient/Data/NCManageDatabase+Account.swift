@@ -23,7 +23,7 @@ class tableAccount: Object {
     @objc dynamic var autoUploadVideo: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
     @objc dynamic var autoUploadWWAnVideo: Bool = false
-    /// Incremental restart date; nil scans the whole library. Advances only past confirmed uploads.
+    /// Confirmed upload progress; also the lower bound for discovery when whole-library mode is off.
     @objc dynamic var autoUploadSinceDate: Date?
     /// Preserves the whole-library selection independently of incremental progress.
     @objc dynamic var autoUploadAllPhotos = false
@@ -61,6 +61,12 @@ class tableAccount: Object {
     @objc dynamic var userStatusStatus: String?
     @objc dynamic var userStatusStatusIsUserDefined: Bool = false
     @objc dynamic var website = ""
+
+    /// Shared by app and PhotoKit discovery. Progress must never restrict a whole-library scan.
+    var autoUploadDatePredicate: NSPredicate? {
+        guard !autoUploadAllPhotos, let autoUploadSinceDate else { return nil }
+        return NSPredicate(format: "creationDate >= %@", autoUploadSinceDate as NSDate)
+    }
 
     override static func primaryKey() -> String {
         return "account"
@@ -407,13 +413,15 @@ extension NCManageDatabase {
         }
     }
 
-    /// Selecting the whole library preserves the date until the next Start.
+    /// Selecting the whole library clears the previous date immediately.
     func setAutoUploadAllPhotosAsync(_ allPhotos: Bool, account: String) async {
         await core.performRealmWriteAsync { realm in
             guard let current = realm.objects(tableAccount.self).filter("account == %@", account).first,
                   !current.autoUploadStart else { return }
             current.autoUploadAllPhotos = allPhotos
-            if !allPhotos, current.autoUploadSinceDate == nil {
+            if allPhotos {
+                current.autoUploadSinceDate = nil
+            } else if current.autoUploadSinceDate == nil {
                 current.autoUploadSinceDate = Date.now
             }
         }
