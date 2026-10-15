@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6306971989EADE6757D44941 /* NextcloudKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 262894EB5592DF09FC34FCF9 /* NextcloudKitUI */; };
 		22BA14432CF44BDBA2E6C291 /* NCDocumentEditorSupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B74B947E07444CC9CFE0A6C /* NCDocumentEditorSupportTests.swift */; };
 		27D0041A6F7CA1E970AD09B2 /* tableMetadata+SessionErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F840C79FAF28213971E832D4 /* tableMetadata+SessionErrorMessage.swift */; };
 		2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
@@ -2212,6 +2213,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6306971989EADE6757D44941 /* NextcloudKitUI in Frameworks */,
 				F710FC80277B7D2700AA9FBF /* RealmSwift in Frameworks */,
 				F70557B92ED44E4700135623 /* LucidBanner in Frameworks */,
 				F72AD70F28C24BA1006CB92D /* NextcloudKit in Frameworks */,
@@ -4151,6 +4153,7 @@
 			);
 			name = Share;
 			packageProductDependencies = (
+				262894EB5592DF09FC34FCF9 /* NextcloudKitUI */,
 				F72D7EB6263B1207000B3DFC /* MarkdownKit */,
 				F710FC7F277B7D2700AA9FBF /* RealmSwift */,
 				F72AD70E28C24BA1006CB92D /* NextcloudKit */,
@@ -7284,6 +7287,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		262894EB5592DF09FC34FCF9 /* NextcloudKitUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
+			productName = NextcloudKitUI;
+		};
 		F3374AEF2D78B01B002A38F9 /* BitCollections */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F3374AEE2D78B01B002A38F9 /* XCRemoteSwiftPackageReference "swift-collections" */;
