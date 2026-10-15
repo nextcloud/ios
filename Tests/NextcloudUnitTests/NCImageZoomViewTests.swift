@@ -92,6 +92,8 @@ struct NCImageZoomViewTests {
     ])
     func centersImageThroughFoldRoundTrip(imageSize: CGSize) {
         let (coordinator, scrollView, imageView) = makeZoomView(imageSize: imageSize)
+        // UIScrollView rounds offsets to physical pixels; an exact center can fall halfway between them.
+        let centeringTolerance = 0.5 / max(scrollView.traitCollection.displayScale, 1) + 0.001
 
         for size in [CGSize(width: 320, height: 480), CGSize(width: 320, height: 220), CGSize(width: 320, height: 480)] {
             scrollView.bounds.size = size
@@ -104,8 +106,8 @@ struct NCImageZoomViewTests {
                 CGPoint(x: imageView.bounds.midX, y: imageView.bounds.midY),
                 to: scrollView
             )
-            #expect(abs(visibleCenter.x - scrollView.bounds.midX) < 0.001)
-            #expect(abs(visibleCenter.y - scrollView.bounds.midY) < 0.001)
+            #expect(abs(visibleCenter.x - scrollView.bounds.midX) < centeringTolerance)
+            #expect(abs(visibleCenter.y - scrollView.bounds.midY) < centeringTolerance)
             #expect(coordinator.zoomState() == nil)
         }
     }
