@@ -291,7 +291,7 @@ More buttons; rearrange or replace them independently of the normal navigation.
 The deferred More menu uses the button itself as its popover anchor.
 The same row contains a filename island for every media type, including presented
 video. Buttons are square (`actionsHeight` wide/high), while the filename uses
-the remaining width: a leading-aligned filename on one line, truncated at the end,
+the remaining width: a leading-aligned filename on up to two lines, truncated at the end,
 with 12-point horizontal insets and no logo. Image: Close, Name, Info, More. Audio:
 Close, Name, Repeat, Auto-advance, More. Playing video uses the same order,
 with player-specific options between Close and Name. All top buttons are square,

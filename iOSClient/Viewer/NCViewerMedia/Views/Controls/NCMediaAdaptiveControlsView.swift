@@ -241,7 +241,7 @@ final class NCMediaAdaptiveActionsView: UIStackView {
         fileNameLabel.font = .preferredFont(forTextStyle: .headline)
         fileNameLabel.textColor = .ncViewerAdaptiveControlForeground
         fileNameLabel.textAlignment = .natural
-        fileNameLabel.numberOfLines = 1
+        fileNameLabel.numberOfLines = 2
         fileNameLabel.lineBreakMode = .byTruncatingTail
         fileNameLabel.adjustsFontForContentSizeCategory = true
         fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
