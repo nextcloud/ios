@@ -33,9 +33,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d file in queue</string>
+			<string>В очереди %d файл</string>
+			<key>few</key>
+			<string>В очереди %d файла</string>
+			<key>many</key>
+			<string>В очереди %d файлов</string>
 			<key>other</key>
-			<string>%d files in queue</string>
+			<string>В очереди %d файла</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_photos_to_back_up_</key>
@@ -49,9 +53,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You have %d item to back up</string>
+			<string>У вас %d элемент для резервного копирования</string>
+			<key>few</key>
+			<string>У вас %d элемента для резервного копирования</string>
+			<key>many</key>
+			<string>У вас %d элементов для резервного копирования</string>
 			<key>other</key>
-			<string>You have %d items to back up</string>
+			<string>У вас %d элемента для резервного копирования</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>
@@ -65,9 +73,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d failed</string>
+			<string>Не удалось: %d</string>
+			<key>few</key>
+			<string>Не удалось: %d</string>
+			<key>many</key>
+			<string>Не удалось: %d</string>
 			<key>other</key>
-			<string>%d failed</string>
+			<string>Не удалось: %d</string>
 		</dict>
 	</dict>
 	<key>_albums_photos_count_</key>
@@ -81,9 +93,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d photo</string>
+			<string>%d фотография</string>
+			<key>few</key>
+			<string>%d фотографии</string>
+			<key>many</key>
+			<string>%d фотографий</string>
 			<key>other</key>
-			<string>%d photos</string>
+			<string>%d фотографии</string>
 		</dict>
 	</dict>
 	<key>_albums_list_photos_and_videos_count_</key>
@@ -97,9 +113,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d photo or video</string>
+			<string>%d фото или видео</string>
+			<key>few</key>
+			<string>%d фото и видео</string>
+			<key>many</key>
+			<string>%d фото и видео</string>
 			<key>other</key>
-			<string>%d photos and videos</string>
+			<string>%d фото и видео</string>
 		</dict>
 	</dict>
 </dict>
