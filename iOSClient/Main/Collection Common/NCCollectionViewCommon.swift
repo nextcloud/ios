@@ -589,6 +589,26 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         }
     }
 
+    func didPresentSearchController(_ searchController: UISearchController) {
+        updateSearchNavigationLayout()
+    }
+
+    func didDismissSearchController(_ searchController: UISearchController) {
+        updateSearchNavigationLayout()
+    }
+
+    private func updateSearchNavigationLayout() {
+        if #available(iOS 26.0, *) { return }
+        guard let navigationController = mainNavigationController,
+              navigationController.topViewController === self else { return }
+        // Refresh inline-search/overflow sizing after UIKit completes its presentation transition.
+        navigationController.configureSidebarButton()
+        navigationController.navigationBar.invalidateIntrinsicContentSize()
+        navigationController.navigationBar.setNeedsLayout()
+        navigationController.view.setNeedsLayout()
+        navigationController.view.layoutIfNeeded()
+    }
+
     func willDismissSearchController(_ searchController: UISearchController) {
         self.isSearchingMode = false
         self.networkSearchInProgress = false
