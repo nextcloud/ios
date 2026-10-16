@@ -486,7 +486,7 @@ struct NCSidebarView: View {
                                 .padding(.horizontal, 5)
                                 .frame(minWidth: 18, minHeight: 18)
                                 .background(.red, in: Capsule())
-                                .offset(x: 6, y: -6)
+                                .offset(notificationBadgeOffset)
                                 .allowsHitTesting(false)
                                 .accessibilityHidden(true)
                         }
@@ -497,6 +497,14 @@ struct NCSidebarView: View {
         }
         .buttonBorderShape(.circle)
         .controlSize(.regular)
+    }
+
+    private var notificationBadgeOffset: CGSize {
+        if #available(iOS 26.0, *) {
+            return CGSize(width: 6, height: -6)
+        }
+        // The bordered header can sit at the safe-area edge; keep its badge within the measured row.
+        return .zero
     }
 
     /// A fixed icon column keeps every destination's title aligned.
