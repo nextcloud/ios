@@ -7,7 +7,7 @@ import UIKit
 /// Single experimental switch for images, audio and both video engines. See ../README.md.
 enum NCMediaAdaptiveLayoutConfiguration {
     /// Keep disabled for TestFlight regression checks of the normal viewer before enabling the experiment.
-    static let isAdaptiveLayoutEnabled = false
+    static let isAdaptiveLayoutEnabled = true
 }
 
 /// Arranges the same media surface above the fold and independent controls below it.
