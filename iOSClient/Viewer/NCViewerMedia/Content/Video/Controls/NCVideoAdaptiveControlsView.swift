@@ -503,7 +503,7 @@ private struct NCVideoAdaptiveControlsSwiftUIView: View {
                     )
 
                     topActionMenu(
-                        systemName: "speaker.wave.2", pointSize: 17, items: state.audioTrackItems,
+                        systemName: "waveform", pointSize: 17, items: state.audioTrackItems,
                         emptyTitle: "_no_audio_tracks_available_", onSelect: onAudioTrackSelected
                     )
                 }

@@ -28,6 +28,12 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     internal var autoUploadFileName = ""
     internal var autoUploadDirectory = ""
     internal let refreshControl = UIRefreshControl()
+    internal lazy var serverDataActivityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .medium)
+        indicator.hidesWhenStopped = true
+        return indicator
+    }()
+    internal lazy var serverDataActivityBarButtonItem = UIBarButtonItem(customView: serverDataActivityIndicator)
     internal var searchController: UISearchController?
     internal var backgroundImageView = UIImageView()
     internal var serverUrl: String = ""
@@ -510,26 +516,19 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             return
         }
 
-        let spinner = UIActivityIndicatorView(style: .medium)
-        spinner.startAnimating()
-
-        let container = UIView()
-        container.translatesAutoresizingMaskIntoConstraints = false
-        container.addSubview(spinner)
-
-        spinner.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            spinner.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-            spinner.centerYAnchor.constraint(equalTo: container.centerYAnchor)
-        ])
-
-        self.navigationItem.titleView = container
+        serverDataActivityIndicator.startAnimating()
+        if navigationController?.topViewController === self {
+            (navigationController as? NCMainNavigationController)?.configureSidebarButton()
+        }
     }
 
     @MainActor
     func stopGUIGetServerData() {
         self.dataSource.setGetServerData(true)
-        self.navigationItem.titleView = nil
+        serverDataActivityIndicator.stopAnimating()
+        if navigationController?.topViewController === self {
+            (navigationController as? NCMainNavigationController)?.configureSidebarButton()
+        }
         self.navigationItem.title = self.titleCurrentFolder
     }
 
@@ -588,6 +587,26 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         } else {
             textField.rightView = nil
         }
+    }
+
+    func didPresentSearchController(_ searchController: UISearchController) {
+        updateSearchNavigationLayout()
+    }
+
+    func didDismissSearchController(_ searchController: UISearchController) {
+        updateSearchNavigationLayout()
+    }
+
+    private func updateSearchNavigationLayout() {
+        if #available(iOS 26.0, *) { return }
+        guard let navigationController = mainNavigationController,
+              navigationController.topViewController === self else { return }
+        // Refresh inline-search/overflow sizing after UIKit completes its presentation transition.
+        navigationController.configureSidebarButton()
+        navigationController.navigationBar.invalidateIntrinsicContentSize()
+        navigationController.navigationBar.setNeedsLayout()
+        navigationController.view.setNeedsLayout()
+        navigationController.view.layoutIfNeeded()
     }
 
     func willDismissSearchController(_ searchController: UISearchController) {

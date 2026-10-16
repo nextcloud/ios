@@ -33,7 +33,12 @@ final class NCMediaDatePickerViewController: UIHostingController<NCMediaDatePick
             rootView: NCMediaDatePickerView(model: model)
         )
 
-        view.backgroundColor = .clear
+        if #available(iOS 26.0, *) {
+            view.backgroundColor = .clear
+        } else {
+            // Older sheets need an opaque host background behind both the title and wheel.
+            view.backgroundColor = .systemBackground
+        }
     }
 
     required init?(coder: NSCoder) {

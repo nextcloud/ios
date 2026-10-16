@@ -344,6 +344,11 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let groupedItems = navigationItem.leadingItemGroups.flatMap { $0.barButtonItems }
         var items = groupedItems.isEmpty ? navigationItem.leftBarButtonItems ?? [] : groupedItems
         items.removeAll { $0 === sidebarButtonItem }
+        // Rebuild loading from its state so repeated updates cannot duplicate or retain a stopped spinner.
+        let albums = topViewController as? AlbumsViewController
+        let loadingItem = collectionViewCommon?.serverDataActivityBarButtonItem ?? trashViewController?.serverDataActivityBarButtonItem ?? albums?.serverDataActivityBarButtonItem
+        let loadingIndicator = collectionViewCommon?.serverDataActivityIndicator ?? trashViewController?.serverDataActivityIndicator ?? albums?.serverDataActivityIndicator
+        items.removeAll { $0 === loadingItem }
         let isFiles = topViewController is NCFiles
         if isFiles || topViewController === viewControllers.first,
            controller != nil,
@@ -355,14 +360,18 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 navigationItem.leftItemsSupplementBackButton = true
             }
         }
-        guard !items.isEmpty else {
-            navigationItem.leadingItemGroups = []
-            return
+        if albums != nil {
+            navigationItem.leftItemsSupplementBackButton = true
         }
-        let representative = items.count > 1 ? UIBarButtonItem(image: UIImage(systemName: "ellipsis")) : nil
-        let group = UIBarButtonItemGroup(barButtonItems: items, representativeItem: representative)
-        group.alwaysAvailable = true
-        navigationItem.leadingItemGroups = [group]
+        if let loadingItem, loadingIndicator?.isAnimating == true {
+            items.append(loadingItem)
+        }
+        // Match Media: each item has its own group; only the sidebar is always available.
+        navigationItem.leadingItemGroups = items.map { item in
+            let group = UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)
+            group.alwaysAvailable = item === sidebarButtonItem
+            return group
+        }
     }
 
     /// Changes the tint color of a specific left bar button item identified by tag.

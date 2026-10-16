@@ -217,15 +217,6 @@ final class NCMediaAdaptiveActionsView: UIStackView {
     private let repeatButton = UIButton(type: .system)
     private let autoAdvanceButton = UIButton(type: .system)
     private let fileNameIsland = UIView()
-    private let fileNameIcon: UIImageView = {
-        // Use the compiled primary app icon, so customer branding needs no separate viewer asset.
-        let icons = Bundle.main.infoDictionary?["CFBundleIcons"] as? [String: Any]
-        let primaryIcon = icons?["CFBundlePrimaryIcon"] as? [String: Any]
-        let iconFiles = primaryIcon?["CFBundleIconFiles"] as? [String] ?? []
-        let iconName = primaryIcon?["CFBundleIconName"] as? String ?? "AppIcon"
-        let image = iconFiles.reversed().compactMap { UIImage(named: $0) }.first ?? UIImage(named: iconName)
-        return UIImageView(image: image)
-    }()
     private let fileNameLabel = UILabel()
     private weak var playbackOptions: NCMediaPlaybackOptions?
 
@@ -247,16 +238,10 @@ final class NCMediaAdaptiveActionsView: UIStackView {
         fileNameIsland.backgroundColor = .ncViewerAdaptiveControlBackground
         fileNameIsland.layer.cornerRadius = 12
         fileNameIsland.layer.borderWidth = UIColor.ncViewerAdaptiveControlBorderWidth
-        fileNameIcon.contentMode = .scaleAspectFill
-        fileNameIcon.clipsToBounds = true
-        fileNameIcon.layer.cornerRadius = 16
-        fileNameIcon.isAccessibilityElement = false
-        fileNameIcon.translatesAutoresizingMaskIntoConstraints = false
-        fileNameIsland.addSubview(fileNameIcon)
         fileNameLabel.font = .preferredFont(forTextStyle: .headline)
         fileNameLabel.textColor = .ncViewerAdaptiveControlForeground
         fileNameLabel.textAlignment = .natural
-        fileNameLabel.numberOfLines = 1
+        fileNameLabel.numberOfLines = 2
         fileNameLabel.lineBreakMode = .byTruncatingTail
         fileNameLabel.adjustsFontForContentSizeCategory = true
         fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -264,11 +249,7 @@ final class NCMediaAdaptiveActionsView: UIStackView {
         addArrangedSubview(fileNameIsland)
         NSLayoutConstraint.activate([
             fileNameIsland.heightAnchor.constraint(equalToConstant: Self.preferredHeight),
-            fileNameIcon.leadingAnchor.constraint(equalTo: fileNameIsland.leadingAnchor, constant: 12),
-            fileNameIcon.centerYAnchor.constraint(equalTo: fileNameIsland.centerYAnchor),
-            fileNameIcon.widthAnchor.constraint(equalToConstant: 32),
-            fileNameIcon.heightAnchor.constraint(equalToConstant: 32),
-            fileNameLabel.leadingAnchor.constraint(equalTo: fileNameIcon.trailingAnchor, constant: 8),
+            fileNameLabel.leadingAnchor.constraint(equalTo: fileNameIsland.leadingAnchor, constant: 12),
             fileNameLabel.trailingAnchor.constraint(equalTo: fileNameIsland.trailingAnchor, constant: -12),
             fileNameLabel.topAnchor.constraint(equalTo: fileNameIsland.topAnchor),
             fileNameLabel.bottomAnchor.constraint(equalTo: fileNameIsland.bottomAnchor)
