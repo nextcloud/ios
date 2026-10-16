@@ -16,6 +16,8 @@ final class AlbumsManager: @unchecked Sendable {
     @MainActor private var photoSyncTasks: [String: Task<Void, Never>] = [:]
     @MainActor private var photoRequests: [String: (id: UUID, task: Task<Void, Error>)] = [:]
     @MainActor private var albumRequests: [String: UUID] = [:]
+    /// Listing activity is separate from cached results so refreshes can keep their content visible.
+    @MainActor let loadingAccounts = CurrentValueSubject<Set<String>, Never>([])
     // Successful server renames awaiting an authoritative album-list response.
     @MainActor private var pendingRenames: [String: [String: String]] = [:]
 
@@ -40,9 +42,13 @@ final class AlbumsManager: @unchecked Sendable {
 
         let request = UUID()
         albumRequests[account] = request
+        loadingAccounts.send(loadingAccounts.value.union([account]))
         photoSyncTasks[account]?.cancel()
         defer {
-            if albumRequests[account] == request { albumRequests[account] = nil }
+            if albumRequests[account] == request {
+                albumRequests[account] = nil
+                loadingAccounts.send(loadingAccounts.value.subtracting([account]))
+            }
         }
 
         do {
@@ -162,6 +168,7 @@ final class AlbumsManager: @unchecked Sendable {
         // Called after a successful edit: a list response started before that edit
         // must not restore a deleted album or its old name/count.
         albumRequests[album.account] = nil
+        loadingAccounts.send(loadingAccounts.value.subtracting([album.account]))
         photoRequests[album.id]?.task.cancel()
         photoRequests[album.id] = nil
     }

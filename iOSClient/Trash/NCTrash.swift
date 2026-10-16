@@ -25,6 +25,12 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     var gridLayout: NCGridLayout!
     var layoutKey = NCGlobal.shared.layoutViewTrash
     let refreshControl = UIRefreshControl()
+    internal lazy var serverDataActivityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .medium)
+        indicator.hidesWhenStopped = true
+        return indicator
+    }()
+    internal lazy var serverDataActivityBarButtonItem = UIBarButtonItem(customView: serverDataActivityIndicator)
     var filename: String?
 
     @MainActor
@@ -71,8 +77,10 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
         // Add Refresh Control
         collectionView.refreshControl = refreshControl
-        refreshControl.tintColor = NCBrandColor.shared.textColor2
+        // Keep the pull gesture; loading is shown only by the navigation-bar spinner.
+        refreshControl.tintColor = .clear
         refreshControl.action(for: .valueChanged) { _ in
+            self.refreshControl.endRefreshing()
             Task {
                 await self.loadListingTrash()
             }
@@ -147,6 +155,17 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     func longPressMoreGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) { }
 
     // MARK: - DataSource
+
+    func setServerDataLoading(_ isLoading: Bool) {
+        if isLoading {
+            serverDataActivityIndicator.startAnimating()
+        } else {
+            serverDataActivityIndicator.stopAnimating()
+        }
+        if navigationController?.topViewController === self {
+            mainNavigationController?.configureSidebarButton()
+        }
+    }
 
     func reloadDataSource(withQueryDB: Bool = true) async {
         let results = await self.database.getTableTrashAsync(filePath: getFilePath(), account: session.account)

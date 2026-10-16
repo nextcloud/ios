@@ -17,6 +17,7 @@ struct AlbumDetailsScreen: View {
     var body: some View {
         ZStack {
             content()
+                .scrollBounceBehavior(.always, axes: .vertical)
 
             if viewModel.isLoadingPopupVisible {
                 NCLoadingAlert()
@@ -75,19 +76,18 @@ struct AlbumDetailsScreen: View {
     @ViewBuilder
     private func content() -> some View {
         if viewModel.isLoading && !viewModel.hasCachedPhotos {
-            ProgressView(NSLocalizedString("_albums_photos_loading_msg_", comment: ""))
+            Color.clear.frame(maxWidth: .infinity, maxHeight: .infinity)
         } else if let error = viewModel.errorMessage {
-            Text(error)
-                .refreshable {
-                    viewModel.onPulledToRefresh()
-                }
+            ScrollView {
+                Text(error)
+                    .frame(maxWidth: .infinity)
+            }
+            .refreshable { viewModel.onPulledToRefresh() }
         } else if viewModel.photos.isEmpty {
             NoPhotosEmptyView(
                 onAddPhotosIntent: handleAddPhotosIntent
             )
-            .refreshable {
-                viewModel.onPulledToRefresh()
-            }
+            .refreshable { viewModel.onPulledToRefresh() }
         } else {
             PhotosGridView(
                 controller: controller,
@@ -99,9 +99,7 @@ struct AlbumDetailsScreen: View {
                     }
                 }
             )
-            .refreshable {
-                viewModel.onPulledToRefresh()
-            }
+            .refreshable { viewModel.onPulledToRefresh() }
         }
     }
 

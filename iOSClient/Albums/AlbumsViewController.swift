@@ -14,12 +14,21 @@ class AlbumsViewController: UIViewController {
     private(set) var detailsViewModel: AlbumDetailsViewModel?
     private var cancellables: Set<AnyCancellable> = []
     private var hostingController: UIHostingController<AnyView>?
+    internal lazy var serverDataActivityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .medium)
+        indicator.hidesWhenStopped = true
+        return indicator
+    }()
+    internal lazy var serverDataActivityBarButtonItem = UIBarButtonItem(customView: serverDataActivityIndicator)
     private var controller: NCMainTabBarController? {
         tabBarController as? NCMainTabBarController
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        // Preserve SwiftUI's native refresh gesture; only its visual indicator is suppressed here.
+        UIRefreshControl.appearance(whenContainedInInstancesOf: [AlbumsViewController.self]).tintColor = .clear
 
         // Needed, since we use NCViewerMediaPage to show the media, which expects this!
         navigationController?.navigationBar.prefersLargeTitles = false
@@ -86,8 +95,9 @@ class AlbumsViewController: UIViewController {
             listViewModel = nil
             viewModel.$screenTitle.combineLatest(viewModel.$isLoading)
                 .receive(on: DispatchQueue.main)
-                .sink { [weak self] _ in
+                .sink { [weak self] _, isLoading in
                     guard let self else { return }
+                    self.setServerDataLoading(isLoading)
                     NCAlbumsNavigationController.configureNavigationItems(for: self)
                 }
                 .store(in: &cancellables)
@@ -96,6 +106,12 @@ class AlbumsViewController: UIViewController {
             let viewModel = AlbumsListViewModel(controller: controller, navigator: navigator)
             listViewModel = viewModel
             detailsViewModel = nil
+            AlbumsManager.shared.loadingAccounts
+                .map { $0.contains(account) }
+                .removeDuplicates()
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] isLoading in self?.setServerDataLoading(isLoading) }
+                .store(in: &cancellables)
             rootView = AnyView(AlbumsListScreen(controller: controller, viewModel: viewModel))
         }
         NCAlbumsNavigationController.configureNavigationItems(for: self)
@@ -140,6 +156,18 @@ class AlbumsViewController: UIViewController {
             AlbumsManager.shared.syncAlbums(for: account)
         }
     }
+
+    private func setServerDataLoading(_ isLoading: Bool) {
+        if isLoading {
+            serverDataActivityIndicator.startAnimating()
+        } else {
+            serverDataActivityIndicator.stopAnimating()
+        }
+        if navigationController?.topViewController === self {
+            (navigationController as? NCMainNavigationController)?.configureSidebarButton()
+        }
+    }
+
 }
 
 struct AccountKey: EnvironmentKey {

@@ -8,13 +8,15 @@ import RealmSwift
 
 extension NCTrash {
     func loadListingTrash() async {
-        defer {
-            self.refreshControl.endRefreshing()
+        // If is already in-flight, do nothing
+        if serverDataActivityIndicator.isAnimating || dataSourceTask?.state == .running || dataSourceTask?.state == .suspended {
+            return
         }
 
-        // If is already in-flight, do nothing
-        if dataSourceTask?.state == .running || dataSourceTask?.state == .suspended {
-            return
+        setServerDataLoading(true)
+        defer {
+            setServerDataLoading(false)
+            refreshControl.endRefreshing()
         }
 
         let resultsListingTrash = await NextcloudKit.shared.listingTrashAsync(filename: filename, showHiddenFiles: false, account: session.account) { task in
