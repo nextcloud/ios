@@ -602,7 +602,7 @@ private struct NCVideoControlsSwiftUIView: View {
                 )
 
                 topActionMenu(
-                    systemName: "speaker.wave.2",
+                    systemName: "waveform",
                     pointSize: 17,
                     items: state.audioTrackItems,
                     emptyTitle: "_no_audio_tracks_available_",
