@@ -72,6 +72,8 @@ Do you want to try the latest version in development of Nextcloud iOS ? Simple, 
 
 [Apple TestFlight](https://testflight.apple.com/join/RXEJbWj9)
 
+Published builds are listed in the [changelog](CHANGELOG.md). Each published TestFlight build must be recorded there against the exact source revision that was archived: marketing version, TestFlight build number, release date, change highlights, and the full commit (or a tag or GitHub release that points at that same commit).
+
 ## Testing
 
 **Note: If a unit or integration test exclusively uses and tests NextcloudKit functions and components, then add that test to the NextcloudKit project instead. NextcloudKit is used in many other projects as an API, and it's better if such tests are located there.**
