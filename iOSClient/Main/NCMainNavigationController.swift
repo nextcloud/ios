@@ -166,6 +166,11 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     }
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        if #available(iOS 27.0, *),
+           viewController is NCCollectionViewCommon || viewController is NCMedia || viewController is AlbumsViewController || viewController is NCTrash {
+            viewController.navigationItem.navigationBarMinimization.minimizationBehavior = .never
+        }
+
         Task { @MainActor in
             // (+)
             // PLUS BUTTON ONLY IN FILES

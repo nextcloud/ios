@@ -198,8 +198,6 @@ extension NCMedia {
             guard self.isViewActived,
                   !self.searchMediaInProgress,
                   !self.isPinchGestureActive,
-                  !self.showOnlyImages,
-                  !self.showOnlyVideos,
                   (!self.isEditMode || self.allowsSearchWhileSelecting) else {
                 return false
             }
@@ -297,6 +295,13 @@ extension NCMedia {
             return
         }
 
+        // SEARCH NEW MEDIA WITH AN ACTIVE FILTER (VIDEOS OR IMAGES)
+        //
+        if (self.showOnlyImages || self.showOnlyVideos), distant || lastDateNew == .distantPast {
+            await searchEarlierFilteredMedia(mediaPath: tblAccount.mediaPath, account: account)
+            return
+        }
+
         // SEARCH NEW MEDIA
         //
         if firstDateNew == .distantFuture || lastDateNew == .distantPast {
@@ -353,6 +358,79 @@ extension NCMedia {
                 }
             }
         } finish: { }
+    }
+
+    /// Fetches both media types so switching filters never leaves a hole in the local timeline.
+    private func searchEarlierFilteredMedia(mediaPath: String, account: String) async {
+        let onlyImages = self.showOnlyImages
+        let onlyVideos = self.showOnlyVideos
+        let visibleOldestDate = self.dataSource.compactMetadatas.last?.date
+        let predicate = NCMedia.getMediaPredicate(session: self.session, mediaPath: mediaPath, showOnlyImages: false, showOnlyVideos: false)
+        let cachedMedia = await self.database.getMediaCompactMetadatasAsync(predicate: predicate, sortedByKeyPath: "date", ascending: false)
+        var upperDate = cachedMedia.last?.date ?? .distantFuture
+        let pageSize = await MainActor.run {
+            max(self.collectionView.visibleCells.count * 3, 300)
+        }
+        var limit = pageSize
+
+        while !Task.isCancelled,
+              self.isViewActived,
+              self.session.account == account,
+              self.showOnlyImages == onlyImages,
+              self.showOnlyVideos == onlyVideos {
+            var receivedFiles: [NKFile] = []
+            await NCMediaNetwork().searchMediaPage(
+                path: mediaPath,
+                firstDate: upperDate,
+                lastDate: .distantPast,
+                account: account,
+                paginate: false,
+                limit: limit) { _ in
+            } update: { files in
+                receivedFiles.append(contentsOf: files)
+            } finish: { }
+
+            guard !Task.isCancelled,
+                  self.isViewActived,
+                  self.session.account == account,
+                  self.showOnlyImages == onlyImages,
+                  self.showOnlyVideos == onlyVideos,
+                  let oldestDate = receivedFiles.last?.date else {
+                return
+            }
+
+            // Keep the boundary inclusive: several files can have the same timestamp.
+            await self.updateMediaMetadatas(
+                files: receivedFiles,
+                firstDate: upperDate as NSDate,
+                lastDate: oldestDate as NSDate,
+                mediaPath: mediaPath,
+                account: account,
+                verifyDeletions: false,
+                update: { })
+            await self.loadDataSource()
+
+            let foundMatchingMedia = receivedFiles.contains { file in
+                guard file.hasPreview, visibleOldestDate.map({ file.date < $0 }) ?? true else {
+                    return false
+                }
+                if onlyVideos {
+                    return file.classFile == NKTypeClassFile.video.rawValue
+                }
+                return file.classFile == NKTypeClassFile.image.rawValue || (file.classFile == NKTypeClassFile.video.rawValue && !file.livePhotoFile.isEmpty)
+            }
+            if foundMatchingMedia || receivedFiles.count < limit {
+                return
+            }
+
+            if oldestDate < upperDate {
+                upperDate = oldestDate
+                limit = pageSize
+            } else {
+                // Expand a full same-date page rather than skipping files at that timestamp.
+                limit += pageSize
+            }
+        }
     }
 
     /// Searches the server for new media within the given date range,
@@ -449,6 +527,7 @@ extension NCMedia {
                                       lastDate: NSDate,
                                       mediaPath: String,
                                       account: String,
+                                      verifyDeletions: Bool = true,
                                       update: @escaping () -> Void) async {
         guard !Task.isCancelled,
               self.session.account == account else {
@@ -458,8 +537,8 @@ extension NCMedia {
         let mediaPredicate = NCMedia.getMediaPredicate(
             session: self.session,
             mediaPath: mediaPath,
-            showOnlyImages: self.showOnlyImages,
-            showOnlyVideos: self.showOnlyVideos)
+            showOnlyImages: false,
+            showOnlyVideos: false)
         let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
             NSPredicate(format: "date >= %@ AND date <= %@", lastDate, firstDate), mediaPredicate
         ])
@@ -488,6 +567,11 @@ extension NCMedia {
            self.isViewActived,
            self.session.account == account {
             update()
+        }
+
+        // A partial history page cannot establish that an absent file was deleted.
+        guard verifyDeletions else {
+            return
         }
 
         for batchStart in stride(from: 0, to: deletedMetadatas.count, by: maximumConcurrentChecks) {
