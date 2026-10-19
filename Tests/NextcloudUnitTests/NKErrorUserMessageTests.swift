@@ -28,14 +28,6 @@ struct NKErrorUserMessageTests {
         #expect(NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: "Already translated").userMessage() == "Already translated")
     }
 
-    @Test("Prefers the server's message when Nextcloud wrote it for people")
-    func userFacingServerMessage() {
-        let body = Data(#"{"ocs":{"meta":{"statuscode":403},"data":"Group sharing is disabled by the administrator"}}"#.utf8)
-        let error = NKError(errorCode: 403, errorDescription: "403: Forbidden", responseData: body)
-
-        #expect(error.userMessage(for: .delete(fileName: "a.jpg")) == "Group sharing is disabled by the administrator")
-    }
-
     @Test("Replaces technical server text")
     func technicalServerText() throws {
         let error = NKError(statusCode: 409, fallbackDescription: "Parent node does not exist")

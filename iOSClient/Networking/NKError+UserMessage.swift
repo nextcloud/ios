@@ -17,7 +17,7 @@ extension NKError {
             return appMessage
         }
 
-        if userFacingServerMessage == nil, let operationMessage = operationMessage(for: context, kind: kind) {
+        if let operationMessage = operationMessage(for: context, kind: kind) {
             return operationMessage
         }
 
