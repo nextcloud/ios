@@ -313,9 +313,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             vc.dismissDidEnterBackground = false
             vc.delegate = self
 
-            let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
+            let maximumHeight = view.safeAreaLayoutGuide.layoutFrame.height * 0.8
             let numberCell = shareAccounts.count
-            let height = min(CGFloat(numberCell * Int(vc.heightCell) + 45), screenHeighMax)
+            let height = min(CGFloat(numberCell * Int(vc.heightCell) + 45), maximumHeight)
             let popup = NCPopupViewController(contentController: vc, popupWidth: 300, popupHeight: height + 20)
 
             self.present(popup, animated: true)

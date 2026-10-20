@@ -16,6 +16,9 @@ class NCViewerProviderContextMenu: UIViewController {
     private let networking = NCNetworking.shared
     internal let global = NCGlobal.shared
     private let sizeIcon: CGFloat = 150
+    private weak var sourceView: UIView?
+    private var previewSize: CGSize?
+    private var usesAvailablePreviewSize = false
     internal var sceneIdentifier: String = ""
 
     // MARK: - View Life Cycle
@@ -24,12 +27,13 @@ class NCViewerProviderContextMenu: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    init(metadata: tableMetadata, image: UIImage?, sceneIdentifier: String) {
+    init(metadata: tableMetadata, image: UIImage?, sceneIdentifier: String, sourceView: UIView) {
         super.init(nibName: nil, bundle: nil)
         self.metadata = metadata.detachedCopy()
         self.metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         self.image = image
         self.sceneIdentifier = sceneIdentifier
+        self.sourceView = sourceView
 
         if metadata.directory {
             imageView.image = NCImageCache.shared.getFolder(account: metadata.account)
@@ -57,7 +61,8 @@ class NCViewerProviderContextMenu: UIViewController {
             // VIEW VIDEO
             if metadata.isVideo {
                 if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512, userId: metadata.userId, urlBase: metadata.urlBase) {
-                    let newSize = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                    usesAvailablePreviewSize = true
+                    let newSize = resize(availablePreviewSize)
                     imageView.image = nil
                     imageView.frame = newSize
                     preferredContentSize = newSize.size
@@ -121,6 +126,16 @@ class NCViewerProviderContextMenu: UIViewController {
         imageView.contentMode = .scaleAspectFill
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        // UIKit owns the presented view's frame; only update its preferred size.
+        let size = usesAvailablePreviewSize ? availablePreviewSize : previewSize.map(fittedPreviewSize) ?? .zero
+        if preferredContentSize != size {
+            preferredContentSize = size
+        }
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -175,7 +190,10 @@ class NCViewerProviderContextMenu: UIViewController {
         }
 
         imageView.image = image
-        imageView.frame = resize(image?.size)
+        let frame = resize(image?.size)
+        if imageView.window == nil {
+            imageView.frame = frame
+        }
     }
 
     private func viewVideo(metadata: tableMetadata) {
@@ -190,34 +208,24 @@ class NCViewerProviderContextMenu: UIViewController {
         }
     }
 
+    private var availablePreviewSize: CGSize {
+        guard let sourceView else { return .zero }
+        let safeSize = sourceView.safeAreaLayoutGuide.layoutFrame.size
+        return safeSize.width > 0 && safeSize.height > 0 ? safeSize : sourceView.bounds.size
+    }
+
+    private func fittedPreviewSize(_ size: CGSize) -> CGSize {
+        let availableSize = availablePreviewSize
+        guard size.width > 0, size.height > 0, availableSize.width > 0, availableSize.height > 0 else { return .zero }
+
+        let scale = min(1, min(availableSize.width / size.width, availableSize.height / size.height))
+        return CGSize(width: size.width * scale, height: size.height * scale)
+    }
+
     private func resize(_ size: CGSize?) -> CGRect {
-        var frame = CGRect.zero
-        guard let size = size else {
-            preferredContentSize = frame.size
-            return frame
-        }
-
-        if size.width <= UIScreen.main.bounds.width {
-            frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-            preferredContentSize = frame.size
-            return frame
-        }
-
-        let originRatio = size.width / size.height
-        let newRatio = UIScreen.main.bounds.width / UIScreen.main.bounds.height
-        var newSize = CGSize.zero
-
-        if originRatio < newRatio {
-            newSize.height = UIScreen.main.bounds.height
-            newSize.width = UIScreen.main.bounds.height * originRatio
-        } else {
-            newSize.width = UIScreen.main.bounds.width
-            newSize.height = UIScreen.main.bounds.width / originRatio
-        }
-
-        frame = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
-        preferredContentSize = frame.size
-        return frame
+        previewSize = size
+        preferredContentSize = size.map(fittedPreviewSize) ?? .zero
+        return CGRect(origin: .zero, size: preferredContentSize)
     }
 }
 
