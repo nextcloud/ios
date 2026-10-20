@@ -103,8 +103,9 @@ class NCMediaNavigationController: NCMainNavigationController {
                         media.showOnlyImages = true
                         media.showOnlyVideos = false
                         Task {
-                            await media.loadDataSource()
                             await media.networkRemoveAll()
+                            await media.loadDataSource()
+                            media.searchNewMedia()
                         }
                     },
 
@@ -112,8 +113,9 @@ class NCMediaNavigationController: NCMainNavigationController {
                         media.showOnlyImages = false
                         media.showOnlyVideos = true
                         Task {
-                            await media.loadDataSource()
                             await media.networkRemoveAll()
+                            await media.loadDataSource()
+                            media.searchNewMedia()
                         }
                     },
 
@@ -121,8 +123,9 @@ class NCMediaNavigationController: NCMainNavigationController {
                         media.showOnlyImages = false
                         media.showOnlyVideos = false
                         Task {
-                            await media.loadDataSource()
                             await media.networkRemoveAll()
+                            await media.loadDataSource()
+                            media.searchNewMedia()
                         }
                     }
                 ]

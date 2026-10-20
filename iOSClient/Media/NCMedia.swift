@@ -344,6 +344,8 @@ class NCMedia: UIViewController {
     // MARK: - NotificationCenter
 
     func networkRemoveAll() async {
+        searchMediaTask?.cancel()
+        searchMediaTask = nil
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = nil
 
