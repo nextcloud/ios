@@ -9,13 +9,14 @@ import NextcloudKit
 
 struct NCVideoViewerContentView: View {
     let metadata: tableMetadata
+    /// The existing viewer collection, used for the adaptive footer; never a second player model.
+    let mediaViewerModel: NCMediaViewerModel?
     let localURL: URL?
     let previewURL: URL?
     let userAgent: String?
     let isSelected: Bool
     let isChromeHidden: Bool
     let contextMenuController: NCMainTabBarController?
-    let navigationBar: UINavigationBar?
     let canGoPrevious: Bool
     let canGoNext: Bool
     let shouldAutoPlay: Bool
@@ -35,6 +36,7 @@ struct NCVideoViewerContentView: View {
     @State private var errorMessage: String?
     @State var presentedAVPlayerURL: URL?
     @State var presentedVLCURL: URL?
+    @State var isSelectingPlaybackPage = false
     @State var hasRequestedPlayback = false
     @State var isLaunchingPlayback = false
     @State private var resolvedPlaybackURL: URL?
@@ -50,13 +52,13 @@ struct NCVideoViewerContentView: View {
 
     init(
         metadata: tableMetadata,
+        mediaViewerModel: NCMediaViewerModel? = nil,
         localURL: URL?,
         previewURL: URL? = nil,
         userAgent: String? = nil,
         isSelected: Bool = true,
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController? = nil,
-        navigationBar: UINavigationBar? = nil,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
         shouldAutoPlay: Bool = false,
@@ -72,13 +74,13 @@ struct NCVideoViewerContentView: View {
         cancelVideoDownload: (@MainActor () async -> Void)? = nil
     ) {
         self.metadata = metadata
+        self.mediaViewerModel = mediaViewerModel
         self.localURL = localURL
         self.previewURL = previewURL
         self.userAgent = userAgent
         self.isSelected = isSelected
         self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
-        self.navigationBar = navigationBar
         self.canGoPrevious = canGoPrevious
         self.canGoNext = canGoNext
         self.shouldAutoPlay = shouldAutoPlay
@@ -129,7 +131,16 @@ struct NCVideoViewerContentView: View {
 
             scheduleAutoPlayIfNeeded()
         }
-        .onReceive(playback.$engine) { _ in
+        .onReceive(playback.$engine) { engine in
+            switch engine {
+            case .avFoundation:
+                presentedVLCURL = nil
+            case .vlc:
+                presentedAVPlayerURL = nil
+            case .loading, .failed:
+                presentedAVPlayerURL = nil
+                presentedVLCURL = nil
+            }
             scheduleAutoPlayIfNeeded()
         }
         .onReceive(NotificationCenter.default.publisher(for: .ncMediaViewerStopPlayback)) { _ in
@@ -329,10 +340,7 @@ private extension NCVideoViewerContentView {
                 Button {
                     retryPlayback()
                 } label: {
-                    Label(
-                        NSLocalizedString("_retry_", comment: ""),
-                        systemImage: "arrow.clockwise"
-                    )
+                    Label(NSLocalizedString("_retry_", comment: ""), systemImage: "arrow.clockwise")
                     .font(.subheadline.weight(.semibold))
                 }
                 .buttonStyle(.borderedProminent)
@@ -416,11 +424,7 @@ private extension NCVideoViewerContentView {
         }
     }
 
-    func playbackPresentationPlaceholder(
-        url: URL,
-        onURLChanged: @escaping (_ newURL: URL) -> Void,
-        onSelectionRestored: @escaping () -> Void
-    ) -> some View {
+    func playbackPresentationPlaceholder(url: URL, onURLChanged: @escaping (_ newURL: URL) -> Void, onSelectionRestored: @escaping () -> Void) -> some View {
         videoBackgroundColor
             .ignoresSafeArea()
             .allowsHitTesting(false)
@@ -466,10 +470,7 @@ private extension NCVideoViewerContentView {
         let expectedTaskIdentifier = taskIdentifier
         let expectedLoadGeneration = loadGeneration
 
-        guard isStableSelection(
-            expectedTaskIdentifier: expectedTaskIdentifier,
-            expectedLoadGeneration: expectedLoadGeneration
-        ) else {
+        guard isStableSelection(expectedTaskIdentifier: expectedTaskIdentifier, expectedLoadGeneration: expectedLoadGeneration) else {
             return
         }
 
@@ -480,17 +481,11 @@ private extension NCVideoViewerContentView {
             return
         }
 
-        await resolveAndLoadVideo(
-            expectedTaskIdentifier: expectedTaskIdentifier,
-            expectedLoadGeneration: expectedLoadGeneration
-        )
+        await resolveAndLoadVideo(expectedTaskIdentifier: expectedTaskIdentifier, expectedLoadGeneration: expectedLoadGeneration)
     }
 
     @MainActor
-    func isStableSelection(
-        expectedTaskIdentifier: String,
-        expectedLoadGeneration: UUID
-    ) -> Bool {
+    func isStableSelection(expectedTaskIdentifier: String, expectedLoadGeneration: UUID) -> Bool {
         guard !Task.isCancelled else {
             return false
         }
@@ -511,24 +506,15 @@ private extension NCVideoViewerContentView {
     }
 
     @MainActor
-    func resolveAndLoadVideo(
-        expectedTaskIdentifier: String,
-        expectedLoadGeneration: UUID
-    ) async {
+    func resolveAndLoadVideo(expectedTaskIdentifier: String, expectedLoadGeneration: UUID) async {
         errorMessage = nil
 
         if let localURL {
-            loadResolvedVideo(
-                url: localURL,
-                expectedTaskIdentifier: expectedTaskIdentifier,
-                expectedLoadGeneration: expectedLoadGeneration
-            )
+            loadResolvedVideo(url: localURL, expectedTaskIdentifier: expectedTaskIdentifier, expectedLoadGeneration: expectedLoadGeneration)
             return
         }
 
-        let result = await resolvedVideoURL(
-            taskIdentifier: expectedTaskIdentifier
-        )
+        let result = await resolvedVideoURL(taskIdentifier: expectedTaskIdentifier)
 
         guard !Task.isCancelled else {
             return
@@ -552,19 +538,11 @@ private extension NCVideoViewerContentView {
             return
         }
 
-        loadResolvedVideo(
-            url: url,
-            expectedTaskIdentifier: expectedTaskIdentifier,
-            expectedLoadGeneration: expectedLoadGeneration
-        )
+        loadResolvedVideo(url: url, expectedTaskIdentifier: expectedTaskIdentifier, expectedLoadGeneration: expectedLoadGeneration)
     }
 
     @MainActor
-    func loadResolvedVideo(
-        url: URL,
-        expectedTaskIdentifier: String,
-        expectedLoadGeneration: UUID
-    ) {
+    func loadResolvedVideo(url: URL, expectedTaskIdentifier: String, expectedLoadGeneration: UUID) {
         guard expectedTaskIdentifier == taskIdentifier else {
             return
         }
@@ -585,13 +563,7 @@ private extension NCVideoViewerContentView {
             return
         }
 
-        playback.loadVideo(
-            metadata: metadata,
-            url: url,
-            fileName: resolvedFileName,
-            userAgent: userAgent,
-            httpHeaders: httpHeaders(for: url)
-        )
+        playback.loadVideo(metadata: metadata, url: url, fileName: resolvedFileName, userAgent: userAgent, httpHeaders: httpHeaders(for: url))
     }
 
     func httpHeaders(for url: URL) -> [String: String] {
@@ -663,10 +635,7 @@ private extension NCVideoViewerContentView {
                 let downloadedURL = try await downloadVideo()
                 try Task.checkCancellation()
 
-                guard isStableSelection(
-                    expectedTaskIdentifier: expectedTaskIdentifier,
-                    expectedLoadGeneration: expectedLoadGeneration
-                ) else {
+                guard isStableSelection(expectedTaskIdentifier: expectedTaskIdentifier, expectedLoadGeneration: expectedLoadGeneration) else {
                     return
                 }
 
@@ -675,13 +644,7 @@ private extension NCVideoViewerContentView {
                 resolvedPlaybackURL = downloadedURL
                 hasRequestedPlayback = true
 
-                playback.loadVideo(
-                    metadata: metadata,
-                    url: downloadedURL,
-                    fileName: resolvedFileName,
-                    userAgent: userAgent,
-                    httpHeaders: [:]
-                )
+                playback.loadVideo(metadata: metadata, url: downloadedURL, fileName: resolvedFileName, userAgent: userAgent, httpHeaders: [:])
             } catch is CancellationError {
                 return
             } catch {
@@ -738,17 +701,10 @@ private extension NCVideoViewerContentView {
         }
 
         if let localURL {
-            return playback.isCurrentVideo(
-                ocId: metadata.ocId,
-                etag: metadata.etag,
-                url: localURL
-            )
+            return playback.isCurrentVideo(ocId: metadata.ocId, etag: metadata.etag, url: localURL)
         }
 
-        return playback.isCurrentVideo(
-            ocId: metadata.ocId,
-            etag: metadata.etag
-        )
+        return playback.isCurrentVideo(ocId: metadata.ocId, etag: metadata.etag)
     }
 
     @MainActor
@@ -774,9 +730,28 @@ private extension NCVideoViewerContentView {
 // MARK: - Fullscreen Playback State
 
 extension NCVideoViewerContentView {
+    /// Both engines stop/dismiss before changing the selected page; the presenter
+    /// choice is the only engine-specific part of thumbnail navigation.
     @MainActor
-    func closeFromFullscreenVideo(ocId: String?) {
-        onClose?(ocId)
+    func selectPageFromPlayback(_ index: Int, usingVLC: Bool) {
+        guard !isSelectingPlaybackPage, let model = mediaViewerModel,
+              model.pageTransition.isIdle, index != model.selectedIndex,
+              index >= 0, index < model.numberOfPages else { return }
+        isSelectingPlaybackPage = true
+        let sourceIndex = model.selectedIndex
+        let selectPage: () -> Void = {
+            resetPlaybackPresentationState()
+            Task { @MainActor in
+                defer { isSelectingPlaybackPage = false }
+                guard model.pageTransition.isIdle, model.selectedIndex == sourceIndex else { return }
+                await model.displayPreviewPage(at: index)
+            }
+        }
+        if usingVLC {
+            NCVideoVLCPresenter.dismiss(completion: selectPage)
+        } else {
+            NCVideoAVPlayerPresenter.dismiss(completion: selectPage)
+        }
     }
 
     @MainActor
@@ -821,9 +796,7 @@ extension NCVideoViewerContentView {
 
 private extension NCVideoViewerContentView {
     @MainActor
-    func resolvedVideoURL(
-        taskIdentifier: String
-    ) async -> (url: URL?, autoplay: Bool, error: NKError) {
+    func resolvedVideoURL(taskIdentifier: String) async -> (url: URL?, autoplay: Bool, error: NKError) {
         if let existingTask = Self.resolvingTasks[taskIdentifier] {
             return await existingTask.value
         }

@@ -39,10 +39,7 @@ class NCMedia: UIViewController {
     var lastScale: CGFloat = 1.0
     var currentScale: CGFloat = 1.0
     var maxColumns: Int {
-        let screenWidth = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
-        let column = Int(screenWidth / 55)
-
-        return column
+        max(1, Int(collectionView.bounds.width / 55))
     }
     var transitionColumns = false
     var lastNumberOfColumns: Int = 0
@@ -83,19 +80,23 @@ class NCMedia: UIViewController {
                 return
             }
 
-            updateLeftBarButtonItems(
-                date: navigationItem.leftBarButtonItems?.first === buttonDateBarItem ? buttonDateBarItem : nil,
-                activity: searchMediaInProgress
-            )
+            updateLeftBarButtonItems(activity: searchMediaInProgress)
         }
     }
 
-    internal lazy var buttonDateBarItem = UIBarButtonItem(
-        title: nil,
-        style: .plain,
-        target: self,
-        action: #selector(presentMediaDatePicker)
-    )
+    internal lazy var buttonDateBarItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(
+            image: UIImage(systemName: "calendar"),
+            style: .plain,
+            target: self,
+            action: #selector(presentMediaDatePicker)
+        )
+        item.accessibilityLabel = NSLocalizedString("_select_date_", comment: "")
+        if #available(iOS 27.1, *) {
+            item.axisBehavior = .horizontalOnly
+        }
+        return item
+    }()
     internal var lastVisibleDateRange: (first: IndexPath, last: IndexPath)?
 
     internal lazy var searchActivityIndicator: UIActivityIndicatorView = {
@@ -340,6 +341,8 @@ class NCMedia: UIViewController {
     // MARK: - NotificationCenter
 
     func networkRemoveAll() async {
+        searchMediaTask?.cancel()
+        searchMediaTask = nil
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = nil
 

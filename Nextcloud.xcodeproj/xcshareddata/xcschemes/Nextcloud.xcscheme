@@ -56,9 +56,9 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F31F69412A2F6D4500162F76"
-               BuildableName = "NextcloudSnapshotTests.xctest"
-               BlueprintName = "NextcloudSnapshotTests"
+               BlueprintIdentifier = "AF8ED1F82757821000B8DBC4"
+               BuildableName = "NextcloudUnitTests.xctest"
+               BlueprintName = "NextcloudUnitTests"
                ReferencedContainer = "container:Nextcloud.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

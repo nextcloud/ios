@@ -13,6 +13,10 @@ class NCFiles: NCCollectionViewCommon {
     internal var lastScrollTime: TimeInterval = 0
     internal var accumulatedScrollDown: CGFloat = 0
 
+    var personalFilesOnly: Bool {
+        (navigationController as? NCFilesNavigationController)?.personalFilesOnly ?? false
+    }
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -99,7 +103,18 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
+    override func getNavigationTitle() -> String {
+        guard serverUrl.isEmpty || serverUrl == utilityFileSystem.getHomeServer(session: session) else {
+            return super.getNavigationTitle()
+        }
+        let titleKey = personalFilesOnly ? "_personal_files_" : "_all_files_"
+        return NSLocalizedString(titleKey, comment: "")
+    }
+
     override func viewWillAppear(_ animated: Bool) {
+        if serverUrl == utilityFileSystem.getHomeServer(session: session) {
+            titleCurrentFolder = getNavigationTitle()
+        }
         super.viewWillAppear(animated)
 
         Task {
@@ -154,7 +169,8 @@ class NCFiles: NCCollectionViewCommon {
         let metadatas = await self.database.getMetadatasAsyncDataSource(withServerUrl: self.serverUrl,
                                                                         withUserId: self.session.userId,
                                                                         withAccount: self.session.account,
-                                                                        withLayout: self.layoutForView)
+                                                                        withLayout: self.layoutForView,
+                                                                        personalFilesOnly: personalFilesOnly)
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
                                                      layoutForView: layoutForView,

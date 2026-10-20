@@ -9,60 +9,18 @@ struct AlbumDetailsScreen: View {
     private unowned let controller: NCMainTabBarController
     @StateObject private var viewModel: AlbumDetailsViewModel
 
-    init(controller: NCMainTabBarController, album: Album, navigator: AlbumsNavigator = AlbumsNavigator()) {
+    init(controller: NCMainTabBarController, viewModel: AlbumDetailsViewModel) {
         self.controller = controller
-        _viewModel = StateObject(
-            wrappedValue: AlbumDetailsViewModel(controller: controller, album: album, navigator: navigator)
-        )
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
 
     var body: some View {
         ZStack {
             content()
+                .scrollBounceBehavior(.always, axes: .vertical)
 
             if viewModel.isLoadingPopupVisible {
                 NCLoadingAlert()
-            }
-        }
-        .navigationTitle(viewModel.screenTitle)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                if !viewModel.isLoading {
-                    Button(action: handleAddPhotosIntent) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "plus")
-                            Text(NSLocalizedString("_albums_photos_add_photos_btn_", comment: ""))
-                        }
-                        .fixedSize()
-                    }
-
-                    Menu {
-                        Button {
-                            viewModel.onRenameAlbumIntent()
-                        } label: {
-                            Label(
-                                NSLocalizedString("_albums_photos_rename_album_btn_", comment: ""),
-                                systemImage: "pencil"
-                            )
-                        }
-
-                        Button(role: .destructive) {
-                            viewModel.onDeleteAlbumIntent()
-                        } label: {
-                            Label(
-                                NSLocalizedString("_albums_photos_delete_album_btn_", comment: ""),
-                                systemImage: "trash"
-                            )
-                        }
-                        .tint(.red)
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
-                            .imageScale(.large)
-                    }
-                    .buttonStyle(.plain)
-                    .tint(Color(NCBrandColor.shared.iconImageColor))
-                }
             }
         }
         .sheet(
@@ -118,19 +76,18 @@ struct AlbumDetailsScreen: View {
     @ViewBuilder
     private func content() -> some View {
         if viewModel.isLoading && !viewModel.hasCachedPhotos {
-            ProgressView(NSLocalizedString("_albums_photos_loading_msg_", comment: ""))
+            Color.clear.frame(maxWidth: .infinity, maxHeight: .infinity)
         } else if let error = viewModel.errorMessage {
-            Text(error)
-                .refreshable {
-                    viewModel.onPulledToRefresh()
-                }
+            ScrollView {
+                Text(error)
+                    .frame(maxWidth: .infinity)
+            }
+            .refreshable { viewModel.onPulledToRefresh() }
         } else if viewModel.photos.isEmpty {
             NoPhotosEmptyView(
                 onAddPhotosIntent: handleAddPhotosIntent
             )
-            .refreshable {
-                viewModel.onPulledToRefresh()
-            }
+            .refreshable { viewModel.onPulledToRefresh() }
         } else {
             PhotosGridView(
                 controller: controller,
@@ -142,9 +99,7 @@ struct AlbumDetailsScreen: View {
                     }
                 }
             )
-            .refreshable {
-                viewModel.onPulledToRefresh()
-            }
+            .refreshable { viewModel.onPulledToRefresh() }
         }
     }
 

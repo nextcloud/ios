@@ -8,9 +8,7 @@ import NextcloudKit
 struct NCVideoURLResolver {
     private let utilityFileSystem = NCUtilityFileSystem()
 
-    func getVideoURL(
-        metadata: tableMetadata
-    ) async -> (url: URL?, autoplay: Bool, error: NKError) {
+    func getVideoURL(metadata: tableMetadata) async -> (url: URL?, autoplay: Bool, error: NKError) {
         if !metadata.url.isEmpty {
             if metadata.url.hasPrefix("/") {
                 return (
@@ -28,12 +26,7 @@ struct NCVideoURLResolver {
         }
 
         if utilityFileSystem.fileProviderStorageExists(metadata) {
-            let localPath = utilityFileSystem.getDirectoryProviderStorageOcId(
-                metadata.ocId,
-                fileName: metadata.fileNameView,
-                userId: metadata.userId,
-                urlBase: metadata.urlBase
-            )
+            let localPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
 
             return (
                 url: URL(fileURLWithPath: localPath),
@@ -45,35 +38,18 @@ struct NCVideoURLResolver {
         return await getDirectDownloadURL(metadata: metadata)
     }
 
-    private func getDirectDownloadURL(
-        metadata: tableMetadata
-    ) async -> (url: URL?, autoplay: Bool, error: NKError) {
+    private func getDirectDownloadURL(metadata: tableMetadata) async -> (url: URL?, autoplay: Bool, error: NKError) {
         await withCheckedContinuation { continuation in
-            NextcloudKit.shared.getDirectDownload(
-                fileId: metadata.fileId,
-                account: metadata.account
-            ) { _ in
+            NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId, account: metadata.account) { _ in
             } completion: { _, urlString, _, error in
                 guard error == .success,
                       let urlString,
                       let url = URL(string: urlString) else {
-                    continuation.resume(
-                        returning: (
-                            url: nil,
-                            autoplay: false,
-                            error: error
-                        )
-                    )
+                    continuation.resume(returning: (url: nil, autoplay: false, error: error))
                     return
                 }
 
-                continuation.resume(
-                    returning: (
-                        url: url,
-                        autoplay: true,
-                        error: error
-                    )
-                )
+                continuation.resume(returning: (url: url, autoplay: true, error: error))
             }
         }
     }

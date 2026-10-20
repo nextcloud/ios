@@ -45,25 +45,18 @@ final class TransfersViewModel: ObservableObject, NCMetadataDownloadTransfersSuc
 
     init(session: NCSession.Session) {
         self.session = session
-
-        Task { @MainActor in
-            await NCNetworking.shared.transferDispatcher.addDelegate(self)
-            await NCNetworking.shared.metadataUploadTranfersSuccess.addDelegate(self)
-            await NCNetworking.shared.metadataDownloadTranfersSuccess.addDelegate(self)
-            await pollTransfers()
-        }
     }
 
-    deinit {
-        print("deinit")
-    }
-
-    func detach() {
-        Task { @MainActor in
-            await NCNetworking.shared.transferDispatcher.removeDelegate(self)
-            await NCNetworking.shared.metadataUploadTranfersSuccess.removeDelegate(self)
-            await NCNetworking.shared.metadataDownloadTranfersSuccess.removeDelegate(self)
-        }
+    /// Observe only while the screen is visible, including subsequent visits to its tab.
+    @MainActor
+    func observeTransfers() async {
+        await networking.transferDispatcher.addDelegate(self)
+        await networking.metadataUploadTranfersSuccess.addDelegate(self)
+        await networking.metadataDownloadTranfersSuccess.addDelegate(self)
+        await pollTransfers()
+        await networking.transferDispatcher.removeDelegate(self)
+        await networking.metadataUploadTranfersSuccess.removeDelegate(self)
+        await networking.metadataDownloadTranfersSuccess.removeDelegate(self)
     }
 
     @MainActor

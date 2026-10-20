@@ -39,28 +39,27 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     var menuPlus: NCContextMenuPlus?
 
     let optionButtonTag = 100
-    let assistantButtonTag = 101
-    let notificationsButtonTag = 102
-    let transfersButtonTag = 103
+
+    lazy var sidebarButtonItem: UIBarButtonItem = {
+        let action = UIAction(title: NSLocalizedString("_sidebar_navigation_", comment: ""), image: UIImage(systemName: "sidebar.left")) { [weak self] _ in
+            self?.controller?.presentSidebar()
+        }
+        let item = UIBarButtonItem(image: UIImage(systemName: "sidebar.left"), primaryAction: action)
+        item.menuRepresentation = action
+        if #available(iOS 27.0, *) {
+            item.visibilityPriority = .high
+        }
+        if #available(iOS 27.1, *) {
+            item.axisBehavior = .horizontalOnly
+        }
+        item.accessibilityLabel = NSLocalizedString("_sidebar_navigation_", comment: "")
+        item.accessibilityIdentifier = "openSidebar"
+        return item
+    }()
 
     lazy var optionButtonItem: UIBarButtonItem = {
         let item = UIBarButtonItem()
         item.tag = optionButtonTag
-        return item
-    }()
-    lazy var assistantButtonItem: UIBarButtonItem = {
-        let item = UIBarButtonItem()
-        item.tag = assistantButtonTag
-        return item
-    }()
-    lazy var notificationsButtonItem: UIBarButtonItem = {
-        let item = UIBarButtonItem()
-        item.tag = notificationsButtonTag
-        return item
-    }()
-    lazy var transfersButtonItem: UIBarButtonItem = {
-        let item = UIBarButtonItem()
-        item.tag = transfersButtonTag
         return item
     }()
 
@@ -78,41 +77,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             optionButtonItem.tintColor = NCBrandColor.shared.iconImageColor
             setOptionMenu(await createOptionMenu())
         }
-
-        assistantButtonItem.primaryAction = UIAction(handler: { _ in
-            let inputModel = NCAssistantInputModel()
-            let assistant = NCAssistant(assistantModel: NCAssistantModel(controller: self.controller, inputModel: inputModel), chatModel: NCAssistantChatModel(controller: self.controller, inputModel: inputModel), conversationsModel: NCAssistantChatConversationsModel(controller: self.controller))
-            let hostingController = UIHostingController(rootView: assistant)
-            self.present(hostingController, animated: true, completion: nil)
-        })
-        assistantButtonItem.image = UIImage(systemName: "sparkles")
-        assistantButtonItem.title = NSLocalizedString("_assistant_", comment: "")
-        assistantButtonItem.tintColor = NCBrandColor.shared.iconImageColor
-
-        notificationsButtonItem.primaryAction = UIAction(handler: { _ in
-            if let navigationController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? UINavigationController,
-               let viewController = navigationController.topViewController as? NCNotification {
-                viewController.modalPresentationStyle = .pageSheet
-                viewController.session = self.session
-                self.present(navigationController, animated: true, completion: nil)
-            }
-        })
-        notificationsButtonItem.image = UIImage(systemName: "bell.fill")
-        notificationsButtonItem.title = NSLocalizedString("_notifications_", comment: "")
-        notificationsButtonItem.tintColor = NCBrandColor.shared.iconImageColor
-
-        transfersButtonItem.primaryAction = UIAction(handler: { _ in
-            let rootView = TransfersView(session: self.session, onClose: { [weak self = self] in
-                self?.dismiss(animated: true)
-            })
-            let hosting = UIHostingController(rootView: rootView)
-            hosting.modalPresentationStyle = .pageSheet
-
-            self.present(hosting, animated: true)
-        })
-        transfersButtonItem.image = UIImage(systemName: "arrow.left.arrow.right.circle.fill")
-        transfersButtonItem.title = NSLocalizedString("_transfers_", comment: "")
-        transfersButtonItem.tintColor = NCBrandColor.shared.iconImageColor
 
         // PLUS BUTTON MENU
         let buttonSize: CGFloat = 44
@@ -142,12 +106,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         view.addSubview(menuPlusButton)
 
-        let trailingAnchor: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? -28 : -22
-        let bottomAnchor: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? -28 : -22
-
         NSLayoutConstraint.activate([
-            menuPlusButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: trailingAnchor),
-            menuPlusButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: bottomAnchor),
+            menuPlusButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            menuPlusButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             menuPlusButton.widthAnchor.constraint(equalToConstant: buttonSize),
             menuPlusButton.heightAnchor.constraint(equalToConstant: buttonSize)
         ])
@@ -202,6 +163,12 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     }
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        if #available(iOS 27.0, *),
+           viewController is NCCollectionViewCommon || viewController is NCMedia || viewController is AlbumsViewController ||
+           viewController is NCTrash || viewController is NCActivity || viewController is UIHostingController<TransfersView> {
+            viewController.navigationItem.navigationBarMinimization.minimizationBehavior = .never
+        }
+
         Task { @MainActor in
             // (+)
             // PLUS BUTTON ONLY IN FILES
@@ -216,6 +183,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             // MENU
             setNavigationBarAppearance()
             await collectionViewCommonTrailingItemGroups()
+            configureSidebarButton()
         }
     }
 
@@ -302,23 +270,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             return
         }
 
-        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
-
-        // ---------------------------------------------------------
-        // Build desired items
-        // ---------------------------------------------------------
-
+        // Keep screen-specific options in the navigation bar.
         var desiredItems: [UIBarButtonItem] = []
-
-        if controller?.availableNotifications ?? false {
-            desiredItems.append(notificationsButtonItem)
-        }
-
-        if capabilities.assistantEnabled {
-            desiredItems.append(assistantButtonItem)
-        }
-
-        desiredItems.append(transfersButtonItem)
 
         if let optionMenu = await createOptionMenu() {
             setOptionMenu(optionMenu)
@@ -385,7 +338,44 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     // MARK: - Left
 
-    func setNavigationLeftItems() async { }
+    func setNavigationLeftItems() async {
+        configureSidebarButton()
+    }
+
+    func configureSidebarButton() {
+        guard let navigationItem = topViewController?.navigationItem else { return }
+        let groupedItems = navigationItem.leadingItemGroups.flatMap { $0.barButtonItems }
+        var items = groupedItems.isEmpty ? navigationItem.leftBarButtonItems ?? [] : groupedItems
+        items.removeAll { $0 === sidebarButtonItem }
+        // Rebuild loading from its state so repeated updates cannot duplicate or retain a stopped spinner.
+        let albums = topViewController as? AlbumsViewController
+        let loadingItem = collectionViewCommon?.serverDataActivityBarButtonItem ?? trashViewController?.serverDataActivityBarButtonItem ?? albums?.serverDataActivityBarButtonItem
+        let loadingIndicator = collectionViewCommon?.serverDataActivityIndicator ?? trashViewController?.serverDataActivityIndicator ?? albums?.serverDataActivityIndicator
+        items.removeAll { $0 === loadingItem }
+        let isFiles = topViewController is NCFiles
+        if isFiles || topViewController === viewControllers.first,
+           controller != nil,
+           !(collectionViewCommon?.isEditMode ?? false),
+           !(mediaViewController?.isEditMode ?? false),
+           !(trashViewController?.isEditMode ?? false) {
+            items.insert(sidebarButtonItem, at: 0)
+            if isFiles {
+                navigationItem.leftItemsSupplementBackButton = true
+            }
+        }
+        if albums != nil {
+            navigationItem.leftItemsSupplementBackButton = true
+        }
+        if let loadingItem, loadingIndicator?.isAnimating == true {
+            items.append(loadingItem)
+        }
+        // Match Media: each item has its own group; only the sidebar is always available.
+        navigationItem.leadingItemGroups = items.map { item in
+            let group = UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)
+            group.alwaysAvailable = item === sidebarButtonItem
+            return group
+        }
+    }
 
     /// Changes the tint color of a specific left bar button item identified by tag.
     /// - Parameters:
@@ -393,10 +383,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     ///   - color: The UIColor to be applied.
     @MainActor
     func setLeftItemColor(tag: Int, to color: UIColor) {
-        guard
-            let items = topViewController?.navigationItem.leftBarButtonItems,
-            let item = items.first(where: { $0.tag == tag })
-        else { return }
+        guard let navigationItem = topViewController?.navigationItem else { return }
+        let groupedItems = navigationItem.leadingItemGroups.flatMap { $0.barButtonItems }
+        let items = groupedItems.isEmpty ? navigationItem.leftBarButtonItems ?? [] : groupedItems
+        guard let item = items.first(where: { $0.tag == tag }) else { return }
 
         applyTint(item, color: color)
     }
@@ -406,7 +396,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     /// - Parameter color: The UIColor to be applied.
     @MainActor
     func setAllLeftItemsColor(_ color: UIColor) {
-        guard let items = topViewController?.navigationItem.leftBarButtonItems else { return }
+        guard let navigationItem = topViewController?.navigationItem else { return }
+        let groupedItems = navigationItem.leadingItemGroups.flatMap { $0.barButtonItems }
+        let items = groupedItems.isEmpty ? navigationItem.leftBarButtonItems ?? [] : groupedItems
 
         for item in items {
             applyTint(item, color: color)
@@ -446,16 +438,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     /// - Parameter color: The UIColor to be applied to all right bar button items.
     @MainActor
     func updateRightBarButtonsTint(to color: UIColor) {
-        let rightItems: [UIBarButtonItem] = [
-            optionButtonItem,
-            assistantButtonItem,
-            notificationsButtonItem,
-            transfersButtonItem
-        ]
-
-        for item in rightItems {
-            applyTint(item, color: color)
-        }
+        applyTint(optionButtonItem, color: color)
 
         if let visibleItems = topViewController?.navigationItem.rightBarButtonItems {
             for item in visibleItems {

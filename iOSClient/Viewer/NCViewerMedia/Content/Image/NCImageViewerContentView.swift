@@ -266,10 +266,7 @@ struct NCImageViewerContentView: View {
             return nil
         }
 
-        return try? await NCSVGRenderer().renderSVGToUIImage(
-            svgData: svgData,
-            size: CGSize(width: 1024, height: 1024)
-        )
+        return try? await NCSVGRenderer().renderSVGToUIImage(svgData: svgData, size: CGSize(width: 1024, height: 1024))
     }
 
     private func isGIF(_ url: URL?) -> Bool {

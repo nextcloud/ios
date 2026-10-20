@@ -17,22 +17,10 @@ struct AlbumsListScreen: View {
     var body: some View {
         ZStack {
             content()
+                .scrollBounceBehavior(.always, axes: .vertical)
 
             if viewModel.isLoadingPopupVisible {
                 NCLoadingAlert()
-            }
-        }
-        .navigationTitle(NSLocalizedString("_albums_list_nav_title_", comment: ""))
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                Button(action: { viewModel.onNewAlbumClick() }) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "plus")
-                        Text(NSLocalizedString("_albums_list_new_album_btn_", comment: ""))
-                    }
-                    .fixedSize()
-                }
             }
         }
         .sheet(
@@ -61,8 +49,8 @@ struct AlbumsListScreen: View {
 
     @ViewBuilder
     private func content() -> some View {
-        if viewModel.isLoading {
-            ProgressView(NSLocalizedString("_albums_list_loading_msg_", comment: ""))
+        if viewModel.isLoading && viewModel.albums.isEmpty {
+            Color.clear.frame(maxWidth: .infinity, maxHeight: .infinity)
         } else if let error = viewModel.errorMessage {
             ScrollView(.vertical) {
                 VStack {
@@ -71,14 +59,10 @@ struct AlbumsListScreen: View {
                     Spacer()
                 }
             }
-            .refreshable {
-                viewModel.onPulledToRefresh()
-            }
+            .refreshable { viewModel.onPulledToRefresh() }
         } else if viewModel.albums.isEmpty {
             NoAlbumsEmptyView(onNewAlbumCreationIntent: viewModel.onNewAlbumClick)
-                .refreshable {
-                    viewModel.onPulledToRefresh()
-                }
+                .refreshable { viewModel.onPulledToRefresh() }
         } else {
             AlbumsGridView(
                 albums: viewModel.albums.sorted { (lhs: Album, rhs: Album) -> Bool in
@@ -88,9 +72,7 @@ struct AlbumsListScreen: View {
                 },
                 onAlbumClicked: viewModel.onAlbumClicked
             )
-            .refreshable {
-                viewModel.onPulledToRefresh()
-            }
+            .refreshable { viewModel.onPulledToRefresh() }
         }
     }
 }

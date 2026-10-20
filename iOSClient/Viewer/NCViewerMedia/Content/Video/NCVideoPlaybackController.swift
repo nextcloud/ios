@@ -55,36 +55,20 @@ final class NCVideoPlaybackController: ObservableObject {
 
     // MARK: - Public API
 
-    func isCurrentVideo(
-        ocId: String,
-        etag: String,
-        url: URL
-    ) -> Bool {
+    func isCurrentVideo(ocId: String, etag: String, url: URL) -> Bool {
         currentOcId == ocId &&
         currentEtag == etag &&
         currentURL == url
     }
     // Used for remote videos before the final playback URL is known.
-    func isCurrentVideo(
-        ocId: String,
-        etag: String
-    ) -> Bool {
+    func isCurrentVideo(ocId: String, etag: String) -> Bool {
         currentOcId == ocId &&
         currentEtag == etag &&
         currentURL != nil
     }
     // Reuses the current player when the requested video is already loaded.
-    func loadVideo(
-        metadata: tableMetadata,
-        url: URL,
-        fileName: String,
-        userAgent: String?,
-        httpHeaders: [String: String]
-    ) {
-        if isSameLoadedVideo(
-            metadata: metadata,
-            url: url
-        ) {
+    func loadVideo(metadata: tableMetadata, url: URL, fileName: String, userAgent: String?, httpHeaders: [String: String]) {
+        if isSameLoadedVideo(metadata: metadata, url: url) {
             return
         }
 
@@ -104,35 +88,17 @@ final class NCVideoPlaybackController: ObservableObject {
             return
         }
 
-        configureAudioSession()
-
         if NCPreferences().alwaysUseVLCForVideo(account: metadata.account, ocId: metadata.ocId) {
-            resolveWithVLC(
-                url: url,
-                userAgent: userAgent,
-                token: token
-            )
+            resolveWithVLC(url: url, userAgent: userAgent, token: token)
             return
         }
 
-        if shouldUseVLCWithoutAVFoundation(
-            url: url,
-            fileName: fileName
-        ) {
-            resolveWithVLC(
-                url: url,
-                userAgent: userAgent,
-                token: token
-            )
+        if shouldUseVLCWithoutAVFoundation(url: url, fileName: fileName) {
+            resolveWithVLC(url: url, userAgent: userAgent, token: token)
             return
         }
 
-        prepareAVFoundation(
-            url: url,
-            userAgent: userAgent,
-            httpHeaders: url.isFileURL ? [:] : httpHeaders,
-            token: token
-        )
+        prepareAVFoundation(url: url, userAgent: userAgent, httpHeaders: url.isFileURL ? [:] : httpHeaders, token: token)
     }
 
     // Changes only the prepared engine. Playback still starts from the cover.
@@ -141,11 +107,7 @@ final class NCVideoPlaybackController: ObservableObject {
             return
         }
 
-        resolveWithVLC(
-            url: currentURL,
-            userAgent: currentUserAgent,
-            token: loadToken
-        )
+        resolveWithVLC(url: currentURL, userAgent: currentUserAgent, token: loadToken)
     }
 
     func retryAVFoundation() {
@@ -172,12 +134,7 @@ final class NCVideoPlaybackController: ObservableObject {
             httpHeaders["User-Agent"] = currentUserAgent
         }
 
-        prepareAVFoundation(
-            url: currentURL,
-            userAgent: currentUserAgent,
-            httpHeaders: httpHeaders,
-            token: token
-        )
+        prepareAVFoundation(url: currentURL, userAgent: currentUserAgent, httpHeaders: httpHeaders, token: token)
     }
 
     func stopIfCurrent(ocId: String) {
@@ -207,12 +164,7 @@ final class NCVideoPlaybackController: ObservableObject {
 
     // MARK: - AVFoundation
 
-    private func prepareAVFoundation(
-        url: URL,
-        userAgent: String?,
-        httpHeaders: [String: String],
-        token: UUID
-    ) {
+    private func prepareAVFoundation(url: URL, userAgent: String?, httpHeaders: [String: String], token: UUID) {
         cancelAVProbeTasks()
 
         let assetOptions: [String: Any]? = httpHeaders.isEmpty
@@ -221,10 +173,7 @@ final class NCVideoPlaybackController: ObservableObject {
                 "AVURLAssetHTTPHeaderFieldsKey": httpHeaders
             ]
 
-        let asset = AVURLAsset(
-            url: url,
-            options: assetOptions
-        )
+        let asset = AVURLAsset(url: url, options: assetOptions)
 
         let item = AVPlayerItem(asset: asset)
         let player = AVPlayer(playerItem: item)
@@ -240,42 +189,23 @@ final class NCVideoPlaybackController: ObservableObject {
 
                 guard !Task.isCancelled,
                       let self,
-                      self.isCurrentLoad(
-                        url: url,
-                        token: token
-                      ) else {
+                      self.isCurrentLoad(url: url, token: token) else {
                     return
                 }
 
                 if isPlayable {
-                    self.resolveWithAVFoundation(
-                        url: url,
-                        player: player,
-                        item: item,
-                        token: token
-                    )
+                    self.resolveWithAVFoundation(url: url, player: player, item: item, token: token)
                 } else {
-                    self.resolveWithVLC(
-                        url: url,
-                        userAgent: userAgent,
-                        token: token
-                    )
+                    self.resolveWithVLC(url: url, userAgent: userAgent, token: token)
                 }
             } catch {
                 guard !Task.isCancelled,
                       let self,
-                      self.isCurrentLoad(
-                        url: url,
-                        token: token
-                      ) else {
+                      self.isCurrentLoad(url: url, token: token) else {
                     return
                 }
 
-                self.resolveWithVLC(
-                    url: url,
-                    userAgent: userAgent,
-                    token: token
-                )
+                self.resolveWithVLC(url: url, userAgent: userAgent, token: token)
             }
         }
 
@@ -288,27 +218,15 @@ final class NCVideoPlaybackController: ObservableObject {
 
             guard !Task.isCancelled,
                   let self,
-                  self.isCurrentLoad(
-                    url: url,
-                    token: token
-                  ) else {
+                  self.isCurrentLoad(url: url, token: token) else {
                 return
             }
 
-            self.resolveWithVLC(
-                url: url,
-                userAgent: userAgent,
-                token: token
-            )
+            self.resolveWithVLC(url: url, userAgent: userAgent, token: token)
         }
     }
 
-    private func resolveWithAVFoundation(
-        url: URL,
-        player: AVPlayer,
-        item: AVPlayerItem,
-        token: UUID
-    ) {
+    private func resolveWithAVFoundation(url: URL, player: AVPlayer, item: AVPlayerItem, token: UUID) {
         guard loadToken == token,
               avProbePlayer === player,
               avProbeItem === item else {
@@ -317,26 +235,15 @@ final class NCVideoPlaybackController: ObservableObject {
 
         cancelAVProbeTasks()
 
-        let preparedPlayback = NCVideoAVPreparedPlayback(
-            url: url,
-            player: player,
-            item: item
-        )
+        let preparedPlayback = NCVideoAVPreparedPlayback(url: url, player: player, item: item)
 
         engine = .avFoundation(preparedPlayback: preparedPlayback)
     }
 
     // MARK: - VLC
 
-    private func resolveWithVLC(
-        url: URL,
-        userAgent: String?,
-        token: UUID
-    ) {
-        guard isCurrentLoad(
-            url: url,
-            token: token
-        ) else {
+    private func resolveWithVLC(url: URL, userAgent: String?, token: UUID) {
+        guard isCurrentLoad(url: url, token: token) else {
             return
         }
 
@@ -354,10 +261,7 @@ final class NCVideoPlaybackController: ObservableObject {
             media.addOption(":http-user-agent=\(userAgent)")
         }
 
-        let preparedPlayback = NCVideoVLCPreparedPlayback(
-            url: url,
-            media: media
-        )
+        let preparedPlayback = NCVideoVLCPreparedPlayback(url: url, media: media)
 
         engine = .vlc(preparedPlayback: preparedPlayback)
     }
@@ -372,52 +276,49 @@ final class NCVideoPlaybackController: ObservableObject {
         avProbeTimeoutTask = nil
     }
 
-    private func isSameLoadedVideo(
-        metadata: tableMetadata,
-        url: URL
-    ) -> Bool {
+    private func isSameLoadedVideo(metadata: tableMetadata, url: URL) -> Bool {
         currentOcId == metadata.ocId &&
         currentEtag == metadata.etag &&
         currentURL == url
     }
 
-    private func isCurrentLoad(
-        url: URL,
-        token: UUID
-    ) -> Bool {
+    private func isCurrentLoad(url: URL, token: UUID) -> Bool {
         loadToken == token && currentURL == url
     }
 
     // MARK: - Private Helpers
 
-    private func configureAudioSession() {
+    static func configureAudioSession() async -> Bool {
         do {
-            try AVAudioSession.sharedInstance().setCategory(
-                .playback,
-                mode: .moviePlayback,
-                options: []
-            )
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                DispatchQueue.global(qos: .userInitiated).async {
+                    do {
+                        let session = AVAudioSession.sharedInstance()
+                        try session.setCategory(.playback, mode: .moviePlayback, options: [])
+                        if #unavailable(iOS 27.0) {
+                            try session.setActive(true)
+                        }
+                        continuation.resume()
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+                }
+            }
 
-            try AVAudioSession.sharedInstance().setActive(true)
+            guard !Task.isCancelled else { return false }
+            if #available(iOS 27.0, *) {
+                return try await AVAudioSession.sharedInstance().activate(options: [])
+            }
+            return true
         } catch {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .error,
-                message: "VIDEO audio session error: \(error.localizedDescription)",
-                consoleOnly: true
-            )
+            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO audio session error: \(error.localizedDescription)", consoleOnly: true)
+            return false
         }
     }
 
     // Legacy formats go directly to VLC.
-    private func shouldUseVLCWithoutAVFoundation(
-        url: URL,
-        fileName: String
-    ) -> Bool {
-        let pathExtension = resolvedVideoExtension(
-            url: url,
-            fileName: fileName
-        )
+    private func shouldUseVLCWithoutAVFoundation(url: URL, fileName: String) -> Bool {
+        let pathExtension = resolvedVideoExtension(url: url, fileName: fileName)
 
         let legacyVideoExtensions: Set<String> = [
             "avi",
@@ -432,10 +333,7 @@ final class NCVideoPlaybackController: ObservableObject {
         return legacyVideoExtensions.contains(pathExtension)
     }
 
-    private func resolvedVideoExtension(
-        url: URL,
-        fileName: String
-    ) -> String {
+    private func resolvedVideoExtension(url: URL, fileName: String) -> String {
         let metadataExtension = URL(fileURLWithPath: fileName)
             .pathExtension
             .lowercased()

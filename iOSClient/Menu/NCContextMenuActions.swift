@@ -97,6 +97,7 @@ enum NCContextMenuActions {
     static func delete(
         metadatas: [tableMetadata],
         controller: NCMainTabBarController?,
+        presentViewController: UIViewController? = nil,
         completion: (() -> Void)? = nil
     ) -> UIAction {
         UIAction(
@@ -112,7 +113,7 @@ enum NCContextMenuActions {
             ) { _ in
                 completion?()
             }
-            controller?.present(alert, animated: true)
+            (presentViewController ?? controller)?.present(alert, animated: true)
         }
     }
 
@@ -192,7 +193,8 @@ enum NCContextMenuActions {
     static func rename(
         metadata: tableMetadata,
         presenter: UIViewController,
-        windowScene: UIWindowScene?
+        windowScene: UIWindowScene?,
+        completion: ((tableMetadata) -> Void)? = nil
     ) -> UIAction {
         UIAction(
             title: NSLocalizedString("_rename_", comment: ""),
@@ -231,6 +233,8 @@ enum NCContextMenuActions {
                 )
                 if error != .success {
                     await showErrorBanner(windowScene: windowScene, error: error)
+                } else if let renamedMetadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(metadata.ocId) {
+                    completion?(renamedMetadata)
                 }
             }
         }

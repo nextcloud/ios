@@ -25,6 +25,8 @@ enum NCVideoAVPlayerPresenter {
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?,
         playbackOptions: NCMediaPlaybackOptions,
+        mediaViewerModel: NCMediaViewerModel? = nil,
+        onSelectPage: ((_ index: Int) -> Void)? = nil,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
         onPrevious: (() -> Void)? = nil,
@@ -39,30 +41,8 @@ enum NCVideoAVPlayerPresenter {
             return false
         }
 
-        if currentURL == url,
-           let currentViewController {
-            currentViewController.update(
-                metadata: metadata,
-                preparedPlayback: preparedPlayback,
-                userAgent: userAgent,
-                shouldAutoPlayOnStart: shouldAutoPlayOnStart,
-                playbackStartReason: playbackStartReason,
-                isChromeHidden: isChromeHidden,
-                contextMenuController: contextMenuController,
-                playbackOptions: playbackOptions
-            )
-            currentViewController.canGoPrevious = canGoPrevious
-            currentViewController.canGoNext = canGoNext
-            currentViewController.onPrevious = onPrevious
-            currentViewController.onNext = onNext
-            currentViewController.onPlaybackEnded = onPlaybackEnded
-            currentViewController.onClose = onClose
-            currentViewController.onPlaybackError = onPlaybackError
-
-            return true
-        }
-
-        if isPresenting {
+        // Updating the current URL is allowed while its presentation finishes.
+        if isPresenting && (currentURL != url || currentViewController == nil) {
             return false
         }
 
@@ -79,6 +59,7 @@ enum NCVideoAVPlayerPresenter {
             )
             currentViewController.canGoPrevious = canGoPrevious
             currentViewController.canGoNext = canGoNext
+            currentViewController.configureAdaptivePaging(model: mediaViewerModel, onSelectPage: onSelectPage)
             currentViewController.onPrevious = onPrevious
             currentViewController.onNext = onNext
             currentViewController.onPlaybackEnded = onPlaybackEnded
@@ -90,12 +71,7 @@ enum NCVideoAVPlayerPresenter {
         }
 
         guard let presenter = topViewController() else {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .error,
-                message: "VIDEO AVPlayer presenter failed: no top view controller",
-                consoleOnly: true
-            )
+            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO AVPlayer presenter failed: no top view controller", consoleOnly: true)
             return false
         }
 
@@ -122,6 +98,7 @@ enum NCVideoAVPlayerPresenter {
         )
         viewController.canGoPrevious = canGoPrevious
         viewController.canGoNext = canGoNext
+        viewController.configureAdaptivePaging(model: mediaViewerModel, onSelectPage: onSelectPage)
         viewController.onPrevious = onPrevious
         viewController.onNext = onNext
         viewController.onPlaybackEnded = onPlaybackEnded
@@ -131,9 +108,7 @@ enum NCVideoAVPlayerPresenter {
         currentViewController = viewController
         currentURL = url
 
-        let navigationController = UINavigationController(
-            rootViewController: viewController
-        )
+        let navigationController = UINavigationController(rootViewController: viewController)
 
         navigationController.modalPresentationStyle = .fullScreen
         navigationController.navigationBar.prefersLargeTitles = false
@@ -143,25 +118,17 @@ enum NCVideoAVPlayerPresenter {
         ]
 
         if !playbackStartReason.shouldShowControlsOnStart {
-            navigationController.setNavigationBarHidden(
-                true,
-                animated: false
-            )
+            navigationController.setNavigationBarHidden(true, animated: false)
         }
 
-        presenter.present(
-            navigationController,
-            animated: false
-        ) {
+        presenter.present(navigationController, animated: false) {
             isPresenting = false
         }
 
         return true
     }
 
-    static func clearCurrent(
-        _ viewController: NCVideoAVPlayerViewController
-    ) {
+    static func clearCurrent(_ viewController: NCVideoAVPlayerViewController) {
         guard currentViewController === viewController else {
             return
         }
@@ -200,9 +167,7 @@ enum NCVideoAVPlayerPresenter {
         dismissCurrent(completion: completion)
     }
 
-    private static func finishDismissal(
-        for viewController: NCVideoAVPlayerViewController?
-    ) {
+    private static func finishDismissal(for viewController: NCVideoAVPlayerViewController?) {
         if let viewController {
             clearCurrent(viewController)
         } else {
@@ -227,28 +192,21 @@ enum NCVideoAVPlayerPresenter {
             .first { $0.isKeyWindow }?
             .rootViewController
 
-        return visibleViewController(from: rootViewController)
+        let mainController: UIViewController? = SceneManager.shared.getController(window: windowScene?.keyWindow)
+        return visibleViewController(from: rootViewController?.presentedViewController ?? mainController ?? rootViewController)
     }
 
-    private static func visibleViewController(
-        from viewController: UIViewController?
-    ) -> UIViewController? {
+    private static func visibleViewController(from viewController: UIViewController?) -> UIViewController? {
         if let navigationController = viewController as? UINavigationController {
-            return visibleViewController(
-                from: navigationController.visibleViewController
-            )
+            return visibleViewController(from: navigationController.visibleViewController)
         }
 
         if let tabBarController = viewController as? UITabBarController {
-            return visibleViewController(
-                from: tabBarController.selectedViewController
-            )
+            return visibleViewController(from: tabBarController.selectedViewController)
         }
 
         if let presentedViewController = viewController?.presentedViewController {
-            return visibleViewController(
-                from: presentedViewController
-            )
+            return visibleViewController(from: presentedViewController)
         }
 
         return viewController

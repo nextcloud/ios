@@ -16,21 +16,11 @@ extension NCVideoAVPlayerViewController {
         }
 
         let currentTime = player.currentTime().seconds
-        let targetSeconds = max(
-            0,
-            min(duration, currentTime + seconds)
-        )
+        let targetSeconds = max(0, min(duration, currentTime + seconds))
 
-        let targetTime = CMTime(
-            seconds: targetSeconds,
-            preferredTimescale: 600
-        )
+        let targetTime = CMTime(seconds: targetSeconds, preferredTimescale: 600)
 
-        player.seek(
-            to: targetTime,
-            toleranceBefore: .zero,
-            toleranceAfter: .zero
-        ) { [weak self] _ in
+        player.seek(to: targetTime, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] _ in
             Task { @MainActor in
                 self?.updateProgressControls()
                 self?.scheduleControlsHide()
@@ -46,27 +36,15 @@ extension NCVideoAVPlayerViewController {
     func showControls(animated: Bool) {
         guard !isPictureInPictureActive else {
             updateViewerBackground(isChromeHidden: true)
-            setControlsVisible(
-                false,
-                animated: false
-            )
-            setNavigationBarVisible(
-                false,
-                animated: false
-            )
+            setControlsVisible(false, animated: false)
+            setNavigationBarVisible(false, animated: false)
             return
         }
 
         updateViewerBackground(isChromeHidden: false)
 
-        setNavigationBarVisible(
-            true,
-            animated: animated
-        )
-        setControlsVisible(
-            true,
-            animated: animated
-        )
+        setNavigationBarVisible(true, animated: animated)
+        setControlsVisible(true, animated: animated)
     }
 
     func hideControls(animated: Bool) {
@@ -78,23 +56,15 @@ extension NCVideoAVPlayerViewController {
 
         updateViewerBackground(isChromeHidden: true)
 
-        setNavigationBarVisible(
-            false,
-            animated: animated
-        )
-        setControlsVisible(
-            false,
-            animated: animated
-        )
+        setNavigationBarVisible(false, animated: animated)
+        setControlsVisible(false, animated: animated)
     }
 
-    private func setControlsVisible(
-        _ visible: Bool,
-        animated: Bool
-    ) {
+    private func setControlsVisible(_ visible: Bool, animated: Bool) {
         stopControlsHideTimer()
 
         controlsVisible = visible
+        let controlsView = self.controlsView
         controlsView.isUserInteractionEnabled = visible
 
         if visible {
@@ -102,21 +72,17 @@ extension NCVideoAVPlayerViewController {
         }
 
         let updates = {
-            self.controlsView.alpha = visible ? 1 : 0
+            controlsView.alpha = visible ? 1 : 0
         }
 
         let completion: (Bool) -> Void = { _ in
-            if !visible {
-                self.controlsView.isHidden = true
+            if !self.controlsVisible {
+                controlsView.isHidden = true
             }
         }
 
         if animated {
-            UIView.animate(
-                withDuration: 0.18,
-                animations: updates,
-                completion: completion
-            )
+            UIView.animate(withDuration: 0.18, animations: updates, completion: completion)
         } else {
             updates()
             completion(true)
@@ -138,10 +104,7 @@ extension NCVideoAVPlayerViewController {
             return
         }
 
-        controlsHideTimer = Timer.scheduledTimer(
-            withTimeInterval: 3,
-            repeats: false
-        ) { [weak self] _ in
+        controlsHideTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { [weak self] _ in
             Task { @MainActor in
                 guard let self,
                       !self.playbackPresentationContext.isSeeking else {
@@ -163,13 +126,22 @@ extension NCVideoAVPlayerViewController {
 
 extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
 
-    func videoControlsDidTapSeekBackward(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidTapSeekBackward(_ controlsView: any NCVideoPlaybackControls) {
         seek(bySeconds: -10)
     }
 
-    func videoControlsDidTapPlayPause(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidTapPlayPause(_ controlsView: any NCVideoPlaybackControls) {
+        if isPlaybackRequested {
+            isPlaybackRequested = false
+            player.pause()
+            updatePlayPauseButton()
+            stopControlsHideTimer()
+            return
+        }
+
         switch player.timeControlStatus {
         case .playing:
+            isPlaybackRequested = false
             player.pause()
 
         case .paused,
@@ -180,45 +152,42 @@ extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
                 player.seek(to: .zero)
             }
 
-            player.play()
+            playWhenAudioSessionIsReady()
 
         @unknown default:
-            player.play()
+            playWhenAudioSessionIsReady()
         }
 
         updatePlayPauseButton()
         scheduleControlsHide()
     }
 
-    func videoControlsDidTapSeekForward(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidTapSeekForward(_ controlsView: any NCVideoPlaybackControls) {
         seek(bySeconds: 10)
     }
 
-    func videoControlsDidToggleRepeat(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidToggleRepeat(_ controlsView: any NCVideoPlaybackControls) {
         playbackOptions.toggleRepeat()
         updatePlaybackOptionsControls()
         scheduleControlsHide()
     }
 
-    func videoControlsDidToggleAutoAdvance(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidToggleAutoAdvance(_ controlsView: any NCVideoPlaybackControls) {
         playbackOptions.toggleAutoAdvance()
         updatePlaybackOptionsControls()
         scheduleControlsHide()
     }
 
-    func videoControlsDidTapPictureInPicture(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidTapPictureInPicture(_ controlsView: any NCVideoPlaybackControls) {
         togglePictureInPicture()
     }
 
-    func videoControlsDidBeginScrubbing(_ controlsView: NCVideoControlsView) {
+    func videoControlsDidBeginScrubbing(_ controlsView: any NCVideoPlaybackControls) {
         playbackPresentationContext.beginSeeking()
         stopControlsHideTimer()
     }
 
-    func videoControls(
-        _ controlsView: NCVideoControlsView,
-        didScrubTo progress: Float
-    ) {
+    func videoControls(_ controlsView: any NCVideoPlaybackControls, didScrubTo progress: Float) {
         guard let duration = player.currentItem?.duration.seconds,
               duration.isFinite,
               duration > 0 else {
@@ -227,17 +196,10 @@ extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
 
         let targetTime = duration * Double(progress)
 
-        controlsView.updateProgress(
-            progress: progress,
-            elapsedText: Self.formatTime(targetTime),
-            remainingText: "−\(Self.formatTime(max(0, duration - targetTime)))"
-        )
+        controlsView.updateProgress(progress: progress, elapsedText: Self.formatTime(targetTime), remainingText: "−\(Self.formatTime(max(0, duration - targetTime)))")
     }
 
-    func videoControlsDidEndScrubbing(
-        _ controlsView: NCVideoControlsView,
-        progress: Float
-    ) {
+    func videoControlsDidEndScrubbing(_ controlsView: any NCVideoPlaybackControls, progress: Float) {
         guard let duration = player.currentItem?.duration.seconds,
               duration.isFinite,
               duration > 0 else {
@@ -246,16 +208,9 @@ extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
             return
         }
 
-        let targetTime = CMTime(
-            seconds: duration * Double(progress),
-            preferredTimescale: 600
-        )
+        let targetTime = CMTime(seconds: duration * Double(progress), preferredTimescale: 600)
 
-        player.seek(
-            to: targetTime,
-            toleranceBefore: .zero,
-            toleranceAfter: .zero
-        ) { [weak self] _ in
+        player.seek(to: targetTime, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] _ in
             Task { @MainActor in
                 self?.playbackPresentationContext.finishSeeking()
                 self?.updateProgressControls()

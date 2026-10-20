@@ -4,18 +4,12 @@
 import Foundation
 
 struct NCMediaViewerLoadingPolicy: Sendable {
-    static let standard = NCMediaViewerLoadingPolicy(
-        automaticallyDownloadsOriginalImages: false,
-        automaticallyDownloadsLivePhotoResources: false
-    )
+    static let standard = NCMediaViewerLoadingPolicy(automaticallyDownloadsOriginalImages: false, automaticallyDownloadsLivePhotoResources: false)
 
     let automaticallyDownloadsOriginalImages: Bool
     let automaticallyDownloadsLivePhotoResources: Bool
 
-    func shouldDownloadOriginalImage(
-        for metadata: tableMetadata,
-        hasUsablePreview: Bool
-    ) -> Bool {
+    func shouldDownloadOriginalImage(for metadata: tableMetadata, hasUsablePreview: Bool) -> Bool {
         if Self.originalRequiredExtensions.contains(metadata.fileExtension.lowercased()) {
             return true
         }

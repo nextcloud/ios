@@ -41,6 +41,7 @@
 "_upload_"                  = "Upload";
 "_home_"                    = "Files";
 "_files_"                   = "Files";
+"_browse_"                  = "Browse";
 "_ok_"                      = "OK";
 "_done_"                    = "Done";
 "_clear_"                   = "Clear";
@@ -54,6 +55,7 @@
 "_create_folder_"           = "Create folder";
 "_create_folder_e2ee_"      = "Create encrypted folder";
 "_close_"                   = "Close";
+"_sidebar_navigation_"      = "Open navigation";
 "_remove_"                  = "Remove";
 "_file_not_found_"          = "File not found";
 "_continue_"                = "Continue";
@@ -63,6 +65,11 @@
 "_audio_"                   = "Audio";
 "_unknown_"                 = "Unknown";
 "_success_"                 = "Success";
+"_status_"                  = "Status";
+"_external_sites_"          = "External sites";
+"_apps_"                    = "Apps";
+"_more_apps_"               = "More apps";
+"_offline_files_"           = "Offline Files";
 "_mode_filename_"           = "Filename mode";
 "_warning_owncloud_"        = "You are connected to an ownCloud server. This is untested and unsupported, use at your own risk. To upgrade to Nextcloud, see https://nextcloud.com/migration.";
 "_warning_unsupported_"     = "You are using an unsupported version of Nextcloud. For the safety of your data we strongly recommend updating to the latest stable Nextcloud.";
@@ -103,6 +110,7 @@
 "_wait_"                    = "Please wait …";
 "_recent_"                  = "Recent";
 "_view_in_folder_"          = "View in folder";
+"_active_"                  = "Active";
 "_disabled_"                = "Disabled";
 "_error_occurred_"          = "An error occurred, please try again.";
 "_retry_"                   = "Retry";
@@ -326,7 +334,6 @@
 "_files_no_files_"              = "No files in here";
 "_files_no_folders_"            = "No folders in here";
 "_request_in_progress_"         = "Request to server in progress …";
-"_personal_files_only_"         = "Personal files only";
 
 "audio"                         = "AUDIO";
 "directory"                     = "FOLDERS";
@@ -635,6 +642,11 @@
 "_add_external_subtitle_" = "Add external subtitle";
 "_repeat_current_media_" = "Repeat current item";
 "_play_next_media_automatically_" = "Play next item automatically";
+"_previous_media_" = "Previous";
+"_next_media_" = "Next";
+"_restart_audio_" = "Restart audio";
+"_play_" = "Play";
+"_pause_" = "Pause";
 "_image_load_failed_" = "Image load failed";
 "_image_load_failed_" = "Image load failed";
 "_gif_file_could_not_be_decoded_" = "GIF file could not be decoded";
@@ -855,6 +867,9 @@
 "_autoupload_force_reupload_footer_" = "Previous upload records are ignored for photos and videos in the selected library or date range. New completed uploads are still recorded. This option stays enabled until you turn it off.";
 
 "_auto_upload_active_" = "Automatic photo and video upload active";
+
+"_seek_backward_10_" = "Go back 10 seconds";
+"_seek_forward_10_" = "Go forward 10 seconds";
 
 // MARK: Error messages
 

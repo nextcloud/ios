@@ -85,6 +85,51 @@ struct NCImageZoomViewTests {
         }
     }
 
+    @Test("Images remain fitted and centered through an upper-region round trip", arguments: [
+        CGSize(width: 400, height: 300),
+        CGSize(width: 300, height: 400),
+        CGSize(width: 400, height: 400)
+    ])
+    func centersImageThroughFoldRoundTrip(imageSize: CGSize) {
+        let (coordinator, scrollView, imageView) = makeZoomView(imageSize: imageSize)
+        // UIScrollView rounds offsets to physical pixels; an exact center can fall halfway between them.
+        let centeringTolerance = 0.5 / max(scrollView.traitCollection.displayScale, 1) + 0.001
+
+        for size in [CGSize(width: 320, height: 480), CGSize(width: 320, height: 220), CGSize(width: 320, height: 480)] {
+            scrollView.bounds.size = size
+            coordinator.layoutImageViewPreservingOnBoundsChange()
+
+            let scale = min(size.width / imageSize.width, size.height / imageSize.height)
+            #expect(abs(imageView.frame.width - imageSize.width * scale) < 0.001)
+            #expect(abs(imageView.frame.height - imageSize.height * scale) < 0.001)
+            let visibleCenter = imageView.convert(
+                CGPoint(x: imageView.bounds.midX, y: imageView.bounds.midY),
+                to: scrollView
+            )
+            #expect(abs(visibleCenter.x - scrollView.bounds.midX) < centeringTolerance)
+            #expect(abs(visibleCenter.y - scrollView.bounds.midY) < centeringTolerance)
+            #expect(coordinator.zoomState() == nil)
+        }
+    }
+
+    @Test("Folding and unfolding retain the zoomed image focal point")
+    func preservesImageZoomThroughFoldRoundTrip() throws {
+        let (coordinator, scrollView, _) = makeZoomView(imageSize: CGSize(width: 400, height: 300))
+        scrollView.setZoomScale(3, animated: false)
+        scrollView.contentOffset = CGPoint(x: 320, y: 120)
+        coordinator.recordCurrentZoomState()
+        let savedState = try #require(coordinator.zoomState())
+
+        for size in [CGSize(width: 320, height: 220), CGSize(width: 320, height: 480)] {
+            scrollView.bounds.size = size
+            coordinator.layoutImageViewPreservingOnBoundsChange()
+            let restoredState = try #require(coordinator.zoomState())
+            #expect(abs(restoredState.zoomScale - savedState.zoomScale) < 0.001)
+            #expect(abs(restoredState.normalizedCenter.x - savedState.normalizedCenter.x) < 0.001)
+            #expect(abs(restoredState.normalizedCenter.y - savedState.normalizedCenter.y) < 0.001)
+        }
+    }
+
     @Test("Double-tap zoom survives view recreation and rotation")
     func preservesDoubleTapZoomAfterViewRecreation() throws {
         var persistedZoomState: NCImageZoomView.ZoomState?

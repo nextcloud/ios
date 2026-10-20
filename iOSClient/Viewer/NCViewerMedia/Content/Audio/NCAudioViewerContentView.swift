@@ -25,6 +25,8 @@ struct NCAudioViewerContentView: View {
     let onAutoPlayConsumed: () -> Void
     let onToggleChrome: () -> Void
 
+    @Environment(\.layoutDirection) private var layoutDirection
+    @Environment(\.mediaViewerIsFoldedLayout) private var isFoldedLayout
     @StateObject private var model: NCAudioViewerModel
 
     init(
@@ -62,153 +64,23 @@ struct NCAudioViewerContentView: View {
         self.onAutoPlayConsumed = onAutoPlayConsumed
         self.onToggleChrome = onToggleChrome
 
-        _model = StateObject(
-            wrappedValue: NCAudioViewerPlaybackRegistry.shared.model(
-                for: metadata.ocId
-            )
-        )
+        _model = StateObject(wrappedValue: NCAudioViewerPlaybackRegistry.shared.model(for: metadata.ocId))
     }
 
     var body: some View {
-        GeometryReader { proxy in
-            let isLandscape = proxy.size.width > proxy.size.height
-            let artworkSize: CGFloat = isLandscape ? 110 : 180
-            let mainSpacing: CGFloat = isLandscape ? 18 : 28
-            let titleHorizontalPadding: CGFloat = 24
-            let sliderHorizontalPadding: CGFloat = isLandscape ? 90 : 32
-            let topPadding: CGFloat = isLandscape ? 72 : 0
-            let buttonSpacing: CGFloat = isLandscape ? 24 : 28
-            let sideButtonSize: CGFloat = isLandscape ? 30 : 34
-            let playButtonSize: CGFloat = isLandscape ? 64 : 72
-            let navigationBarHeight: CGFloat = isLandscape ? 32 : 44
-            let minimumNavigationBarBottom: CGFloat = isLandscape ? 32 : 64
-            // The navigation bar frame moves while hidden. Its safe area and
-            // bounds keep this inset stable when the bar becomes visible again.
-            let safeAreaTop = max(
-                proxy.safeAreaInsets.top,
-                navigationBar?.window?.safeAreaInsets.top ?? 0
-            )
-            let effectiveNavigationBarHeight = max(
-                navigationBar?.bounds.height ?? 0,
-                navigationBarHeight
-            )
-            let navigationBarBottom = max(
-                safeAreaTop + effectiveNavigationBarHeight,
-                minimumNavigationBarBottom
-            )
-            let topActionsPadding = navigationBarBottom + 4
-
-            ZStack {
-                Color.ncViewerBackground(backgroundStyle)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        onToggleChrome()
-                    }
-
-                VStack(spacing: mainSpacing) {
-                    artworkView(size: artworkSize)
-                    if !isLandscape {
-                        VStack(spacing: 8) {
-                            Text(displayFileName)
-                                .font(.headline)
-                                .foregroundStyle(primaryForegroundStyle)
-                                .lineLimit(2)
-                                .multilineTextAlignment(.center)
-
-                            Text(metadata.contentType.isEmpty ? "Audio" : metadata.contentType)
-                                .font(.footnote)
-                                .foregroundStyle(secondaryForegroundStyle)
-                                .lineLimit(1)
-                        }
-                        .padding(.horizontal, titleHorizontalPadding)
-                    }
-
-                    VStack(spacing: 10) {
-                        Slider(
-                            value: Binding(
-                                get: { model.currentTime },
-                                set: { model.seek(to: $0) }
-                            ),
-                            in: 0...max(model.duration, 1)
-                        )
-                        .disabled(!isSelected || model.duration <= 0)
-
-                        HStack {
-                            Text(formatTime(model.currentTime))
-
-                            Spacer()
-
-                            Text(formatTime(model.duration))
-                        }
-                        .font(.caption.monospacedDigit())
-                        .foregroundStyle(secondaryForegroundStyle)
-                    }
-                    .padding(.horizontal, sliderHorizontalPadding)
-
-                    ZStack {
-                        Button {
-                            model.togglePlayback()
-                        } label: {
-                            Image(systemName: model.isPlaying ? "pause.circle.fill" : "play.circle.fill")
-                                .font(.system(size: playButtonSize, weight: .regular))
-                                .foregroundStyle(primaryForegroundStyle)
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(!isSelected)
-
-                        Button {
-                            model.restart()
-                        } label: {
-                            Image(systemName: "backward.end.circle.fill")
-                                .font(.system(size: sideButtonSize, weight: .regular))
-                                .foregroundStyle(primaryForegroundStyle)
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(!isSelected || model.duration <= 0)
-                        .offset(
-                            x: -(playButtonSize / 2 + buttonSpacing + sideButtonSize / 2)
-                        )
-                    }
-                    .frame(height: playButtonSize)
-                    .frame(maxWidth: .infinity)
-                }
-                .padding(.top, topPadding)
-
-                VStack {
-                    HStack(spacing: 8) {
-                        audioPlaybackOptionButton(
-                            systemName: playbackOptions.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1",
-                            accessibilityLabel: "_repeat_current_media_"
-                        ) {
-                            playbackOptions.toggleRepeat()
-                        }
-
-                        audioPlaybackOptionButton(
-                            systemName: playbackOptions.isAutoAdvanceEnabled ? "forward.end.fill" : "forward.end",
-                            accessibilityLabel: "_play_next_media_automatically_"
-                        ) {
-                            playbackOptions.toggleAutoAdvance()
-                        }
-
-                        Spacer()
-                    }
-                    .padding(.leading, 28)
-                    .padding(.top, topActionsPadding)
-
-                    Spacer()
-                }
+        Group {
+            if isFoldedLayout {
+                adaptiveArtwork
+            } else {
+                normalContent
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .task(id: localURL) {
             guard isSelected else {
                 return
             }
 
-            model.configurePlaybackCompletion(
-                options: playbackOptions,
-                onPlayNextMedia: onPlayNextMedia
-            )
+            model.configurePlaybackCompletion(options: playbackOptions, onPlayNextMedia: onPlayNextMedia)
             await model.load(url: localURL)
             await consumeAutoPlayIfNeeded()
         }
@@ -219,10 +91,7 @@ struct NCAudioViewerContentView: View {
             }
 
             Task { @MainActor in
-                model.configurePlaybackCompletion(
-                    options: playbackOptions,
-                    onPlayNextMedia: onPlayNextMedia
-                )
+                model.configurePlaybackCompletion(options: playbackOptions, onPlayNextMedia: onPlayNextMedia)
                 await model.load(url: localURL)
                 await consumeAutoPlayIfNeeded()
             }
@@ -246,6 +115,147 @@ struct NCAudioViewerContentView: View {
 
     // MARK: - Views
 
+    // Keep all player lifecycle modifiers above the layout switch so folding never reloads playback.
+    private var normalContent: some View {
+        GeometryReader { proxy in
+            let mainSpacing: CGFloat = 18
+            let sliderHorizontalPadding: CGFloat = 32
+            let buttonSpacing: CGFloat = 24
+            let sideButtonSize: CGFloat = 30
+            let playButtonSize: CGFloat = 64
+            let safeAreaTop = max(proxy.safeAreaInsets.top, navigationBar?.window?.safeAreaInsets.top ?? 0)
+            let windowInsets = navigationBar?.window?.safeAreaInsets ?? .zero
+            let leadingSafeArea = max(proxy.safeAreaInsets.leading, layoutDirection == .leftToRight ? windowInsets.left : windowInsets.right)
+            let trailingSafeArea = max(proxy.safeAreaInsets.trailing, layoutDirection == .leftToRight ? windowInsets.right : windowInsets.left)
+            let navigationBarBottom = self.navigationBarBottom(in: proxy) ?? (safeAreaTop + 44)
+            let thumbnailReservedHeight = NCMediaViewerThumbnail.preferredHeight + 40
+
+            ZStack {
+                Color.ncViewerBackground(backgroundStyle)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        onToggleChrome()
+                    }
+
+                VStack(spacing: 0) {
+                    Color.clear
+                        .frame(height: navigationBarBottom + 12)
+
+                    HStack(spacing: 8) {
+                        audioPlaybackOptionButton(systemName: playbackOptions.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1", accessibilityLabel: "_repeat_current_media_") {
+                            playbackOptions.toggleRepeat()
+                        }
+
+                        audioPlaybackOptionButton(
+                            systemName: playbackOptions.isAutoAdvanceEnabled ? "forward.end.fill" : "forward.end",
+                            accessibilityLabel: "_play_next_media_automatically_"
+                        ) {
+                            playbackOptions.toggleAutoAdvance()
+                        }
+
+                        Spacer()
+                    }
+                    .padding(.leading, 28)
+                    .padding(.bottom, mainSpacing)
+
+                    VStack(spacing: mainSpacing) {
+                        GeometryReader { artworkProxy in
+                            let size = min(180, min(artworkProxy.size.width, artworkProxy.size.height))
+                            if size >= 72 {
+                                artworkView(size: size)
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            }
+                        }
+                        .frame(minHeight: 0, maxHeight: .infinity)
+
+                        HStack(spacing: 5) {
+                            Slider(
+                                value: Binding(
+                                    get: { model.currentTime },
+                                    set: { model.seek(to: $0) }
+                                ),
+                                in: 0...max(model.duration, 1)
+                            )
+                            .disabled(!isSelected || model.duration <= 0)
+                            .tint(Color.ncViewerPlaybackProgressTint(account: metadata.account))
+
+                            Text(model.remainingTimeText)
+                                .font(.subheadline.monospacedDigit())
+                                .fontWeight(.bold)
+                                .foregroundStyle(primaryForegroundStyle)
+                                .lineLimit(1)
+                                .fixedSize()
+                        }
+                        .padding(.horizontal, sliderHorizontalPadding)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                        ZStack {
+                            Button {
+                                model.togglePlayback()
+                            } label: {
+                                Image(systemName: model.isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                                    .font(.system(size: playButtonSize, weight: .regular))
+                                    .foregroundStyle(primaryForegroundStyle)
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(!isSelected)
+
+                            ForEach([-10, 10], id: \.self) { seconds in
+                                Button {
+                                    model.seek(to: model.currentTime + Double(seconds))
+                                } label: {
+                                    Image(systemName: seconds < 0 ? "gobackward.10" : "goforward.10")
+                                        .font(.system(size: sideButtonSize, weight: .regular))
+                                        .foregroundStyle(primaryForegroundStyle)
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(!isSelected || model.duration <= 0)
+                                .accessibilityLabel(NSLocalizedString(seconds < 0 ? "_seek_backward_10_" : "_seek_forward_10_", comment: ""))
+                                .offset(x: (seconds < 0 ? -1 : 1) * (playButtonSize / 2 + buttonSpacing + sideButtonSize / 2))
+                            }
+                        }
+                        .frame(height: playButtonSize)
+                        .frame(maxWidth: .infinity)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.bottom, 10)
+
+                    Color.clear
+                        .frame(height: thumbnailReservedHeight)
+                }
+                .padding(.leading, leadingSafeArea)
+                .padding(.trailing, trailingSafeArea)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+
+    private var adaptiveArtwork: some View {
+        GeometryReader { proxy in
+            let size = max(0, min(320, min(proxy.size.width, proxy.size.height) - 24))
+            ZStack {
+                Color.ncViewerBackground(backgroundStyle)
+                if size > 0 {
+                    artworkView(size: size)
+                }
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height)
+            .contentShape(Rectangle())
+            .onTapGesture { onToggleChrome() }
+        }
+        .clipped()
+    }
+
+    private func navigationBarBottom(in proxy: GeometryProxy) -> CGFloat? {
+        guard let navigationBar, let window = navigationBar.window, !navigationBar.isHidden else {
+            return nil
+        }
+
+        let navigationContent = navigationBar.topItem?.titleView ?? navigationBar
+        let frame = navigationContent.convert(navigationContent.bounds, to: window)
+        return max(0, frame.maxY - proxy.frame(in: .global).minY)
+    }
+
     private func artworkView(size: CGFloat) -> some View {
         ZStack {
             if let previewImage {
@@ -260,17 +270,13 @@ struct NCAudioViewerContentView: View {
                     .frame(width: size, height: size)
 
                 Image(systemName: "waveform")
-                    .font(.system(size: 76, weight: .regular))
+                    .font(.system(size: size * 76 / 180, weight: .regular))
                     .foregroundStyle(primaryForegroundStyle.opacity(0.9))
             }
         }
     }
 
-    private func audioPlaybackOptionButton(
-        systemName: String,
-        accessibilityLabel: String,
-        action: @escaping () -> Void
-    ) -> some View {
+    private func audioPlaybackOptionButton(systemName: String, accessibilityLabel: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: systemName)
                 .font(.system(size: 17, weight: .regular))
@@ -341,14 +347,6 @@ struct NCAudioViewerContentView: View {
 
     // MARK: - Private
 
-    private var displayFileName: String {
-        if !metadata.fileNameView.isEmpty {
-            return metadata.fileNameView
-        }
-
-        return metadata.fileName
-    }
-
     @MainActor
     private func consumeAutoPlayIfNeeded() async {
         guard shouldAutoPlay else {
@@ -368,36 +366,15 @@ struct NCAudioViewerContentView: View {
         onAutoPlayConsumed()
     }
 
-    private func formatTime(_ seconds: Double) -> String {
-        guard seconds.isFinite,
-              seconds >= 0 else {
-            return "00:00"
-        }
-
-        let totalSeconds = Int(seconds.rounded())
-        let minutes = totalSeconds / 60
-        let remainingSeconds = totalSeconds % 60
-
-        return String(
-            format: "%02d:%02d",
-            minutes,
-            remainingSeconds
-        )
-    }
 }
 
 private extension View {
     @ViewBuilder
-    func audioControlGlassBackground<BackgroundShape: SwiftUI.Shape>(
-        shape: BackgroundShape
-    ) -> some View {
+    func audioControlGlassBackground<BackgroundShape: SwiftUI.Shape>(shape: BackgroundShape) -> some View {
         if #available(iOS 26.0, *) {
-            self
-                .glassEffect(.regular.interactive(), in: shape)
+            self.glassEffect(.regular.interactive(), in: shape)
         } else {
-            self
-                .background(.regularMaterial)
-                .clipShape(shape)
+            self.background(.regularMaterial).clipShape(shape)
         }
     }
 }
@@ -433,7 +410,6 @@ final class NCAudioViewerPlaybackRegistry {
 
 @MainActor
 final class NCAudioViewerModel: ObservableObject {
-
     // MARK: - Published State
 
     @Published private(set) var isPlaying = false
@@ -443,6 +419,7 @@ final class NCAudioViewerModel: ObservableObject {
     // MARK: - Private State
 
     private var player: AVPlayer?
+    private var playbackTask: Task<Void, Never>?
     private var timeObserver: Any?
     private var endObserver: NSObjectProtocol?
     private var currentURL: URL?
@@ -452,10 +429,14 @@ final class NCAudioViewerModel: ObservableObject {
 
     // MARK: - Public API
 
-    func configurePlaybackCompletion(
-        options: NCMediaPlaybackOptions,
-        onPlayNextMedia: @escaping NCMediaPlaybackAdvanceRequest
-    ) {
+    var remainingTimeText: String {
+        let remaining = max(0, duration - currentTime)
+        guard remaining.isFinite, remaining < Double(Int.max) else { return "0:00" }
+        let seconds = Int(remaining.rounded(.up))
+        return String(format: "%d:%02d", seconds / 60, seconds % 60)
+    }
+
+    func configurePlaybackCompletion(options: NCMediaPlaybackOptions, onPlayNextMedia: @escaping NCMediaPlaybackAdvanceRequest) {
         playbackOptions = options
         self.onPlayNextMedia = onPlayNextMedia
     }
@@ -470,8 +451,6 @@ final class NCAudioViewerModel: ObservableObject {
         currentURL = url
         loadedURL = url
 
-        configureAudioSession()
-
         let asset = AVURLAsset(url: url)
         let item = AVPlayerItem(asset: asset)
         let player = AVPlayer(playerItem: item)
@@ -482,6 +461,11 @@ final class NCAudioViewerModel: ObservableObject {
 
         addTimeObserver(to: player)
         addEndObserver(for: item, player: player)
+
+        _ = await configureAudioSession()
+        guard self.player === player else {
+            return
+        }
 
         Task { [weak self] in
             let loadedDuration: Double
@@ -523,10 +507,25 @@ final class NCAudioViewerModel: ObservableObject {
             seek(to: 0)
         }
 
-        configureAudioSession()
-
-        player.play()
+        playbackTask?.cancel()
         isPlaying = true
+        playbackTask = Task { [weak self] in
+            guard let self else {
+                return
+            }
+
+            let activated = await configureAudioSession()
+            guard !Task.isCancelled, self.player === player, isPlaying else {
+                return
+            }
+
+            guard activated else {
+                isPlaying = false
+                return
+            }
+
+            player.play()
+        }
     }
 
     func togglePlayback() {
@@ -541,7 +540,7 @@ final class NCAudioViewerModel: ObservableObject {
         seek(to: 0)
 
         if isPlaying {
-            player?.play()
+            play()
         }
     }
 
@@ -550,31 +549,26 @@ final class NCAudioViewerModel: ObservableObject {
             return
         }
 
-        let clampedSeconds = min(
-            max(seconds, 0),
-            max(duration, 0)
-        )
+        let clampedSeconds = min(max(seconds, 0), max(duration, 0))
 
         currentTime = clampedSeconds
 
-        let time = CMTime(
-            seconds: clampedSeconds,
-            preferredTimescale: 600
-        )
+        let time = CMTime(seconds: clampedSeconds, preferredTimescale: 600)
 
-        player.seek(
-            to: time,
-            toleranceBefore: .zero,
-            toleranceAfter: .zero
-        )
+        player.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero)
     }
 
     func pause() {
+        playbackTask?.cancel()
+        playbackTask = nil
         player?.pause()
         isPlaying = false
     }
 
     func stop() {
+        playbackTask?.cancel()
+        playbackTask = nil
+
         if let player {
             player.pause()
         }
@@ -600,35 +594,38 @@ final class NCAudioViewerModel: ObservableObject {
 
     // MARK: - Private
 
-    private func configureAudioSession() {
+    private func configureAudioSession() async -> Bool {
         do {
-            try AVAudioSession.sharedInstance().setCategory(
-                .playback,
-                mode: .default,
-                options: []
-            )
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                DispatchQueue.global(qos: .userInitiated).async {
+                    do {
+                        let session = AVAudioSession.sharedInstance()
+                        try session.setCategory(.playback, mode: .default, options: [])
+                        if #unavailable(iOS 27.0) {
+                            try session.setActive(true)
+                        }
+                        continuation.resume()
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+                }
+            }
 
-            try AVAudioSession.sharedInstance().setActive(true)
+            if #available(iOS 27.0, *) {
+                return try await AVAudioSession.sharedInstance().activate(options: [])
+            }
+
+            return true
         } catch {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .error,
-                message: "AUDIO session error: \(error.localizedDescription)",
-                consoleOnly: true
-            )
+            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "AUDIO session error: \(error.localizedDescription)", consoleOnly: true)
+            return false
         }
     }
 
     private func addTimeObserver(to player: AVPlayer) {
-        let interval = CMTime(
-            seconds: 0.25,
-            preferredTimescale: 600
-        )
+        let interval = CMTime(seconds: 0.25, preferredTimescale: 600)
 
-        timeObserver = player.addPeriodicTimeObserver(
-            forInterval: interval,
-            queue: .main
-        ) { [weak self] time in
+        timeObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
             guard let self else {
                 return
             }
@@ -643,15 +640,8 @@ final class NCAudioViewerModel: ObservableObject {
         }
     }
 
-    private func addEndObserver(
-        for item: AVPlayerItem,
-        player: AVPlayer
-    ) {
-        endObserver = NotificationCenter.default.addObserver(
-            forName: AVPlayerItem.didPlayToEndTimeNotification,
-            object: item,
-            queue: .main
-        ) { [weak self, weak player] _ in
+    private func addEndObserver(for item: AVPlayerItem, player: AVPlayer) {
+        endObserver = NotificationCenter.default.addObserver(forName: AVPlayerItem.didPlayToEndTimeNotification, object: item, queue: .main) { [weak self, weak player] _ in
             guard let self,
                   let player else {
                 return
@@ -666,11 +656,7 @@ final class NCAudioViewerModel: ObservableObject {
                 case .repeatCurrentItem:
                     self.currentTime = 0
 
-                    player.seek(
-                        to: .zero,
-                        toleranceBefore: .zero,
-                        toleranceAfter: .zero
-                    ) { _ in
+                    player.seek(to: .zero, toleranceBefore: .zero, toleranceAfter: .zero) { _ in
                         Task { @MainActor in
                             guard self.player === player else {
                                 return

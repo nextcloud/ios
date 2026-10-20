@@ -11,11 +11,11 @@ class NCOffline: NCCollectionViewCommon {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
-        titleCurrentFolder = NSLocalizedString("_manage_file_offline_", comment: "")
+        titleCurrentFolder = NSLocalizedString("_offline_files_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewOffline
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImageName = "icloud.and.arrow.down"
+        emptyImageName = "arrow.down.circle.dotted"
         emptyTitle = "_files_no_files_"
         emptyDescription = "_tutorial_offline_view_"
         emptyDataPortaitOffset = 30

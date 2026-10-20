@@ -5,16 +5,12 @@
 import Foundation
 
 extension NCVideoViewerContentView {
-    @MainActor
-    @discardableResult
-    func requestAVPlayerPresentation(preparedPlayback: NCVideoAVPreparedPlayback) -> Bool {
+    @MainActor @discardableResult func requestAVPlayerPresentation(preparedPlayback: NCVideoAVPreparedPlayback) -> Bool {
         hasRequestedPlayback = true
         return presentAVPlayerIfSelected(preparedPlayback: preparedPlayback)
     }
 
-    @MainActor
-    @discardableResult
-    func presentAVPlayerIfSelected(preparedPlayback: NCVideoAVPreparedPlayback) -> Bool {
+    @MainActor @discardableResult func presentAVPlayerIfSelected(preparedPlayback: NCVideoAVPreparedPlayback) -> Bool {
         guard isSelected else {
             return false
         }
@@ -33,12 +29,14 @@ extension NCVideoViewerContentView {
             isChromeHidden: isChromeHidden,
             contextMenuController: contextMenuController,
             playbackOptions: playbackOptions,
+            mediaViewerModel: mediaViewerModel,
+            onSelectPage: { index in selectPageFromPlayback(index, usingVLC: false) },
             canGoPrevious: canGoPrevious,
             canGoNext: canGoNext,
             onPrevious: goToPreviousPageFromAVPlayer,
             onNext: goToNextPageFromAVPlayer,
             onPlaybackEnded: onPlayNextMedia,
-            onClose: closeFromFullscreenVideo,
+            onClose: onClose,
             onPlaybackError: handleAVPlayerPlaybackError
         )
 

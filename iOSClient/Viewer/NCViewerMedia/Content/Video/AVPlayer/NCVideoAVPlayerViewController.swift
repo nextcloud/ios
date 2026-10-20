@@ -45,6 +45,9 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     // MARK: - Paging Callbacks
 
+    private var mediaViewerModel: NCMediaViewerModel?
+    private var onSelectPage: ((_ index: Int) -> Void)?
+
     var onPrevious: (() -> Void)?
     var onNext: (() -> Void)?
     var onPlaybackEnded: NCMediaPlaybackAdvanceRequest?
@@ -53,12 +56,50 @@ final class NCVideoAVPlayerViewController: UIViewController {
     var canGoPrevious = false
     var canGoNext = false
 
+    func configureAdaptivePaging(model: NCMediaViewerModel?, onSelectPage: ((_ index: Int) -> Void)?) {
+        mediaViewerModel = model
+        self.onSelectPage = onSelectPage
+        updateAdaptivePagingIfFolded()
+    }
+
+    private func updateAdaptivePagingIfFolded() {
+        guard (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true else { return }
+        adaptiveControlsView.setFileName(metadata.fileNameView.isEmpty ? metadata.fileName : metadata.fileNameView, account: metadata.account)
+        adaptiveControlsView.configurePaging(model: mediaViewerModel, onSelectPage: { [weak self] index in self?.onSelectPage?(index) })
+    }
+
     // MARK: - Views
 
     internal let playerContainerView = NCVideoAVPlayerLayerView()
-    internal let controlsView = NCVideoControlsView()
+    private let normalControlsView = NCVideoControlsView()
+    private lazy var adaptiveControlsView: NCVideoAdaptiveControlsView = {
+        let controlsView = NCVideoAdaptiveControlsView(state: normalControlsView.state)
+        controlsView.delegate = self
+        controlsView.configureAdaptiveActions(
+            closeAction: UIAction { [weak self] _ in self?.close() },
+            moreButton: NCContextMenuViewer.mediaActionsButton(
+                viewController: self,
+                metadataProvider: { [weak self] in self?.metadata },
+                controllerProvider: { [weak self] in self?.contextMenuController }
+            )
+        )
+        return controlsView
+    }()
+
+    internal var controlsView: any NCVideoPlaybackControls {
+        if (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true {
+            return adaptiveControlsView
+        }
+        return normalControlsView
+    }
 
     private let floatingTitleView = NCMediaViewerFloatingTitleView()
+
+    private lazy var moreNavigationItem = NCContextMenuViewer.mediaNavigationItem(
+        viewController: self,
+        metadataProvider: { [weak self] in self?.metadata },
+        controllerProvider: { [weak self] in self?.contextMenuController }
+    )
 
     private lazy var floatingTitleDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -82,6 +123,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private var playbackEndObserver: NSObjectProtocol?
     private var playbackFailureObserver: NSObjectProtocol?
     private var playbackStartupTimeoutTask: Task<Void, Never>?
+    private var audioSessionTask: Task<Void, Never>?
     private var timeObserverToken: Any?
     private var preparedURL: URL?
     private var hasReportedPlaybackError = false
@@ -93,17 +135,18 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     internal var shouldKeepControlsVisible: Bool {
-        player.timeControlStatus != .playing && !isPlaybackRequested
+        (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true ||
+            player.timeControlStatus != .playing && !isPlaybackRequested
     }
 
-    internal func setNavigationBarVisible(
-        _ isVisible: Bool,
-        animated: Bool
-    ) {
-        navigationController?.setNavigationBarHidden(
-            !isVisible,
-            animated: animated
-        )
+    internal func setNavigationBarVisible(_ isVisible: Bool, animated: Bool) {
+        guard let navigationController else { return }
+        navigationController.setNavigationBarHidden(!isVisible || (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true, animated: animated)
+        navigationController.view.layoutIfNeeded()
+        updateControlsNavigationBar()
+        navigationController.transitionCoordinator?.animate(alongsideTransition: nil) { [weak self] _ in
+            self?.updateControlsNavigationBar()
+        }
     }
 
     // MARK: - Init
@@ -127,14 +170,9 @@ final class NCVideoAVPlayerViewController: UIViewController {
         self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
         self.playbackOptions = playbackOptions
-        self.playbackPresentationContext = NCVideoPlaybackPresentationContext(
-            startReason: playbackStartReason
-        )
+        self.playbackPresentationContext = NCVideoPlaybackPresentationContext(startReason: playbackStartReason)
 
-        super.init(
-            nibName: nil,
-            bundle: nil
-        )
+        super.init(nibName: nil, bundle: nil)
 
         modalPresentationStyle = .fullScreen
     }
@@ -155,7 +193,25 @@ final class NCVideoAVPlayerViewController: UIViewController {
     override func loadView() {
         let initialBackgroundColor = viewerBackgroundColor
 
-        let rootView = UIView()
+        let rootView = NCMediaAdaptiveLayoutView(
+            mediaView: playerContainerView,
+            normalControlsView: normalControlsView,
+            adaptiveControlsView: { [weak self] in self?.adaptiveControlsView }
+        )
+        rootView.onLayoutModeChanged = { [weak self] isFolded in
+            guard let self else {
+                return
+            }
+
+            updateAdaptivePagingIfFolded()
+            showControls(animated: false)
+
+            if isFolded {
+                stopControlsHideTimer()
+            } else {
+                scheduleControlsHide()
+            }
+        }
         rootView.backgroundColor = initialBackgroundColor
         rootView.isOpaque = true
         rootView.clipsToBounds = true
@@ -163,29 +219,12 @@ final class NCVideoAVPlayerViewController: UIViewController {
         playerContainerView.backgroundColor = initialBackgroundColor
         playerContainerView.isOpaque = true
         playerContainerView.clipsToBounds = true
-        playerContainerView.translatesAutoresizingMaskIntoConstraints = false
         playerContainerView.playerLayer.videoGravity = .resizeAspect
 
-        controlsView.delegate = self
+        normalControlsView.delegate = self
         updatePlaybackOptionsControls()
         controlsView.alpha = 0
         controlsView.isHidden = true
-        controlsView.translatesAutoresizingMaskIntoConstraints = false
-
-        rootView.addSubview(playerContainerView)
-        rootView.addSubview(controlsView)
-
-        NSLayoutConstraint.activate([
-            playerContainerView.leadingAnchor.constraint(equalTo: rootView.leadingAnchor),
-            playerContainerView.trailingAnchor.constraint(equalTo: rootView.trailingAnchor),
-            playerContainerView.topAnchor.constraint(equalTo: rootView.topAnchor),
-            playerContainerView.bottomAnchor.constraint(equalTo: rootView.bottomAnchor),
-
-            controlsView.leadingAnchor.constraint(equalTo: rootView.leadingAnchor),
-            controlsView.trailingAnchor.constraint(equalTo: rootView.trailingAnchor),
-            controlsView.topAnchor.constraint(equalTo: rootView.topAnchor),
-            controlsView.bottomAnchor.constraint(equalTo: rootView.bottomAnchor)
-        ])
 
         updateControlsNavigationBar()
 
@@ -204,7 +243,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
         configureNavigationItem()
         updateTitleLabel(metadata: metadata)
-        configureAudioSession()
         configurePlayerLayer()
         configureSwipeGestures()
         configureTapGesture()
@@ -229,14 +267,8 @@ final class NCVideoAVPlayerViewController: UIViewController {
         updateControlsNavigationBar()
     }
 
-    override func viewWillTransition(
-        to size: CGSize,
-        with coordinator: UIViewControllerTransitionCoordinator
-    ) {
-        super.viewWillTransition(
-            to: size,
-            with: coordinator
-        )
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
 
         coordinator.animate(alongsideTransition: { [weak self] _ in
             self?.view.layoutIfNeeded()
@@ -286,12 +318,8 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     private var viewerBackgroundColor: UIColor {
-        UIColor.ncViewerBackground(
-            ncViewerBackgroundStyle(
-                for: metadata,
-                isChromeHidden: isChromeHidden
-            )
-        )
+        let isFolded = (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true
+        return .ncViewerBackground(ncViewerVideoPlaybackBackgroundStyle(for: metadata, isChromeHidden: isChromeHidden, isFoldedLayout: isFolded))
     }
 
     @MainActor
@@ -310,23 +338,26 @@ final class NCVideoAVPlayerViewController: UIViewController {
         navigationItem.title = nil
         navigationItem.titleView = floatingTitleView
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "chevron.backward"),
-            style: .plain,
-            target: self,
-            action: #selector(closeTapped)
-        )
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), style: .plain, target: self, action: #selector(closeTapped))
+
+        navigationItem.rightBarButtonItem = moreNavigationItem
+
+    }
+
+    func updateMetadata(_ metadata: tableMetadata) {
+        guard self.metadata.ocId == metadata.ocId, self.metadata.account == metadata.account else { return }
+
+        self.metadata = metadata
+        updateTitleLabel(metadata: metadata)
     }
 
     private func updateTitleLabel(metadata: tableMetadata) {
+        normalControlsView.setAccount(metadata.account)
         let primaryTitle = metadata.fileNameView.isEmpty
             ? metadata.fileName
             : metadata.fileNameView
 
-        floatingTitleView.update(
-            primaryText: primaryTitle,
-            secondaryText: floatingTitleDateFormatter.string(from: metadata.date as Date)
-        )
+        floatingTitleView.update(primaryText: primaryTitle, secondaryText: floatingTitleDateFormatter.string(from: metadata.date as Date))
     }
 
     @objc
@@ -354,26 +385,17 @@ final class NCVideoAVPlayerViewController: UIViewController {
     // MARK: - Swipe Navigation
 
     private func configureSwipeGestures() {
-        let previousGesture = UISwipeGestureRecognizer(
-            target: self,
-            action: #selector(handleSwipe(_:))
-        )
+        let previousGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
         previousGesture.direction = .right
         previousGesture.delegate = self
         view.addGestureRecognizer(previousGesture)
 
-        let nextGesture = UISwipeGestureRecognizer(
-            target: self,
-            action: #selector(handleSwipe(_:))
-        )
+        let nextGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
         nextGesture.direction = .left
         nextGesture.delegate = self
         view.addGestureRecognizer(nextGesture)
 
-        let closePanGesture = UIPanGestureRecognizer(
-            target: self,
-            action: #selector(handleClosePan(_:))
-        )
+        let closePanGesture = UIPanGestureRecognizer(target: self, action: #selector(handleClosePan(_:)))
         closePanGesture.delegate = self
         self.closePanGesture = closePanGesture
         view.addGestureRecognizer(closePanGesture)
@@ -445,10 +467,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     // MARK: - Gesture Handling
 
     private func configureTapGesture() {
-        let tapGesture = UITapGestureRecognizer(
-            target: self,
-            action: #selector(handleSingleTap(_:))
-        )
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleSingleTap(_:)))
         tapGesture.numberOfTapsRequired = 1
         tapGesture.cancelsTouchesInView = false
         tapGesture.delegate = self
@@ -514,8 +533,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
         if shouldAutoPlayOnStart,
            player.timeControlStatus != .playing {
-            player.play()
-            startPlaybackStartupTimeout()
+            playWhenAudioSessionIsReady()
         }
 
         updatePlayPauseButton()
@@ -524,6 +542,8 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     private func stop() {
+        audioSessionTask?.cancel()
+        audioSessionTask = nil
         preparedURL = nil
         isPlaybackRequested = false
         playbackPresentationContext.reset()
@@ -576,9 +596,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         playerContainerView.playerLayer.frame = playerContainerView.bounds
 
         if pictureInPictureController == nil {
-            pictureInPictureController = AVPictureInPictureController(
-                playerLayer: playerContainerView.playerLayer
-            )
+            pictureInPictureController = AVPictureInPictureController(playerLayer: playerContainerView.playerLayer)
             pictureInPictureController?.delegate = self
         }
 
@@ -604,28 +622,19 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private func configureObservers() {
         cleanupObservers()
 
-        itemStatusObservation = player.currentItem?.observe(
-            \.status,
-            options: [.initial, .new]
-        ) { [weak self] _, _ in
+        itemStatusObservation = player.currentItem?.observe(\.status, options: [.initial, .new]) { [weak self] _, _ in
             Task { @MainActor in
                 self?.handleCurrentItemStatusChange()
             }
         }
 
-        timeControlStatusObservation = player.observe(
-            \.timeControlStatus,
-            options: [.initial, .new]
-        ) { [weak self] _, _ in
+        timeControlStatusObservation = player.observe(\.timeControlStatus, options: [.initial, .new]) { [weak self] _, _ in
             Task { @MainActor in
                 self?.handleTimeControlStatusChange()
             }
         }
 
-        timeObserverToken = player.addPeriodicTimeObserver(
-            forInterval: CMTime(seconds: 0.5, preferredTimescale: CMTimeScale(NSEC_PER_SEC)),
-            queue: .main
-        ) { [weak self] _ in
+        timeObserverToken = player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.5, preferredTimescale: CMTimeScale(NSEC_PER_SEC)), queue: .main) { [weak self] _ in
             guard let self,
                   !self.playbackPresentationContext.isSeeking else {
                 return
@@ -635,19 +644,11 @@ final class NCVideoAVPlayerViewController: UIViewController {
         }
 
         if let currentItem = player.currentItem {
-            playbackEndObserver = NotificationCenter.default.addObserver(
-                forName: .AVPlayerItemDidPlayToEndTime,
-                object: currentItem,
-                queue: .main
-            ) { [weak self] _ in
+            playbackEndObserver = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: currentItem, queue: .main) { [weak self] _ in
                 self?.handlePlaybackEnded()
             }
 
-            playbackFailureObserver = NotificationCenter.default.addObserver(
-                forName: .AVPlayerItemFailedToPlayToEndTime,
-                object: currentItem,
-                queue: .main
-            ) { [weak self] _ in
+            playbackFailureObserver = NotificationCenter.default.addObserver(forName: .AVPlayerItemFailedToPlayToEndTime, object: currentItem, queue: .main) { [weak self] _ in
                 Task { @MainActor in
                     self?.reportPlaybackErrorIfNeeded()
                 }
@@ -693,10 +694,10 @@ final class NCVideoAVPlayerViewController: UIViewController {
         }
 
         if shouldAutoPlayOnStart,
+           isPlaybackRequested,
            player.timeControlStatus != .playing {
-            isPlaybackRequested = true
             updatePlayPauseButton()
-            player.play()
+            playWhenAudioSessionIsReady()
         } else {
             updatePlayPauseButton()
         }
@@ -712,7 +713,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private func startPlaybackStartupTimeout() {
         cancelPlaybackStartupTimeout()
 
-        guard shouldAutoPlayOnStart,
+        guard isPlaybackRequested,
               player.timeControlStatus != .playing else {
             return
         }
@@ -730,12 +731,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
                 return
             }
 
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .error,
-                message: "VIDEO AVPlayer playback startup timed out",
-                consoleOnly: false
-            )
+            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO AVPlayer playback startup timed out", consoleOnly: false)
 
             self.reportPlaybackErrorIfNeeded()
         }
@@ -760,12 +756,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         let errorDomain = playerError?.domain ?? "unknown"
         let errorCode = playerError?.code ?? 0
 
-        nkLog(
-            tag: NCGlobal.shared.logTagViewer,
-            emoji: .error,
-            message: "VIDEO AVPlayer playback failed domain: \(errorDomain), code: \(errorCode)",
-            consoleOnly: false
-        )
+        nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO AVPlayer playback failed domain: \(errorDomain), code: \(errorCode)", consoleOnly: false)
 
         onPlaybackError?()
     }
@@ -781,7 +772,8 @@ final class NCVideoAVPlayerViewController: UIViewController {
             isPlaybackRequested = true
 
         case .paused:
-            if !playbackPresentationContext.shouldSuppressAutomaticControlsPresentation,
+            if audioSessionTask == nil,
+               !playbackPresentationContext.shouldSuppressAutomaticControlsPresentation,
                player.currentItem?.status == .readyToPlay ||
                 player.currentItem?.status == .failed ||
                 player.currentItem == nil {
@@ -857,11 +849,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         isPlaybackRequested = true
         updatePlayPauseButton()
 
-        player.seek(
-            to: .zero,
-            toleranceBefore: .zero,
-            toleranceAfter: .zero
-        ) { [weak self, weak player] didFinish in
+        player.seek(to: .zero, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self, weak player] didFinish in
             guard let self,
                   let player else {
                 return
@@ -880,7 +868,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
                     return
                 }
 
-                player.play()
+                self.playWhenAudioSessionIsReady()
                 self.updateProgressControls()
                 self.scheduleControlsHide()
             }
@@ -888,10 +876,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     internal func updatePlaybackOptionsControls() {
-        controlsView.updatePlaybackOptions(
-            isRepeatEnabled: playbackOptions.isRepeatEnabled,
-            isAutoAdvanceEnabled: playbackOptions.isAutoAdvanceEnabled
-        )
+        controlsView.updatePlaybackOptions(isRepeatEnabled: playbackOptions.isRepeatEnabled, isAutoAdvanceEnabled: playbackOptions.isAutoAdvanceEnabled)
     }
 
     private func updateControlsNavigationBar() {
@@ -899,40 +884,44 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     internal func controlsHitFramesContain(_ location: CGPoint) -> Bool {
-        let topActionsFrame = controlsView.topActionsView.convert(
-            controlsView.topActionsView.bounds,
-            to: view
-        )
-        let centerControlsFrame = controlsView.centerControlsView.convert(
-            controlsView.centerControlsView.bounds,
-            to: view
-        )
-        let bottomControlsFrame = controlsView.bottomControlsView.convert(
-            controlsView.bottomControlsView.bounds,
-            to: view
-        )
+        let topActionsFrame = controlsView.topActionsView.convert(controlsView.topActionsView.bounds, to: view)
+        let centerControlsFrame = controlsView.centerControlsView.convert(controlsView.centerControlsView.bounds, to: view)
+        let bottomControlsFrame = controlsView.bottomControlsView.convert(controlsView.bottomControlsView.bounds, to: view)
+
+        if (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true {
+            let adaptiveActionsFrame = adaptiveControlsView.actionsContainerView.convert(adaptiveControlsView.actionsContainerView.bounds, to: view)
+            let footerFrame = adaptiveControlsView.pagingFooterView.convert(adaptiveControlsView.pagingFooterView.bounds, to: view)
+            if !adaptiveControlsView.isHidden && (adaptiveActionsFrame.contains(location) || footerFrame.contains(location)) {
+                return true
+            }
+        }
 
         return topActionsFrame.contains(location)
             || centerControlsFrame.contains(location)
             || bottomControlsFrame.contains(location)
     }
 
-    private func configureAudioSession() {
-        do {
-            try AVAudioSession.sharedInstance().setCategory(
-                .playback,
-                mode: .moviePlayback,
-                options: []
-            )
+    func playWhenAudioSessionIsReady() {
+        guard player.currentItem != nil else { return }
+        isPlaybackRequested = true
+        guard audioSessionTask == nil else { return }
 
-            try AVAudioSession.sharedInstance().setActive(true)
-        } catch {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .error,
-                message: "VIDEO AVPlayer audio session error: \(error.localizedDescription)",
-                consoleOnly: true
-            )
+        let playbackPlayer = player
+        let playbackURL = url
+        startPlaybackStartupTimeout()
+        audioSessionTask = Task { @MainActor [weak self] in
+            let activated = await NCVideoPlaybackController.configureAudioSession()
+            guard !Task.isCancelled, let self else { return }
+            audioSessionTask = nil
+            guard isPlaybackRequested, player === playbackPlayer, url == playbackURL else { return }
+            guard activated else {
+                reportPlaybackErrorIfNeeded()
+                return
+            }
+
+            player.play()
+            startPlaybackStartupTimeout()
+            updatePlayPauseButton()
         }
     }
 
@@ -951,28 +940,18 @@ final class NCVideoAVPlayerViewController: UIViewController {
         guard currentTime.isFinite,
               duration.isFinite,
               duration > 0 else {
-            controlsView.updateProgress(
-                progress: 0,
-                elapsedText: "0:00",
-                remainingText: "−0:00"
-            )
+            controlsView.updateProgress(progress: 0, elapsedText: "0:00", remainingText: "−0:00")
             return
         }
 
         let progress = Float(max(0, min(1, currentTime / duration)))
         let remainingTime = max(0, duration - currentTime)
 
-        controlsView.updateProgress(
-            progress: progress,
-            elapsedText: Self.formatTime(currentTime),
-            remainingText: "−\(Self.formatTime(remainingTime))"
-        )
+        controlsView.updateProgress(progress: progress, elapsedText: Self.formatTime(currentTime), remainingText: "−\(Self.formatTime(remainingTime))")
     }
 
     internal func updateSeekingState() {
-        controlsView.setSeekingEnabled(
-            player.currentItem?.duration.seconds.isFinite == true
-        )
+        controlsView.setSeekingEnabled(player.currentItem?.duration.seconds.isFinite == true)
     }
 
     internal static func formatTime(_ seconds: Double) -> String {
@@ -987,30 +966,22 @@ final class NCVideoAVPlayerViewController: UIViewController {
 // MARK: - Picture in Picture Delegate
 
 extension NCVideoAVPlayerViewController: AVPictureInPictureControllerDelegate {
-    func pictureInPictureControllerWillStartPictureInPicture(
-        _ pictureInPictureController: AVPictureInPictureController
-    ) {
+    func pictureInPictureControllerWillStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
 
         stopControlsHideTimer()
         hideControls(animated: false)
     }
 
-    func pictureInPictureControllerDidStartPictureInPicture(
-        _ pictureInPictureController: AVPictureInPictureController
-    ) {
+    func pictureInPictureControllerDidStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
 
         stopControlsHideTimer()
         hideControls(animated: false)
     }
 
-    func pictureInPictureControllerWillStopPictureInPicture(
-        _ pictureInPictureController: AVPictureInPictureController
-    ) {
+    func pictureInPictureControllerWillStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
     }
 
-    func pictureInPictureControllerDidStopPictureInPicture(
-        _ pictureInPictureController: AVPictureInPictureController
-    ) {
+    func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
         updatePlayPauseButton()
         updateProgressControls()
         updateSeekingState()
@@ -1023,16 +994,8 @@ extension NCVideoAVPlayerViewController: AVPictureInPictureControllerDelegate {
         }
     }
 
-    func pictureInPictureController(
-        _ pictureInPictureController: AVPictureInPictureController,
-        failedToStartPictureInPictureWithError error: Error
-    ) {
-        nkLog(
-            tag: NCGlobal.shared.logTagViewer,
-            emoji: .error,
-            message: "VIDEO AVPlayer PiP failed to start: \(error.localizedDescription)",
-            consoleOnly: true
-        )
+    func pictureInPictureController(_ pictureInPictureController: AVPictureInPictureController, failedToStartPictureInPictureWithError error: Error) {
+        nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO AVPlayer PiP failed to start: \(error.localizedDescription)", consoleOnly: true)
 
         updatePlayPauseButton()
         updateProgressControls()
@@ -1045,10 +1008,7 @@ extension NCVideoAVPlayerViewController: AVPictureInPictureControllerDelegate {
 
 extension NCVideoAVPlayerViewController: UIGestureRecognizerDelegate {
     // Keep AVPlayer touches compatible with viewer gestures, but isolate visible controls from global gestures.
-    func gestureRecognizer(
-        _ gestureRecognizer: UIGestureRecognizer,
-        shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
-    ) -> Bool {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         guard controlsVisible else {
             return true
         }
@@ -1064,10 +1024,7 @@ extension NCVideoAVPlayerViewController: UIGestureRecognizerDelegate {
     }
 
     // Keep global viewer gestures disabled while Picture in Picture is active or when visible controls receive the touch.
-    func gestureRecognizer(
-        _ gestureRecognizer: UIGestureRecognizer,
-        shouldReceive touch: UITouch
-    ) -> Bool {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         guard !isPictureInPictureActive else {
             return false
         }

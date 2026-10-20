@@ -23,8 +23,10 @@ class tableAccount: Object {
     @objc dynamic var autoUploadVideo: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
     @objc dynamic var autoUploadWWAnVideo: Bool = false
-    /// Incremental restart date; nil scans the whole library. Advances only past confirmed uploads.
+    /// Confirmed upload progress; also the lower bound for discovery when whole-library mode is off.
     @objc dynamic var autoUploadSinceDate: Date?
+    /// Preserves the whole-library selection independently of incremental progress.
+    @objc dynamic var autoUploadAllPhotos = false
     /// Ignores completed uploads from previous sessions while preserving the local history.
     @objc dynamic var autoUploadForceReupload = false
     @objc dynamic var backend = ""
@@ -60,6 +62,12 @@ class tableAccount: Object {
     @objc dynamic var userStatusStatusIsUserDefined: Bool = false
     @objc dynamic var website = ""
 
+    /// Shared by app and PhotoKit discovery. Progress must never restrict a whole-library scan.
+    var autoUploadDatePredicate: NSPredicate? {
+        guard !autoUploadAllPhotos, let autoUploadSinceDate else { return nil }
+        return NSPredicate(format: "creationDate >= %@", autoUploadSinceDate as NSDate)
+    }
+
     override static func primaryKey() -> String {
         return "account"
     }
@@ -78,6 +86,7 @@ class tableAccount: Object {
                                    autoUploadWWAnPhoto: self.autoUploadWWAnPhoto,
                                    autoUploadWWAnVideo: self.autoUploadWWAnVideo,
                                    autoUploadSinceDate: self.autoUploadSinceDate,
+                                   autoUploadAllPhotos: self.autoUploadAllPhotos,
                                    autoUploadForceReupload: self.autoUploadForceReupload,
                                    user: self.user,
                                    userId: self.userId,
@@ -100,6 +109,7 @@ class tableAccount: Object {
         self.autoUploadWWAnPhoto = codableObject.autoUploadWWAnPhoto
         self.autoUploadWWAnVideo = codableObject.autoUploadWWAnVideo
         self.autoUploadSinceDate = codableObject.autoUploadSinceDate
+        self.autoUploadAllPhotos = codableObject.autoUploadAllPhotos ?? (codableObject.autoUploadSinceDate == nil)
         self.autoUploadForceReupload = codableObject.autoUploadForceReupload ?? false
 
         self.user = codableObject.user
@@ -123,6 +133,8 @@ struct tableAccountCodable: Codable {
     var autoUploadWWAnPhoto: Bool
     var autoUploadWWAnVideo: Bool
     var autoUploadSinceDate: Date?
+    // Optional so older backups infer the selection from their restart date.
+    var autoUploadAllPhotos: Bool?
     // Optional so backups written before this setting remain readable.
     var autoUploadForceReupload: Bool?
 
@@ -397,6 +409,21 @@ extension NCManageDatabase {
             guard let current = realm.objects(tableAccount.self).filter("account == %@", account).first,
                   !current.autoUploadStart else { return }
             current.autoUploadSinceDate = date
+            current.autoUploadAllPhotos = date == nil
+        }
+    }
+
+    /// Selecting the whole library clears the previous date immediately.
+    func setAutoUploadAllPhotosAsync(_ allPhotos: Bool, account: String) async {
+        await core.performRealmWriteAsync { realm in
+            guard let current = realm.objects(tableAccount.self).filter("account == %@", account).first,
+                  !current.autoUploadStart else { return }
+            current.autoUploadAllPhotos = allPhotos
+            if allPhotos {
+                current.autoUploadSinceDate = nil
+            } else if current.autoUploadSinceDate == nil {
+                current.autoUploadSinceDate = Date.now
+            }
         }
     }
 
@@ -414,6 +441,7 @@ extension NCManageDatabase {
             guard let current = accounts.filter("account == %@", account).first else { return }
             if enabled, !accounts.filter("autoUploadStart == true AND account != %@", account).isEmpty { return }
             if current.autoUploadStart != enabled {
+                if enabled, current.autoUploadAllPhotos { current.autoUploadSinceDate = nil }
                 current.autoUploadSessionIdentifier = UUID().uuidString
                 current.autoUploadStart = enabled
             }

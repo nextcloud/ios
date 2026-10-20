@@ -19,7 +19,6 @@ class NCContextMenuNavigation: NSObject {
               favoriteOnTop: UIAction,
               directoryOnTop: UIAction,
               hiddenFiles: UIAction,
-              personalFilesOnly: UIAction,
               showDescription: UIAction,
               showRecommendedFiles: UIAction?)? {
         guard let collectionViewCommon else {
@@ -165,19 +164,6 @@ class NCContextMenuNavigation: NSObject {
             }
         }
 
-        let personalFilesOnly = NCPreferences().getPersonalFilesOnly(account: session.account)
-        let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""),
-                                               image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors),
-                                               state: personalFilesOnly ? .on : .off) { _ in
-            Task {
-                NCPreferences().setPersonalFilesOnly(account: session.account, value: !personalFilesOnly)
-                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferReloadDataSource(serverUrl: collectionViewCommon.serverUrl, requestData: false, status: nil)
-                }
-                await mainNavigationController.updateMenuOption()
-            }
-        }
-
         let showDescriptionKeychain = NCPreferences().showDescription
         let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""),
                                        state: showDescriptionKeychain ? .on : .off) { _ in
@@ -205,7 +191,7 @@ class NCContextMenuNavigation: NSObject {
             }
         }
 
-        return (select, viewStyleSubmenu, sortSubmenu, favoriteOnTopAction, directoryOnTopAction, hiddenFilesAction, personalFilesOnlyAction, showDescription, showRecommendedFiles)
+        return (select, viewStyleSubmenu, sortSubmenu, favoriteOnTopAction, directoryOnTopAction, hiddenFilesAction, showDescription, showRecommendedFiles)
     }
 
     // MARK: - TRASH MENU OPTION ACTION

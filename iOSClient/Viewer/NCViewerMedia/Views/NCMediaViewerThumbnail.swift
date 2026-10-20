@@ -6,6 +6,59 @@ import UIKit
 import SwiftUI
 import NextcloudKit
 
+/// Model bindings shared by normal and adaptive layouts for every media type.
+/// The caller owns visibility and spacing; this view never hides with the media controls.
+struct NCMediaViewerThumbnailStrip: View {
+    @ObservedObject var model: NCMediaViewerModel
+    var onSelectPage: ((_ index: Int) -> Void)?
+
+    var body: some View {
+        NCMediaViewerThumbnail(
+            selectedIndex: model.selectedIndex,
+            numberOfPages: model.numberOfPages,
+            reloadRevision: model.thumbnailReloadRevision,
+            metadataProvider: { index in
+                model.metadataForThumbnail(at: index)
+            },
+            metadataResolver: { index in
+                await model.resolveMetadataForThumbnail(at: index)
+            },
+            previewURLProvider: { metadata in
+                await model.previewURL(for: metadata, ext: NCGlobal.shared.previewExt256)
+            },
+            audioLoadProvider: { index in
+                await model.loadPageIfNeeded(index: index)
+            },
+            isDeletedProvider: { index in
+                model.isThumbnailDeleted(at: index)
+            },
+            onSelect: { index in
+                if let onSelectPage {
+                    onSelectPage(index)
+                    return
+                }
+                Task {
+                    await model.displayPreviewPage(at: index)
+                }
+            }
+        )
+        .equatable()
+        .frame(height: NCMediaViewerThumbnail.preferredHeight)
+    }
+}
+
+// MARK: - Adaptive thumbnail island
+
+extension View {
+    /// Shared decoration for paged media and presented video; keeps the lane's height
+    /// and selection gestures while matching the Previous/Next button background.
+    func ncAdaptiveThumbnailIsland() -> some View {
+        padding(.horizontal, NCMediaAdaptiveControlsLayout.spacing)
+            .frame(maxWidth: .infinity)
+            .ncAdaptiveControlSurface(shape: RoundedRectangle(cornerRadius: 16))
+    }
+}
+
 // MARK: - Layout
 
 private enum NCMediaViewerThumbnailLayout {
@@ -59,10 +112,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
         NCMediaViewerThumbnailLayout.preferredHeight
     }
 
-    static func == (
-        lhs: NCMediaViewerThumbnail,
-        rhs: NCMediaViewerThumbnail
-    ) -> Bool {
+    static func == (lhs: NCMediaViewerThumbnail, rhs: NCMediaViewerThumbnail) -> Bool {
         lhs.selectedIndex == rhs.selectedIndex &&
         lhs.numberOfPages == rhs.numberOfPages &&
         lhs.reloadRevision == rhs.reloadRevision
@@ -75,10 +125,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
         layout.minimumInteritemSpacing = NCMediaViewerThumbnailLayout.itemSpacing
         layout.sectionInset = .zero
 
-        let collectionView = NCMediaViewerThumbnailCollectionView(
-            frame: .zero,
-            collectionViewLayout: layout
-        )
+        let collectionView = NCMediaViewerThumbnailCollectionView(frame: .zero, collectionViewLayout: layout)
 
         collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
@@ -89,10 +136,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
         collectionView.delegate = context.coordinator
         collectionView.prefetchDataSource = context.coordinator
 
-        collectionView.register(
-            NCMediaViewerThumbnailUICollectionCell.self,
-            forCellWithReuseIdentifier: NCMediaViewerThumbnailUICollectionCell.reuseIdentifier
-        )
+        collectionView.register(NCMediaViewerThumbnailUICollectionCell.self, forCellWithReuseIdentifier: NCMediaViewerThumbnailUICollectionCell.reuseIdentifier)
 
         context.coordinator.collectionView = collectionView
         collectionView.onBoundsSizeChanged = { [weak coordinator = context.coordinator] size in
@@ -102,10 +146,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
         return collectionView
     }
 
-    func updateUIView(
-        _ collectionView: UICollectionView,
-        context: Context
-    ) {
+    func updateUIView(_ collectionView: UICollectionView, context: Context) {
         context.coordinator.selectedIndex = selectedIndex
         context.coordinator.numberOfPages = numberOfPages
         context.coordinator.reloadRevision = reloadRevision
@@ -203,17 +244,11 @@ extension NCMediaViewerThumbnail {
 
         // MARK: - UICollectionViewDataSource
 
-        func collectionView(
-            _ collectionView: UICollectionView,
-            numberOfItemsInSection section: Int
-        ) -> Int {
+        func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
             numberOfPages
         }
 
-        func collectionView(
-            _ collectionView: UICollectionView,
-            cellForItemAt indexPath: IndexPath
-        ) -> UICollectionViewCell {
+        func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
             guard let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: NCMediaViewerThumbnailUICollectionCell.reuseIdentifier,
                 for: indexPath
@@ -221,20 +256,14 @@ extension NCMediaViewerThumbnail {
                 return UICollectionViewCell()
             }
 
-            configure(
-                cell,
-                at: indexPath.item
-            )
+            configure(cell, at: indexPath.item)
 
             return cell
         }
 
         // MARK: - UICollectionViewDelegate
 
-        func collectionView(
-            _ collectionView: UICollectionView,
-            didSelectItemAt indexPath: IndexPath
-        ) {
+        func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
             let selectedIndex = indexPath.item
 
             shouldEmphasizeSelectedThumbnail = true
@@ -267,10 +296,7 @@ extension NCMediaViewerThumbnail {
             selectCenteredThumbnailDuringScrollIfNeeded()
         }
 
-        func scrollViewDidEndDragging(
-            _ scrollView: UIScrollView,
-            willDecelerate decelerate: Bool
-        ) {
+        func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
             guard !decelerate else {
                 return
             }
@@ -284,28 +310,18 @@ extension NCMediaViewerThumbnail {
 
         // MARK: - UICollectionViewDelegateFlowLayout
 
-        func collectionView(
-            _ collectionView: UICollectionView,
-            layout collectionViewLayout: UICollectionViewLayout,
-            sizeForItemAt indexPath: IndexPath
-        ) -> CGSize {
+        func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
             let baseWidth = NCMediaViewerThumbnailLayout.thumbnailSize
             let extraWidth = shouldEmphasizeSelectedThumbnail && isDisplayedCurrentThumbnail(at: indexPath.item)
                 ? NCMediaViewerThumbnailLayout.selectedExtraWidth
                 : 0
 
-            return CGSize(
-                width: baseWidth + extraWidth,
-                height: NCMediaViewerThumbnailLayout.itemContainerHeight
-            )
+            return CGSize(width: baseWidth + extraWidth, height: NCMediaViewerThumbnailLayout.itemContainerHeight)
         }
 
         // MARK: - UICollectionViewDataSourcePrefetching
 
-        func collectionView(
-            _ collectionView: UICollectionView,
-            prefetchItemsAt indexPaths: [IndexPath]
-        ) {
+        func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
             for indexPath in indexPaths {
                 prefetchThumbnail(at: indexPath.item)
             }
@@ -445,17 +461,10 @@ extension NCMediaViewerThumbnail {
             collectionView.layoutIfNeeded()
             updateContentInsetsIfNeeded()
 
-            let indexPath = IndexPath(
-                item: index,
-                section: 0
-            )
+            let indexPath = IndexPath(item: index, section: 0)
 
             guard let attributes = collectionView.layoutAttributesForItem(at: indexPath) else {
-                collectionView.scrollToItem(
-                    at: indexPath,
-                    at: .centeredHorizontally,
-                    animated: animated
-                )
+                collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: animated)
 
                 lastCenteredIndex = index
                 lastCenteredBoundsSize = boundsSize
@@ -466,23 +475,11 @@ extension NCMediaViewerThumbnail {
 
             let targetOffsetX = attributes.center.x - collectionView.bounds.width / 2
             let minOffsetX = -collectionView.adjustedContentInset.left
-            let maxOffsetX = max(
-                minOffsetX,
-                collectionView.contentSize.width - collectionView.bounds.width + collectionView.adjustedContentInset.right
-            )
+            let maxOffsetX = max(minOffsetX, collectionView.contentSize.width - collectionView.bounds.width + collectionView.adjustedContentInset.right)
 
-            let clampedOffsetX = min(
-                max(targetOffsetX, minOffsetX),
-                maxOffsetX
-            )
+            let clampedOffsetX = min(max(targetOffsetX, minOffsetX), maxOffsetX)
 
-            collectionView.setContentOffset(
-                CGPoint(
-                    x: clampedOffsetX,
-                    y: 0
-                ),
-                animated: animated
-            )
+            collectionView.setContentOffset(CGPoint(x: clampedOffsetX, y: 0), animated: animated)
 
             lastCenteredIndex = index
             lastCenteredBoundsSize = boundsSize
@@ -534,15 +531,9 @@ extension NCMediaViewerThumbnail {
                 return nil
             }
 
-            let visibleRect = CGRect(
-                origin: collectionView.contentOffset,
-                size: collectionView.bounds.size
-            )
+            let visibleRect = CGRect(origin: collectionView.contentOffset, size: collectionView.bounds.size)
 
-            let centerPoint = CGPoint(
-                x: visibleRect.midX,
-                y: visibleRect.midY
-            )
+            let centerPoint = CGPoint(x: visibleRect.midX, y: visibleRect.midY)
 
             if let indexPath = collectionView.indexPathForItem(at: centerPoint) {
                 return indexPath.item
@@ -578,17 +569,9 @@ extension NCMediaViewerThumbnail {
 
             let selectedItemWidth = NCMediaViewerThumbnailLayout.thumbnailSize + NCMediaViewerThumbnailLayout.selectedExtraWidth
 
-            let horizontalInset = max(
-                0,
-                (collectionView.bounds.width - selectedItemWidth) / 2
-            )
+            let horizontalInset = max(0, (collectionView.bounds.width - selectedItemWidth) / 2)
 
-            let contentInset = UIEdgeInsets(
-                top: 0,
-                left: horizontalInset,
-                bottom: 0,
-                right: horizontalInset
-            )
+            let contentInset = UIEdgeInsets(top: 0, left: horizontalInset, bottom: 0, right: horizontalInset)
 
             guard collectionView.contentInset != contentInset else {
                 return
@@ -610,10 +593,7 @@ extension NCMediaViewerThumbnail {
                     continue
                 }
 
-                configure(
-                    cell,
-                    at: indexPath.item
-                )
+                configure(cell, at: indexPath.item)
             }
         }
 
@@ -622,28 +602,19 @@ extension NCMediaViewerThumbnail {
                 return
             }
 
-            let indexPath = IndexPath(
-                item: index,
-                section: 0
-            )
+            let indexPath = IndexPath(item: index, section: 0)
 
             guard collectionView.indexPathsForVisibleItems.contains(indexPath),
                   let cell = collectionView.cellForItem(at: indexPath) as? NCMediaViewerThumbnailUICollectionCell else {
                 return
             }
 
-            configure(
-                cell,
-                at: index
-            )
+            configure(cell, at: index)
         }
 
         // MARK: - Cell Configuration
 
-        private func configure(
-            _ cell: NCMediaViewerThumbnailUICollectionCell,
-            at index: Int
-        ) {
+        private func configure(_ cell: NCMediaViewerThumbnailUICollectionCell, at index: Int) {
             let isDeleted = isDeletedProvider(index)
             let metadata = isDeleted ? nil : metadataProvider(index)
             let ocId = metadata?.ocId
@@ -660,10 +631,7 @@ extension NCMediaViewerThumbnail {
             if !isDeleted, isAudio {
                 loadAudioIfNeeded(at: index)
             } else if !isDeleted, image == nil {
-                loadThumbnailIfNeeded(
-                    index: index,
-                    metadata: metadata
-                )
+                loadThumbnailIfNeeded(index: index, metadata: metadata)
             }
 
             cell.configure(
@@ -729,10 +697,7 @@ extension NCMediaViewerThumbnail {
                     return
                 }
 
-                self.imageCache.setObject(
-                    image,
-                    forKey: metadata.ocId as NSString
-                )
+                self.imageCache.setObject(image, forKey: metadata.ocId as NSString)
                 self.refreshThumbnailIfVisible(at: index)
             }
         }
@@ -789,17 +754,11 @@ extension NCMediaViewerThumbnail {
             if metadata?.classFile == NKTypeClassFile.audio.rawValue {
                 loadAudioIfNeeded(at: index)
             } else {
-                loadThumbnailIfNeeded(
-                    index: index,
-                    metadata: metadata
-                )
+                loadThumbnailIfNeeded(index: index, metadata: metadata)
             }
         }
 
-        private func loadThumbnailIfNeeded(
-            index: Int,
-            metadata initialMetadata: tableMetadata?
-        ) {
+        private func loadThumbnailIfNeeded(index: Int, metadata initialMetadata: tableMetadata?) {
             guard index >= 0,
                   index < numberOfPages,
                   !isDeletedProvider(index),
@@ -817,7 +776,7 @@ extension NCMediaViewerThumbnail {
 
             pendingPrefetchIndexes.insert(index)
 
-            Task { [weak self] in
+            Task { @MainActor [weak self] in
                 guard let self else {
                     return
                 }
@@ -830,61 +789,39 @@ extension NCMediaViewerThumbnail {
 
                 guard let metadata,
                       !metadata.ocId.isEmpty else {
-                    await MainActor.run {
-                        _ = self.pendingPrefetchIndexes.remove(index)
-                    }
+                    self.pendingPrefetchIndexes.remove(index)
                     return
                 }
 
                 guard !self.isDeletedProvider(index) else {
-                    await MainActor.run {
-                        _ = self.pendingPrefetchIndexes.remove(index)
-                    }
+                    self.pendingPrefetchIndexes.remove(index)
                     return
                 }
 
                 guard metadata.classFile != NKTypeClassFile.audio.rawValue else {
-                    await MainActor.run {
-                        _ = self.pendingPrefetchIndexes.remove(index)
-                        self.loadAudioIfNeeded(at: index)
-                        self.refreshThumbnailIfVisible(at: index)
-                    }
-                    return
-                }
-
-                guard let previewURL = await self.previewURLProvider(metadata) else {
-                    await MainActor.run {
-                        self.indexesWithoutPreview.insert(index)
-                        _ = self.pendingPrefetchIndexes.remove(index)
-                        self.refreshThumbnailIfVisible(at: index)
-                    }
-                    return
-                }
-
-                guard let image = await Self.makeImage(from: previewURL) else {
-                    await MainActor.run {
-                        self.indexesWithoutPreview.insert(index)
-                        _ = self.pendingPrefetchIndexes.remove(index)
-                        self.refreshThumbnailIfVisible(at: index)
-                    }
-                    return
-                }
-
-                await MainActor.run {
-                    self.indexesWithoutPreview.remove(index)
-                    _ = self.pendingPrefetchIndexes.remove(index)
-
-                    guard !self.isDeletedProvider(index) else {
-                        return
-                    }
-
-                    self.imageCache.setObject(
-                        image,
-                        forKey: metadata.ocId as NSString
-                    )
-
+                    self.pendingPrefetchIndexes.remove(index)
+                    self.loadAudioIfNeeded(at: index)
                     self.refreshThumbnailIfVisible(at: index)
+                    return
                 }
+
+                guard let previewURL = await self.previewURLProvider(metadata),
+                      let image = await Self.makeImage(from: previewURL) else {
+                    self.indexesWithoutPreview.insert(index)
+                    self.pendingPrefetchIndexes.remove(index)
+                    self.refreshThumbnailIfVisible(at: index)
+                    return
+                }
+
+                self.indexesWithoutPreview.remove(index)
+                self.pendingPrefetchIndexes.remove(index)
+
+                guard !self.isDeletedProvider(index) else {
+                    return
+                }
+
+                self.imageCache.setObject(image, forKey: metadata.ocId as NSString)
+                self.refreshThumbnailIfVisible(at: index)
             }
         }
 
@@ -983,26 +920,12 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
         imageView.frame = thumbnailFrame
         placeholderView.frame = thumbnailFrame
 
-        placeholderIconView.center = CGPoint(
-            x: placeholderView.bounds.midX,
-            y: placeholderView.bounds.midY
-        )
+        placeholderIconView.center = CGPoint(x: placeholderView.bounds.midX, y: placeholderView.bounds.midY)
 
-        playIconView.center = CGPoint(
-            x: thumbnailFrame.midX,
-            y: thumbnailFrame.midY
-        )
+        playIconView.center = CGPoint(x: thumbnailFrame.midX, y: thumbnailFrame.midY)
     }
 
-    func configure(
-        image: UIImage?,
-        isCurrent: Bool,
-        isVideo: Bool,
-        isAudio: Bool,
-        isMetadataResolved: Bool,
-        shouldShowPlaceholder: Bool,
-        isDeleted: Bool
-    ) {
+    func configure(image: UIImage?, isCurrent: Bool, isVideo: Bool, isAudio: Bool, isMetadataResolved: Bool, shouldShowPlaceholder: Bool, isDeleted: Bool) {
         isCurrentThumbnail = isCurrent
         imageView.image = isDeleted ? nil : image
         placeholderView.isHidden = !shouldShowPlaceholder
@@ -1027,19 +950,10 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
         placeholderView.backgroundColor = UIColor.secondarySystemFill
         placeholderIconView.tintColor = .label
 
-        let placeholderConfiguration = UIImage.SymbolConfiguration(
-            pointSize: placeholderPointSize,
-            weight: .medium
-        )
+        let placeholderConfiguration = UIImage.SymbolConfiguration(pointSize: placeholderPointSize, weight: .medium)
 
-        placeholderIconView.image = UIImage(
-            systemName: placeholderSymbol,
-            withConfiguration: placeholderConfiguration
-        )?.withRenderingMode(.alwaysTemplate)
-        placeholderIconView.bounds.size = CGSize(
-            width: placeholderPointSize,
-            height: placeholderPointSize
-        )
+        placeholderIconView.image = UIImage(systemName: placeholderSymbol, withConfiguration: placeholderConfiguration)?.withRenderingMode(.alwaysTemplate)
+        placeholderIconView.bounds.size = CGSize(width: placeholderPointSize, height: placeholderPointSize)
         playIconView.image = playIconView.image?.withRenderingMode(.alwaysTemplate)
         playIconView.tintColor = .systemGray
         playIconView.isHidden = isDeleted || !isVideo || imageView.image == nil
@@ -1067,17 +981,11 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
 
         playIconView.tintColor = .white
         playIconView.contentMode = .center
-        playIconView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(
-            pointSize: 14,
-            weight: .semibold
-        )
+        playIconView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 14, weight: .semibold)
         playIconView.layer.shadowColor = UIColor.black.cgColor
         playIconView.layer.shadowOpacity = 0.35
         playIconView.layer.shadowRadius = 4
-        playIconView.layer.shadowOffset = CGSize(
-            width: 0,
-            height: 2
-        )
+        playIconView.layer.shadowOffset = CGSize(width: 0, height: 2)
 
         contentView.addSubview(imageView)
         contentView.addSubview(placeholderView)

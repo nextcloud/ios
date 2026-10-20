@@ -91,13 +91,7 @@ final class NCGlobal: Sendable {
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
 
     // CHUNK
-    let chunkSizeMBCellular                         = 10000000
-    let chunkSizeMBEthernetOrWiFi                   = 100000000
-
-    // NCViewerProviderContextMenu
-    //
-    let maxAutoDownload: UInt64                     = 50000000      // 50MB
-    let maxAutoDownloadCellular: UInt64             = 10000000      // 10MB
+    let chunkSize                                   = 100000000
 
     // Layout
     //

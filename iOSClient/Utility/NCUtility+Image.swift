@@ -24,7 +24,9 @@ extension NCUtility {
             case NKTypeIconFile.audio.rawValue: image = UIImage(systemName: "waveform", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.iconImageColor2]))
             case NKTypeIconFile.code.rawValue: image = UIImage(systemName: "ellipsis.curlybraces", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.iconImageColor2]))
             case NKTypeIconFile.compress.rawValue: image = UIImage(systemName: "doc.zipper", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.iconImageColor2]))
-            case NKTypeIconFile.directory.rawValue: image = UIImage(named: "folder")! .image(color: NCBrandColor.shared.getElement(account: account), size: UIScreen.main.bounds.width / 2)
+            case NKTypeIconFile.directory.rawValue:
+                let folder = UIImage(named: "folder")!
+                image = folder.image(color: NCBrandColor.shared.getElement(account: account), size: size ?? folder.size.width)
             case NKTypeIconFile.document.rawValue: image = UIImage(systemName: "doc.richtext", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.documentIconColor]))
             case NKTypeIconFile.image.rawValue: image = UIImage(systemName: "photo", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.iconImageColor2]))
             case NKTypeIconFile.video.rawValue: image = UIImage(systemName: "video", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.iconImageColor2]))
@@ -224,17 +226,16 @@ extension NCUtility {
         }
     }
 
-    func pdfThumbnail(url: URL, width: CGFloat = 240) -> UIImage? {
+    func pdfThumbnail(url: URL, width: CGFloat = 240, scale: CGFloat) -> UIImage? {
         guard let data = try? Data(contentsOf: url), let page = PDFDocument(data: data)?.page(at: 0) else {
             return nil
         }
         let pageSize = page.bounds(for: .mediaBox)
-        let pdfScale = width / pageSize.width
-        // Apply if you're displaying the thumbnail on screen
-        let scale = UIScreen.main.scale * pdfScale
-        let screenSize = CGSize(width: pageSize.width * scale, height: pageSize.height * scale)
+        guard pageSize.width > 0 else { return nil }
+        let pdfScale = width / pageSize.width * max(scale, 1)
+        let thumbnailSize = CGSize(width: pageSize.width * pdfScale, height: pageSize.height * pdfScale)
 
-        return page.thumbnail(of: screenSize, for: .mediaBox)
+        return page.thumbnail(of: thumbnailSize, for: .mediaBox)
     }
 
     func createAvatar(displayName: String, size: CGFloat) -> UIImage? {

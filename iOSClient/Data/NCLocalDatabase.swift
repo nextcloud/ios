@@ -39,11 +39,21 @@ final class NCLocalDatabase: @unchecked Sendable {
         return databasePool
     }
 
-    /// Clears the local state stored in GRDB while preserving its schema and migrations.
+    /// Removes all GRDB state for one account in a single transaction.
+    func clearDatabase(account: String) async throws {
+        let databasePool = try databasePool()
+        try await databasePool.write { database in
+            _ = try NCPhotoLibraryAsset.filter(Column("account") == account).deleteAll(database)
+            _ = try NCAutoUploadResource.filter(Column("account") == account).deleteAll(database)
+        }
+    }
+
+    /// Clears both GRDB tables while preserving their schema and migrations.
     func clearDBCache() async throws {
         let databasePool = try databasePool()
         try await databasePool.write { database in
             _ = try NCPhotoLibraryAsset.deleteAll(database)
+            _ = try NCAutoUploadResource.deleteAll(database)
         }
     }
 

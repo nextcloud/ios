@@ -39,6 +39,8 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
 
     weak var delegate: NCListCellDelegate?
 
+    private var favoriteOutlineView: UIImageView?
+
     // Cell Protocol
     var metadata: tableMetadata? {
         didSet {
@@ -103,6 +105,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         imageItem.layer.masksToBounds = true
         imageStatus.image = nil
         imageFavorite.image = nil
+        favoriteOutlineView?.isHidden = true
         imageLocal.image = nil
 
         buttonShared.setImage(nil, for: .normal)
@@ -337,7 +340,8 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
             imageView.makeCircularBackground(withColor: imageView.image != nil ? .systemBackground : .clear)
         }
 
-        if imageFavorite.image != nil {
+        // Keep one outline and its constraints across cell reuse.
+        if imageFavorite.image != nil, favoriteOutlineView == nil {
             let outlineView = UIImageView()
             outlineView.translatesAutoresizingMaskIntoConstraints = false
             outlineView.image = UIImage(systemName: "star")
@@ -352,11 +356,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
                 outlineView.bottomAnchor.constraint(equalTo: imageFavorite.bottomAnchor, constant: 1)
             ])
             imageFavorite.sendSubviewToBack(outlineView)
-        } else {
-            imageFavorite.subviews.forEach { view in
-                view.removeFromSuperview()
-            }
+            favoriteOutlineView = outlineView
         }
+
+        favoriteOutlineView?.isHidden = imageFavorite.image == nil
     }
 
     override func layoutSubviews() {
@@ -392,17 +395,30 @@ class NCListLayout: UICollectionViewFlowLayout {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override var itemSize: CGSize {
-        get {
-            if let collectionView = collectionView {
-                let itemWidth: CGFloat = collectionView.frame.width
-                return CGSize(width: itemWidth, height: self.itemHeight)
+    override func prepare() {
+        if let collectionView {
+            // Update the flow layout's stored size, not just a computed getter.
+            // Split columns can resize without recreating the collection view.
+            let size = CGSize(width: collectionView.bounds.width, height: itemHeight)
+            if itemSize != size {
+                itemSize = size
             }
-            return CGSize(width: 100, height: 100)
         }
-        set {
-            super.itemSize = newValue
+        super.prepare()
+    }
+
+    override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
+        newBounds.width != collectionView?.bounds.width || super.shouldInvalidateLayout(forBoundsChange: newBounds)
+    }
+
+    override func invalidationContext(forBoundsChange newBounds: CGRect) -> UICollectionViewLayoutInvalidationContext {
+        let context = super.invalidationContext(forBoundsChange: newBounds)
+        if newBounds.width != collectionView?.bounds.width,
+           let flowContext = context as? UICollectionViewFlowLayoutInvalidationContext {
+            flowContext.invalidateFlowLayoutDelegateMetrics = true
+            flowContext.invalidateFlowLayoutAttributes = true
         }
+        return context
     }
 
     override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {

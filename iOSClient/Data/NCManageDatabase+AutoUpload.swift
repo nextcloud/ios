@@ -52,6 +52,23 @@ extension NCManageDatabase {
             }
             realm.delete(transfer)
         }
+
+        // An extracted photo belongs to this transfer's directory. Only release it
+        // after the transfer is gone; a skipped or failed database write must keep
+        // the file available for retry. A failed read also leaves the file intact.
+        guard detached.sessionSelector == NCGlobal.shared.selectorUploadAutoUpload,
+              !detached.assetLocalIdentifier.isEmpty,
+              !detached.ocId.isEmpty,
+              await core.performRealmReadAsync({ realm in
+                  realm.object(ofType: tableMetadata.self, forPrimaryKey: detached.ocId) == nil
+              }) == true else { return }
+
+        let utilityFileSystem = NCUtilityFileSystem()
+        let storagePath = utilityFileSystem.getDocumentStorage(userId: detached.userId, urlBase: detached.urlBase)
+        guard !storagePath.isEmpty else { return }
+        let transferDirectory = URL(fileURLWithPath: storagePath, isDirectory: true)
+            .appendingPathComponent(detached.ocId, isDirectory: true)
+        utilityFileSystem.removeFile(atPath: transferDirectory.path)
     }
 
     func addAutoUploadTransferAsync(account: String,

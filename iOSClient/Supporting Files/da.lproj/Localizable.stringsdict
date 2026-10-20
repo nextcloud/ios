@@ -13,9 +13,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d tilladte downloads tilbage</string>
+			<string>%d tilladt download tilbage</string>
 			<key>other</key>
-			<string>%d resterende tilladte downloads</string>
+			<string>%d tilladte downloads tilbage</string>
 		</dict>
 	</dict>
 	<key>_auto_upload_files_in_queue_</key>

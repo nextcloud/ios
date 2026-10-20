@@ -575,9 +575,10 @@ extension SceneDelegate: NCPasscodeDelegate {
             accountRequestVC.delegate = self
             accountRequestVC.startTimer(nil)
 
-            let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
+            let availableHeight = controller?.view.safeAreaLayoutGuide.layoutFrame.height ?? window?.safeAreaLayoutGuide.layoutFrame.height ?? 0
+            let maximumHeight = availableHeight * 0.8
             let numberCell = tblAccounts.count
-            let height = min(CGFloat(numberCell * Int(accountRequestVC.heightCell) + 45), screenHeighMax)
+            let height = min(CGFloat(numberCell * Int(accountRequestVC.heightCell) + 45), maximumHeight)
 
             let popup = NCPopupViewController(contentController: accountRequestVC, popupWidth: 300, popupHeight: height + 20)
             popup.backgroundAlpha = 0.8
@@ -610,6 +611,12 @@ final class SceneManager {
 
     func register(scene: UIScene, withRootViewController rootViewController: NCMainTabBarController) {
         sceneController[rootViewController] = scene
+    }
+
+    /// Returns the main tab controller, or nil when the window displays another root,
+    /// such as the login screen.
+    func getController(window: UIWindow?) -> NCMainTabBarController? {
+        window?.rootViewController as? NCMainTabBarController
     }
 
     func getController(scene: UIScene?) -> NCMainTabBarController? {

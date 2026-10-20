@@ -7,35 +7,55 @@ import Combine
 import SwiftUI
 import UIKit
 
+// MARK: - Shared Playback Controls
+
+// Shared playback actions and updates; each layout owns its own controls view.
+@MainActor
+protocol NCVideoPlaybackControls: AnyObject where Self: UIView {
+    var delegate: NCVideoControlsViewDelegate? { get set }
+    var centerControlsView: UIView { get }
+    var bottomControlsView: UIView { get }
+    var topActionsView: UIView { get }
+
+    func updatePlayPauseButton(isPlaying: Bool)
+    func updateProgress(progress: Float, elapsedText: String, remainingText: String)
+    func setSeekingEnabled(_ isEnabled: Bool)
+    func updatePlaybackOptions(isRepeatEnabled: Bool, isAutoAdvanceEnabled: Bool)
+    func setTopActionsMode(_ mode: NCVideoControlsTopActionsMode)
+    func setSubtitleTrackMenuItems(_ items: [NCVideoTrackMenuItem])
+    func setAudioTrackMenuItems(_ items: [NCVideoTrackMenuItem])
+    func setTopActionsNavigationBar(_ navigationBar: UINavigationBar?)
+}
+
 // MARK: - Video Controls View Delegate
 
 protocol NCVideoControlsViewDelegate: AnyObject {
-    func videoControlsDidTapSeekBackward(_ controlsView: NCVideoControlsView)
-    func videoControlsDidTapPlayPause(_ controlsView: NCVideoControlsView)
-    func videoControlsDidTapSeekForward(_ controlsView: NCVideoControlsView)
-    func videoControlsDidToggleRepeat(_ controlsView: NCVideoControlsView)
-    func videoControlsDidToggleAutoAdvance(_ controlsView: NCVideoControlsView)
-    func videoControlsDidTapPictureInPicture(_ controlsView: NCVideoControlsView)
-    func videoControlsDidTapAddExternalSubtitle(_ controlsView: NCVideoControlsView)
-    func videoControls(_ controlsView: NCVideoControlsView, didSelectSubtitleTrackIndex index: Int32)
-    func videoControls(_ controlsView: NCVideoControlsView, didSelectAudioTrackIndex index: Int32)
-    func videoControlsDidBeginScrubbing(_ controlsView: NCVideoControlsView)
-    func videoControls(_ controlsView: NCVideoControlsView, didScrubTo progress: Float)
-    func videoControlsDidEndScrubbing(_ controlsView: NCVideoControlsView, progress: Float)
+    func videoControlsDidTapSeekBackward(_ controlsView: any NCVideoPlaybackControls)
+    func videoControlsDidTapPlayPause(_ controlsView: any NCVideoPlaybackControls)
+    func videoControlsDidTapSeekForward(_ controlsView: any NCVideoPlaybackControls)
+    func videoControlsDidToggleRepeat(_ controlsView: any NCVideoPlaybackControls)
+    func videoControlsDidToggleAutoAdvance(_ controlsView: any NCVideoPlaybackControls)
+    func videoControlsDidTapPictureInPicture(_ controlsView: any NCVideoPlaybackControls)
+    func videoControlsDidTapAddExternalSubtitle(_ controlsView: any NCVideoPlaybackControls)
+    func videoControls(_ controlsView: any NCVideoPlaybackControls, didSelectSubtitleTrackIndex index: Int32)
+    func videoControls(_ controlsView: any NCVideoPlaybackControls, didSelectAudioTrackIndex index: Int32)
+    func videoControlsDidBeginScrubbing(_ controlsView: any NCVideoPlaybackControls)
+    func videoControls(_ controlsView: any NCVideoPlaybackControls, didScrubTo progress: Float)
+    func videoControlsDidEndScrubbing(_ controlsView: any NCVideoPlaybackControls, progress: Float)
 }
 
 extension NCVideoControlsViewDelegate {
-    func videoControlsDidToggleRepeat(_ controlsView: NCVideoControlsView) { }
+    func videoControlsDidToggleRepeat(_ controlsView: any NCVideoPlaybackControls) { }
 
-    func videoControlsDidToggleAutoAdvance(_ controlsView: NCVideoControlsView) { }
+    func videoControlsDidToggleAutoAdvance(_ controlsView: any NCVideoPlaybackControls) { }
 
-    func videoControlsDidTapPictureInPicture(_ controlsView: NCVideoControlsView) { }
+    func videoControlsDidTapPictureInPicture(_ controlsView: any NCVideoPlaybackControls) { }
 
-    func videoControlsDidTapAddExternalSubtitle(_ controlsView: NCVideoControlsView) { }
+    func videoControlsDidTapAddExternalSubtitle(_ controlsView: any NCVideoPlaybackControls) { }
 
-    func videoControls(_ controlsView: NCVideoControlsView, didSelectSubtitleTrackIndex index: Int32) { }
+    func videoControls(_ controlsView: any NCVideoPlaybackControls, didSelectSubtitleTrackIndex index: Int32) { }
 
-    func videoControls(_ controlsView: NCVideoControlsView, didSelectAudioTrackIndex index: Int32) { }
+    func videoControls(_ controlsView: any NCVideoPlaybackControls, didSelectAudioTrackIndex index: Int32) { }
 }
 
 // MARK: - Video Controls Top Actions Mode
@@ -60,7 +80,7 @@ struct NCVideoTrackMenuItem: Identifiable, Equatable {
 
 // MARK: - Video Controls View
 
-final class NCVideoControlsView: UIView {
+final class NCVideoControlsView: UIView, NCVideoPlaybackControls {
 
     // MARK: - Public
 
@@ -87,7 +107,8 @@ final class NCVideoControlsView: UIView {
     // MARK: - State
 
     // Keep the hosted hierarchy stable so playback updates do not dismiss an open menu.
-    private var state = NCVideoControlsState()
+    let state: NCVideoControlsState
+    private let layoutState = NCVideoControlsLayoutState()
     private var topActionsTopConstraint: NSLayoutConstraint?
     private weak var navigationBar: UINavigationBar?
 
@@ -98,11 +119,19 @@ final class NCVideoControlsView: UIView {
     // MARK: - Init
 
     override init(frame: CGRect) {
+        state = NCVideoControlsState()
         super.init(frame: frame)
         configureLayout()
     }
 
+    init(state: NCVideoControlsState) {
+        self.state = state
+        super.init(frame: .zero)
+        configureLayout()
+    }
+
     required init?(coder: NSCoder) {
+        state = NCVideoControlsState()
         super.init(coder: coder)
         configureLayout()
     }
@@ -117,11 +146,11 @@ final class NCVideoControlsView: UIView {
         state.isPlaying = isPlaying
     }
 
-    func updateProgress(
-        progress: Float,
-        elapsedText: String,
-        remainingText: String
-    ) {
+    func setAccount(_ account: String) {
+        if layoutState.account != account { layoutState.account = account }
+    }
+
+    func updateProgress(progress: Float, elapsedText: String, remainingText: String) {
         let progress = max(0, min(1, progress))
 
         guard state.progress != progress ||
@@ -143,10 +172,7 @@ final class NCVideoControlsView: UIView {
         state.isSeekingEnabled = isEnabled
     }
 
-    func updatePlaybackOptions(
-        isRepeatEnabled: Bool,
-        isAutoAdvanceEnabled: Bool
-    ) {
+    func updatePlaybackOptions(isRepeatEnabled: Bool, isAutoAdvanceEnabled: Bool) {
         if state.isRepeatEnabled != isRepeatEnabled {
             state.isRepeatEnabled = isRepeatEnabled
         }
@@ -271,22 +297,23 @@ final class NCVideoControlsView: UIView {
                 navigationBar.bounds,
                 to: self
             )
-            topOffset = navigationFrame.maxY
+            topOffset = max(safeAreaInsets.top, navigationFrame.maxY)
         } else {
             topOffset = safeAreaInsets.top
         }
 
-        guard state.topActionsTopOffset != topOffset else {
+        guard layoutState.topActionsTopOffset != topOffset else {
             return
         }
 
-        state.topActionsTopOffset = topOffset
+        layoutState.topActionsTopOffset = topOffset
         topActionsTopConstraint.constant = topOffset
     }
 
     private func makeRootView() -> NCVideoControlsSwiftUIView {
         NCVideoControlsSwiftUIView(
             state: state,
+            layoutState: layoutState,
             onSeekBackward: { [weak self] in
                 guard let self else {
                     return
@@ -365,9 +392,10 @@ final class NCVideoControlsView: UIView {
     }
 }
 
-// MARK: - SwiftUI State
+// MARK: - Shared Playback State
 
-private final class NCVideoControlsState: ObservableObject {
+@MainActor
+final class NCVideoControlsState: ObservableObject {
     @Published var isPlaying = false
     @Published var progress: Float = 0
     @Published var elapsedText = "0:00"
@@ -378,13 +406,22 @@ private final class NCVideoControlsState: ObservableObject {
     @Published var topActionsMode: NCVideoControlsTopActionsMode = .none
     @Published var subtitleTrackItems: [NCVideoTrackMenuItem] = []
     @Published var audioTrackItems: [NCVideoTrackMenuItem] = []
+}
+
+// MARK: - Controls Layout State
+
+@MainActor
+final class NCVideoControlsLayoutState: ObservableObject {
     @Published var topActionsTopOffset: CGFloat = 0
+    /// Selected file account for the seek bar branding color in either layout.
+    @Published var account = ""
 }
 
 // MARK: - SwiftUI Controls
 
 private struct NCVideoControlsSwiftUIView: View {
     @ObservedObject var state: NCVideoControlsState
+    @ObservedObject var layoutState: NCVideoControlsLayoutState
     let onSeekBackward: () -> Void
     let onPlayPause: () -> Void
     let onSeekForward: () -> Void
@@ -421,7 +458,7 @@ private struct NCVideoControlsSwiftUIView: View {
                     .frame(height: NCVideoControlsView.topActionsHeight)
                     .position(
                         x: topActionsCenterX,
-                        y: state.topActionsTopOffset + (NCVideoControlsView.topActionsHeight / 2)
+                        y: layoutState.topActionsTopOffset + (NCVideoControlsView.topActionsHeight / 2)
                     )
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -479,9 +516,6 @@ private struct NCVideoControlsSwiftUIView: View {
 
     private var bottomControls: some View {
         HStack(spacing: NCVideoControlsView.topActionsSpacing) {
-            timeLabel(state.elapsedText)
-                .frame(width: 54)
-
             Slider(
                 value: Binding(
                     get: {
@@ -505,11 +539,11 @@ private struct NCVideoControlsSwiftUIView: View {
                 }
             )
             .disabled(!state.isSeekingEnabled)
-            .tint(.gray)
+            .tint(Color.ncViewerPlaybackProgressTint(account: layoutState.account))
             .opacity(state.isSeekingEnabled ? 1 : 0.45)
 
-            timeLabel(state.remainingText)
-                .frame(width: 58)
+            timeLabel(state.remainingText.trimmingCharacters(in: CharacterSet(charactersIn: "−-")))
+                .fixedSize()
         }
         .padding(.horizontal, 18)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -559,7 +593,7 @@ private struct NCVideoControlsSwiftUIView: View {
 
             case .vlcTracks:
                 subtitleActionMenu(
-                    systemName: "captions.bubble",
+                    systemName: "character.bubble",
                     pointSize: 17,
                     items: state.subtitleTrackItems,
                     emptyTitle: "_no_subtitles_available_",
@@ -568,7 +602,7 @@ private struct NCVideoControlsSwiftUIView: View {
                 )
 
                 topActionMenu(
-                    systemName: "speaker.wave.2",
+                    systemName: "waveform",
                     pointSize: 17,
                     items: state.audioTrackItems,
                     emptyTitle: "_no_audio_tracks_available_",
@@ -658,10 +692,7 @@ private struct NCVideoControlsSwiftUIView: View {
         .buttonStyle(.plain)
     }
 
-    private func topActionIcon(
-        systemName: String,
-        pointSize: CGFloat
-    ) -> some View {
+    private func topActionIcon(systemName: String, pointSize: CGFloat) -> some View {
         Image(systemName: systemName)
             .font(.system(size: pointSize, weight: .regular))
             .foregroundStyle(.primary)
@@ -672,13 +703,7 @@ private struct NCVideoControlsSwiftUIView: View {
             .controlGlassBackground(shape: Circle())
     }
 
-    private func circleButton(
-        systemName: String,
-        size: CGFloat,
-        pointSize: CGFloat,
-        isEnabled: Bool,
-        action: @escaping () -> Void
-    ) -> some View {
+    private func circleButton(systemName: String, size: CGFloat, pointSize: CGFloat, isEnabled: Bool, action: @escaping () -> Void) -> some View {
         Button {
             guard isEnabled else {
                 return
@@ -700,8 +725,9 @@ private struct NCVideoControlsSwiftUIView: View {
 
     private func timeLabel(_ text: String) -> some View {
         Text(text)
-            .font(.system(size: 15, weight: .medium, design: .rounded).monospacedDigit())
-            .foregroundStyle(.secondary)
+            .font(.subheadline.monospacedDigit())
+            .fontWeight(.bold)
+            .foregroundStyle(.primary)
             .lineLimit(1)
             .minimumScaleFactor(0.85)
     }
@@ -709,7 +735,7 @@ private struct NCVideoControlsSwiftUIView: View {
 
 // MARK: - AirPlay Route Picker
 
-private struct NCVideoAirPlayRoutePickerView: UIViewRepresentable {
+struct NCVideoAirPlayRoutePickerView: UIViewRepresentable {
     func makeUIView(context: Context) -> AVRoutePickerView {
         let routePickerView = AVRoutePickerView()
         routePickerView.backgroundColor = .clear
@@ -719,18 +745,12 @@ private struct NCVideoAirPlayRoutePickerView: UIViewRepresentable {
         return routePickerView
     }
 
-    func updateUIView(
-        _ uiView: AVRoutePickerView,
-        context: Context
-    ) { }
+    func updateUIView(_ uiView: AVRoutePickerView, context: Context) { }
 }
 
 private extension View {
     @ViewBuilder
-    func controlGlassBackground<BackgroundShape: Shape>(
-        shape: BackgroundShape,
-        isInteractive: Bool = true
-    ) -> some View {
+    func controlGlassBackground<BackgroundShape: Shape>(shape: BackgroundShape, isInteractive: Bool = true) -> some View {
         if #available(iOS 26.0, *) {
             self
                 .glassEffect(.regular.interactive(isInteractive), in: shape)
@@ -798,8 +818,5 @@ private struct NCVideoControlsPreviewView: UIViewRepresentable {
         return containerView
     }
 
-    func updateUIView(
-        _ uiView: UIView,
-        context: Context
-    ) { }
+    func updateUIView(_ uiView: UIView, context: Context) { }
 }
