@@ -42,8 +42,10 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
             return nil
         }
 
-        // Treat `size` as pixels. Convert to points for WKWebView/snapshot.
-        let scale = max(UIScreen.main.scale, 1)
+        // Use the rendering view's scale to convert the requested pixels to points.
+        let webView = makeWebView(sizeInPoints: .zero, backgroundColor: backgroundColor)
+        self.webView = webView
+        let scale = max(webView.traitCollection.displayScale, 1)
         let targetPixelSize = CGSize(width: max(1, size.width), height: max(1, size.height))
         let targetPointSize = CGSize(
             width: max(1, targetPixelSize.width / scale),
@@ -51,8 +53,7 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
         )
 
         // Build a dedicated WKWebView sized in points.
-        let webView = makeWebView(sizeInPoints: targetPointSize, backgroundColor: backgroundColor)
-        self.webView = webView
+        webView.frame = CGRect(origin: .zero, size: targetPointSize)
 
         // Inline the SVG into the DOM to avoid <img> rasterization path.
         let html = makeHTML(svgData: svgData, canvasPointSize: targetPointSize, backgroundColor: backgroundColor, tintColor: tintColor)

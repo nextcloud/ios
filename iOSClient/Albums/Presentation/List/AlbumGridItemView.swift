@@ -8,6 +8,7 @@ import SwiftUI
 struct AlbumGridItemView: View {
     let album: Album
     @Environment(\.localAccount) var localAccount: String
+    @Environment(\.displayScale) private var displayScale
     private enum ImageState { case loading, empty, thumbnail(UIImage) }
     @State private var imageState: ImageState = .empty
 
@@ -114,7 +115,7 @@ struct AlbumGridItemView: View {
         )
         .stroke(
             Color.gray.opacity(1),
-            lineWidth: 1 / UIScreen.main.scale
+            lineWidth: 1 / max(displayScale, 1)
         )
     }
 }

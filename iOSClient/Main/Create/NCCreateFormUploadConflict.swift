@@ -335,7 +335,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                                                                                                  fileName: metadataAlreadyExists.fileNameView,
                                                                                                  userId: metadataAlreadyExists.userId,
                                                                                                  urlBase: metadataAlreadyExists.urlBase))
-                if let image = utility.pdfThumbnail(url: url) {
+                if let image = utility.pdfThumbnail(url: url, scale: cell.imageAlreadyExistingFile.traitCollection.displayScale) {
                     cell.imageAlreadyExistingFile.image = image
                 } else {
                     cell.imageAlreadyExistingFile.image = UIImage(named: metadataAlreadyExists.iconName)
@@ -445,7 +445,11 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 do {
                     if metadataNewFile.classFile == NKTypeClassFile.image.rawValue {
                         // preserver memory especially for very large files in Share extension
-                        if let image = UIImage.downsample(imageAt: URL(fileURLWithPath: filePathNewFile), to: cell.imageNewFile.frame.size) {
+                        if let image = UIImage.downsample(
+                            imageAt: URL(fileURLWithPath: filePathNewFile),
+                            to: cell.imageNewFile.frame.size,
+                            scale: cell.imageNewFile.traitCollection.displayScale
+                        ) {
                             cell.imageNewFile.image = image
                         }
                     }

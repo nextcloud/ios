@@ -34,7 +34,11 @@ class NCShareCell: UITableViewCell {
         imageCell?.layer.cornerRadius = 6
         imageCell?.layer.masksToBounds = true
 
-        if let image = UIImage.downsample(imageAt: URL(fileURLWithPath: NSTemporaryDirectory() + fileName), to: CGSize(width: 80, height: 80)) {
+        if let image = UIImage.downsample(
+            imageAt: URL(fileURLWithPath: NSTemporaryDirectory() + fileName),
+            to: CGSize(width: 80, height: 80),
+            scale: traitCollection.displayScale
+        ) {
             imageCell.image = image
             imageCell.contentMode = .scaleAspectFill
         } else {
