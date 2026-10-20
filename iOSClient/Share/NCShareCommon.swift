@@ -10,18 +10,18 @@ enum NCShareCommon {
     static let itemTypeFile = "file"
     static let itemTypeFolder = "folder"
 
-    static func createLinkAvatar(imageName: String, colorCircle: UIColor) -> UIImage? {
+    static func createLinkAvatar(imageName: String, colorCircle: UIColor, scale: CGFloat) -> UIImage? {
         let size: CGFloat = 200
 
         let bottomImage = UIImage(named: "circle_fill")!.image(color: colorCircle, size: size / 2)
         let topImage = NCUtility().loadImage(named: imageName, colors: [NCBrandColor.shared.iconImageColor])
-        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, UIScreen.main.scale)
-        bottomImage.draw(in: CGRect(origin: CGPoint.zero, size: CGSize(width: size, height: size)))
-        topImage.draw(in: CGRect(origin: CGPoint(x: size / 4, y: size / 4), size: CGSize(width: size / 2, height: size / 2)))
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-
-        return image
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = max(scale, 1)
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: size, height: size), format: format)
+        return renderer.image { _ in
+            bottomImage.draw(in: CGRect(origin: .zero, size: CGSize(width: size, height: size)))
+            topImage.draw(in: CGRect(origin: CGPoint(x: size / 4, y: size / 4), size: CGSize(width: size / 2, height: size / 2)))
+        }
     }
 
     static func copyLink(link: String, viewController: UIViewController, sender: Any) {

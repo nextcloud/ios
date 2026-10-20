@@ -172,7 +172,7 @@ extension UIImage {
     ///   - pointSize: The target point size
     ///   - scale: The point to pixel scale (Pixeld per point)
     /// - Returns: The downsampled image, if successful
-    static func downsample(imageAt imageURL: URL, to pointSize: CGSize, scale: CGFloat = UIScreen.main.scale) -> UIImage? {
+    static func downsample(imageAt imageURL: URL, to pointSize: CGSize, scale: CGFloat) -> UIImage? {
 
         // Create an CGImageSource that represent an image
         let imageSourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary

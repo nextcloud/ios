@@ -34,8 +34,8 @@ extension NCShareExtension: NCAccountRequestDelegate {
             vcAccountRequest.delegate = self
             vcAccountRequest.dismissDidEnterBackground = true
 
-            let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
-            let height = min(CGFloat(accounts.count * Int(vcAccountRequest.heightCell) + 45), screenHeighMax)
+            let maximumHeight = view.safeAreaLayoutGuide.layoutFrame.height * 0.8
+            let height = min(CGFloat(accounts.count * Int(vcAccountRequest.heightCell) + 45), maximumHeight)
 
             let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height + 20)
 

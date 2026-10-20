@@ -20,6 +20,7 @@ public extension NCPopupViewControllerDelegate {
 public class NCPopupViewController: UIViewController {
 
     private var centerYConstraint: NSLayoutConstraint?
+    private var keyboardFrameInScreen: CGRect?
 
     // Popup width, it's nil if width is determined by view's intrinsic size
     private(set) public var popupWidth: CGFloat?
@@ -111,8 +112,13 @@ public class NCPopupViewController: UIViewController {
         setupViews()
         addDismissGesture()
 
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    override public func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateKeyboardPosition()
     }
 
     // MARK: - Setup
@@ -182,19 +188,26 @@ public class NCPopupViewController: UIViewController {
 
         if let popupWidth = popupWidth {
             let widthConstraint = NSLayoutConstraint(item: containerView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: popupWidth)
+            widthConstraint.priority = .init(999)
             NSLayoutConstraint.activate([widthConstraint])
         }
 
         if let popupHeight = popupHeight {
             let heightConstraint = NSLayoutConstraint(item: containerView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: popupHeight)
+            heightConstraint.priority = .init(999)
             NSLayoutConstraint.activate([heightConstraint])
         }
+
+        NSLayoutConstraint.activate([
+            containerView.widthAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.widthAnchor),
+            containerView.heightAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.heightAnchor)
+        ])
     }
 
     private func addCenterPositionConstraints() {
 
-        let centerXConstraint = NSLayoutConstraint(item: containerView, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0)
-        centerYConstraint = NSLayoutConstraint(item: containerView, attribute: .centerY, relatedBy: .equal, toItem: view, attribute: .centerY, multiplier: 1, constant: 0)
+        let centerXConstraint = containerView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor)
+        centerYConstraint = containerView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor)
         NSLayoutConstraint.activate([centerXConstraint, centerYConstraint!])
     }
 
@@ -239,47 +252,31 @@ public class NCPopupViewController: UIViewController {
     // MARK: - Keyboard notification
 
     @objc internal func keyboardWillShow(_ notification: Notification?) {
-
-        var keyboardSize = CGSize.zero
-
-        if let info = notification?.userInfo {
-
-            let frameEndUserInfoKey = UIResponder.keyboardFrameEndUserInfoKey
-
-            //  Getting UIKeyboardSize.
-            if let keyboardFrame = info[frameEndUserInfoKey] as? CGRect {
-
-                let screenSize = UIScreen.main.bounds
-
-                // Calculating actual keyboard displayed size, keyboard frame may be different when hardware keyboard is attached (Bug ID: #469) (Bug ID: #381)
-                let intersectRect = keyboardFrame.intersection(screenSize)
-
-                if intersectRect.isNull {
-                    keyboardSize = CGSize(width: screenSize.size.width, height: 0)
-                } else {
-                    keyboardSize = intersectRect.size
-                }
-
-                if keyboardPosizionEnabled {
-
-                    let popupDiff = screenSize.height - ((screenSize.height - (popupHeight ?? 0)) / 2)
-                    let keyboardDiff = screenSize.height - keyboardSize.height
-                    let diff = popupDiff - keyboardDiff
-
-                    if centerYConstraint != nil && diff > 0 {
-                        centerYConstraint?.constant = -(diff + 15)
-                    }
-                }
-            }
-        }
+        keyboardFrameInScreen = notification?.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
+        updateKeyboardPosition()
     }
 
     @objc func keyboardWillHide(_ notification: Notification) {
+        keyboardFrameInScreen = nil
+        updateKeyboardPosition()
+    }
 
-        if keyboardPosizionEnabled {
-            if centerYConstraint != nil {
-                centerYConstraint?.constant = 0
+    private func updateKeyboardPosition() {
+        guard keyboardPosizionEnabled, let centerYConstraint else { return }
+        var offset: CGFloat = 0
+        if let keyboardFrameInScreen, let screen = view.window?.windowScene?.screen {
+            let keyboardFrame = view.convert(keyboardFrameInScreen, from: screen.coordinateSpace)
+            let safeFrame = view.safeAreaLayoutGuide.layoutFrame
+            let popupFrame = CGRect(x: containerView.frame.minX, y: safeFrame.midY - containerView.bounds.height / 2,
+                                   width: containerView.bounds.width, height: containerView.bounds.height)
+            if popupFrame.intersects(keyboardFrame) {
+                let overlap = popupFrame.maxY - keyboardFrame.minY + 15
+                let availableOffset = max(0, popupFrame.minY - safeFrame.minY)
+                offset = -min(overlap, availableOffset)
             }
+        }
+        if centerYConstraint.constant != offset {
+            centerYConstraint.constant = offset
         }
     }
 }

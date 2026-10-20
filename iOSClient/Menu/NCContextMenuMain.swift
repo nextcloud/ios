@@ -473,12 +473,12 @@ class NCContextMenuMain: NSObject {
                             var iconImage = UIImage(systemName: "exclamationmark.triangle.fill")
 
                             if let iconUrl = item.icon {
+                                let displayScale = max(self.viewController.view.traitCollection.displayScale, 1)
                                 let results = await NextcloudKit.shared.downloadContentAsync(serverUrl: metadata.urlBase + iconUrl, account: metadata.account)
                                 if results.error == .success, let data = results.responseData?.data,
                                    let image = try? await NCSVGRenderer().renderSVGToUIImage(
                                     svgData: data,
-                                    size: CGSize(width: UIScreen.main.scale * 20,
-                                                 height: UIScreen.main.scale * 20),
+                                    size: CGSize(width: displayScale * 20, height: displayScale * 20),
                                     tintColor: NCBrandColor.shared.iconImageColor,
                                     trimTransparentPixels: false) {
                                     iconImage = image
