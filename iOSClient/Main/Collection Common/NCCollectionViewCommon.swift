@@ -101,10 +101,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     internal var lastScale: CGFloat = 1.0
     internal var currentScale: CGFloat = 1.0
     internal var maxColumns: Int {
-        let screenWidth = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
-        let column = Int(screenWidth / 55)
-
-        return column
+        max(1, Int(collectionView.bounds.width / 55))
     }
     internal var transitionColumns = false
     internal var numberOfColumns: Int = 0
@@ -383,6 +380,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         } else {
             collectionView.collectionViewLayout.invalidateLayout()
         }
+        sectionFirstHeader?.viewRichWorkspaceHeightConstraint.constant = getHeaderHeight(section: 0).heightHeaderRichWorkspace
         sectionFirstHeader?.setNeedsLayout()
     }
 
@@ -754,7 +752,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
            !isSearchingMode,
            let richWorkspaceText = self.richWorkspaceText,
            !richWorkspaceText.trimmingCharacters(in: .whitespaces).isEmpty {
-            heightHeaderRichWorkspace = UIScreen.main.bounds.size.height / 6
+            heightHeaderRichWorkspace = collectionView.bounds.height / 6
         }
 
         if isRecommendationActived,

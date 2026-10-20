@@ -39,10 +39,7 @@ class NCMedia: UIViewController {
     var lastScale: CGFloat = 1.0
     var currentScale: CGFloat = 1.0
     var maxColumns: Int {
-        let screenWidth = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
-        let column = Int(screenWidth / 55)
-
-        return column
+        max(1, Int(collectionView.bounds.width / 55))
     }
     var transitionColumns = false
     var lastNumberOfColumns: Int = 0
