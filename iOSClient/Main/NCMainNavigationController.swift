@@ -12,7 +12,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let utility = NCUtility()
     let utilityFileSystem = NCUtilityFileSystem()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    let menuPlusButton: UIButton = NCMenuPlusButton(type: .system)
+    lazy var menuPlusButton: UIButton = NCMenuPlusButton(type: .system)
 
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
@@ -43,16 +43,18 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     private var menuPlusFloatingConstraints: [NSLayoutConstraint] = []
 
-    private lazy var plusButtonGroup: UIBarButtonItemGroup = {
-        let item = UIBarButtonItem(customView: menuPlusButton)
+    private lazy var plusButtonItem: UIBarButtonItem = {
+        let image = UIImage(systemName: "plus")?.withTintColor(.white, renderingMode: .alwaysOriginal)
+        let item = UIBarButtonItem(image: image, menu: nil)
         if #available(iOS 26.0, *) {
-            item.hidesSharedBackground = true
+            item.style = .prominent
         }
-        if #available(iOS 27.1, *) {
-            item.axisBehavior = .verticalPreferred
-        }
-        return UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)
+        item.title = NSLocalizedString("_add_", comment: "")
+        item.accessibilityLabel = item.title
+        return item
     }()
+
+    private lazy var plusButtonGroup = UIBarButtonItemGroup(barButtonItems: [plusButtonItem], representativeItem: nil)
 
     lazy var sidebarButtonItem: UIBarButtonItem = {
         let action = UIAction(title: NSLocalizedString("_sidebar_navigation_", comment: ""), image: UIImage(systemName: "sidebar.left")) { [weak self] _ in
@@ -93,46 +95,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         // PLUS BUTTON MENU
-        let buttonSize: CGFloat = 44
-        let plusConfiguration = UIImage.SymbolConfiguration(pointSize: 18, weight: .regular)
-        let plusImage = UIImage(systemName: "plus", withConfiguration: plusConfiguration)?.withRenderingMode(.alwaysTemplate)
-
-        if #available(iOS 26.0, *) {
-            var glassConfiguration = UIButton.Configuration.prominentGlass()
-            glassConfiguration.image = plusImage
-            menuPlusButton.configuration = glassConfiguration
-        } else {
-            menuPlusButton.setImage(plusImage, for: .normal)
-            menuPlusButton.contentHorizontalAlignment = .center
-            menuPlusButton.contentVerticalAlignment = .center
-            menuPlusButton.layer.cornerRadius = buttonSize / 2
-            menuPlusButton.layer.masksToBounds = false
-            menuPlusButton.layer.shadowColor = UIColor.black.cgColor
-            menuPlusButton.layer.shadowOpacity = 0.18
-            menuPlusButton.layer.shadowRadius = 8
-            menuPlusButton.layer.shadowOffset = CGSize(width: 0, height: 4)
-        }
-
-        menuPlusButton.setPlusButtonColor(NCBrandColor.shared.getElement(account: session.account))
-        menuPlusButton.showsMenuAsPrimaryAction = true
-        menuPlusButton.translatesAutoresizingMaskIntoConstraints = false
-        menuPlusButton.accessibilityLabel = NSLocalizedString("_add_", comment: "")
-
-        view.addSubview(menuPlusButton)
-
-        let trailingAnchor: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? -28 : -22
-        let bottomAnchor: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? -28 : -22
-
-        menuPlusFloatingConstraints = [
-            menuPlusButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: trailingAnchor),
-            menuPlusButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: bottomAnchor)
-        ]
-        NSLayoutConstraint.activate(menuPlusFloatingConstraints + [
-            menuPlusButton.widthAnchor.constraint(equalToConstant: buttonSize),
-            menuPlusButton.heightAnchor.constraint(equalToConstant: buttonSize)
-        ])
-
-        menuPlus = NCContextMenuPlus(menuPlusButton: menuPlusButton, controller: controller, navigationController: self)
+        menuPlus = NCContextMenuPlus(controller: controller, navigationController: self)
+        configurePlusButtonPlacement()
 
         if #available(iOS 27.1, *) {
             view.addInteraction(UIHingeInteraction { [weak self] _, update in
@@ -140,14 +104,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 // Keep the same placement for every hinge state, including closed.
                 // Ignore nil updates when the view temporarily leaves its hierarchy.
                 self.usesNavigationBarPlusButton = true
-                NSLayoutConstraint.deactivate(self.menuPlusFloatingConstraints)
-                self.menuPlusFloatingConstraints.removeAll()
-                self.menuPlusButton.removeFromSuperview()
-                self.menuPlusButton.layer.removeAllAnimations()
-                self.menuPlusButton.transform = .identity
-                self.menuPlusButton.alpha = 1
-                self.menuPlusButton.configuration?.image = UIImage(systemName: "plus")?.withTintColor(.white, renderingMode: .alwaysOriginal)
-                self.updateNavigationBarPlusButton()
+                self.configurePlusButtonPlacement()
                 Task { @MainActor [weak self] in
                     await self?.collectionViewCommonTrailingItemGroups()
                 }
@@ -226,7 +183,72 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
     }
 
-    /// Place the existing creation button in the system navigation bar.
+    private func configurePlusButtonPlacement() {
+        if usesNavigationBarPlusButton {
+            // Duo: use a native bar item, without the floating button's sizing or configuration.
+            NSLayoutConstraint.deactivate(menuPlusFloatingConstraints)
+            menuPlusFloatingConstraints.removeAll()
+            menuPlusButton.layer.removeAllAnimations()
+            menuPlusButton.removeFromSuperview()
+            updateNavigationBarPlusButton()
+        } else {
+            // Other devices: keep the original floating button.
+            let buttonSize: CGFloat = 44
+            let plusConfiguration = UIImage.SymbolConfiguration(pointSize: 18, weight: .regular)
+            let plusImage = UIImage(systemName: "plus", withConfiguration: plusConfiguration)?.withRenderingMode(.alwaysTemplate)
+
+            if #available(iOS 26.0, *) {
+                var configuration = UIButton.Configuration.prominentGlass()
+                configuration.image = plusImage
+                menuPlusButton.configuration = configuration
+            } else {
+                menuPlusButton.setImage(plusImage, for: .normal)
+                menuPlusButton.contentHorizontalAlignment = .center
+                menuPlusButton.contentVerticalAlignment = .center
+                menuPlusButton.layer.cornerRadius = buttonSize / 2
+                menuPlusButton.layer.masksToBounds = false
+                menuPlusButton.layer.shadowColor = UIColor.black.cgColor
+                menuPlusButton.layer.shadowOpacity = 0.18
+                menuPlusButton.layer.shadowRadius = 8
+                menuPlusButton.layer.shadowOffset = CGSize(width: 0, height: 4)
+            }
+
+            menuPlusButton.showsMenuAsPrimaryAction = true
+            menuPlusButton.translatesAutoresizingMaskIntoConstraints = false
+            menuPlusButton.accessibilityLabel = NSLocalizedString("_add_", comment: "")
+            view.addSubview(menuPlusButton)
+
+            let spacing: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? -28 : -22
+            menuPlusFloatingConstraints = [
+                menuPlusButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: spacing),
+                menuPlusButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: spacing),
+                menuPlusButton.widthAnchor.constraint(equalToConstant: buttonSize),
+                menuPlusButton.heightAnchor.constraint(equalToConstant: buttonSize)
+            ]
+            NSLayoutConstraint.activate(menuPlusFloatingConstraints)
+        }
+        updatePlusButtonState()
+    }
+
+    /// Apply shared menu state directly to the active presentation.
+    func updatePlusButtonState(resetAlpha: Bool = false) {
+        guard let menuPlus else { return }
+        let color = menuPlus.isEnabled ? NCBrandColor.shared.getElement(account: session.account) : .lightGray
+        if usesNavigationBarPlusButton {
+            plusButtonItem.menu = menuPlus.menu
+            plusButtonItem.isEnabled = menuPlus.isEnabled
+            plusButtonItem.tintColor = color
+        } else {
+            menuPlusButton.menu = menuPlus.menu
+            menuPlusButton.isEnabled = menuPlus.isEnabled
+            menuPlusButton.setPlusButtonColor(color)
+            if resetAlpha {
+                menuPlusButton.alpha = 1
+            }
+        }
+    }
+
+    /// Keep the native creation item pinned to the current Files screen.
     func updateNavigationBarPlusButton() {
         guard usesNavigationBarPlusButton else {
             return
@@ -249,7 +271,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     }
 
     func setNavigationBarPlusButtonHidden(_ isHidden: Bool) {
-        menuPlusButton.isHidden = isHidden
+        plusButtonItem.isHidden = isHidden
         plusButtonGroup.isHidden = isHidden
     }
 

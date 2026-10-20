@@ -15,7 +15,8 @@ class NCContextMenuPlus: NSObject {
         let sortOrder: Int
     }
 
-    let menuPlusButton: UIButton?
+    private(set) var menu: UIMenu?
+    private(set) var isEnabled = true
     weak var controller: NCMainTabBarController?
     private weak var navigationController: NCMainNavigationController?
     private var menuSignature: String?
@@ -25,8 +26,7 @@ class NCContextMenuPlus: NSObject {
         SceneManager.shared.getWindowScene(controller: controller)
     }
 
-    init(menuPlusButton: UIButton?, controller: NCMainTabBarController?, navigationController: NCMainNavigationController) {
-        self.menuPlusButton = menuPlusButton
+    init(controller: NCMainTabBarController?, navigationController: NCMainNavigationController) {
         self.controller = controller
         self.navigationController = navigationController
     }
@@ -46,7 +46,6 @@ class NCContextMenuPlus: NSObject {
 
     func create(session: NCSession.Session) async {
         guard let controller,
-              let menuPlusButton,
               controller.account == session.account else {
             return
         }
@@ -518,14 +517,13 @@ class NCContextMenuPlus: NSObject {
         // PLUS BUTTON
         updatePlusButtonEnabled(session: session)
 
-        if menuPlusButton.menu != nil,
+        if menu != nil,
            !menuChanged {
             return
         }
 
-        menuPlusButton.menu = plusMenu
-        menuPlusButton.showsMenuAsPrimaryAction = true
-        menuPlusButton.alpha = 1
+        menu = plusMenu
+        navigationController?.updatePlusButtonState(resetAlpha: true)
     }
 
     private func makeFolderMenu(elements: [UIMenuElement]) -> UIMenu {
@@ -651,14 +649,19 @@ class NCContextMenuPlus: NSObject {
     }
 
     func updatePlusButtonEnabled(session: NCSession.Session) {
-        guard let controller, let menuPlusButton else {
+        guard let controller, controller.account == session.account else {
             return
         }
+        isEnabled = isPlusButtonEnabled(for: controller)
+        navigationController?.updatePlusButtonState()
+    }
 
-        let isEnabled = isPlusButtonEnabled(for: controller)
-
-        menuPlusButton.isEnabled = isEnabled
-        menuPlusButton.setPlusButtonColor(isEnabled ? NCBrandColor.shared.getElement(account: session.account) : .lightGray)
+    func reset() {
+        creationID = UUID()
+        menuSignature = nil
+        menu = nil
+        isEnabled = false
+        navigationController?.updatePlusButtonState()
     }
 
     private func isPlusButtonEnabled(for controller: NCMainTabBarController) -> Bool {
@@ -693,14 +696,14 @@ class NCContextMenuPlus: NSObject {
 
     @MainActor
     func hiddenPlusButton(_ isHidden: Bool, animation: Bool = true) {
-        guard let menuPlusButton else {
+        guard let navigationController else {
             return
         }
-        if let navigationController,
-           navigationController.usesNavigationBarPlusButton {
+        if navigationController.usesNavigationBarPlusButton {
             navigationController.setNavigationBarPlusButtonHidden(isHidden)
             return
         }
+        let menuPlusButton = navigationController.menuPlusButton
         let tx = 200.0
         if isHidden {
             if menuPlusButton.transform.tx == tx {
@@ -735,9 +738,10 @@ class NCContextMenuPlus: NSObject {
 
     @MainActor
     func resetPlusButtonAlpha(animated: Bool = true) {
-        guard let menuPlusButton else {
+        guard let navigationController, !navigationController.usesNavigationBarPlusButton else {
             return
         }
+        let menuPlusButton = navigationController.menuPlusButton
         let update = {
             menuPlusButton.alpha = 1.0
         }

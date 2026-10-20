@@ -71,8 +71,7 @@ class NCFiles: NCCollectionViewCommon {
                         }
                     }
                     let session = NCSession.shared.getSession(account: account)
-                    self.mainNavigationController?.menuPlusButton.menu = nil
-                    self.mainNavigationController?.menuPlusButton.isEnabled = false
+                    self.mainNavigationController?.menuPlus?.reset()
 
                     self.serverUrl = self.utilityFileSystem.getHomeServer(session: session)
                     self.navigationController?.popToRootViewController(animated: false)
