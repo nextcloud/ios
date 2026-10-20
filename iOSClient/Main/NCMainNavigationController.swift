@@ -106,12 +106,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         view.addSubview(menuPlusButton)
 
-        let trailingAnchor: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? -28 : -22
-        let bottomAnchor: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? -28 : -22
-
         NSLayoutConstraint.activate([
-            menuPlusButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: trailingAnchor),
-            menuPlusButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: bottomAnchor),
+            menuPlusButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            menuPlusButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             menuPlusButton.widthAnchor.constraint(equalToConstant: buttonSize),
             menuPlusButton.heightAnchor.constraint(equalToConstant: buttonSize)
         ])
