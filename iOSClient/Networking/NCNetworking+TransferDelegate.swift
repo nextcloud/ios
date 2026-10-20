@@ -228,10 +228,11 @@ extension NCNetworking: NCTransferDelegate {
         let resultsFile = await NextcloudKit.shared.getFileFromFileIdAsync(fileId: fileId, account: account)
 
         guard resultsFile.error == .success, let file = resultsFile.file else {
+            let error = resultsFile.error == .success ? NKError(errorCode: NCGlobal.shared.errorResourceNotFound, errorDescription: "File not found") : resultsFile.error
+
             Task {
                 await showErrorBanner(windowScene: windowScene,
-                                      text: resultsFile.error.errorDescription,
-                                      errorCode: resultsFile.error.errorCode)
+                                      error: error)
             }
             return
         }

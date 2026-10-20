@@ -170,10 +170,10 @@ class NCCreate: NSObject {
         )
         guard results.error == .success, let metadata = results.metadata else {
             let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+            let error: NKError = results.error == .success ? .invalidData : results.error
             await showErrorBanner(
                 windowScene: windowScene,
-                text: results.error.errorDescription,
-                errorCode: results.error.errorCode
+                error: error
             )
             return
         }

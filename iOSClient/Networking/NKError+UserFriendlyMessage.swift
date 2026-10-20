@@ -6,11 +6,11 @@ import Foundation
 import NextcloudKit
 
 extension NKError {
-    /// The message to show people for this error, or `nil` when nothing should be shown (success or cancellation).
+    /// The message to show users for this error, or `nil` when nothing should be shown (success or cancellation).
     ///
     /// Tries the app's own text, then the few operations where the generic message would be wrong, then
     /// NextcloudKit's generic message. Keep `errorDescription` for logs.
-    func userMessage(for context: NCErrorContext = .generic) -> String? {
+    func userFriendlyMessage(for context: NCErrorContext = .generic) -> String? {
         guard let kind, kind != .cancelled, errorCode != NCGlobal.shared.errorTaskCancelled else { return nil }
 
         if let appMessage {
@@ -45,6 +45,7 @@ extension NKError {
         return isRejectedUpload && errorDescription.localizedCaseInsensitiveContains("virus")
     }
 
+    /// Unique cases that require a specific non-generic error
     private func operationMessage(for context: NCErrorContext, kind: Kind) -> String? {
         switch (context, kind) {
         case (.upload, .unknown) where isVirusDetected:

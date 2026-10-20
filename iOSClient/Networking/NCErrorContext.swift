@@ -46,7 +46,7 @@ enum NCErrorContext: Equatable {
         }
     }
 
-    /// The context of the operation an item is waiting for or failed at, from its metadata `status`.
+    /// The context of the operation a metadata is waiting for or failed at, from its metadata `status`.
     init(metadataStatus: Int, fileName: String) {
         let global = NCGlobal.shared
 
