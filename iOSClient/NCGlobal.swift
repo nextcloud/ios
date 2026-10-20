@@ -93,11 +93,6 @@ final class NCGlobal: Sendable {
     // CHUNK
     let chunkSize                                   = 100000000
 
-    // NCViewerProviderContextMenu
-    //
-    let maxAutoDownload: UInt64                     = 50000000      // 50MB
-    let maxAutoDownloadCellular: UInt64             = 10000000      // 10MB
-
     // Layout
     //
     let layoutList                                  = "typeLayoutList"
