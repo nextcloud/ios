@@ -4,6 +4,9 @@
 
 extension NCFiles {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard mainNavigationController?.usesNavigationBarPlusButton != true else {
+            return
+        }
         let currentOffsetY = scrollView.contentOffset.y
         let currentTime = CACurrentMediaTime()
         let deltaY = currentOffsetY - lastOffsetY

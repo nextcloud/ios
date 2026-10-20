@@ -39,6 +39,20 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     var menuPlus: NCContextMenuPlus?
 
     let optionButtonTag = 100
+    private(set) var usesNavigationBarPlusButton = false
+
+    private var menuPlusFloatingConstraints: [NSLayoutConstraint] = []
+
+    private lazy var plusButtonGroup: UIBarButtonItemGroup = {
+        let item = UIBarButtonItem(customView: menuPlusButton)
+        if #available(iOS 26.0, *) {
+            item.hidesSharedBackground = true
+        }
+        if #available(iOS 27.1, *) {
+            item.axisBehavior = .verticalPreferred
+        }
+        return UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)
+    }()
 
     lazy var sidebarButtonItem: UIBarButtonItem = {
         let action = UIAction(title: NSLocalizedString("_sidebar_navigation_", comment: ""), image: UIImage(systemName: "sidebar.left")) { [weak self] _ in
@@ -109,14 +123,36 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let trailingAnchor: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? -28 : -22
         let bottomAnchor: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? -28 : -22
 
-        NSLayoutConstraint.activate([
+        menuPlusFloatingConstraints = [
             menuPlusButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: trailingAnchor),
-            menuPlusButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: bottomAnchor),
+            menuPlusButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: bottomAnchor)
+        ]
+        NSLayoutConstraint.activate(menuPlusFloatingConstraints + [
             menuPlusButton.widthAnchor.constraint(equalToConstant: buttonSize),
             menuPlusButton.heightAnchor.constraint(equalToConstant: buttonSize)
         ])
 
-        menuPlus = NCContextMenuPlus(menuPlusButton: menuPlusButton, controller: controller)
+        menuPlus = NCContextMenuPlus(menuPlusButton: menuPlusButton, controller: controller, navigationController: self)
+
+        if #available(iOS 27.1, *) {
+            view.addInteraction(UIHingeInteraction { [weak self] _, update in
+                guard let self, update.hinge != nil, !self.usesNavigationBarPlusButton else { return }
+                // Keep the same placement for every hinge state, including closed.
+                // Ignore nil updates when the view temporarily leaves its hierarchy.
+                self.usesNavigationBarPlusButton = true
+                NSLayoutConstraint.deactivate(self.menuPlusFloatingConstraints)
+                self.menuPlusFloatingConstraints.removeAll()
+                self.menuPlusButton.removeFromSuperview()
+                self.menuPlusButton.layer.removeAllAnimations()
+                self.menuPlusButton.transform = .identity
+                self.menuPlusButton.alpha = 1
+                self.menuPlusButton.configuration?.image = UIImage(systemName: "plus")?.withTintColor(.white, renderingMode: .alwaysOriginal)
+                self.updateNavigationBarPlusButton()
+                Task { @MainActor [weak self] in
+                    await self?.collectionViewCommonTrailingItemGroups()
+                }
+            })
+        }
 
         // CAPABILITIES UPDATE
         //
@@ -188,6 +224,33 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             await collectionViewCommonTrailingItemGroups()
             configureSidebarButton()
         }
+    }
+
+    /// Place the existing creation button in the system navigation bar.
+    func updateNavigationBarPlusButton() {
+        guard usesNavigationBarPlusButton else {
+            return
+        }
+
+        // A pinned group stays out of the system overflow, unlike trailing item groups.
+        for viewController in viewControllers where viewController !== topViewController {
+            if viewController.navigationItem.pinnedTrailingGroup === plusButtonGroup {
+                viewController.navigationItem.pinnedTrailingGroup = nil
+            }
+        }
+
+        let files = topViewController as? NCFiles
+
+        if let files {
+            files.navigationItem.pinnedTrailingGroup = plusButtonGroup
+        }
+
+        setNavigationBarPlusButtonHidden(files == nil || files?.isEditMode == true || files?.isSearchingMode == true)
+    }
+
+    func setNavigationBarPlusButtonHidden(_ isHidden: Bool) {
+        menuPlusButton.isHidden = isHidden
+        plusButtonGroup.isHidden = isHidden
     }
 
     // MARK: - Right
@@ -275,6 +338,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         // Keep screen-specific options in the navigation bar.
         var desiredItems: [UIBarButtonItem] = []
+        updateNavigationBarPlusButton()
 
         if let optionMenu = await createOptionMenu() {
             setOptionMenu(optionMenu)

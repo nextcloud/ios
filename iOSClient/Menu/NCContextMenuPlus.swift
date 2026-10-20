@@ -17,6 +17,7 @@ class NCContextMenuPlus: NSObject {
 
     let menuPlusButton: UIButton?
     weak var controller: NCMainTabBarController?
+    private weak var navigationController: NCMainNavigationController?
     private var menuSignature: String?
     private var creationID = UUID()
 
@@ -24,9 +25,10 @@ class NCContextMenuPlus: NSObject {
         SceneManager.shared.getWindowScene(controller: controller)
     }
 
-    init(menuPlusButton: UIButton?, controller: NCMainTabBarController?) {
+    init(menuPlusButton: UIButton?, controller: NCMainTabBarController?, navigationController: NCMainNavigationController) {
         self.menuPlusButton = menuPlusButton
         self.controller = controller
+        self.navigationController = navigationController
     }
 
     nonisolated static func menuInfo(for ext: String) -> CreatorMenuInfo? {
@@ -692,6 +694,11 @@ class NCContextMenuPlus: NSObject {
     @MainActor
     func hiddenPlusButton(_ isHidden: Bool, animation: Bool = true) {
         guard let menuPlusButton else {
+            return
+        }
+        if let navigationController,
+           navigationController.usesNavigationBarPlusButton {
+            navigationController.setNavigationBarPlusButtonHidden(isHidden)
             return
         }
         let tx = 200.0
