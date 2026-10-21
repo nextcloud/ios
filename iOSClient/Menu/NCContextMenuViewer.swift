@@ -72,7 +72,7 @@ class NCContextMenuViewer: NSObject {
         }
 
         if !webView {
-            menuElements.append(makeViewInFolderAction(metadata: metadata, controller: controller, viewController: viewController))
+            menuElements.append(NCContextMenuActions.viewInFolder(metadata: metadata, controller: controller, viewController: viewController))
         }
 
         if !webView,
@@ -264,34 +264,6 @@ class NCContextMenuViewer: NSObject {
 
     private func shouldShowDetails(for capabilities: NKCapabilities.Capabilities) -> Bool {
         capabilities.fileSharingApiEnabled || capabilities.filesComments || !capabilities.activity.isEmpty
-    }
-
-    private func makeViewInFolderAction(metadata: tableMetadata, controller: NCMainTabBarController, viewController: UIViewController?) -> UIAction {
-        UIAction(
-            title: NSLocalizedString("_view_in_folder_", comment: ""),
-            image: UIImage(systemName: "questionmark.folder")
-        ) { _ in
-            Task {
-                if let files = await NCNetworking.shared.moveInFolder(serverUrl: metadata.serverUrl,
-                                                                      sceneIdentifier: controller.sceneIdentifier) {
-
-                    files.loadViewIfNeeded()
-                    files.view.layoutIfNeeded()
-                    files.collectionView.layoutIfNeeded()
-
-                    if let mediaViewer = viewController as? NCMediaViewerHostingController {
-                        mediaViewer.close()
-                    } else if let mediaViewer = viewController as? NCVideoVLCViewController {
-                        mediaViewer.closeImmediately()
-                    } else if let mediaViewer = viewController as? NCVideoAVPlayerViewController {
-                        mediaViewer.closeImmediately()
-                    }
-
-                    try? await Task.sleep(for: .seconds(0.6))
-                    files.blinkItem(ocId: metadata.ocId)
-                }
-            }
-        }
     }
 
     private func makePDFActions() -> [UIAction] {

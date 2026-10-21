@@ -38,13 +38,13 @@ class NCContextMenuMain: NSObject {
         self.sender = sender
     }
 
-    func viewMenu() -> UIMenu {
+    func viewMenu(showViewInFolder: Bool = false) -> UIMenu {
         guard let capabilities = NCNetworking.shared.capabilities[metadata.account] else {
             return UIMenu()
         }
 
         let topMenuItems = buildTopMenuItems(metadata: metadata)
-        let mainActionsMenu = buildMainActionsMenu(metadata: metadata, capabilities: capabilities)
+        let mainActionsMenu = buildMainActionsMenu(metadata: metadata, capabilities: capabilities, showViewInFolder: showViewInFolder)
         let clientIntegrationMenu = buildClientIntegrationMenuItems(capabilities: capabilities, metadata: metadata)
         let deleteMenu = buildDeleteMenu(metadata: metadata)
 
@@ -94,8 +94,12 @@ class NCContextMenuMain: NSObject {
 
     // MARK: Main Actions Menu
 
-    private func buildMainActionsMenu(metadata: tableMetadata, capabilities: NKCapabilities.Capabilities) -> [UIMenuElement] {
+    private func buildMainActionsMenu(metadata: tableMetadata, capabilities: NKCapabilities.Capabilities, showViewInFolder: Bool) -> [UIMenuElement] {
         var menuElements: [UIMenuElement] = []
+
+        if showViewInFolder, let controller {
+            menuElements.append(NCContextMenuActions.viewInFolder(metadata: metadata, controller: controller, viewController: viewController))
+        }
 
         if NCNetworking.shared.isOnline,
            !metadata.directory,

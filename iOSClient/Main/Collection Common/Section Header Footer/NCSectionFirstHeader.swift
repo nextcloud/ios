@@ -394,7 +394,7 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
         }, actionProvider: { _ in
             let cell = collectionView.cellForItem(at: indexPath)
             let contextMenu = NCContextMenuMain(metadata: metadata.detachedCopy(), viewController: viewController, controller: self.controller, sender: cell)
-            return contextMenu.viewMenu()
+            return contextMenu.viewMenu(showViewInFolder: true)
         })
 #endif
     }
@@ -415,7 +415,7 @@ extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
             button.menu = nil
             return
         }
-        button.menu = NCContextMenuMain(metadata: metadata, viewController: viewController, controller: self.controller, sender: sender).viewMenu()
+        button.menu = NCContextMenuMain(metadata: metadata, viewController: viewController, controller: self.controller, sender: sender).viewMenu(showViewInFolder: true)
 #endif
     }
 
