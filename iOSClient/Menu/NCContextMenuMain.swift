@@ -279,7 +279,7 @@ class NCContextMenuMain: NSObject {
 
     private func makeModifyWithQuickLookAction(metadata: tableMetadata) -> UIAction {
         return UIAction(
-            title: NSLocalizedString("_modify_", comment: ""),
+            title: NSLocalizedString("_edit_", comment: ""),
             image: utility.loadImage(named: "pencil.tip.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
             Task {
