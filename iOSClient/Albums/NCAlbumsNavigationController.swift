@@ -6,10 +6,10 @@ import UIKit
 
 /// Shares the app's navigation appearance and sidebar behavior with Files and Media.
 class NCAlbumsNavigationController: NCMainNavigationController {
-    override func collectionViewCommonTrailingItemGroups() async {
+    override func updateNavigationMenu() async {
         // Album screens provide their own creation and editing actions.
         guard !(topViewController is AlbumsViewController) else { return }
-        await super.collectionViewCommonTrailingItemGroups()
+        await super.updateNavigationMenu()
     }
 
     static func configureNavigationItems(for screen: AlbumsViewController) {

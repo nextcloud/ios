@@ -38,8 +38,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let menuNavigation = NCContextMenuNavigation()
     var menuPlus: NCContextMenuPlus?
 
-    let optionButtonTag = 100
-
     lazy var sidebarButtonItem: UIBarButtonItem = {
         let action = UIAction(title: NSLocalizedString("_sidebar_navigation_", comment: ""), image: UIImage(systemName: "sidebar.left")) { [weak self] _ in
             self?.controller?.presentSidebar()
@@ -57,11 +55,15 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         return item
     }()
 
-    lazy var optionButtonItem: UIBarButtonItem = {
-        let item = UIBarButtonItem()
-        item.tag = optionButtonTag
-        return item
-    }()
+    private var isEditingContent: Bool {
+        (collectionViewCommon?.isEditMode ?? false) || (trashViewController?.isEditMode ?? false) || (mediaViewController?.isEditMode ?? false)
+    }
+
+    private var leadingItems: [UIBarButtonItem] {
+        guard let navigationItem = topViewController?.navigationItem else { return [] }
+        let items = navigationItem.leadingItemGroups.flatMap { $0.barButtonItems }
+        return items.isEmpty ? navigationItem.leftBarButtonItems ?? [] : items
+    }
 
     // MARK: - View Life Cycle
 
@@ -72,13 +74,13 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         setNavigationBarAppearance()
         setNavigationBarHidden(false, animated: true)
 
-        Task {
-            optionButtonItem.image = UIImage(systemName: "ellipsis")
-            optionButtonItem.tintColor = NCBrandColor.shared.iconImageColor
-            setOptionMenu(await createOptionMenu())
-        }
+        configurePlusButton()
+        observeNotifications()
+    }
 
-        // PLUS BUTTON MENU
+    // MARK: - Plus Button
+
+    private func configurePlusButton() {
         let buttonSize: CGFloat = 44
         let plusConfiguration = UIImage.SymbolConfiguration(pointSize: 18, weight: .regular)
         let plusImage = UIImage(systemName: "plus", withConfiguration: plusConfiguration)?.withRenderingMode(.alwaysTemplate)
@@ -114,10 +116,14 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         ])
 
         menuPlus = NCContextMenuPlus(menuPlusButton: menuPlusButton, controller: controller)
+    }
 
+    // MARK: - Notifications
+
+    private func observeNotifications() {
         // CAPABILITIES UPDATE
-        //
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterServerDidUpdate), object: nil, queue: nil) { [weak self] notification in
+        let serverUpdate = Notification.Name(global.notificationCenterServerDidUpdate)
+        NotificationCenter.default.addObserver(forName: serverUpdate, object: nil, queue: nil) { [weak self] notification in
             guard let userInfo = notification.userInfo,
                   let account = userInfo["account"] as? String else {
                 return
@@ -134,9 +140,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 guard controller.account == account else { return }
                 let session = NCSession.shared.getSession(account: account)
 
-                // Notification
-                //
-                if capabilities.notification.count == 0 {
+                if capabilities.notification.isEmpty {
                     controller.availableNotifications = false
                 } else {
                     _ = await NextcloudKit.shared.getNotificationsAsync(account: account)
@@ -144,23 +148,23 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                     controller.availableNotifications = true
                 }
                 guard controller.account == account else { return }
-                await self.collectionViewCommonTrailingItemGroups()
-                // (+)
+                await self.updateNavigationMenu()
                 await self.menuPlus?.create(session: session)
             }
         }
 
         // REACHABILITY
-        //
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterNetworkReachability), object: nil, queue: .main) { [weak self] _ in
+        let reachability = Notification.Name(global.notificationCenterNetworkReachability)
+        NotificationCenter.default.addObserver(forName: reachability, object: nil, queue: .main) { [weak self] _ in
             Task { @MainActor [weak self] in
                 guard let self else { return }
 
-                // (+)
                 await self.menuPlus?.create(session: session)
             }
         }
     }
+
+    // MARK: - Navigation
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         if #available(iOS 27.0, *),
@@ -170,19 +174,13 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         Task { @MainActor in
-            // (+)
-            // PLUS BUTTON ONLY IN FILES
             if let viewController = viewController as? NCFiles {
-                self.menuPlus?.hiddenPlusButton(isEditMode: viewController.isEditMode,
-                                                isSearchingMode: viewController.isSearchingMode,
-                                                animation: false)
+                menuPlus?.hiddenPlusButton(isEditMode: viewController.isEditMode, isSearchingMode: viewController.isSearchingMode, animation: false)
             } else {
-                self.menuPlus?.hiddenPlusButton(true,
-                                                animation: false)
+                menuPlus?.hiddenPlusButton(true, animation: false)
             }
-            // MENU
             setNavigationBarAppearance()
-            await collectionViewCommonTrailingItemGroups()
+            await updateNavigationMenu()
             configureSidebarButton()
         }
     }
@@ -191,58 +189,29 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     @MainActor
     func setNavigationRightItems() async {
-
         // COLLECTION EDIT MODE
         if let collectionViewCommon, collectionViewCommon.isEditMode {
-
-            collectionViewCommon.tabBarSelect?.update(
-                fileSelect: collectionViewCommon.fileSelect,
-                metadatas: collectionViewCommon.getSelectedMetadatas(),
-                userId: session.userId
-            )
+            collectionViewCommon.tabBarSelect?.update(fileSelect: collectionViewCommon.fileSelect, metadatas: collectionViewCommon.getSelectedMetadatas(), userId: session.userId)
             collectionViewCommon.tabBarSelect?.show()
             // SEARCH (OFF)
             collectionViewCommon.navigationItem.searchController = nil
 
-            let cancel = UIBarButtonItem(
-                image: UIImage(systemName: "xmark"),
-                style: .plain
-            ) {
+            setCancelButton(for: collectionViewCommon.navigationItem) {
                 Task {
                     await collectionViewCommon.setEditMode(false)
                 }
             }
-            cancel.accessibilityLabel = NSLocalizedString("_cancel_", comment: "")
-
-            let group = UIBarButtonItemGroup(
-                barButtonItems: [cancel],
-                representativeItem: nil
-            )
-
-            collectionViewCommon.navigationItem.trailingItemGroups = [group]
             return
         }
 
         // TRASH EDIT MODE
         if let trashViewController, trashViewController.isEditMode {
-
             trashViewController.tabBarSelect.update(selectOcId: [])
             trashViewController.tabBarSelect.show()
 
-            let cancel = UIBarButtonItem(
-                image: UIImage(systemName: "xmark"),
-                style: .plain
-            ) {
+            setCancelButton(for: trashViewController.navigationItem) {
                 trashViewController.setEditMode(false)
             }
-            cancel.accessibilityLabel = NSLocalizedString("_cancel_", comment: "")
-
-            let group = UIBarButtonItemGroup(
-                barButtonItems: [cancel],
-                representativeItem: nil
-            )
-
-            trashViewController.navigationItem.trailingItemGroups = [group]
             return
         }
 
@@ -251,18 +220,25 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         collectionViewCommon?.tabBarSelect?.hide()
         // SEARCH (ON)
         collectionViewCommon?.navigationItem.searchController = collectionViewCommon?.searchController
-        await collectionViewCommonTrailingItemGroups()
+        await updateNavigationMenu()
+    }
+
+    private func setCancelButton(for navigationItem: UINavigationItem, action: @escaping () -> Void) {
+        let cancel = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain) {
+            action()
+        }
+        cancel.accessibilityLabel = NSLocalizedString("_cancel_", comment: "")
+        navigationItem.additionalOverflowItems = nil
+        navigationItem.trailingItemGroups = [UIBarButtonItemGroup(barButtonItems: [cancel], representativeItem: nil)]
     }
 
     @MainActor
-    func collectionViewCommonTrailingItemGroups() async {
+    func updateNavigationMenu() async {
         guard let topViewController else {
             return
         }
 
-        guard !(collectionViewCommon?.isEditMode ?? false),
-              !(trashViewController?.isEditMode ?? false),
-              !(mediaViewController?.isEditMode ?? false),
+        guard !isEditingContent,
               !(topViewController is NCViewerPDF),
               !(topViewController is NCViewerRichdocuments),
               !(topViewController is NCViewerDirectEditing)
@@ -270,69 +246,27 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             return
         }
 
-        // Keep screen-specific options in the navigation bar.
-        var desiredItems: [UIBarButtonItem] = []
-
-        if let optionMenu = await createOptionMenu() {
-            setOptionMenu(optionMenu)
-            desiredItems.append(optionButtonItem)
-        }
-
-        // ---------------------------------------------------------
-        // Read current items from trailingItemGroups
-        // ---------------------------------------------------------
-
-        let currentItems: [UIBarButtonItem] = topViewController.navigationItem.trailingItemGroups.flatMap { $0.barButtonItems }
-
-        let currentTags = currentItems.map { $0.tag }
-        let desiredTags = desiredItems.map { $0.tag }
-
-        // If nothing changed → exit
-        guard currentTags != desiredTags else {
-            return
-        }
-
-        let group = UIBarButtonItemGroup(
-            barButtonItems: desiredItems,
-            representativeItem: nil
-        )
-
-        topViewController.navigationItem.trailingItemGroups = [group]
+        let menu = await createOptionMenu()
+        guard self.topViewController === topViewController, !isEditingContent else { return }
+        setOptionMenu(menu, for: topViewController.navigationItem)
+        topViewController.navigationItem.trailingItemGroups = []
     }
 
     func createOptionMenu() async -> UIMenu? { return nil }
 
     func updateMenuOption() async {
-        guard let topViewController else {
-            return
-        }
-        let hasOptionButton = topViewController.navigationItem.trailingItemGroups
-            .flatMap { $0.barButtonItems }
-            .contains(where: { $0.tag == optionButtonTag })
-
-        guard hasOptionButton else {
-            return
-        }
-
-        setOptionMenu(await createOptionMenu())
-
-        // Force refresh of the bar button group if the menu instance changed.
-        let currentGroups = topViewController.navigationItem.trailingItemGroups
-        if !currentGroups.isEmpty {
-            topViewController.navigationItem.trailingItemGroups = currentGroups
-        }
+        guard let topViewController, topViewController.navigationItem.additionalOverflowItems != nil else { return }
+        let menu = await createOptionMenu()
+        guard self.topViewController === topViewController, topViewController.navigationItem.additionalOverflowItems != nil else { return }
+        setOptionMenu(menu, for: topViewController.navigationItem)
     }
 
-    /// Configures the options button for both direct toolbar display and UIKit's
-    /// navigation-bar overflow menu.
-    ///
-    /// The button keeps its regular menu when it is displayed in the bar. When
-    /// UIKit moves it into the system overflow, the inline representation avoids
-    /// presenting another ellipsis submenu inside that overflow menu.
-    func setOptionMenu(_ menu: UIMenu?) {
-        optionButtonItem.menu = menu
-        optionButtonItem.menuRepresentation = menu.map {
-            UIMenu(title: "", options: .displayInline, children: $0.children)
+    /// Shares UIKit's overflow button with navigation items that no longer fit in the bar.
+    func setOptionMenu(_ menu: UIMenu?, for navigationItem: UINavigationItem) {
+        navigationItem.additionalOverflowItems = menu.map { menu in
+            UIDeferredMenuElement.uncached { completion in
+                completion(menu.children)
+            }
         }
     }
 
@@ -344,8 +278,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     func configureSidebarButton() {
         guard let navigationItem = topViewController?.navigationItem else { return }
-        let groupedItems = navigationItem.leadingItemGroups.flatMap { $0.barButtonItems }
-        var items = groupedItems.isEmpty ? navigationItem.leftBarButtonItems ?? [] : groupedItems
+        var items = leadingItems
         items.removeAll { $0 === sidebarButtonItem }
         // Rebuild loading from its state so repeated updates cannot duplicate or retain a stopped spinner.
         let albums = topViewController as? AlbumsViewController
@@ -355,9 +288,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let isFiles = topViewController is NCFiles
         if isFiles || topViewController === viewControllers.first,
            controller != nil,
-           !(collectionViewCommon?.isEditMode ?? false),
-           !(mediaViewController?.isEditMode ?? false),
-           !(trashViewController?.isEditMode ?? false) {
+           !isEditingContent {
             items.insert(sidebarButtonItem, at: 0)
             if isFiles {
                 navigationItem.leftItemsSupplementBackButton = true
@@ -383,10 +314,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     ///   - color: The UIColor to be applied.
     @MainActor
     func setLeftItemColor(tag: Int, to color: UIColor) {
-        guard let navigationItem = topViewController?.navigationItem else { return }
-        let groupedItems = navigationItem.leadingItemGroups.flatMap { $0.barButtonItems }
-        let items = groupedItems.isEmpty ? navigationItem.leftBarButtonItems ?? [] : groupedItems
-        guard let item = items.first(where: { $0.tag == tag }) else { return }
+        guard let item = leadingItems.first(where: { $0.tag == tag }) else { return }
 
         applyTint(item, color: color)
     }
@@ -396,11 +324,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     /// - Parameter color: The UIColor to be applied.
     @MainActor
     func setAllLeftItemsColor(_ color: UIColor) {
-        guard let navigationItem = topViewController?.navigationItem else { return }
-        let groupedItems = navigationItem.leadingItemGroups.flatMap { $0.barButtonItems }
-        let items = groupedItems.isEmpty ? navigationItem.leftBarButtonItems ?? [] : groupedItems
-
-        for item in items {
+        for item in leadingItems {
             applyTint(item, color: color)
         }
     }
@@ -415,11 +339,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     @MainActor
     private func applyTint(_ button: UIButton, color: UIColor) {
         if var cfg = button.configuration {
-            // Se in futuro userai UIButton.Configuration, tieni il colore allineato qui
             cfg.baseForegroundColor = color
             button.configuration = cfg
         } else {
-            // Config attuale (nessuna configuration): SF Symbols sono template, quindi basta tintColor
             button.tintColor = color
             button.setTitleColor(color, for: .normal)
         }
@@ -434,11 +356,11 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
     }
 
-    /// Updates the tint color of all preloaded and currently visible right bar buttons.
+    /// Updates the tint color of the system overflow and currently visible right bar buttons.
     /// - Parameter color: The UIColor to be applied to all right bar button items.
     @MainActor
     func updateRightBarButtonsTint(to color: UIColor) {
-        applyTint(optionButtonItem, color: color)
+        navigationBar.tintColor = color
 
         if let visibleItems = topViewController?.navigationItem.rightBarButtonItems {
             for item in visibleItems {
