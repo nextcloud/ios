@@ -84,43 +84,88 @@ class NCFilesExtensionHandler {
             $0.hasItemConformingToTypeIdentifier(UTType.item.identifier as String) || $0.hasItemConformingToTypeIdentifier("public.url")
         }) }
 
+        // Without any usable attachment (for example when sharing an entire Apple
+        // Note) the loop below never runs and the completion handler would never
+        // be called, leaving the share extension UI hanging without an upload
+        // button. Report the empty result right away instead.
+        guard !itemsProvider.isEmpty else {
+            DispatchQueue.main.async { completion([]) }
+            return
+        }
+
         for (ix, provider) in itemsProvider.enumerated() {
-            provider.loadItem(forTypeIdentifier: provider.typeIdentifier) { [self] item, error in
-                defer {
-                    counter += 1
-                    if counter == itemsProvider.count { completion(self.fileNames) }
-                }
-                guard error == nil else { return }
-                var originalName = (dateFormatter.string(from: Date())) + String(ix)
-
-                if let url = item as? URL, url.isFileURL, !url.lastPathComponent.isEmpty {
-                    originalName = url.lastPathComponent
-
-                    if fileNames.contains(originalName) {
-                        let incrementalNumber = NCPreferences().incrementalNumber
-                        originalName = "\(url.deletingPathExtension().lastPathComponent) \(incrementalNumber).\(url.pathExtension)"
-                    }
-                }
-
-                var fileName: String?
-                switch item {
-                case let image as UIImage:
-                    fileName = getItem(image: image, fileName: originalName)
-                case let url as URL:
-                    fileName = getItem(url: url, fileName: originalName)
-                case let data as Data:
-                    fileName = getItem(data: data, fileName: originalName, provider: provider)
-                case let text as String:
-                    fileName = getItem(string: text, fileName: originalName)
-                default: return
-                }
-
+            loadItem(from: provider, index: ix) { [self] fileName in
                 if let fileName, !fileNames.contains(fileName) {
                     fileNames.append(fileName)
                 }
+                counter += 1
+                if counter == itemsProvider.count { completion(self.fileNames) }
             }
         }
     }
+
+    /// Loads a usable file from an item provider, trying the preferred type
+    /// identifier first and falling back to the remaining registered types when
+    /// the preferred one yields nothing (as happens e.g. with Apple Notes).
+    private func loadItem(from provider: NSItemProvider, index ix: Int, completion: @escaping (String?) -> Void) {
+        var typeIdentifiers: [String] = []
+        for identifier in [provider.typeIdentifier] + provider.registeredTypeIdentifiers where !identifier.isEmpty {
+            if !typeIdentifiers.contains(identifier) {
+                typeIdentifiers.append(identifier)
+            }
+        }
+
+        func tryNext(_ remaining: ArraySlice<String>) {
+            guard let typeIdentifier = remaining.first else {
+                completion(nil)
+                return
+            }
+            provider.loadItem(forTypeIdentifier: typeIdentifier) { [self] item, error in
+                guard error == nil, let item else {
+                    tryNext(remaining.dropFirst())
+                    return
+                }
+                if let fileName = handleItem(item, provider: provider, index: ix) {
+                    completion(fileName)
+                } else {
+                    tryNext(remaining.dropFirst())
+                }
+            }
+        }
+
+        tryNext(typeIdentifiers[...])
+    }
+
+    /// Converts a loaded item into a temporary file and returns its file name,
+    /// or nil when the item type is unsupported.
+    private func handleItem(_ item: NSSecureCoding, provider: NSItemProvider, index ix: Int) -> String? {
+        var originalName = (dateFormatter.string(from: Date())) + String(ix)
+
+        if let url = item as? URL, url.isFileURL, !url.lastPathComponent.isEmpty {
+            originalName = url.lastPathComponent
+
+            if fileNames.contains(originalName) {
+                let incrementalNumber = NCPreferences().incrementalNumber
+                originalName = "\(url.deletingPathExtension().lastPathComponent) \(incrementalNumber).\(url.pathExtension)"
+            }
+        }
+
+        switch item {
+        case let image as UIImage:
+            return getItem(image: image, fileName: originalName)
+        case let url as URL:
+            return getItem(url: url, fileName: originalName)
+        case let data as Data:
+            return getItem(data: data, fileName: originalName, provider: provider)
+        case let text as String:
+            return getItem(string: text, fileName: originalName)
+        case let attributedText as NSAttributedString:
+            return getItem(string: attributedText.string, fileName: originalName)
+        default:
+            return nil
+        }
+    }
+}
 
     // Image
     func getItem(image: UIImage, fileName: String) -> String? {
