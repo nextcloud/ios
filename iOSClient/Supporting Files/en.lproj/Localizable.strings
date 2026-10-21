@@ -269,6 +269,7 @@
 "_upload_mov_livephoto_"        = "Live Photo";
 "_upload_mov_livephoto_footer_" = "\"Live Photo\" will save the selected photo in \"Live Photo\" format, if possible.";
 "_capabilities_"                = "Capabilities";
+"_capabilities_unavailable_"    = "Server capabilities are not available yet. Please try again in a moment.";
 "_capabilities_footer_"         = "Display the packages used by the app if they are installed and available on the server.";
 "_diagnostics_"                 = "Diagnostics";
 "_diagnostics_footer_"          = "Changing log level requires a restart of the app to take effect";

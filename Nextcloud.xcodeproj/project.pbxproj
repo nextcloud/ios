@@ -82,6 +82,7 @@
 		AF22B20C277C6F4D00DAB0CC /* NCShareCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF22B20B277C6F4D00DAB0CC /* NCShareCell.swift */; };
 		AF22B217277D196700DAB0CC /* NCShareExtension+DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF22B215277D196700DAB0CC /* NCShareExtension+DataSource.swift */; };
 		AF22B218277D196700DAB0CC /* NCShareExtension+Files.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF22B216277D196700DAB0CC /* NCShareExtension+Files.swift */; };
+		AB17A0212F90000100FE2801 /* NCHighlightableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB17A0222F90000100FE2802 /* NCHighlightableView.swift */; };
 		AF2D7C7C2742556F00ADF566 /* NCShareLinkCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2D7C7B2742556F00ADF566 /* NCShareLinkCell.swift */; };
 		AF2D7C7E2742559100ADF566 /* NCShareUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2D7C7D2742559100ADF566 /* NCShareUserCell.swift */; };
 		AF3FDCC22796ECC300710F60 /* NCTrash+CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF3FDCC12796ECC300710F60 /* NCTrash+CollectionView.swift */; };
@@ -1448,6 +1449,7 @@
 		AF22B20B277C6F4D00DAB0CC /* NCShareCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareCell.swift; sourceTree = "<group>"; };
 		AF22B215277D196700DAB0CC /* NCShareExtension+DataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCShareExtension+DataSource.swift"; sourceTree = "<group>"; };
 		AF22B216277D196700DAB0CC /* NCShareExtension+Files.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCShareExtension+Files.swift"; sourceTree = "<group>"; };
+		AB17A0222F90000100FE2802 /* NCHighlightableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCHighlightableView.swift; sourceTree = "<group>"; };
 		AF2D7C7B2742556F00ADF566 /* NCShareLinkCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareLinkCell.swift; sourceTree = "<group>"; };
 		AF2D7C7D2742559100ADF566 /* NCShareUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareUserCell.swift; sourceTree = "<group>"; };
 		AF3FDCC12796ECC300710F60 /* NCTrash+CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCTrash+CollectionView.swift"; sourceTree = "<group>"; };
@@ -3654,6 +3656,7 @@
 				AF730AF927843E4C00B7520E /* NCShareExtension+NCAccountRequestDelegate.swift */,
 				AF22B215277D196700DAB0CC /* NCShareExtension+DataSource.swift */,
 				AF22B216277D196700DAB0CC /* NCShareExtension+Files.swift */,
+				AB17A0222F90000100FE2802 /* NCHighlightableView.swift */,
 				AF22B20B277C6F4D00DAB0CC /* NCShareCell.swift */,
 				F7148046262EBE4B00693E51 /* Share-Bridging-Header.h */,
 			);
@@ -5034,6 +5037,7 @@
 				F7D496FC2EBFA541004F9823 /* NCRecommendationsCell.swift in Sources */,
 				F799DF832C4B7DCC003410B5 /* NCSectionFooter.swift in Sources */,
 				AF22B218277D196700DAB0CC /* NCShareExtension+Files.swift in Sources */,
+				AB17A0212F90000100FE2801 /* NCHighlightableView.swift in Sources */,
 				F799DF862C4B7E56003410B5 /* NCSectionHeader.swift in Sources */,
 				F702F2D025EE5B5C008F8E80 /* NCGlobal.swift in Sources */,
 				F72437802C10B92400C7C68D /* NCSharePermissions.swift in Sources */,

@@ -363,7 +363,7 @@ extension NCShareExtension {
         Task { @MainActor in
             guard let tblAccount = NCShareExtensionData.shared.getTblAccoun(),
                   let capabilities = NCNetworking.shared.capabilities[tblAccount.account] else {
-                return
+                return showAlert(description: "_capabilities_unavailable_")
             }
             guard !filesName.isEmpty else { return showAlert(description: "_files_no_files_") }
             let session = NCShareExtensionData.shared.getSession()
