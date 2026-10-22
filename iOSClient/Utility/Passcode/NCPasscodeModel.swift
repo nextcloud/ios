@@ -64,7 +64,7 @@ final class NCPasscodeModel: ObservableObject {
 
     var biometricSymbol: String? {
         if isPreview { return step == .authenticate ? "faceid" : nil }
-        guard step == .authenticate, preferences.touchFaceID, preferences.passcode != nil else { return nil }
+        guard step == .authenticate, mode != .change, preferences.touchFaceID, preferences.passcode != nil else { return nil }
         let context = LAContext()
         guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil) else { return nil }
         return context.biometryType == .faceID ? "faceid" : "touchid"

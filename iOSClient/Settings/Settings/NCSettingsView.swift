@@ -306,10 +306,14 @@ struct NCSettingsView: View {
             })
         }
         .sheet(isPresented: $showPasscode) {
-            SetupPasscodeView(isLockActive: $model.isLockActive, controller: model.controller)
+            NCPasscodeView(mode: NCPreferences().passcode == nil ? .create : .disable,
+                           allowCancel: true,
+                           completion: completePasscode)
         }
         .sheet(isPresented: $showChangePasscode) {
-            SetupPasscodeView(isLockActive: $model.isLockActive, controller: model.controller, changePasscode: true)
+            NCPasscodeView(mode: .change,
+                           allowCancel: true,
+                           completion: completePasscode)
         }
 #if DEBUG
         .alert("Database export failed", isPresented: $showDatabaseExportError) {
@@ -320,6 +324,22 @@ struct NCSettingsView: View {
 #endif
         .navigationBarTitle(NSLocalizedString("_settings_", comment: ""))
         .defaultViewModifier(model)
+    }
+
+    /// Update the lock setting only after the passcode operation has completed.
+    private func completePasscode(_ result: NCPasscodeModel.Result) {
+        switch result {
+        case .configured:
+            model.isLockActive = true
+        case .disabled:
+            model.isLockActive = false
+        case .reset:
+            (UIApplication.shared.delegate as? AppDelegate)?.resetApplication()
+        case .authenticated, .cancelled:
+            break
+        }
+        showPasscode = false
+        showChangePasscode = false
     }
 
 #if DEBUG

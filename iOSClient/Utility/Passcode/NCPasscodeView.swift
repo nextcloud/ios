@@ -46,55 +46,64 @@ struct NCPasscodeView: View {
     }
 
     var body: some View {
-        GeometryReader { geometry in
-            ScrollView {
-                VStack(spacing: 24) {
-                    Image(systemName: "lock.shield")
-                        .font(.largeTitle)
-                        .accessibilityHidden(true)
-                    Text(NSLocalizedString(model.title, comment: ""))
-                        .font(.title2)
-                        .multilineTextAlignment(.center)
-                        .accessibilityAddTraits(.isHeader)
-                    HStack(spacing: 16) {
-                        ForEach(0..<6) { index in
-                            Image(systemName: index < model.digits.count ? "circle.fill" : "circle")
-                                .font(.body)
-                        }
-                    }
-                    .accessibilityElement(children: .ignore)
-                    .accessibilityLabel(NSLocalizedString("_passcode_digits_entered_", comment: ""))
-                    .accessibilityValue("\(model.digits.count) / 6")
-
-                    if let deadline = model.lockoutEnd {
-                        TimelineView(.periodic(from: .now, by: 1)) { timeline in
-                            VStack(spacing: 8) {
-                                Text(NSLocalizedString("_passcode_counter_fail_", comment: ""))
-                                Text("\(max(0, Int(deadline.timeIntervalSince(timeline.date).rounded(.up)))) " + NSLocalizedString("_seconds_", comment: ""))
+        NavigationStack {
+            GeometryReader { geometry in
+                ScrollView {
+                    VStack(spacing: 24) {
+                        Image(systemName: "lock.shield")
+                            .font(.largeTitle)
+                            .accessibilityHidden(true)
+                        Text(NSLocalizedString(model.title, comment: ""))
+                            .font(.title2)
+                            .multilineTextAlignment(.center)
+                            .accessibilityAddTraits(.isHeader)
+                        HStack(spacing: 16) {
+                            ForEach(0..<6) { index in
+                                Image(systemName: index < model.digits.count ? "circle.fill" : "circle")
+                                    .font(.body)
                             }
-                            .multilineTextAlignment(.center)
                         }
-                    } else {
-                        Text(NSLocalizedString(model.message, comment: ""))
-                            .foregroundStyle(.red)
-                            .multilineTextAlignment(.center)
-                            .frame(minHeight: 24)
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel(NSLocalizedString("_passcode_digits_entered_", comment: ""))
+                        .accessibilityValue("\(model.digits.count) / 6")
+
+                        if let deadline = model.lockoutEnd {
+                            TimelineView(.periodic(from: .now, by: 1)) { timeline in
+                                VStack(spacing: 8) {
+                                    Text(NSLocalizedString("_passcode_counter_fail_", comment: ""))
+                                    Text("\(max(0, Int(deadline.timeIntervalSince(timeline.date).rounded(.up)))) " + NSLocalizedString("_seconds_", comment: ""))
+                                }
+                                .multilineTextAlignment(.center)
+                            }
+                        } else {
+                            Text(NSLocalizedString(model.message, comment: ""))
+                                .foregroundStyle(.red)
+                                .multilineTextAlignment(.center)
+                                .frame(minHeight: 24)
+                        }
+                        keypad
                     }
-                    keypad
-                    if model.allowCancel {
-                        Button(NSLocalizedString("_cancel_", comment: "")) {
+                    .padding(24)
+                    .frame(maxWidth: 360)
+                    .frame(maxWidth: .infinity, minHeight: geometry.size.height)
+                }
+            }
+            .background(Color(uiColor: .systemBackground))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                if model.allowCancel {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button {
                             model.cancel()
+                        } label: {
+                            Image(systemName: "xmark")
                         }
-                        .padding(.top, 8)
+                        .accessibilityLabel(NSLocalizedString("_close_", comment: ""))
                     }
                 }
-                .padding(24)
-                .frame(maxWidth: 360)
-                .frame(maxWidth: .infinity, minHeight: geometry.size.height)
             }
         }
-        .background(Color(uiColor: .systemBackground))
-        .interactiveDismissDisabled()
+        .interactiveDismissDisabled(!model.allowCancel)
         .task { await model.start() }
         .task(id: model.lockoutEnd) {
             guard let deadline = model.lockoutEnd else { return }
@@ -111,7 +120,10 @@ struct NCPasscodeView: View {
                 model.cancelBiometrics()
             }
         }
-        .onDisappear { model.cancelBiometrics() }
+        .onDisappear {
+            model.cancelBiometrics()
+            model.cancel()
+        }
     }
 
     private var keypad: some View {
