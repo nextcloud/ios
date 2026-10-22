@@ -533,10 +533,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         if let window = SceneManager.shared.getWindow(scene: scene),
            let controller = SceneManager.shared.getController(scene: scene) {
-            window.rootViewController = controller
+            if window.rootViewController !== controller {
+                window.rootViewController = controller
+            }
             if NCPreferences().presentPasscode {
-                NCPasscode.shared.presentPasscode(viewController: controller, delegate: self) {
-                    NCPasscode.shared.enableTouchFaceID()
+                NCPasscodeView.present(from: controller) { [weak self, weak controller] result in
+                    switch result {
+                    case .authenticated, .configured:
+                        if NCPreferences().accountRequest, let controller {
+                            self?.requestedAccount(controller: controller)
+                        }
+                    case .reset:
+                        self?.appDelegate?.resetApplication()
+                    case .cancelled, .disabled:
+                        break
+                    }
                 }
             } else if NCPreferences().accountRequest {
                 requestedAccount(controller: controller)
@@ -562,7 +573,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 // MARK: - Extension
 
-extension SceneDelegate: NCPasscodeDelegate {
+extension SceneDelegate {
     func requestedAccount(controller: UIViewController?) {
         let tblAccounts = NCManageDatabase.shared.getAllTableAccount()
         if tblAccounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
@@ -585,10 +596,6 @@ extension SceneDelegate: NCPasscodeDelegate {
 
             controller?.present(popup, animated: true)
         }
-    }
-
-    func passcodeReset(_ passcodeViewController: TOPasscodeViewController) {
-        appDelegate?.resetApplication()
     }
 }
 

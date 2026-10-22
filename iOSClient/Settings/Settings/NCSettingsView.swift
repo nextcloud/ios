@@ -308,11 +308,13 @@ struct NCSettingsView: View {
         .sheet(isPresented: $showPasscode) {
             NCPasscodeView(mode: NCPreferences().passcode == nil ? .create : .disable,
                            allowCancel: true,
+                           windowScene: SceneManager.shared.getWindowScene(controller: model.controller),
                            completion: completePasscode)
         }
         .sheet(isPresented: $showChangePasscode) {
             NCPasscodeView(mode: .change,
                            allowCancel: true,
+                           windowScene: SceneManager.shared.getWindowScene(controller: model.controller),
                            completion: completePasscode)
         }
 #if DEBUG

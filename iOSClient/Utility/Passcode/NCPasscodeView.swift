@@ -8,20 +8,22 @@ import SwiftUI
 @MainActor
 struct NCPasscodeView: View {
     @StateObject private var model: NCPasscodeModel
-    @Environment(\.scenePhase) private var scenePhase
+    private weak var windowScene: UIWindowScene?
 
-    init(model: NCPasscodeModel) {
+    init(model: NCPasscodeModel, windowScene: UIWindowScene? = nil) {
         _model = StateObject(wrappedValue: model)
+        self.windowScene = windowScene
     }
 
     /// SwiftUI callers handle the result and dismiss their sheet in completion.
     init(mode: NCPasscodeModel.Mode = .authenticate, allowCancel: Bool = false,
-         completion: @escaping @MainActor (NCPasscodeModel.Result) -> Void) {
+         windowScene: UIWindowScene? = nil, completion: @escaping @MainActor (NCPasscodeModel.Result) -> Void) {
         _model = StateObject(wrappedValue: {
             let model = NCPasscodeModel(mode: mode, allowCancel: allowCancel)
             model.onCompletion = completion
             return model
         }())
+        self.windowScene = windowScene
     }
 
     /// UIKit callers receive the result after the passcode screen has closed.
@@ -34,7 +36,7 @@ struct NCPasscodeView: View {
             top = presented
         }
         let model = NCPasscodeModel(mode: mode, allowCancel: allowCancel)
-        let controller = UIHostingController(rootView: NCPasscodeView(model: model))
+        let controller = UIHostingController(rootView: NCPasscodeView(model: model, windowScene: top.view.window?.windowScene))
         controller.modalPresentationStyle = allowCancel ? .pageSheet : .fullScreen
         controller.isModalInPresentation = !allowCancel
         model.onCompletion = { [weak controller] result in
@@ -42,12 +44,12 @@ struct NCPasscodeView: View {
             if controller.isBeingDismissed || controller.presentingViewController == nil {
                 completion(result)
             } else {
-                controller.dismiss(animated: true) {
+                controller.dismiss(animated: allowCancel && controller.view.window?.windowScene?.activationState == .foregroundActive) {
                     completion(result)
                 }
             }
         }
-        top.present(controller, animated: true)
+        top.present(controller, animated: allowCancel)
     }
 
     var body: some View {
@@ -118,12 +120,15 @@ struct NCPasscodeView: View {
                 model.refreshProtection()
             } catch { return }
         }
-        .onChange(of: scenePhase) { _, phase in
-            if phase == .active {
-                model.refreshProtection()
-            } else if phase == .background {
-                model.cancelBiometrics()
-            }
+        .onReceive(NotificationCenter.default.publisher(for: UIScene.didActivateNotification)) { notification in
+            guard let windowScene, (notification.object as? UIScene) === windowScene else { return }
+            model.refreshProtection()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIScene.didEnterBackgroundNotification)) { notification in
+            guard let windowScene, (notification.object as? UIScene) === windowScene else { return }
+            model.cancelBiometrics()
+            // Optional operations cancel themselves; mandatory app authentication stays open.
+            model.cancel()
         }
         .onDisappear {
             model.cancelBiometrics()
