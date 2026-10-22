@@ -1114,6 +1114,10 @@
 		F7FF2CB12842159500EBB7A1 /* NCSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */; };
 		F7FFFCA02FB300440015441E /* NCAssistantSharedTextStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FFFC9D2FB300440015441E /* NCAssistantSharedTextStore.swift */; };
 		F7FFFCA22FB300600015441E /* NCAssistantSharedTextStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FFFC9D2FB300440015441E /* NCAssistantSharedTextStore.swift */; };
+		9F0E3B428AB44A6480190C2D /* NCPasscodeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131F8E2F43AD414E9DB53019 /* NCPasscodeModel.swift */; };
+		87768C6AB8E040219DF85898 /* NCPasscodeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131F8E2F43AD414E9DB53019 /* NCPasscodeModel.swift */; };
+		7670DABED44E4D56AD99E6DC /* NCPasscodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F902B24E44354B6D9F329F12 /* NCPasscodeView.swift */; };
+		9310075861174A62B1C9FED6 /* NCPasscodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F902B24E44354B6D9F329F12 /* NCPasscodeView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2161,6 +2165,8 @@
 		F7FDFF592E437E55000D7688 /* NCAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAccount.swift; sourceTree = "<group>"; };
 		F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSectionHeader.xib; sourceTree = "<group>"; };
 		F7FFFC9D2FB300440015441E /* NCAssistantSharedTextStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantSharedTextStore.swift; sourceTree = "<group>"; };
+		131F8E2F43AD414E9DB53019 /* NCPasscodeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCPasscodeModel.swift; sourceTree = "<group>"; };
+		F902B24E44354B6D9F329F12 /* NCPasscodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCPasscodeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -3617,6 +3623,7 @@
 		F7BFFA991A24D7BB0044ED85 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
+				B6DE60601BB3410D92EB99EC /* Passcode */,
 				F39170A82CB8201B006127BC /* FileAutoRenamer+Extensions.swift */,
 				F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */,
 				F752BA042E58C05200616A26 /* Maintenance.swift */,
@@ -4043,6 +4050,15 @@
 				F7EFC0CB256BF89300461AAD /* UserStatus */,
 			);
 			path = Account;
+			sourceTree = "<group>";
+		};
+		B6DE60601BB3410D92EB99EC /* Passcode */ = {
+			isa = PBXGroup;
+			children = (
+				131F8E2F43AD414E9DB53019 /* NCPasscodeModel.swift */,
+				F902B24E44354B6D9F329F12 /* NCPasscodeView.swift */,
+			);
+			path = Passcode;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -5059,6 +5075,8 @@
 				F768823A2C0DD230001CF441 /* NCPreferences.swift in Sources */,
 				A1E2EE010000000000000004 /* NCEndToEndKeySet.swift in Sources */,
 				F737DA9E2B7B893C0063BAFC /* NCPasscode.swift in Sources */,
+				87768C6AB8E040219DF85898 /* NCPasscodeModel.swift in Sources */,
+				9310075861174A62B1C9FED6 /* NCPasscodeView.swift in Sources */,
 				F7C30DF7291BC0D30017149B /* NCNetworkingE2EEUpload.swift in Sources */,
 				F7C687EC2D22BDE5004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */,
 				F33918C72C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */,
@@ -5573,6 +5591,8 @@
 				F768822A2C0DD1E7001CF441 /* NCSettingsModel.swift in Sources */,
 				F7BCE48E301091EA00876F4D /* NCMediaDatePickerViewController.swift in Sources */,
 				F737DA9D2B7B893C0063BAFC /* NCPasscode.swift in Sources */,
+				9F0E3B428AB44A6480190C2D /* NCPasscodeModel.swift in Sources */,
+				7670DABED44E4D56AD99E6DC /* NCPasscodeView.swift in Sources */,
 				F77C97392953131000FDDD09 /* NCCameraRoll.swift in Sources */,
 				F7CADEFD2EA159210057849E /* NCMetadataUploadTranfersSuccess.swift in Sources */,
 				F343A4B32A1E01FF00DDA874 /* PHAsset+Extension.swift in Sources */,

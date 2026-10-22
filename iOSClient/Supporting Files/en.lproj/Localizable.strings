@@ -879,3 +879,6 @@
 
 "_seek_backward_10_" = "Go back 10 seconds";
 "_seek_forward_10_" = "Go forward 10 seconds";
+
+"_passcode_incorrect_" = "Incorrect passcode. Try again.";
+"_passcode_digits_entered_" = "Passcode digits entered";
