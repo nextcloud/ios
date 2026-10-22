@@ -35,11 +35,16 @@ struct NCPasscodeView: View {
         }
         let model = NCPasscodeModel(mode: mode, allowCancel: allowCancel)
         let controller = UIHostingController(rootView: NCPasscodeView(model: model))
-        controller.modalPresentationStyle = .fullScreen
-        controller.isModalInPresentation = true
+        controller.modalPresentationStyle = allowCancel ? .pageSheet : .fullScreen
+        controller.isModalInPresentation = !allowCancel
         model.onCompletion = { [weak controller] result in
-            controller?.dismiss(animated: true) {
+            guard let controller else { return }
+            if controller.isBeingDismissed || controller.presentingViewController == nil {
                 completion(result)
+            } else {
+                controller.dismiss(animated: true) {
+                    completion(result)
+                }
             }
         }
         top.present(controller, animated: true)
