@@ -85,13 +85,12 @@ class NCMedia: UIViewController {
     }
 
     internal lazy var buttonDateBarItem: UIBarButtonItem = {
-        let item = UIBarButtonItem(
-            image: UIImage(systemName: "calendar"),
-            style: .plain,
-            target: self,
-            action: #selector(presentMediaDatePicker)
-        )
-        item.accessibilityLabel = NSLocalizedString("_select_date_", comment: "")
+        let action = UIAction(title: NSLocalizedString("_select_date_", comment: ""), image: UIImage(systemName: "calendar")) { [weak self] _ in
+            self?.presentMediaDatePicker()
+        }
+        let item = UIBarButtonItem(image: UIImage(systemName: "calendar"), primaryAction: action)
+        item.menuRepresentation = action
+        item.accessibilityLabel = action.title
         if #available(iOS 27.1, *) {
             item.axisBehavior = .horizontalOnly
         }

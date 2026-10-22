@@ -46,29 +46,14 @@ class NCMediaNavigationController: NCMainNavigationController {
 
         if media.isEditMode {
             media.tabBarSelect.show()
-            await collectionViewCommonTrailingItemGroups()
         } else {
             media.tabBarSelect.hide()
-            await mediaTrailingItemGroups()
-            await collectionViewCommonTrailingItemGroups()
         }
+        let menu = await createOptionMenu()
+        guard topViewController === media else { return }
+        setOptionMenu(menu, for: media.navigationItem)
+        media.navigationItem.trailingItemGroups = []
         configureSidebarButton()
-    }
-
-    private func mediaTrailingItemGroups() async {
-        var desiredItems: [UIBarButtonItem] = []
-
-        if let optionMenu = await self.createOptionMenu() {
-            setOptionMenu(optionMenu)
-            desiredItems.append(optionButtonItem)
-        }
-
-        let group = UIBarButtonItemGroup(
-            barButtonItems: desiredItems,
-            representativeItem: nil
-        )
-
-        topViewController?.navigationItem.trailingItemGroups = [group]
     }
 
     override func createOptionMenu() async -> UIMenu? {
