@@ -119,7 +119,7 @@
                                             <outlet property="delegate" destination="VYq-xA-D35" id="DAj-hF-SRY"/>
                                         </connections>
                                     </tableView>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tbe-Jp-I8U">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tbe-Jp-I8U" customClass="NCHighlightableView" customModule="Share" customModuleProvider="target">
                                         <rect key="frame" x="10" y="10" width="394" height="50"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="create folder" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WHW-J5-8gq">
@@ -145,7 +145,7 @@
                                             <constraint firstItem="R3X-g5-ZFs" firstAttribute="leading" secondItem="Tbe-Jp-I8U" secondAttribute="leading" constant="15" id="qgl-VD-5v8"/>
                                         </constraints>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kHU-CI-3gI">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kHU-CI-3gI" customClass="NCHighlightableView" customModule="Share" customModuleProvider="target">
                                         <rect key="frame" x="10" y="300" width="394" height="50"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="upload" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ka7-SC-ac5">
