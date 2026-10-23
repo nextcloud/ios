@@ -300,11 +300,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         if let loadingItem, loadingIndicator?.isAnimating == true {
             items.append(loadingItem)
         }
-        // Match Media: each item has its own group; only the sidebar is always available.
+        // Each item can move independently into UIKit's overflow menu.
         navigationItem.leadingItemGroups = items.map { item in
-            let group = UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)
-            group.alwaysAvailable = item === sidebarButtonItem
-            return group
+            UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)
         }
     }
 
