@@ -9,6 +9,10 @@ import SwiftUI
 
 class NCFiles: NCCollectionViewCommon {
     private var dataSourceTask: URLSessionTask?
+    private var folderPollingTask: Task<Void, Never>?
+    private var folderPollingNetworkTask: URLSessionTask?
+    // Prevent polling from starting another refresh while server data is loading.
+    private var serverDataRequests = 0
     internal var lastOffsetY: CGFloat = 0
     internal var lastScrollTime: TimeInterval = 0
     internal var accumulatedScrollDown: CGFloat = 0
@@ -44,8 +48,15 @@ class NCFiles: NCCollectionViewCommon {
             }
         }
 
+        NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor in
+                self?.startFolderPolling()
+            }
+        }
+
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
-            Task {
+            Task { @MainActor in
+                self.stopFolderPolling()
                 await self.stopSyncMetadata()
                 await self.searchOperationHandle.cancel()
             }
@@ -124,6 +135,7 @@ class NCFiles: NCCollectionViewCommon {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        startFolderPolling()
 
         Task {
             // (+)
@@ -138,13 +150,76 @@ class NCFiles: NCCollectionViewCommon {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
-        dataSourceTask?.cancel()
-        dataSourceTask = nil
+        stopFolderPolling()
 
         Task {
             await stopSyncMetadata()
         }
+    }
+
+    // MARK: - Folder polling
+
+    /// Checks the folder every 30 seconds while this is the current Files controller.
+    /// Called when the view appears or the app becomes active; duplicate starts are ignored.
+    private func startFolderPolling() {
+        guard folderPollingTask == nil, viewIfLoaded?.window != nil, controller?.currentViewController() === self else { return }
+        folderPollingTask = Task { @MainActor [weak self] in
+            while !Task.isCancelled {
+                do {
+                    try await Task.sleep(for: .seconds(30))
+                } catch {
+                    return
+                }
+                guard let self else { return }
+                await self.pollFolder()
+            }
+        }
+    }
+
+    /// Stops polling and cancels folder requests when leaving the view or entering background.
+    private func stopFolderPolling() {
+        folderPollingTask?.cancel()
+        folderPollingTask = nil
+        folderPollingNetworkTask?.cancel()
+        folderPollingNetworkTask = nil
+        dataSourceTask?.cancel()
+        dataSourceTask = nil
+    }
+
+    /// Reads only the folder metadata and reuses the existing refresh when its ETag changes.
+    private func pollFolder() async {
+        // Skip this cycle while the window is inactive or the user is interacting with the list.
+        guard viewIfLoaded?.window?.windowScene?.activationState == .foregroundActive,
+              presentedViewController == nil, !isSearchingMode, !isEditMode, serverDataRequests == 0,
+              !collectionView.isTracking, !collectionView.isDecelerating else { return }
+
+        let account = session.account
+        let serverUrl = self.serverUrl
+        let directory = await database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
+        let etag = directory?.etag
+        // Keep this cycle's task so a late network callback cannot attach to a restarted loop.
+        let pollingTask = folderPollingTask
+        guard !Task.isCancelled else { return }
+
+        let result = await networking.readFileAsync(serverUrlFileName: serverUrl, account: account) { task in
+            Task { @MainActor in
+                // Cancelling the Swift task does not automatically cancel the HTTP request.
+                if pollingTask?.isCancelled == true {
+                    task.cancel()
+                } else {
+                    self.folderPollingNetworkTask = task
+                }
+            }
+        }
+        // The account, folder or search mode may have changed while awaiting the response.
+        guard !Task.isCancelled, account == session.account, serverUrl == self.serverUrl,
+              viewIfLoaded?.window?.windowScene?.activationState == .foregroundActive,
+              presentedViewController == nil, !isSearchingMode, !isEditMode, serverDataRequests == 0,
+              !collectionView.isTracking, !collectionView.isDecelerating,
+              result.error == .success, let metadata = result.metadata, metadata.etag != etag else { return }
+
+        // The existing refresh checks the ETag again before reading the folder contents.
+        await getServerData()
     }
 
     // MARK: - DataSource
@@ -179,9 +254,13 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func getServerData(forced: Bool = false) async {
+        serverDataRequests += 1
         defer {
+            serverDataRequests -= 1
             stopGUIGetServerData()
-            startSyncMetadata(metadatas: self.dataSource.getMetadatas())
+            if !Task.isCancelled {
+                startSyncMetadata(metadatas: self.dataSource.getMetadatas())
+            }
         }
 
         dataSourceTask?.cancel()
@@ -198,7 +277,7 @@ class NCFiles: NCCollectionViewCommon {
 
         let effectiveForced = forced || hasPlaceholder
         let resultsReadFolder = await networkReadFolderAsync(serverUrl: self.serverUrl, forced: effectiveForced)
-        guard resultsReadFolder.error == .success, resultsReadFolder.reloadRequired else {
+        guard !Task.isCancelled, resultsReadFolder.error == .success, resultsReadFolder.reloadRequired else {
             return
         }
 
@@ -237,10 +316,17 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     private func networkReadFolderAsync(serverUrl: String, forced: Bool) async -> (metadatas: [tableMetadata]?, error: NKError, reloadRequired: Bool) {
+        guard !Task.isCancelled else { return (nil, .success, false) }
         var reloadRequired: Bool = false
         let account = session.account
+        let pollingTask = folderPollingTask
         let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrl, account: account) { task in
             Task { @MainActor in
+                // The request callback can arrive after the polling cycle was stopped.
+                guard pollingTask?.isCancelled != true else {
+                    task.cancel()
+                    return
+                }
                 self.dataSourceTask = task
 
                 if self.dataSource.isEmpty() {
@@ -258,6 +344,7 @@ class NCFiles: NCCollectionViewCommon {
         await self.database.updateDirectoryRichWorkspaceAsync(metadata.richWorkspace, account: account, serverUrl: serverUrl)
         let tableDirectory = await self.database.getTableDirectoryAsync(ocId: metadata.ocId)
 
+        guard !Task.isCancelled else { return (nil, .success, false) }
         // Verify LivePhoto
         //
         reloadRequired = await networking.setLivePhoto(account: account)
@@ -283,6 +370,10 @@ class NCFiles: NCCollectionViewCommon {
             options: options
         ) { task in
             Task { @MainActor in
+                guard pollingTask?.isCancelled != true else {
+                    task.cancel()
+                    return
+                }
                 self.dataSourceTask = task
 
                 if self.dataSource.isEmpty() {
@@ -291,7 +382,7 @@ class NCFiles: NCCollectionViewCommon {
             }
         }
 
-        guard resultsReadFolder.error == .success else {
+        guard !Task.isCancelled, resultsReadFolder.error == .success else {
             return(nil, resultsReadFolder.error, reloadRequired)
         }
         reloadRequired = true
