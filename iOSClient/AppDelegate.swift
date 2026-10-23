@@ -32,6 +32,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var pushSubscriptionTask: Task<Void, Never>?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+#if DEBUG
+        // Give security UI tests a repeatable starting state on their dedicated simulator.
+        if isUiTestingEnabled && ProcessInfo.processInfo.arguments.contains("UI_TESTING_PASSCODE") {
+            let preferences = NCPreferences()
+            preferences.passcode = nil
+            preferences.clearPasscodeFailures()
+            preferences.touchFaceID = false
+            preferences.requestPasscodeAtStart = true
+            preferences.resetAppCounterFail = false
+        }
+#endif
         if isUiTestingEnabled {
             Task {
                 await NCAccount().deleteAllAccounts()

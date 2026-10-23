@@ -62,12 +62,6 @@ SPDX-FileCopyrightText = "Nextcloud GmbH"
 SPDX-License-Identifier = "LicenseRef-NextcloudTrademarks"
 
 [[annotations]]
-path = ["iOSClient/Utility/TOPasscodeViewController/**"]
-precedence = "aggregate"
-SPDX-FileCopyrightText = "2017 Timothy Oliver"
-SPDX-License-Identifier = "MIT"
-
-[[annotations]]
 path = ["iOSClient/Utility/NYMnemonic/**"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2014 Nybex, Inc. <https://nybex.com>"

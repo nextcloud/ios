@@ -62,6 +62,7 @@ struct NCPasscodeView: View {
                             .accessibilityHidden(true)
                         Text(NSLocalizedString(model.title, comment: ""))
                             .font(.title2)
+                            .accessibilityIdentifier("passcode.title")
                             .multilineTextAlignment(.center)
                             .accessibilityAddTraits(.isHeader)
                         HStack(spacing: 16) {
@@ -73,17 +74,20 @@ struct NCPasscodeView: View {
                         .accessibilityElement(children: .ignore)
                         .accessibilityLabel(NSLocalizedString("_passcode_digits_entered_", comment: ""))
                         .accessibilityValue("\(model.digits.count) / 6")
+                        .accessibilityIdentifier("passcode.progress")
 
                         if let deadline = model.lockoutEnd {
                             TimelineView(.periodic(from: .now, by: 1)) { timeline in
                                 VStack(spacing: 8) {
                                     Text(NSLocalizedString("_passcode_counter_fail_", comment: ""))
                                     Text("\(max(0, Int(deadline.timeIntervalSince(timeline.date).rounded(.up)))) " + NSLocalizedString("_seconds_", comment: ""))
+                                        .accessibilityIdentifier("passcode.lockout.remaining")
                                 }
                                 .multilineTextAlignment(.center)
                             }
                         } else {
                             Text(NSLocalizedString(model.message, comment: ""))
+                                .accessibilityIdentifier("passcode.error")
                                 .foregroundStyle(.red)
                                 .multilineTextAlignment(.center)
                                 .frame(minHeight: 24)
@@ -106,6 +110,7 @@ struct NCPasscodeView: View {
                             Image(systemName: "xmark")
                         }
                         .accessibilityLabel(NSLocalizedString("_close_", comment: ""))
+                        .accessibilityIdentifier("passcode.close")
                     }
                 }
             }
@@ -165,6 +170,7 @@ struct NCPasscodeView: View {
                         .frame(minWidth: 64, minHeight: 64)
                 }
                 .accessibilityLabel(NSLocalizedString("_delete_", comment: ""))
+                .accessibilityIdentifier("passcode.delete")
                 .disabled(!model.canEnterCode || model.digits.isEmpty)
             }
         }
@@ -180,6 +186,7 @@ struct NCPasscodeView: View {
                 .frame(minWidth: 64, minHeight: 64)
                 .background(Color(uiColor: .secondarySystemBackground), in: Circle())
         }
+        .accessibilityIdentifier("passcode.digit.\(digit)")
         .disabled(!model.canEnterCode)
     }
 }

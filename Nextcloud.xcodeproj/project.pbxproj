@@ -174,7 +174,6 @@
 		F37208C22BAB63F0006B5430 /* TagListView in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C12BAB63F0006B5430 /* TagListView */; };
 		F37208C42BAB63F0006B5430 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C32BAB63F0006B5430 /* Gzip */; };
 		F37208C82BAB63F1006B5430 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C72BAB63F1006B5430 /* KeychainAccess */; };
-		F3754A7D2CF87D600009312E /* SetupPasscodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3754A7C2CF87D600009312E /* SetupPasscodeView.swift */; };
 		F389C9F52CEE383300049762 /* SelectAlbumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F389C9F42CEE383300049762 /* SelectAlbumView.swift */; };
 		F38F71252B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */; };
 		F39170AD2CB82024006127BC /* FileAutoRenamer+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39170A82CB8201B006127BC /* FileAutoRenamer+Extensions.swift */; };
@@ -365,8 +364,6 @@
 		F7346E2328B0FEBA006CE2D2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7346E2228B0FEBA006CE2D2 /* Assets.xcassets */; };
 		F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */ = {isa = PBXBuildFile; productRef = F734B06528E75C0100E180D5 /* TLPhotoPicker */; };
 		F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */; };
-		F737DA9D2B7B893C0063BAFC /* NCPasscode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F737DA9C2B7B893C0063BAFC /* NCPasscode.swift */; };
-		F737DA9E2B7B893C0063BAFC /* NCPasscode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F737DA9C2B7B893C0063BAFC /* NCPasscode.swift */; };
 		F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381EDA218218C9000B1560 /* NCOffline.swift */; };
 		F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381EDE218218C9000B1560 /* NCOffline.storyboard */; };
 		F7386E482DA90E0F009A00F6 /* NCAppVersionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7386E452DA90E02009A00F6 /* NCAppVersionManager.swift */; };
@@ -981,42 +978,6 @@
 		F7D496FC2EBFA541004F9823 /* NCRecommendationsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75D90202D2BE26C003E740B /* NCRecommendationsCell.swift */; };
 		F7D496FD2EBFA6D9004F9823 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F7D497082EBFAFD6004F9823 /* NCImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B649B2ADFFAED00014640 /* NCImageCache.swift */; };
-		F7D4BF012CA1831900A5E746 /* NCCollectionViewCommonPinchGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF002CA1831600A5E746 /* NCCollectionViewCommonPinchGesture.swift */; };
-		F7D4BF2C2CA2E8D800A5E746 /* TOPasscodeKeypadView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF102CA2E8D800A5E746 /* TOPasscodeKeypadView.m */; };
-		F7D4BF2D2CA2E8D800A5E746 /* TOPasscodeSettingsKeypadView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF172CA2E8D800A5E746 /* TOPasscodeSettingsKeypadView.m */; };
-		F7D4BF2E2CA2E8D800A5E746 /* TOPasscodeFixedInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF202CA2E8D800A5E746 /* TOPasscodeFixedInputView.m */; };
-		F7D4BF2F2CA2E8D800A5E746 /* TOPasscodeButtonLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF1C2CA2E8D800A5E746 /* TOPasscodeButtonLabel.m */; };
-		F7D4BF302CA2E8D800A5E746 /* TOPasscodeViewControllerAnimatedTransitioning.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF072CA2E8D800A5E746 /* TOPasscodeViewControllerAnimatedTransitioning.m */; };
-		F7D4BF312CA2E8D800A5E746 /* TOPasscodeSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF282CA2E8D800A5E746 /* TOPasscodeSettingsViewController.m */; };
-		F7D4BF322CA2E8D800A5E746 /* TOPasscodeCircleImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF032CA2E8D800A5E746 /* TOPasscodeCircleImage.m */; };
-		F7D4BF332CA2E8D800A5E746 /* TOPasscodeView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF122CA2E8D800A5E746 /* TOPasscodeView.m */; };
-		F7D4BF342CA2E8D800A5E746 /* TOPasscodeCircleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF0E2CA2E8D800A5E746 /* TOPasscodeCircleButton.m */; };
-		F7D4BF352CA2E8D800A5E746 /* TOPasscodeInputField.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF222CA2E8D800A5E746 /* TOPasscodeInputField.m */; };
-		F7D4BF362CA2E8D800A5E746 /* TOSettingsKeypadImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF092CA2E8D800A5E746 /* TOSettingsKeypadImage.m */; };
-		F7D4BF372CA2E8D800A5E746 /* TOPasscodeSettingsWarningLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF192CA2E8D800A5E746 /* TOPasscodeSettingsWarningLabel.m */; };
-		F7D4BF382CA2E8D800A5E746 /* TOPasscodeVariableInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF242CA2E8D800A5E746 /* TOPasscodeVariableInputView.m */; };
-		F7D4BF392CA2E8D800A5E746 /* TOPasscodeCircleView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF1E2CA2E8D800A5E746 /* TOPasscodeCircleView.m */; };
-		F7D4BF3A2CA2E8D800A5E746 /* TOPasscodeViewContentLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF052CA2E8D800A5E746 /* TOPasscodeViewContentLayout.m */; };
-		F7D4BF3B2CA2E8D800A5E746 /* TOPasscodeSettingsKeypadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF152CA2E8D800A5E746 /* TOPasscodeSettingsKeypadButton.m */; };
-		F7D4BF3C2CA2E8D800A5E746 /* TOPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF2A2CA2E8D800A5E746 /* TOPasscodeViewController.m */; };
-		F7D4BF3D2CA2E8D800A5E746 /* TOPasscodeKeypadView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF102CA2E8D800A5E746 /* TOPasscodeKeypadView.m */; };
-		F7D4BF3E2CA2E8D800A5E746 /* TOPasscodeSettingsKeypadView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF172CA2E8D800A5E746 /* TOPasscodeSettingsKeypadView.m */; };
-		F7D4BF3F2CA2E8D800A5E746 /* TOPasscodeFixedInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF202CA2E8D800A5E746 /* TOPasscodeFixedInputView.m */; };
-		F7D4BF402CA2E8D800A5E746 /* TOPasscodeButtonLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF1C2CA2E8D800A5E746 /* TOPasscodeButtonLabel.m */; };
-		F7D4BF412CA2E8D800A5E746 /* TOPasscodeViewControllerAnimatedTransitioning.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF072CA2E8D800A5E746 /* TOPasscodeViewControllerAnimatedTransitioning.m */; };
-		F7D4BF422CA2E8D800A5E746 /* TOPasscodeSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF282CA2E8D800A5E746 /* TOPasscodeSettingsViewController.m */; };
-		F7D4BF432CA2E8D800A5E746 /* TOPasscodeCircleImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF032CA2E8D800A5E746 /* TOPasscodeCircleImage.m */; };
-		F7D4BF442CA2E8D800A5E746 /* TOPasscodeView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF122CA2E8D800A5E746 /* TOPasscodeView.m */; };
-		F7D4BF452CA2E8D800A5E746 /* TOPasscodeCircleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF0E2CA2E8D800A5E746 /* TOPasscodeCircleButton.m */; };
-		F7D4BF462CA2E8D800A5E746 /* TOPasscodeInputField.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF222CA2E8D800A5E746 /* TOPasscodeInputField.m */; };
-		F7D4BF472CA2E8D800A5E746 /* TOSettingsKeypadImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF092CA2E8D800A5E746 /* TOSettingsKeypadImage.m */; };
-		F7D4BF482CA2E8D800A5E746 /* TOPasscodeSettingsWarningLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF192CA2E8D800A5E746 /* TOPasscodeSettingsWarningLabel.m */; };
-		F7D4BF492CA2E8D800A5E746 /* TOPasscodeVariableInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF242CA2E8D800A5E746 /* TOPasscodeVariableInputView.m */; };
-		F7D4BF4A2CA2E8D800A5E746 /* TOPasscodeCircleView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF1E2CA2E8D800A5E746 /* TOPasscodeCircleView.m */; };
-		F7D4BF4B2CA2E8D800A5E746 /* TOPasscodeViewContentLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF052CA2E8D800A5E746 /* TOPasscodeViewContentLayout.m */; };
-		F7D4BF4C2CA2E8D800A5E746 /* TOPasscodeSettingsKeypadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF152CA2E8D800A5E746 /* TOPasscodeSettingsKeypadButton.m */; };
-		F7D4BF4D2CA2E8D800A5E746 /* TOPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF2A2CA2E8D800A5E746 /* TOPasscodeViewController.m */; };
-		F7D4BF542CA2ED9D00A5E746 /* VLCKitSPM in Frameworks */ = {isa = PBXBuildFile; productRef = F7D4BF532CA2ED9D00A5E746 /* VLCKitSPM */; };
 		F7D56B1A2972405500FA46C4 /* Mantis in Frameworks */ = {isa = PBXBuildFile; productRef = F7D56B192972405500FA46C4 /* Mantis */; };
 		F7D60CAF2C941ACB008FBFDD /* NCMediaPinchGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D60CAE2C941ACB008FBFDD /* NCMediaPinchGesture.swift */; };
 		F7D61E932EBF1366007F865B /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */; };
@@ -1118,6 +1079,7 @@
 		87768C6AB8E040219DF85898 /* NCPasscodeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131F8E2F43AD414E9DB53019 /* NCPasscodeModel.swift */; };
 		7670DABED44E4D56AD99E6DC /* NCPasscodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F902B24E44354B6D9F329F12 /* NCPasscodeView.swift */; };
 		9310075861174A62B1C9FED6 /* NCPasscodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F902B24E44354B6D9F329F12 /* NCPasscodeView.swift */; };
+		D56DFFE5D5014F66A7C9FED0 /* PasscodeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6C501EF1104A6A8569D9C1 /* PasscodeUITests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1510,7 +1472,6 @@
 		F36C514D2E89393C0097E5F7 /* UIView+BlurVibrancy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+BlurVibrancy.swift"; sourceTree = "<group>"; };
 		F36E64F62B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+SelectTabBarDelegate.swift"; sourceTree = "<group>"; };
 		F37208742BAB4AB0006B5430 /* TestConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestConstants.swift; sourceTree = "<group>"; };
-		F3754A7C2CF87D600009312E /* SetupPasscodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupPasscodeView.swift; sourceTree = "<group>"; };
 		F389C9F42CEE383300049762 /* SelectAlbumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectAlbumView.swift; sourceTree = "<group>"; };
 		F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectionViewCommonSelectTabBar.swift; sourceTree = "<group>"; };
 		F39170A82CB8201B006127BC /* FileAutoRenamer+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileAutoRenamer+Extensions.swift"; sourceTree = "<group>"; };
@@ -1629,7 +1590,6 @@
 		F7346E2028B0FA3A006CE2D2 /* Widget-Brinding-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Widget-Brinding-header.h"; sourceTree = "<group>"; };
 		F7346E2228B0FEBA006CE2D2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		F737DA9C2B7B893C0063BAFC /* NCPasscode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCPasscode.swift; sourceTree = "<group>"; };
 		F7381EDA218218C9000B1560 /* NCOffline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCOffline.swift; sourceTree = "<group>"; };
 		F7381EDE218218C9000B1560 /* NCOffline.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCOffline.storyboard; sourceTree = "<group>"; };
 		F7386E452DA90E02009A00F6 /* NCAppVersionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAppVersionManager.swift; sourceTree = "<group>"; };
@@ -2078,42 +2038,6 @@
 		F7CF067A2E0FF38F0063AD04 /* NCAppStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAppStateManager.swift; sourceTree = "<group>"; };
 		F7CF06822E11273F0063AD04 /* NCManageDatabase+CreateMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+CreateMetadata.swift"; sourceTree = "<group>"; };
 		F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerRichWorkspace.storyboard; sourceTree = "<group>"; };
-		F7D4BF002CA1831600A5E746 /* NCCollectionViewCommonPinchGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectionViewCommonPinchGesture.swift; sourceTree = "<group>"; };
-		F7D4BF022CA2E8D800A5E746 /* TOPasscodeCircleImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOPasscodeCircleImage.h; sourceTree = "<group>"; };
-		F7D4BF032CA2E8D800A5E746 /* TOPasscodeCircleImage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeCircleImage.m; sourceTree = "<group>"; };
-		F7D4BF042CA2E8D800A5E746 /* TOPasscodeViewContentLayout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOPasscodeViewContentLayout.h; sourceTree = "<group>"; };
-		F7D4BF052CA2E8D800A5E746 /* TOPasscodeViewContentLayout.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeViewContentLayout.m; sourceTree = "<group>"; };
-		F7D4BF062CA2E8D800A5E746 /* TOPasscodeViewControllerAnimatedTransitioning.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOPasscodeViewControllerAnimatedTransitioning.h; sourceTree = "<group>"; };
-		F7D4BF072CA2E8D800A5E746 /* TOPasscodeViewControllerAnimatedTransitioning.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeViewControllerAnimatedTransitioning.m; sourceTree = "<group>"; };
-		F7D4BF082CA2E8D800A5E746 /* TOSettingsKeypadImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOSettingsKeypadImage.h; sourceTree = "<group>"; };
-		F7D4BF092CA2E8D800A5E746 /* TOSettingsKeypadImage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOSettingsKeypadImage.m; sourceTree = "<group>"; };
-		F7D4BF0B2CA2E8D800A5E746 /* TOPasscodeViewControllerConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOPasscodeViewControllerConstants.h; sourceTree = "<group>"; };
-		F7D4BF0D2CA2E8D800A5E746 /* TOPasscodeCircleButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOPasscodeCircleButton.h; sourceTree = "<group>"; };
-		F7D4BF0E2CA2E8D800A5E746 /* TOPasscodeCircleButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeCircleButton.m; sourceTree = "<group>"; };
-		F7D4BF0F2CA2E8D800A5E746 /* TOPasscodeKeypadView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOPasscodeKeypadView.h; sourceTree = "<group>"; };
-		F7D4BF102CA2E8D800A5E746 /* TOPasscodeKeypadView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeKeypadView.m; sourceTree = "<group>"; };
-		F7D4BF112CA2E8D800A5E746 /* TOPasscodeView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOPasscodeView.h; sourceTree = "<group>"; };
-		F7D4BF122CA2E8D800A5E746 /* TOPasscodeView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeView.m; sourceTree = "<group>"; };
-		F7D4BF142CA2E8D800A5E746 /* TOPasscodeSettingsKeypadButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOPasscodeSettingsKeypadButton.h; sourceTree = "<group>"; };
-		F7D4BF152CA2E8D800A5E746 /* TOPasscodeSettingsKeypadButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeSettingsKeypadButton.m; sourceTree = "<group>"; };
-		F7D4BF162CA2E8D800A5E746 /* TOPasscodeSettingsKeypadView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOPasscodeSettingsKeypadView.h; sourceTree = "<group>"; };
-		F7D4BF172CA2E8D800A5E746 /* TOPasscodeSettingsKeypadView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeSettingsKeypadView.m; sourceTree = "<group>"; };
-		F7D4BF182CA2E8D800A5E746 /* TOPasscodeSettingsWarningLabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOPasscodeSettingsWarningLabel.h; sourceTree = "<group>"; };
-		F7D4BF192CA2E8D800A5E746 /* TOPasscodeSettingsWarningLabel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeSettingsWarningLabel.m; sourceTree = "<group>"; };
-		F7D4BF1B2CA2E8D800A5E746 /* TOPasscodeButtonLabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOPasscodeButtonLabel.h; sourceTree = "<group>"; };
-		F7D4BF1C2CA2E8D800A5E746 /* TOPasscodeButtonLabel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeButtonLabel.m; sourceTree = "<group>"; };
-		F7D4BF1D2CA2E8D800A5E746 /* TOPasscodeCircleView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOPasscodeCircleView.h; sourceTree = "<group>"; };
-		F7D4BF1E2CA2E8D800A5E746 /* TOPasscodeCircleView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeCircleView.m; sourceTree = "<group>"; };
-		F7D4BF1F2CA2E8D800A5E746 /* TOPasscodeFixedInputView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOPasscodeFixedInputView.h; sourceTree = "<group>"; };
-		F7D4BF202CA2E8D800A5E746 /* TOPasscodeFixedInputView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeFixedInputView.m; sourceTree = "<group>"; };
-		F7D4BF212CA2E8D800A5E746 /* TOPasscodeInputField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOPasscodeInputField.h; sourceTree = "<group>"; };
-		F7D4BF222CA2E8D800A5E746 /* TOPasscodeInputField.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeInputField.m; sourceTree = "<group>"; };
-		F7D4BF232CA2E8D800A5E746 /* TOPasscodeVariableInputView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOPasscodeVariableInputView.h; sourceTree = "<group>"; };
-		F7D4BF242CA2E8D800A5E746 /* TOPasscodeVariableInputView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeVariableInputView.m; sourceTree = "<group>"; };
-		F7D4BF272CA2E8D800A5E746 /* TOPasscodeSettingsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOPasscodeSettingsViewController.h; sourceTree = "<group>"; };
-		F7D4BF282CA2E8D800A5E746 /* TOPasscodeSettingsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeSettingsViewController.m; sourceTree = "<group>"; };
-		F7D4BF292CA2E8D800A5E746 /* TOPasscodeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOPasscodeViewController.h; sourceTree = "<group>"; };
-		F7D4BF2A2CA2E8D800A5E746 /* TOPasscodeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeViewController.m; sourceTree = "<group>"; };
 		F7D532461F5D4123006568B1 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7D5324D1F5D4137006568B1 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7D532541F5D4155006568B1 /* sk-SK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sk-SK"; path = "sk-SK.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -2167,6 +2091,7 @@
 		F7FFFC9D2FB300440015441E /* NCAssistantSharedTextStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantSharedTextStore.swift; sourceTree = "<group>"; };
 		131F8E2F43AD414E9DB53019 /* NCPasscodeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCPasscodeModel.swift; sourceTree = "<group>"; };
 		F902B24E44354B6D9F329F12 /* NCPasscodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCPasscodeView.swift; sourceTree = "<group>"; };
+		BC6C501EF1104A6A8569D9C1 /* PasscodeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasscodeUITests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -2277,7 +2202,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7D4BF542CA2ED9D00A5E746 /* VLCKitSPM in Frameworks */,
 				F7D56B1A2972405500FA46C4 /* Mantis in Frameworks */,
 				F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */,
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
@@ -2449,6 +2373,7 @@
 			isa = PBXGroup;
 			children = (
 				F3374A952D6744A4002A38F9 /* BaseUIXCTestCase.swift */,
+				BC6C501EF1104A6A8569D9C1 /* PasscodeUITests.swift */,
 				AABD0C882D5F631600F009E6 /* Extensions */,
 				AA3C85E92D36BBDE00F74F12 /* UITestBackend */,
 				AA8E03DB2D2FBAAD00E7E89C /* DownloadLimitUITests.swift */,
@@ -2587,7 +2512,6 @@
 				F7A03E342D427308007AA677 /* NCMainNavigationController.swift */,
 				F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */,
 				F75A64A3307DFB9E0059B78E /* NCMainTabBarController+Sidebar.swift */,
-				F737DA9C2B7B893C0063BAFC /* NCPasscode.swift */,
 				F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */,
 				F75A64A1307DFB870059B78E /* NCSidebarView.swift */,
 			);
@@ -3143,7 +3067,6 @@
 				F7CCAB502ECF315F00F8E68B /* NCCollectionViewCommon+SyncMetadata.swift */,
 				F721C5092FB6F9AA00207DA9 /* NCCollectionViewCommon+TransitionSourceBlink.swift */,
 				F76995F32F9A4AC000291FA7 /* NCCollectionViewCommon+UIEditMenuInteractionDelegate.swift */,
-				F7D4BF002CA1831600A5E746 /* NCCollectionViewCommonPinchGesture.swift */,
 				F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */,
 				F7C1EEA425053A9C00866ACC /* NCCollectionViewDataSource.swift */,
 				F78ACD50219046AC0088454D /* Section Header Footer */,
@@ -3234,7 +3157,6 @@
 			children = (
 				F76882112C0DD1E7001CF441 /* NCSettingsModel.swift */,
 				F768820C2C0DD1E7001CF441 /* NCSettingsView.swift */,
-				F3754A7C2CF87D600009312E /* SetupPasscodeView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -3647,7 +3569,6 @@
 				F3E173BE2C9B1057006D177A /* ScreenAwakeManager */,
 				F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */,
 				F7245923289BB50B00474787 /* ThreadSafeDictionary.swift */,
-				F7D4BF2B2CA2E8D800A5E746 /* TOPasscodeViewController */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -3735,96 +3656,6 @@
 				F78A18B523CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift */,
 			);
 			path = RichWorkspace;
-			sourceTree = "<group>";
-		};
-		F7D4BF0A2CA2E8D800A5E746 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				F7D4BF022CA2E8D800A5E746 /* TOPasscodeCircleImage.h */,
-				F7D4BF032CA2E8D800A5E746 /* TOPasscodeCircleImage.m */,
-				F7D4BF042CA2E8D800A5E746 /* TOPasscodeViewContentLayout.h */,
-				F7D4BF052CA2E8D800A5E746 /* TOPasscodeViewContentLayout.m */,
-				F7D4BF062CA2E8D800A5E746 /* TOPasscodeViewControllerAnimatedTransitioning.h */,
-				F7D4BF072CA2E8D800A5E746 /* TOPasscodeViewControllerAnimatedTransitioning.m */,
-				F7D4BF082CA2E8D800A5E746 /* TOSettingsKeypadImage.h */,
-				F7D4BF092CA2E8D800A5E746 /* TOSettingsKeypadImage.m */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		F7D4BF0C2CA2E8D800A5E746 /* Supporting */ = {
-			isa = PBXGroup;
-			children = (
-				F7D4BF0B2CA2E8D800A5E746 /* TOPasscodeViewControllerConstants.h */,
-			);
-			path = Supporting;
-			sourceTree = "<group>";
-		};
-		F7D4BF132CA2E8D800A5E746 /* Main */ = {
-			isa = PBXGroup;
-			children = (
-				F7D4BF0D2CA2E8D800A5E746 /* TOPasscodeCircleButton.h */,
-				F7D4BF0E2CA2E8D800A5E746 /* TOPasscodeCircleButton.m */,
-				F7D4BF0F2CA2E8D800A5E746 /* TOPasscodeKeypadView.h */,
-				F7D4BF102CA2E8D800A5E746 /* TOPasscodeKeypadView.m */,
-				F7D4BF112CA2E8D800A5E746 /* TOPasscodeView.h */,
-				F7D4BF122CA2E8D800A5E746 /* TOPasscodeView.m */,
-			);
-			path = Main;
-			sourceTree = "<group>";
-		};
-		F7D4BF1A2CA2E8D800A5E746 /* Settings */ = {
-			isa = PBXGroup;
-			children = (
-				F7D4BF142CA2E8D800A5E746 /* TOPasscodeSettingsKeypadButton.h */,
-				F7D4BF152CA2E8D800A5E746 /* TOPasscodeSettingsKeypadButton.m */,
-				F7D4BF162CA2E8D800A5E746 /* TOPasscodeSettingsKeypadView.h */,
-				F7D4BF172CA2E8D800A5E746 /* TOPasscodeSettingsKeypadView.m */,
-				F7D4BF182CA2E8D800A5E746 /* TOPasscodeSettingsWarningLabel.h */,
-				F7D4BF192CA2E8D800A5E746 /* TOPasscodeSettingsWarningLabel.m */,
-			);
-			path = Settings;
-			sourceTree = "<group>";
-		};
-		F7D4BF252CA2E8D800A5E746 /* Shared */ = {
-			isa = PBXGroup;
-			children = (
-				F7D4BF1B2CA2E8D800A5E746 /* TOPasscodeButtonLabel.h */,
-				F7D4BF1C2CA2E8D800A5E746 /* TOPasscodeButtonLabel.m */,
-				F7D4BF1D2CA2E8D800A5E746 /* TOPasscodeCircleView.h */,
-				F7D4BF1E2CA2E8D800A5E746 /* TOPasscodeCircleView.m */,
-				F7D4BF1F2CA2E8D800A5E746 /* TOPasscodeFixedInputView.h */,
-				F7D4BF202CA2E8D800A5E746 /* TOPasscodeFixedInputView.m */,
-				F7D4BF212CA2E8D800A5E746 /* TOPasscodeInputField.h */,
-				F7D4BF222CA2E8D800A5E746 /* TOPasscodeInputField.m */,
-				F7D4BF232CA2E8D800A5E746 /* TOPasscodeVariableInputView.h */,
-				F7D4BF242CA2E8D800A5E746 /* TOPasscodeVariableInputView.m */,
-			);
-			path = Shared;
-			sourceTree = "<group>";
-		};
-		F7D4BF262CA2E8D800A5E746 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				F7D4BF132CA2E8D800A5E746 /* Main */,
-				F7D4BF1A2CA2E8D800A5E746 /* Settings */,
-				F7D4BF252CA2E8D800A5E746 /* Shared */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
-		F7D4BF2B2CA2E8D800A5E746 /* TOPasscodeViewController */ = {
-			isa = PBXGroup;
-			children = (
-				F7D4BF0A2CA2E8D800A5E746 /* Models */,
-				F7D4BF0C2CA2E8D800A5E746 /* Supporting */,
-				F7D4BF262CA2E8D800A5E746 /* Views */,
-				F7D4BF272CA2E8D800A5E746 /* TOPasscodeSettingsViewController.h */,
-				F7D4BF282CA2E8D800A5E746 /* TOPasscodeSettingsViewController.m */,
-				F7D4BF292CA2E8D800A5E746 /* TOPasscodeViewController.h */,
-				F7D4BF2A2CA2E8D800A5E746 /* TOPasscodeViewController.m */,
-			);
-			path = TOPasscodeViewController;
 			sourceTree = "<group>";
 		};
 		F7DFB7E9219C5A0500680748 /* Create */ = {
@@ -4314,7 +4145,6 @@
 				F7160A812BE933390034DCB3 /* RealmSwift */,
 				F33EE6E02BF4BDA500CA1A51 /* NIOSSL */,
 				F33EE6EF2BF4C0FF00CA1A51 /* NIO */,
-				F7D4BF532CA2ED9D00A5E746 /* VLCKitSPM */,
 				F3374AEF2D78B01B002A38F9 /* BitCollections */,
 				F3374AF12D78B01B002A38F9 /* Collections */,
 				F3374AF32D78B01B002A38F9 /* DequeModule */,
@@ -4545,7 +4375,6 @@
 				F3A0479C2BD268B500658E7B /* XCRemoteSwiftPackageReference "PopupView" */,
 				F33EE6DF2BF4BDA500CA1A51 /* XCRemoteSwiftPackageReference "swift-nio-ssl" */,
 				F33EE6EE2BF4C0FF00CA1A51 /* XCRemoteSwiftPackageReference "swift-nio" */,
-				F7D4BF4E2CA2ECCB00A5E746 /* XCRemoteSwiftPackageReference "vlckit-spm" */,
 				F3374AEE2D78B01B002A38F9 /* XCRemoteSwiftPackageReference "swift-collections" */,
 				F70557B52ED44E2700135623 /* XCRemoteSwiftPackageReference "LucidBanner" */,
 				F76BED72306CE862002E1442 /* XCRemoteSwiftPackageReference "GRDB" */,
@@ -4902,6 +4731,7 @@
 				AAA7BC2E2D3E39F1008F1A22 /* CapabilitiesResponse.swift in Sources */,
 				AA3C85F22D394B3A00F74F12 /* DownloadLimitResponse.swift in Sources */,
 				F3374A962D6744A4002A38F9 /* BaseUIXCTestCase.swift in Sources */,
+				D56DFFE5D5014F66A7C9FED0 /* PasscodeUITests.swift in Sources */,
 				F37208812BAB5979006B5430 /* TestConstants.swift in Sources */,
 				F33D303E2D8B129600531D64 /* AutoUploadUITests.swift in Sources */,
 			);
@@ -5007,32 +4837,15 @@
 				F711A4DF2AF92CAE00095DD8 /* NCUtility+Date.swift in Sources */,
 				F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */,
 				F7C30DFE291BD0B80017149B /* NCNetworkingE2EEDelete.swift in Sources */,
-				F7D4BF2C2CA2E8D800A5E746 /* TOPasscodeKeypadView.m in Sources */,
 				F7C630802FFE4F8000257EEB /* UIWindowScene+Extension.swift in Sources */,
-				F7D4BF2D2CA2E8D800A5E746 /* TOPasscodeSettingsKeypadView.m in Sources */,
-				F7D4BF2E2CA2E8D800A5E746 /* TOPasscodeFixedInputView.m in Sources */,
 				F7D61EA92EBF1694007F865B /* NCManageDatabase+TableCapabilities.swift in Sources */,
-				F7D4BF2F2CA2E8D800A5E746 /* TOPasscodeButtonLabel.m in Sources */,
-				F7D4BF302CA2E8D800A5E746 /* TOPasscodeViewControllerAnimatedTransitioning.m in Sources */,
-				F7D4BF312CA2E8D800A5E746 /* TOPasscodeSettingsViewController.m in Sources */,
 				F71916122E2901FB00E13E96 /* NCNetworking+Upload.swift in Sources */,
 				F73BC74F2F23811E003170C2 /* WarningBannerView.swift in Sources */,
-				F7D4BF322CA2E8D800A5E746 /* TOPasscodeCircleImage.m in Sources */,
 				F7CAFE192F168F6000DB35A5 /* NCDebouncer.swift in Sources */,
-				F7D4BF332CA2E8D800A5E746 /* TOPasscodeView.m in Sources */,
 				F77E8C252E79717D00EAE68F /* NCManageDatabase+LivePhoto.swift in Sources */,
-				F7D4BF342CA2E8D800A5E746 /* TOPasscodeCircleButton.m in Sources */,
-				F7D4BF352CA2E8D800A5E746 /* TOPasscodeInputField.m in Sources */,
-				F7D4BF362CA2E8D800A5E746 /* TOSettingsKeypadImage.m in Sources */,
-				F7D4BF372CA2E8D800A5E746 /* TOPasscodeSettingsWarningLabel.m in Sources */,
-				F7D4BF382CA2E8D800A5E746 /* TOPasscodeVariableInputView.m in Sources */,
-				F7D4BF392CA2E8D800A5E746 /* TOPasscodeCircleView.m in Sources */,
-				F7D4BF3A2CA2E8D800A5E746 /* TOPasscodeViewContentLayout.m in Sources */,
 				F79792482F5EECE100FE9544 /* Font+Extension.swift in Sources */,
 				F751760B307F53680057C9B0 /* NCMediaViewerTransitionSource.swift in Sources */,
 				F7D61EBF2EBF1878007F865B /* NCManageDatabase+Tag.swift in Sources */,
-				F7D4BF3B2CA2E8D800A5E746 /* TOPasscodeSettingsKeypadButton.m in Sources */,
-				F7D4BF3C2CA2E8D800A5E746 /* TOPasscodeViewController.m in Sources */,
 				F74AF3A5247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
 				AF1A9B6527D0CC0500F17A9E /* UIAlertController+Extension.swift in Sources */,
 				AF22B206277B4E4C00DAB0CC /* NCCreateFormUploadConflict.swift in Sources */,
@@ -5074,7 +4887,6 @@
 				F757CC8529E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
 				F768823A2C0DD230001CF441 /* NCPreferences.swift in Sources */,
 				A1E2EE010000000000000004 /* NCEndToEndKeySet.swift in Sources */,
-				F737DA9E2B7B893C0063BAFC /* NCPasscode.swift in Sources */,
 				87768C6AB8E040219DF85898 /* NCPasscodeModel.swift in Sources */,
 				9310075861174A62B1C9FED6 /* NCPasscodeView.swift in Sources */,
 				F7C30DF7291BC0D30017149B /* NCNetworkingE2EEUpload.swift in Sources */,
@@ -5250,7 +5062,6 @@
 				F768822C2C0DD1E7001CF441 /* NCPreferences.swift in Sources */,
 				A1E2EE010000000000000007 /* NCEndToEndKeySet.swift in Sources */,
 				F7CAFE1D2F17A35F00DB35A5 /* ProgressQuantizer.swift in Sources */,
-				F3754A7D2CF87D600009312E /* SetupPasscodeView.swift in Sources */,
 				F73EF7D72B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
 				F3374A842D64AC31002A38F9 /* AssistantLabelStyle.swift in Sources */,
 				F74BAE172C7E2F4E0028D4FA /* FileProviderDomain.swift in Sources */,
@@ -5348,30 +5159,13 @@
 				F77A6B30301112C5007103E6 /* NCMediaSectionHeader.swift in Sources */,
 				F794E13D2BBBFF2E003693D7 /* NCMainTabBarController.swift in Sources */,
 				F7CBC1252BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift in Sources */,
-				F7D4BF3D2CA2E8D800A5E746 /* TOPasscodeKeypadView.m in Sources */,
-				F7D4BF3E2CA2E8D800A5E746 /* TOPasscodeSettingsKeypadView.m in Sources */,
 				F7132C722D085AD200B42D6A /* NCTermOfServiceModel.swift in Sources */,
 				F7132C732D085AD200B42D6A /* NCTermOfServiceView.swift in Sources */,
 				F7A08A7C3017441D00470AD3 /* NCMedia+SelectDelegate.swift in Sources */,
-				F7D4BF3F2CA2E8D800A5E746 /* TOPasscodeFixedInputView.m in Sources */,
-				F7D4BF402CA2E8D800A5E746 /* TOPasscodeButtonLabel.m in Sources */,
 				F70898692EDDB51700EF85BD /* NCSelectOpen+SelectDelegate.swift in Sources */,
-				F7D4BF412CA2E8D800A5E746 /* TOPasscodeViewControllerAnimatedTransitioning.m in Sources */,
-				F7D4BF422CA2E8D800A5E746 /* TOPasscodeSettingsViewController.m in Sources */,
-				F7D4BF432CA2E8D800A5E746 /* TOPasscodeCircleImage.m in Sources */,
 				F78026102E9CFA3700B63436 /* NCTransfersView.swift in Sources */,
-				F7D4BF442CA2E8D800A5E746 /* TOPasscodeView.m in Sources */,
-				F7D4BF452CA2E8D800A5E746 /* TOPasscodeCircleButton.m in Sources */,
-				F7D4BF462CA2E8D800A5E746 /* TOPasscodeInputField.m in Sources */,
-				F7D4BF472CA2E8D800A5E746 /* TOSettingsKeypadImage.m in Sources */,
-				F7D4BF482CA2E8D800A5E746 /* TOPasscodeSettingsWarningLabel.m in Sources */,
 				F3A0B1F12EC76FE800F10B82 /* NCUserStatusModel.swift in Sources */,
 				F3A0B1F22EC76FE800F10B82 /* NCUserStatusView.swift in Sources */,
-				F7D4BF492CA2E8D800A5E746 /* TOPasscodeVariableInputView.m in Sources */,
-				F7D4BF4A2CA2E8D800A5E746 /* TOPasscodeCircleView.m in Sources */,
-				F7D4BF4B2CA2E8D800A5E746 /* TOPasscodeViewContentLayout.m in Sources */,
-				F7D4BF4C2CA2E8D800A5E746 /* TOPasscodeSettingsKeypadButton.m in Sources */,
-				F7D4BF4D2CA2E8D800A5E746 /* TOPasscodeViewController.m in Sources */,
 				AAE330042D2ED20200B04903 /* NCShareNavigationTitleSetting.swift in Sources */,
 				F71CFA672F2A07DB007A3AE9 /* NCMediaNetwork.swift in Sources */,
 				F7DF7B422F1A36C100514020 /* HelperBanner.swift in Sources */,
@@ -5445,7 +5239,6 @@
 				F71F6D072B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */,
 				F761856C29E98543006EB3B0 /* NCIntroCollectionViewCell.swift in Sources */,
 				F75DD765290ABB25002EB562 /* Intent.intentdefinition in Sources */,
-				F7D4BF012CA1831900A5E746 /* NCCollectionViewCommonPinchGesture.swift in Sources */,
 				F74B6D952A7E239A00F03C5F /* NCManageDatabase+Chunk.swift in Sources */,
 				F702F2F725EE5CED008F8E80 /* NCLogin.swift in Sources */,
 				F75D90212D2BE26F003E740B /* NCRecommendationsCell.swift in Sources */,
@@ -5590,7 +5383,6 @@
 				F79792472F5EECE100FE9544 /* Font+Extension.swift in Sources */,
 				F768822A2C0DD1E7001CF441 /* NCSettingsModel.swift in Sources */,
 				F7BCE48E301091EA00876F4D /* NCMediaDatePickerViewController.swift in Sources */,
-				F737DA9D2B7B893C0063BAFC /* NCPasscode.swift in Sources */,
 				9F0E3B428AB44A6480190C2D /* NCPasscodeModel.swift in Sources */,
 				7670DABED44E4D56AD99E6DC /* NCPasscodeView.swift in Sources */,
 				F77C97392953131000FDDD09 /* NCCameraRoll.swift in Sources */,
@@ -7319,14 +7111,6 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		F7D4BF4E2CA2ECCB00A5E746 /* XCRemoteSwiftPackageReference "vlckit-spm" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/tylerjonesio/vlckit-spm";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.5.1;
-			};
-		};
 		F7D56B182972405400FA46C4 /* XCRemoteSwiftPackageReference "Mantis" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/marinofaggiana/Mantis";
@@ -7728,11 +7512,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
 			productName = NextcloudKit;
-		};
-		F7D4BF532CA2ED9D00A5E746 /* VLCKitSPM */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F7D4BF4E2CA2ECCB00A5E746 /* XCRemoteSwiftPackageReference "vlckit-spm" */;
-			productName = VLCKitSPM;
 		};
 		F7D56B192972405500FA46C4 /* Mantis */ = {
 			isa = XCSwiftPackageProductDependency;

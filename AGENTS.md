@@ -26,7 +26,7 @@ Other platforms like Android are irrelevant for this project.
 |-----------------|-----------------------------------------------------|----------------------|
 | `.github` | GitHub CI workflows (build & test, SwiftLint, extension-target builds) and issue templates. | Keep all three checks green: `xcode.yml` (builds the `Nextcloud` scheme and runs its tests against a Nextcloud server provisioned in CI), `lint.yml` (SwiftLint), `additional-targets.yml` (build-checks the extension schemes). CI skips draft PRs. |
 | `iOSClient` | Main iOS client source code. | — |
-| `iOSClient/Utility/Passcode` | Shared SwiftUI passcode component, developed alongside the existing TOPasscode implementation. | Keep the existing passcode flow active until callers are migrated. |
+| `iOSClient/Utility/Passcode` | Shared SwiftUI passcode UI and authentication model used by the main app and Share Extension. | Preserve existing credentials, lockout rules and app/extension reset behavior. |
 | `iOSClient/Supporting Files` | Translation files synced with Transifex (see `iOSClient/.tx/config`). | Only add new strings to `en.lproj` (`Localizable.strings`, plurals in `Localizable.stringsdict`); never edit the other `*.lproj` dirs — Transifex overwrites them. |
 | `Brand` | Branding layer: `NCBrand.swift` (app constants, colors), `Database.swift` (Realm database name and schema version), Info.plists and entitlements for all targets, launch screen and intro screens. | Bump `databaseSchemaVersion` in `Brand/Database.swift` when changing Realm models. |
 | `File Provider Extension` | Contains business logic for the iOS File Provider extension. | — |

@@ -30,6 +30,10 @@ final class NCPasscodeModel: ObservableObject {
     @Published private var step: Step
     var onCompletion: (@MainActor (NCPasscodeModel.Result) -> Void)?
 
+    static var isPasscodeReset: Bool {
+        NCPreferences().resetAppCounterFail && NCPreferences().passcodeCounterFailReset >= NCBrandOptions.shared.resetAppPasscodeAttempts
+    }
+
     private var isPreview = false
     private var newPasscode = ""
     private var biometricContext: LAContext?
@@ -89,7 +93,7 @@ final class NCPasscodeModel: ObservableObject {
         if let deadline = preferences.passcodeLockoutEnd, deadline <= Date() {
             preferences.clearPasscodeFailures()
         }
-        if preferences.resetAppCounterFail && preferences.passcodeCounterFailReset >= NCBrandOptions.shared.resetAppPasscodeAttempts {
+        if Self.isPasscodeReset {
             finish(.reset)
             return
         }
