@@ -113,7 +113,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
             self.richWorkspaceText = richWorkspaceText
         }
         setRichWorkspaceColor()
-        let accountChanged = self.recommendations.first?.account != recommendations.first?.account
+        let recommendationsChanged = self.recommendations.count != recommendations.count || self.recommendations.first?.account != recommendations.first?.account
         contentRequestID = UUID()
         let requestID = contentRequestID
         self.recommendations = recommendations
@@ -143,7 +143,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
             viewSection.isHidden = false
         }
 
-        if accountChanged {
+        if recommendationsChanged {
             recommendationsIdentity = []
             collectionViewRecommendations.reloadData()
         }
@@ -204,13 +204,21 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let recommendedFile = self.recommendations[indexPath.row]
-        guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: "cell",
-            for: indexPath
-        ) as? NCRecommendationsCell else {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? NCRecommendationsCell else {
             fatalError("Unable to dequeue NCRecommendationsCell")
         }
+
+        guard recommendations.indices.contains(indexPath.item) else {
+            cell.imageRequestID = UUID()
+            cell.metadata = nil
+            cell.image.image = nil
+            cell.labelInfo.text = nil
+            cell.labelFilename.text = nil
+            cell.labelExtensionFilename.text = nil
+            return cell
+        }
+
+        let recommendedFile = recommendations[indexPath.item]
 
         cell.representedFileId = recommendedFile.id
         cell.representedAccount = recommendedFile.account
