@@ -166,6 +166,40 @@ final class PasscodeUITests: BaseUIXCTestCase {
         XCTAssertTrue(lockSetting.waitForExistence(timeout: 5), "Unlocking must preserve the Settings screen.")
     }
 
+    /// Waiting out each three-attempt lockout must not reset the ten-attempt app-wipe counter.
+    func testAppResetAfterTenFailuresAcrossLockouts() {
+        createPasscode()
+        let resetSetting = app.switches["settings.passcode.reset"]
+        for _ in 0..<3 where !resetSetting.isHittable {
+            app.swipeUp()
+        }
+        XCTAssertTrue(resetSetting.waitForExistence(timeout: 5))
+        XCTAssertEqual(resetSetting.value as? String, "0")
+        resetSetting.tap()
+        XCTAssertEqual(resetSetting.value as? String, "1")
+
+        backgroundAndActivate()
+        assertTitle("Enter Passcode")
+        for attempt in 1...10 {
+            enter(wrongCode)
+            if attempt.isMultiple(of: 3) {
+                assertLockedOut()
+                XCTAssertTrue(lockout.waitForNonExistence(timeout: 65))
+                XCTAssertTrue(app.buttons["passcode.digit.1"].isEnabled)
+            } else if attempt < 10 {
+                XCTAssertTrue(title.exists, "The app must remain locked until the reset threshold.")
+            }
+        }
+
+        // The real reset clears local data and exits. Relaunch without the test-setup reset.
+        XCTAssertTrue(app.wait(for: .notRunning, timeout: 10))
+        currentCode = nil
+        app.launchArguments = languageArguments
+        app.launch()
+        XCTAssertTrue(app.buttons["login"].waitForExistence(timeout: TestConstants.controlExistenceTimeout))
+        XCTAssertFalse(title.exists, "The app reset must remove the stored passcode.")
+    }
+
     private func createPasscode() {
         lockSetting.tap()
         assertTitle("Enter a new passcode")

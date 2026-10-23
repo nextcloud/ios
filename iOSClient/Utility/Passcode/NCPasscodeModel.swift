@@ -91,7 +91,9 @@ final class NCPasscodeModel: ObservableObject {
         guard !isPreview else { return }
         guard result == nil else { return }
         if let deadline = preferences.passcodeLockoutEnd, deadline <= Date() {
-            preferences.clearPasscodeFailures()
+            // Expiring the retry delay must preserve the total used for the app-reset threshold.
+            preferences.passcodeCounterFail = 0
+            preferences.passcodeLockoutEnd = nil
         }
         if Self.isPasscodeReset {
             finish(.reset)

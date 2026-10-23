@@ -97,6 +97,7 @@ struct NCSettingsView: View {
 
                         // Reset app wrong attempts
                         Toggle(NSLocalizedString("_reset_wrong_passcode_option_", comment: ""), isOn: $model.resetWrongAttempts)
+                            .accessibilityIdentifier("settings.passcode.reset")
                             .font(.body)
                             .onChange(of: model.resetWrongAttempts) {
                                 model.updateResetWrongAttemptsSetting()
