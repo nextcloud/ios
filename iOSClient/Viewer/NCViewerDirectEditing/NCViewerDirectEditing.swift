@@ -437,7 +437,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
                 guard error == .success, account == self.metadata.account else {
                     Task {
                         let windowScene = SceneManager.shared.getWindow(sceneIdentifier: self.sceneIdentifier)?.windowScene
-                        await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                        await showErrorBanner(windowScene: windowScene, error: error)
                     }
                     return
                 }
@@ -565,7 +565,7 @@ extension NCViewerDirectEditing: NCSelectDelegate {
             } else {
                 Task {
                     let windowScene = SceneManager.shared.getWindow(sceneIdentifier: self.sceneIdentifier)?.windowScene
-                    await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                    await showErrorBanner(windowScene: windowScene, error: error == .success ? .invalidData : error)
                 }
             }
         }

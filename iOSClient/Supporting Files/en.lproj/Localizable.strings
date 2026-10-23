@@ -112,9 +112,6 @@
 "_view_in_folder_"          = "View in folder";
 "_active_"                  = "Active";
 "_disabled_"                = "Disabled";
-"_compact_"                 = "Compact";
-"_normal_"                  = "Normal";
-"_verbose_"                 = "Verbose";
 "_error_occurred_"          = "An error occurred, please try again.";
 "_retry_"                   = "Retry";
 "_images_"                  = "Images";
@@ -599,8 +596,6 @@
 "_while_charging_"          = "While charging";
 "_keep_screen_awake_"       = "Keep screen awake\nwhile transferring files";
 "_error_not_found_"         = "The requested resource could not be found";
-"_error_conflict_"          = "The request could not be completed due to a conflict with the current state of the resource";
-"_error_precondition_"      = "The server does not meet one of the preconditions of the requester";
 "_downloading_"             = "Downloading";
 "_additional_options_"      = "Additional options";
 "_unauthorizedFilesPasscode_" = "Files app cannot be used with an activated passcode";
@@ -718,13 +713,9 @@
 
 // MARK: Login poll
 
-// MARK: File name validator (used by NextcloudKit, don't remove)
+// MARK: File name validator
 "_file_name_validator_error_reserved_name_" = "\"%@\" is a forbidden name.";
-"_file_name_validator_error_forbidden_file_extension_" = "\".%@\" is a forbidden file extension.";
-"_file_name_validator_error_invalid_character_" = "Name contains an invalid character: \"%@\".";
-"_file_name_validator_error_space_" = "Name must not contain spaces at the beginning or end.";
 "_file_name_new_extension_" = "Changing the extension might cause this file to open in a different application.";
-"_file_name_empty_" = "File name cannot be empty.";
 "_please_rename_file_" = "Please rename the file or folder.";
 "hidden_file_name_warning" = "Name will result in a hidden file.";
 
@@ -879,3 +870,15 @@
 
 "_seek_backward_10_" = "Go back 10 seconds";
 "_seek_forward_10_" = "Go forward 10 seconds";
+
+// MARK: Error messages
+
+"_error_title_upload_" = "Couldn't upload “%@”";
+"_error_title_download_" = "Couldn't download “%@”";
+"_error_title_delete_" = "Couldn't delete “%@”";
+"_error_title_rename_" = "Couldn't rename the item";
+"_error_title_move_copy_" = "Couldn't move or copy “%@”";
+"_error_title_create_folder_" = "Couldn't create the folder “%@”";
+"_error_title_favorite_" = "Couldn't update the favorite for “%@”";
+"_error_upload_no_folder_" = "The folder you're uploading to doesn't exist anymore.";
+"_error_create_folder_no_parent_" = "The parent folder doesn't exist.";

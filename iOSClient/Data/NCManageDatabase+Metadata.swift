@@ -378,6 +378,18 @@ extension tableMetadata {
     }
 }
 
+#if !EXTENSION || EXTENSION_SHARE
+extension tableMetadata {
+    /// The saved `sessionError`, worded for people from its `errorCode` and the operation the item failed at.
+    var sessionErrorMessage: String {
+        let error = NKError(errorCode: errorCode, errorDescription: sessionError)
+        let context = NCErrorContext(metadataStatus: status, fileName: fileNameView)
+
+        return error.userFriendlyMessage(for: context) ?? error.localizedGenericMessage
+    }
+}
+#endif
+
 extension NCManageDatabase {
 #if !EXTENSION
     func isMetadataShareOrMounted(metadata: tableMetadata, metadataFolder: tableMetadata?) -> Bool {
