@@ -176,7 +176,18 @@ final class PasscodeUITests: BaseUIXCTestCase {
         XCTAssertTrue(close.waitForExistence(timeout: 5))
 
         backgroundAndActivate()
-        XCTAssertTrue(lockWindow.waitForExistence(timeout: 5))
+        guard lockWindow.waitForExistence(timeout: 5) else {
+            let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+            screenshot.name = "App lock above acknowledgements"
+            screenshot.lifetime = .keepAlways
+            add(screenshot)
+            let hierarchy = XCTAttachment(string: app.debugDescription)
+            hierarchy.name = "App lock UI hierarchy"
+            hierarchy.lifetime = .keepAlways
+            add(hierarchy)
+            XCTFail("App-lock window missing after foreground. Passcode title exists: \(title.exists); acknowledgements close exists: \(close.exists).")
+            return
+        }
         assertTitle("Enter Passcode")
         XCTAssertFalse(close.isHittable)
         enter(originalCode)
@@ -218,9 +229,29 @@ final class PasscodeUITests: BaseUIXCTestCase {
             app.swipeUp()
         }
         XCTAssertTrue(resetSetting.waitForExistence(timeout: 5))
-        XCTAssertEqual(resetSetting.value as? String, "0")
-        resetSetting.tap()
-        XCTAssertEqual(resetSetting.value as? String, "1")
+        // SwiftUI can expose the labelled row as a switch containing the actual control.
+        let nestedSwitch = resetSetting.switches.firstMatch
+        let resetControl = nestedSwitch.exists ? nestedSwitch : resetSetting
+        XCTAssertEqual(resetControl.value as? String, "0")
+        if nestedSwitch.exists {
+            resetControl.tap()
+        } else {
+            // In the English test layout the switch is at the trailing edge of the row.
+            resetControl.coordinate(withNormalizedOffset: CGVector(dx: 0.95, dy: 0.5)).tap()
+        }
+        let resetEnabled = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "1"), object: resetControl)
+        guard XCTWaiter.wait(for: [resetEnabled], timeout: 5) == .completed else {
+            let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+            screenshot.name = "Reset setting after tap"
+            screenshot.lifetime = .keepAlways
+            add(screenshot)
+            let hierarchy = XCTAttachment(string: app.debugDescription)
+            hierarchy.name = "Reset setting UI hierarchy"
+            hierarchy.lifetime = .keepAlways
+            add(hierarchy)
+            XCTFail("The reset switch did not become enabled after tapping it.")
+            return
+        }
 
         backgroundAndActivate()
         assertTitle("Enter Passcode")
@@ -297,10 +328,15 @@ final class PasscodeUITests: BaseUIXCTestCase {
         XCTAssertEqual(title.label, expected)
     }
 
+    /// Wait for the Home screen and an actual background state before reactivating the app.
     private func backgroundAndActivate() {
         XCUIDevice.shared.press(.home)
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        XCTAssertTrue(springboard.wait(for: .runningForeground, timeout: 5))
         let background = NSPredicate { [app] _, _ in
-            MainActor.assumeIsolated { app?.state != .runningForeground }
+            MainActor.assumeIsolated {
+                app?.state == .runningBackground || app?.state == .runningBackgroundSuspended
+            }
         }
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: background, object: nil)], timeout: 5), .completed)
         app.activate()

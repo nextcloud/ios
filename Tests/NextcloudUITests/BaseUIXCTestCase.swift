@@ -61,11 +61,23 @@ class BaseUIXCTestCase: XCTestCase {
 
     /// Sign in through the app's authentication flow, supporting system authentication and the embedded fallback.
     func logIn() async throws {
-        if app.buttons["openSidebar"].exists || app.buttons["accountSwitcher"].exists {
-            return
-        }
         let login = app.buttons["login"]
-        guard login.await() else { throw UITestError.waitForExistence(login) }
+        let deadline = Date().addingTimeInterval(30)
+        // Startup can restore the main interface after the first accessibility snapshot.
+        // Wait for either destination instead of assuming that the login screen will appear.
+        repeat {
+            if app.buttons["openSidebar"].exists || app.buttons["accountSwitcher"].exists {
+                return
+            }
+            if login.exists && login.isHittable {
+                break
+            }
+            try await Task.sleep(for: .milliseconds(250))
+        } while Date() < deadline
+        guard login.exists else {
+            attachAuthenticationDiagnostics()
+            throw UITestError.waitForExistence(login)
+        }
         login.tap()
 
         let serverAddress = app.textFields["serverAddress"].firstMatch

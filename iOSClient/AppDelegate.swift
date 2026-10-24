@@ -43,11 +43,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             preferences.resetAppCounterFail = false
         }
 #endif
-        if isUiTestingEnabled {
-            Task {
-                await NCAccount().deleteAllAccounts()
-            }
-        }
         let utilityFileSystem = NCUtilityFileSystem()
         let utility = NCUtility()
 
