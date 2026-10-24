@@ -109,9 +109,12 @@ class BaseUIXCTestCase: XCTestCase {
     private func authenticationWebView() async throws -> XCUIElement {
         let browsers = [app!, XCUIApplication(bundleIdentifier: "com.apple.SafariViewService")]
         let promptHosts = browsers + [XCUIApplication(bundleIdentifier: "com.apple.springboard")]
-        let deadline = Date().addingTimeInterval(30)
+        // The app tries HTTPS first, even for the HTTP-only localhost test server.
+        // Allow the initial URLSession request to time out before its HTTP fallback starts.
+        let timeout = URLSessionConfiguration.default.timeoutIntervalForRequest + 30
+        let deadline = Date().addingTimeInterval(timeout)
         repeat {
-            for host in promptHosts {
+            for host in promptHosts where host.state != .notRunning {
                 for label in ["Continue", "Allow"] {
                     let button = host.alerts.buttons[label].firstMatch
                     if button.exists && button.isHittable {
@@ -119,7 +122,7 @@ class BaseUIXCTestCase: XCTestCase {
                     }
                 }
             }
-            for browser in browsers {
+            for browser in browsers where browser.state != .notRunning {
                 let webView = browser.webViews.firstMatch
                 if webView.exists {
                     return webView
