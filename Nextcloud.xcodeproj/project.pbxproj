@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A0C0DE0230E0000100C0D001 /* NCPasscodeWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C0DE0130E0000100C0D001 /* NCPasscodeWindow.swift */; };
 		22BA14432CF44BDBA2E6C291 /* NCDocumentEditorSupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B74B947E07444CC9CFE0A6C /* NCDocumentEditorSupportTests.swift */; };
 		2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
@@ -1299,6 +1300,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A0C0DE0130E0000100C0D001 /* NCPasscodeWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCPasscodeWindow.swift; sourceTree = "<group>"; };
 		131F8E2F43AD414E9DB53019 /* NCPasscodeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCPasscodeModel.swift; sourceTree = "<group>"; };
 		2C33C47F23E2C475005F963B /* Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C33C48123E2C475005F963B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -2377,6 +2379,7 @@
 			isa = PBXGroup;
 			children = (
 				131F8E2F43AD414E9DB53019 /* NCPasscodeModel.swift */,
+				A0C0DE0130E0000100C0D001 /* NCPasscodeWindow.swift */,
 				F902B24E44354B6D9F329F12 /* NCPasscodeView.swift */,
 			);
 			path = Passcode;
@@ -5393,6 +5396,7 @@
 				F7BCE48E301091EA00876F4D /* NCMediaDatePickerViewController.swift in Sources */,
 				9F0E3B428AB44A6480190C2D /* NCPasscodeModel.swift in Sources */,
 				7670DABED44E4D56AD99E6DC /* NCPasscodeView.swift in Sources */,
+				A0C0DE0230E0000100C0D001 /* NCPasscodeWindow.swift in Sources */,
 				F77C97392953131000FDDD09 /* NCCameraRoll.swift in Sources */,
 				F7CADEFD2EA159210057849E /* NCMetadataUploadTranfersSuccess.swift in Sources */,
 				F343A4B32A1E01FF00DDA874 /* PHAsset+Extension.swift in Sources */,

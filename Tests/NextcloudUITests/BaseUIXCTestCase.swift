@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: Nextcloud GmbH
 // SPDX-FileCopyrightText: 2025 Milen Pivchev
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
@@ -58,92 +59,92 @@ class BaseUIXCTestCase: XCTestCase {
         try await Task.sleep(for: .seconds(TestConstants.controlExistenceTimeout))
     }
 
-    ///
-    /// Automation of the sign-in, if required.
-    ///
-    ///
+    /// Sign in through the app's authentication flow, supporting system authentication and the embedded fallback.
     func logIn() async throws {
-        guard app.buttons["login"].exists else {
+        if app.buttons["openSidebar"].exists || app.buttons["accountSwitcher"].exists {
             return
         }
+        let login = app.buttons["login"]
+        guard login.await() else { throw UITestError.waitForExistence(login) }
+        login.tap()
 
-        app.buttons["login"].tap()
-
-        let serverAddressTextField = app.textFields["serverAddress"].firstMatch
-        guard serverAddressTextField.await() else { return }
-
-        try await aSmallMoment()
-
-        serverAddressTextField.tap()
-        serverAddressTextField.typeText(TestConstants.server)
-
+        let serverAddress = app.textFields["serverAddress"].firstMatch
+        guard serverAddress.await() else { throw UITestError.waitForExistence(serverAddress) }
+        serverAddress.tap()
+        serverAddress.typeText(TestConstants.server)
         app.buttons["submitServerAddress"].tap()
 
-        try await aSmallMoment()
-
-        let webView = app.webViews.firstMatch
-
-        guard webView.await() else {
-            throw UITestError.waitForExistence(webView)
+        let webView = try await authenticationWebView()
+        let username = webView.textFields.firstMatch
+        let loginButton = webView.buttons["Log in"].firstMatch
+        if !username.exists, loginButton.await(timeout: 5) {
+            loginButton.tap()
         }
-
-//        try await aSmallMoment()
-
-        let loginButton = webView.buttons["Log in"]
-
-//        try await aSmallMoment()
-
-        if loginButton.await() {
+        if username.await() {
+            username.tap()
+            username.typeText(TestConstants.username)
+            let password = webView.secureTextFields.firstMatch
+            guard password.await() else { throw UITestError.waitForExistence(password) }
+            password.tap()
+            password.typeText(TestConstants.password)
+            guard loginButton.await() else { throw UITestError.waitForExistence(loginButton) }
             loginButton.tap()
         }
 
-//        try await aSmallMoment()
-
-        let usernameTextField = webView.textFields.firstMatch
-
-        if usernameTextField.await() {
-
-            try await aSmallMoment()
-
-            guard usernameTextField.await() else { return }
-            usernameTextField.tap()
-
-            try await aSmallMoment()
-
-            usernameTextField.typeText(TestConstants.username)
-
-            try await aSmallMoment()
-
-            let passwordSecureTextField = webView.secureTextFields.firstMatch
-
-            try await aSmallMoment()
-
-            passwordSecureTextField.tap()
-
-
-            try await aSmallMoment()
-
-            passwordSecureTextField.typeText(TestConstants.password)
-
-            try await aSmallMoment()
-
-            webView.buttons.firstMatch.tap()
+        let grant = webView.buttons["Grant access"]
+        guard grant.await(timeout: 30) else {
+            attachAuthenticationDiagnostics()
+            throw UITestError.waitForExistence(grant)
         }
+        grant.tap()
 
-        try await aSmallMoment()
-
-        let grantButton = webView.buttons["Grant access"]
-
-        guard grantButton.await() else {
-            throw UITestError.waitForExistence(grantButton)
+        let sidebar = app.buttons["openSidebar"].firstMatch
+        guard sidebar.await(timeout: 30) || app.buttons["accountSwitcher"].exists else {
+            attachAuthenticationDiagnostics()
+            throw UITestError.waitForExistence(sidebar)
         }
+    }
 
-        grantButton.tap()
-        grantButton.awaitInexistence()
+    /// ASWebAuthenticationSession may expose its UI in SafariViewService rather than in the app hierarchy.
+    private func authenticationWebView() async throws -> XCUIElement {
+        let browsers = [app!, XCUIApplication(bundleIdentifier: "com.apple.SafariViewService")]
+        let promptHosts = browsers + [XCUIApplication(bundleIdentifier: "com.apple.springboard")]
+        let deadline = Date().addingTimeInterval(30)
+        repeat {
+            for host in promptHosts {
+                for label in ["Continue", "Allow"] {
+                    let button = host.alerts.buttons[label].firstMatch
+                    if button.exists && button.isHittable {
+                        button.tap()
+                    }
+                }
+            }
+            for browser in browsers {
+                let webView = browser.webViews.firstMatch
+                if webView.exists {
+                    return webView
+                }
+            }
+            try await Task.sleep(for: .milliseconds(250))
+        } while Date() < deadline
 
-        app.buttons["accountSwitcher"].await()
+        attachAuthenticationDiagnostics()
+        throw UITestError.waitForExistence(app.webViews.firstMatch)
+    }
 
-        try await aSmallMoment()
+    /// Keep login diagnostics in the xcresult instead of losing the context on a CI failure.
+    private func attachAuthenticationDiagnostics() {
+        let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        screenshot.name = "Authentication screen"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+        for host in [app!, XCUIApplication(bundleIdentifier: "com.apple.SafariViewService"), XCUIApplication(bundleIdentifier: "com.apple.springboard")]
+            where host.state == .runningForeground {
+            let hierarchy = XCTAttachment(string: host.debugDescription)
+            hierarchy.name = "Authentication UI hierarchy"
+            hierarchy.lifetime = .keepAlways
+            add(hierarchy)
+        }
     }
 
     ///

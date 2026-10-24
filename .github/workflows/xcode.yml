@@ -62,6 +62,7 @@ jobs:
   test:
     name: Run Tests
     runs-on: xcode-27
+    timeout-minutes: 30
     needs: [build]
 
     if: github.event.pull_request.draft == false
@@ -116,7 +117,7 @@ jobs:
         name: Nextcloud for iOS
 
     - name: Assert Nextcloud Server Status
-      run: curl -s --retry 5 --retry-delay 60 --retry-all-errors http://localhost:8080/status.php || true
+      run: curl --fail --show-error --silent --max-time 5 --retry 5 --retry-delay 2 --retry-max-time 30 --retry-all-errors http://localhost:8080/status.php
 
     - name: Boot iOS Simulator
       run: |
@@ -133,6 +134,7 @@ jobs:
         fi
 
     - name: Run Xcode Test
+      timeout-minutes: 25
       run: |
         set -o pipefail && \
         xcodebuild test-without-building \
@@ -141,11 +143,14 @@ jobs:
         -derivedDataPath "DerivedData" \
         -test-iterations 3 \
         -retry-tests-on-failure \
+        -test-timeouts-enabled YES \
+        -default-test-execution-time-allowance 360 \
+        -maximum-test-execution-time-allowance 360 \
         -resultBundlePath "TestResult.xcresult"
 
     - name: Upload Xcode Test Results
       uses: actions/upload-artifact@v7
-      if: ${{ !cancelled() }}
+      if: ${{ always() }}
       with:
         name: TestResult.xcresult
         path: "TestResult.xcresult"

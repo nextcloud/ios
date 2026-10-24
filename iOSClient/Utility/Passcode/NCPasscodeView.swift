@@ -116,7 +116,13 @@ struct NCPasscodeView: View {
             }
         }
         .interactiveDismissDisabled(!model.allowCancel)
-        .task { await model.start() }
+        .task {
+            if let windowScene, windowScene.activationState != .foregroundActive {
+                model.refreshProtection()
+            } else {
+                await model.start()
+            }
+        }
         .task(id: model.lockoutEnd) {
             guard let deadline = model.lockoutEnd else { return }
             let remaining = max(0, deadline.timeIntervalSinceNow)
@@ -127,7 +133,7 @@ struct NCPasscodeView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: UIScene.didActivateNotification)) { notification in
             guard let windowScene, (notification.object as? UIScene) === windowScene else { return }
-            model.refreshProtection()
+            Task { await model.start() }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIScene.didEnterBackgroundNotification)) { notification in
             guard let windowScene, (notification.object as? UIScene) === windowScene else { return }

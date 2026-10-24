@@ -16,6 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
     private var privacyProtectionWindow: UIWindow?
+    private var passcodeWindow: NCPasscodeWindow?
     private let global = NCGlobal.shared
     private let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: NCGlobal.shared.udMigrationMultiDomains)
 
@@ -112,6 +113,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             // NO account found, start with the Login
             //
             NCPreferences().removeAll()
+            passcodeWindow?.hide()
+            passcodeWindow = nil
 
             if let bundleID = Bundle.main.bundleIdentifier {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
@@ -184,6 +187,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             //
             window?.rootViewController = controller
             window?.makeKeyAndVisible()
+            // Also protect interfaces created after an asynchronous maintenance or migration.
+            requestPasscodeIfNeeded(controller: controller)
             //
             if activateSceneForAccount {
                 self.activateSceneForAccount(scene, account: activeTblAccount.account, controller: controller)
@@ -199,6 +204,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidDisconnect(_ scene: UIScene) {
         guard let windowScene = scene as? UIWindowScene else { return }
 
+        passcodeWindow?.hide()
+        passcodeWindow = nil
+        hidePrivacyProtectionWindow()
         LucidBannerRegistry.shared.remove(for: windowScene)
         lucidBanner = nil
 
@@ -208,15 +216,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillEnterForeground(_ scene: UIScene) {
         hidePrivacyProtectionWindow()
 
-        if let rootHostingController = scene.rootHostingController() {
-            if rootHostingController.anyRootView is Maintenance {
-                return
-            }
+        guard let controller = window?.rootViewController as? NCMainTabBarController else {
+            return
         }
-        let session = SceneManager.shared.getSession(scene: scene)
-        let controller = SceneManager.shared.getController(scene: scene)
 
-        activateSceneForAccount(scene, account: session.account, controller: controller)
+        activateSceneForAccount(scene, account: controller.account, controller: controller)
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
@@ -255,16 +259,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let tblAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
         }
+        if NCPreferences().presentPasscode {
+            showPrivacyProtectionWindow()
+        }
         bgID = app.beginBackgroundTask(withName: "FlushBeforeSuspend") {
             app.endBackgroundTask(bgID); bgID = .invalid
         }
 
         Task {
-            Task { @MainActor in
-                if NCPreferences().presentPasscode {
-                    showPrivacyProtectionWindow()
-                }
-            }
             defer {
                 app.endBackgroundTask(bgID); bgID = .invalid
             }
@@ -509,14 +511,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     private func showPrivacyProtectionWindow() {
-        guard let windowScene = self.window?.windowScene else {
+        guard privacyProtectionWindow == nil,
+              let windowScene = self.window?.windowScene else {
             return
         }
 
         self.privacyProtectionWindow = UIWindow(windowScene: windowScene)
         self.privacyProtectionWindow?.rootViewController = UIStoryboard(name: "LaunchScreen", bundle: nil).instantiateInitialViewController()
         self.privacyProtectionWindow?.windowLevel = .alert + 1
-        self.privacyProtectionWindow?.makeKeyAndVisible()
+        self.privacyProtectionWindow?.isHidden = false
     }
 
     private func hidePrivacyProtectionWindow() {
@@ -524,34 +527,60 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         privacyProtectionWindow = nil
     }
 
+    /// Request the mandatory lock; return whether authentication is required, including while the UI is not ready.
+    @discardableResult
+    private func requestPasscodeIfNeeded(controller: NCMainTabBarController) -> Bool {
+        guard NCPreferences().presentPasscode else {
+            passcodeWindow?.hide()
+            passcodeWindow = nil
+            return false
+        }
+        guard !controller.account.isEmpty,
+              NCManageDatabase.shared.getTableAccount(account: controller.account) != nil,
+              let window,
+              window.rootViewController === controller,
+              let windowScene = window.windowScene else {
+            return true
+        }
+        if passcodeWindow == nil {
+            passcodeWindow = NCPasscodeWindow(mainWindow: window, windowScene: windowScene) { [weak self, weak controller] result in
+                guard let self else { return }
+                self.passcodeWindow = nil
+                switch result {
+                case .authenticated:
+                    if NCPreferences().accountRequest,
+                       let controller,
+                       self.window?.rootViewController === controller,
+                       NCManageDatabase.shared.getTableAccount(account: controller.account) != nil {
+                        self.requestedAccount(controller: controller)
+                    }
+                case .reset:
+                    self.appDelegate?.resetApplication()
+                case .cancelled, .configured, .disabled:
+                    break
+                }
+            }
+        }
+        passcodeWindow?.show()
+        return true
+    }
+
     private func activateSceneForAccount(_ scene: UIScene,
                                          account: String,
                                          controller: NCMainTabBarController?) {
-        guard !account.isEmpty else {
+        guard !account.isEmpty,
+              let controller,
+              controller.account == account,
+              NCManageDatabase.shared.getTableAccount(account: account) != nil,
+              let window,
+              window.rootViewController === controller,
+              let windowScene = scene as? UIWindowScene,
+              window.windowScene === windowScene else {
             return
         }
 
-        if let window = SceneManager.shared.getWindow(scene: scene),
-           let controller = SceneManager.shared.getController(scene: scene) {
-            if window.rootViewController !== controller {
-                window.rootViewController = controller
-            }
-            if NCPreferences().presentPasscode {
-                NCPasscodeView.present(from: controller) { [weak self, weak controller] result in
-                    switch result {
-                    case .authenticated, .configured:
-                        if NCPreferences().accountRequest, let controller {
-                            self?.requestedAccount(controller: controller)
-                        }
-                    case .reset:
-                        self?.appDelegate?.resetApplication()
-                    case .cancelled, .disabled:
-                        break
-                    }
-                }
-            } else if NCPreferences().accountRequest {
-                requestedAccount(controller: controller)
-            }
+        if !requestPasscodeIfNeeded(controller: controller), NCPreferences().accountRequest {
+            requestedAccount(controller: controller)
         }
 
         Task {
@@ -575,6 +604,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 extension SceneDelegate {
     func requestedAccount(controller: UIViewController?) {
+        guard var presenter = controller else { return }
+        while let presented = presenter.presentedViewController {
+            if let popup = presented as? NCPopupViewController, popup.contentController is NCAccountRequest {
+                return
+            }
+            presenter = presented
+        }
         let tblAccounts = NCManageDatabase.shared.getAllTableAccount()
         if tblAccounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
             accountRequestVC.controller = controller
@@ -586,7 +622,7 @@ extension SceneDelegate {
             accountRequestVC.delegate = self
             accountRequestVC.startTimer(nil)
 
-            let availableHeight = controller?.view.safeAreaLayoutGuide.layoutFrame.height ?? window?.safeAreaLayoutGuide.layoutFrame.height ?? 0
+            let availableHeight = presenter.view.safeAreaLayoutGuide.layoutFrame.height
             let maximumHeight = availableHeight * 0.8
             let numberCell = tblAccounts.count
             let height = min(CGFloat(numberCell * Int(accountRequestVC.heightCell) + 45), maximumHeight)
@@ -594,7 +630,7 @@ extension SceneDelegate {
             let popup = NCPopupViewController(contentController: accountRequestVC, popupWidth: 300, popupHeight: height + 20)
             popup.backgroundAlpha = 0.8
 
-            controller?.present(popup, animated: true)
+            presenter.present(popup, animated: true)
         }
     }
 }

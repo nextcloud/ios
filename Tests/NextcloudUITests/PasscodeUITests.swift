@@ -15,6 +15,7 @@ final class PasscodeUITests: BaseUIXCTestCase {
 
     private var title: XCUIElement { app.staticTexts["passcode.title"] }
     private var closeButton: XCUIElement { app.buttons["passcode.close"] }
+    private var lockWindow: XCUIElement { app.windows["passcode.window"] }
     private var lockout: XCUIElement { app.staticTexts["passcode.lockout.remaining"] }
     private var lockSetting: XCUIElement { app.buttons["settings.passcode.toggle"] }
     private var changeSetting: XCUIElement { app.buttons["settings.passcode.change"] }
@@ -166,6 +167,50 @@ final class PasscodeUITests: BaseUIXCTestCase {
         XCTAssertTrue(lockSetting.waitForExistence(timeout: 5), "Unlocking must preserve the Settings screen.")
     }
 
+    /// An informational sheet stays in the app window while the mandatory lock covers it.
+    func testAppLockAppearsAbovePresentedSheet() {
+        createPasscode()
+        let acknowledgements = app.buttons["Acknowledgements"]
+        scrollTo(acknowledgements)
+        acknowledgements.tap()
+        let close = app.buttons["settings.acknowledgements.close"]
+        XCTAssertTrue(close.waitForExistence(timeout: 5))
+
+        backgroundAndActivate()
+        XCTAssertTrue(lockWindow.waitForExistence(timeout: 5))
+        assertTitle("Enter Passcode")
+        XCTAssertFalse(close.isHittable)
+        enter(originalCode)
+        XCTAssertTrue(lockWindow.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(close.isHittable, "Unlocking must preserve the sheet underneath.")
+        close.tap()
+        scrollTo(lockSetting, towardsTop: true)
+    }
+
+    /// An existing confirmation alert cannot intercept or prevent the app-lock window.
+    func testAppLockAppearsAbovePresentedAlert() {
+        createPasscode()
+        let advanced = app.buttons["Advanced"]
+        scrollTo(advanced)
+        advanced.tap()
+        let clearCache = app.buttons["Clear cache"]
+        scrollTo(clearCache)
+        clearCache.tap()
+        let cancel = app.alerts.firstMatch.buttons["Cancel"]
+        XCTAssertTrue(cancel.waitForExistence(timeout: 5))
+
+        backgroundAndActivate()
+        XCTAssertTrue(lockWindow.waitForExistence(timeout: 5))
+        assertTitle("Enter Passcode")
+        XCTAssertFalse(cancel.isHittable)
+        enter(originalCode)
+        XCTAssertTrue(lockWindow.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(cancel.isHittable, "Unlocking must preserve the confirmation alert underneath.")
+        cancel.tap()
+        app.navigationBars["Advanced"].buttons["Settings"].tap()
+        scrollTo(lockSetting, towardsTop: true)
+    }
+
     /// Waiting out each three-attempt lockout must not reset the ten-attempt app-wipe counter.
     func testAppResetAfterTenFailuresAcrossLockouts() {
         createPasscode()
@@ -219,6 +264,17 @@ final class PasscodeUITests: BaseUIXCTestCase {
         XCTAssertTrue(settings.waitForExistence(timeout: 5))
         settings.tap()
         XCTAssertTrue(lockSetting.waitForExistence(timeout: 5))
+    }
+
+    private func scrollTo(_ element: XCUIElement, towardsTop: Bool = false) {
+        for _ in 0..<6 where !element.isHittable {
+            if towardsTop {
+                app.swipeDown()
+            } else {
+                app.swipeUp()
+            }
+        }
+        XCTAssertTrue(element.isHittable)
     }
 
     private func enter(_ code: String) {
