@@ -92,17 +92,46 @@ class BaseUIXCTestCase: XCTestCase {
         }
 
         let grant = webView.buttons["Grant access"]
-        guard grant.await(timeout: 30) else {
+        guard try await waitForAuthenticationConsent() else {
             attachAuthenticationDiagnostics()
             throw UITestError.waitForExistence(grant)
         }
-        grant.tap()
 
         let sidebar = app.buttons["openSidebar"].firstMatch
         guard sidebar.await(timeout: 30) || app.buttons["accountSwitcher"].exists else {
             attachAuthenticationDiagnostics()
             throw UITestError.waitForExistence(sidebar)
         }
+    }
+
+    /// Waiting alone does not trigger interruption monitors; dismiss password prompts in their owning process.
+    private func waitForAuthenticationConsent() async throws -> Bool {
+        let browsers = [app!, XCUIApplication(bundleIdentifier: "com.apple.SafariViewService")]
+        let hosts = browsers + [XCUIApplication(bundleIdentifier: "com.apple.springboard")]
+        let deadline = Date().addingTimeInterval(30)
+        var passwordPromptDismissed = false
+        repeat {
+            promptSearch: for host in hosts where !passwordPromptDismissed && host.state != .notRunning {
+                for label in ["Not Now", "Non ora", "Ora no"] {
+                    let button = host.buttons[label].firstMatch
+                    if button.exists && button.isHittable {
+                        button.tap()
+                        passwordPromptDismissed = true
+                        _ = button.waitForNonExistence(timeout: 5)
+                        break promptSearch
+                    }
+                }
+            }
+            for browser in browsers where browser.state != .notRunning {
+                let grant = browser.webViews.buttons["Grant access"].firstMatch
+                if grant.exists && grant.isHittable {
+                    grant.tap()
+                    return true
+                }
+            }
+            try await Task.sleep(for: .milliseconds(250))
+        } while Date() < deadline
+        return false
     }
 
     /// ASWebAuthenticationSession may expose its UI in SafariViewService rather than in the app hierarchy.

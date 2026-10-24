@@ -24,7 +24,6 @@ final class PasscodeUITests: BaseUIXCTestCase {
         try await super.setUp()
         continueAfterFailure = false
         addUIInterruptionMonitor(withDescription: "Allow Notifications", for: "Allow")
-        addUIInterruptionMonitor(withDescription: "Save Password", for: "Not Now")
         app = XCUIApplication()
         app.launchArguments = ["UI_TESTING", "UI_TESTING_PASSCODE"] + languageArguments
         app.launch()

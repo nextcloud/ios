@@ -65,6 +65,8 @@
       </BuildActionEntries>
    </BuildAction>
    <TestAction
+      language = "en"
+      region = "US"
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
