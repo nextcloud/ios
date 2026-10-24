@@ -6,4 +6,3 @@
 #import "NYMnemonic.h"
 #import "UIImage+animatedGIF.h"
 #import "NCPushNotificationEncryption.h"
-#import "TOPasscodeViewController.h"

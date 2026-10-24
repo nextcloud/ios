@@ -53,6 +53,7 @@ struct NCSettingsView: View {
                     }
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
+                .accessibilityIdentifier("settings.passcode.toggle")
                 .disabled(NCBrandOptions.shared.enforce_passcode_lock)
             }, header: {
                 Text(NSLocalizedString("_privacy_", comment: ""))
@@ -77,6 +78,7 @@ struct NCSettingsView: View {
                                     .tint(Color(NCBrandColor.shared.textColor))
                             }
                         })
+                        .accessibilityIdentifier("settings.passcode.change")
                         // Enable Touch ID
                         Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchFaceID)
                             .font(.body)
@@ -95,6 +97,7 @@ struct NCSettingsView: View {
 
                         // Reset app wrong attempts
                         Toggle(NSLocalizedString("_reset_wrong_passcode_option_", comment: ""), isOn: $model.resetWrongAttempts)
+                            .accessibilityIdentifier("settings.passcode.reset")
                             .font(.body)
                             .onChange(of: model.resetWrongAttempts) {
                                 model.updateResetWrongAttemptsSetting()
@@ -306,10 +309,16 @@ struct NCSettingsView: View {
             })
         }
         .sheet(isPresented: $showPasscode) {
-            SetupPasscodeView(isLockActive: $model.isLockActive, controller: model.controller)
+            NCPasscodeView(mode: NCPreferences().passcode == nil ? .create : .disable,
+                           allowCancel: true,
+                           windowScene: SceneManager.shared.getWindowScene(controller: model.controller),
+                           completion: completePasscode)
         }
         .sheet(isPresented: $showChangePasscode) {
-            SetupPasscodeView(isLockActive: $model.isLockActive, controller: model.controller, changePasscode: true)
+            NCPasscodeView(mode: .change,
+                           allowCancel: true,
+                           windowScene: SceneManager.shared.getWindowScene(controller: model.controller),
+                           completion: completePasscode)
         }
 #if DEBUG
         .alert("Database export failed", isPresented: $showDatabaseExportError) {
@@ -320,6 +329,22 @@ struct NCSettingsView: View {
 #endif
         .navigationBarTitle(NSLocalizedString("_settings_", comment: ""))
         .defaultViewModifier(model)
+    }
+
+    /// Update the lock setting only after the passcode operation has completed.
+    private func completePasscode(_ result: NCPasscodeModel.Result) {
+        switch result {
+        case .configured:
+            model.isLockActive = true
+        case .disabled:
+            model.isLockActive = false
+        case .reset:
+            (UIApplication.shared.delegate as? AppDelegate)?.resetApplication()
+        case .authenticated, .cancelled:
+            break
+        }
+        showPasscode = false
+        showChangePasscode = false
     }
 
 #if DEBUG

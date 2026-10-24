@@ -331,47 +331,6 @@ extension UIAlertController {
         }
     }
 
-    @MainActor
-    static func failedPasscode(presenter: UIViewController, completion: (() -> Void)? = nil) {
-        let preferences = NCPreferences()
-        let deadline: Date
-
-        if let pending = preferences.passcodeLockoutEnd {
-            guard pending > Date() else {
-                endPasscodeLockout(completion: completion)
-                return
-            }
-
-            deadline = pending
-        } else {
-            deadline = Date().addingTimeInterval(TimeInterval(NCBrandOptions.shared.passcodeSecondsFail))
-            preferences.passcodeLockoutEnd = deadline
-        }
-
-        let alertController = UIAlertController(title: NSLocalizedString("_passcode_counter_fail_", comment: ""), message: nil, preferredStyle: .alert)
-        presenter.present(alertController, animated: true)
-
-        alertController.message = "\(Int(deadline.timeIntervalSinceNow.rounded(.up))) " + NSLocalizedString("_seconds_", comment: "")
-
-        _ = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-            let seconds = Int(deadline.timeIntervalSinceNow.rounded(.up))
-
-            if seconds > 0 {
-                alertController.message = "\(seconds) " + NSLocalizedString("_seconds_", comment: "")
-            } else {
-                timer.invalidate()
-                alertController.dismiss(animated: true)
-                endPasscodeLockout(completion: completion)
-            }
-        }
-    }
-
-    private static func endPasscodeLockout(completion: (() -> Void)?) {
-        NCPreferences().clearPasscodeFailures()
-
-        completion?()
-    }
-
     /// Presents a localized confirmation alert and asynchronously returns the user's choice.
     ///
     /// - Parameters:
