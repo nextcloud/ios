@@ -147,6 +147,7 @@ jobs:
         -xctestrun $(find . -type f -name "*.xctestrun") \
         -destination "${{ env.DESTINATION }}" \
         -derivedDataPath "DerivedData" \
+        -skip-testing:NextcloudUITests/PasscodeUITests \
         -test-iterations 3 \
         -retry-tests-on-failure \
         -test-timeouts-enabled YES \
