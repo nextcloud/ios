@@ -329,11 +329,13 @@ struct NCSidebarView: View {
         let counts = await (progress, waiting, errors)
         guard !Task.isCancelled else { return }
         let states = [("_in_error_", counts.2), ("_in_progress_", counts.0), ("_in_waiting_", counts.1)]
+        let subtitle: String
         if let state = states.first(where: { $0.1 > 0 }) {
-            transfersSubtitle = "\(state.1) \(NSLocalizedString(state.0, comment: ""))"
+            subtitle = "\(state.1) \(NSLocalizedString(state.0, comment: ""))"
         } else {
-            transfersSubtitle = NSLocalizedString("_no_transfer_in_progress_", comment: "")
+            subtitle = NSLocalizedString("_no_transfer_in_progress_", comment: "")
         }
+        if transfersSubtitle != subtitle { transfersSubtitle = subtitle }
     }
 
     private var autoUploadIcon: some View {
