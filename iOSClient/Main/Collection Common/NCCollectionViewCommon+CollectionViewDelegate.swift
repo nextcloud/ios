@@ -164,26 +164,16 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
     }
 
-    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+        guard let indexPath = indexPaths.first,
+              let metadata = self.dataSource.getMetadata(indexPath: indexPath),
               metadata.classFile != NKTypeClassFile.url.rawValue,
               !isEditMode
         else {
             return nil
         }
         let identifier = indexPath as NSCopying
-        var image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
         let cell = collectionView.cellForItem(at: indexPath)
-
-        if image == nil {
-            if cell is NCListCell {
-                image = (cell as? NCListCell)?.imageItem.image
-            } else if cell is NCGridCell {
-                image = (cell as? NCGridCell)?.imageItem.image
-            } else if cell is NCPhotoCell {
-                image = (cell as? NCPhotoCell)?.imageItem.image
-            }
-        }
 
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             return nil
@@ -193,11 +183,103 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         })
     }
 
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfiguration configuration: UIContextMenuConfiguration, highlightPreviewForItemAt indexPath: IndexPath) -> UITargetedPreview? {
+        contextMenuPreview = nil
+
+        guard let cell = collectionView.cellForItem(at: indexPath),
+              let copies = cellCopies(of: cell, at: indexPath)
+        else {
+            return nil
+        }
+        let preview = NCContextMenuPreviewView(sourceCell: cell, rowCell: copies.row, fullNameCell: copies.fullName, rowAlignment: cell is NCGridCell ? .top : .center)
+        let parameters = UIPreviewParameters()
+
+        // Keeps the room for the whole name invisible until the menu opens.
+        parameters.backgroundColor = .clear
+        parameters.shadowPath = preview.rowShadowPath
+
+        // Places the row copy exactly over the pressed cell.
+        let center = CGPoint(x: cell.center.x, y: cell.frame.minY - preview.rowFrame.minY + preview.bounds.midY)
+        let targetedPreview = UITargetedPreview(view: preview, parameters: parameters, target: UIPreviewTarget(container: collectionView, center: center))
+
+        contextMenuPreview = targetedPreview
+
+        return targetedPreview
+    }
+
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfiguration configuration: UIContextMenuConfiguration, dismissalPreviewForItemAt indexPath: IndexPath) -> UITargetedPreview? {
+        contextMenuPreview
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willDisplayContextMenu configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
+        contextMenuPreviewView?.setFullNameVisible(true, alongside: animator)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willEndContextMenuInteraction configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
+        contextMenuPreviewView?.setFullNameVisible(false, alongside: animator)
+
+        guard let animator else {
+            contextMenuPreview = nil
+            return
+        }
+
+        let endingPreview = contextMenuPreview
+
+        // A new press may have stored its own preview before this dismissal finished.
+        animator.addCompletion { [weak self] in
+            if self?.contextMenuPreview === endingPreview {
+                self?.contextMenuPreview = nil
+            }
+        }
+    }
+
     func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
         animator.addCompletion {
             if let indexPath = configuration.identifier as? IndexPath {
                 self.collectionView(collectionView, didSelectItemAt: indexPath)
             }
         }
+    }
+
+    private var contextMenuPreviewView: NCContextMenuPreviewView? {
+        contextMenuPreview?.view as? NCContextMenuPreviewView
+    }
+
+    /// Copies of the item's list or grid cell, one as is and one wrapping its whole name; `nil` for photo cells, which show no name.
+    private func cellCopies(of cell: UICollectionViewCell, at indexPath: IndexPath) -> (row: UICollectionViewCell, fullName: UICollectionViewCell)? {
+        guard cell is NCListCell || cell is NCGridCell,
+              let metadata = dataSource.getMetadata(indexPath: indexPath)
+        else {
+            return nil
+        }
+        let nib = UINib(nibName: cell is NCListCell ? "NCListCell" : "NCGridCell", bundle: nil)
+        let existsImagePreview = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
+
+        func copy(showingFullName: Bool) -> UICollectionViewCell? {
+            guard let copy = nib.instantiate(withOwner: nil).first as? UICollectionViewCell else { return nil }
+
+            copy.frame = cell.bounds
+            copy.backgroundColor = collectionView.backgroundColor
+
+            if let listCopy = copy as? NCListCell {
+                _ = listCell(cell: listCopy, indexPath: indexPath, metadata: metadata, existsImagePreview: existsImagePreview)
+
+                if showingFullName {
+                    listCopy.showFullName()
+                }
+            } else if let gridCopy = copy as? NCGridCell {
+                _ = gridCell(cell: gridCopy, indexPath: indexPath, metadata: metadata, existsImagePreview: existsImagePreview)
+
+                if showingFullName {
+                    gridCopy.showFullName()
+                }
+            }
+
+            return copy
+        }
+
+        guard let row = copy(showingFullName: false), let fullName = copy(showingFullName: true) else { return nil }
+
+        return (row, fullName)
     }
 }

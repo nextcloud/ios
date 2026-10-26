@@ -73,6 +73,10 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     internal var currentMenuObjectId: String?
     internal var currentMenuPoint: CGPoint = .zero
 
+    // Context Menu
+    //
+    internal var contextMenuPreview: UITargetedPreview?
+
     // Search
     //
     internal var isSearchingMode: Bool = false

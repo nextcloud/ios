@@ -136,6 +136,7 @@
                 <outlet property="iconsStackView" destination="dYL-ap-9lA" id="IKa-gM-1zT"/>
                 <outlet property="imageFavorite" destination="AYs-f2-vve" id="UeH-R7-bZr"/>
                 <outlet property="imageItem" destination="5Ci-V1-hf5" id="xky-Nw-NUb"/>
+                <outlet property="imageItemBottomConstraint" destination="eEC-eB-alE" id="gIb-Bc-Ot1"/>
                 <outlet property="imageLocal" destination="81G-wH-fjN" id="bqj-wQ-CBV"/>
                 <outlet property="imageSelect" destination="DHy-Up-3Bh" id="mo9-rP-P4I"/>
                 <outlet property="imageStatus" destination="a0p-rj-jnV" id="6Dg-tf-evd"/>
@@ -144,6 +145,7 @@
                 <outlet property="labelInfo" destination="2po-8g-XeS" id="FJ4-wI-9cW"/>
                 <outlet property="labelSubinfo" destination="12P-pO-DHO" id="K6d-7r-FGh"/>
                 <outlet property="labelTitle" destination="eU3-lY-fKr" id="0P7-yM-Asb"/>
+                <outlet property="titleHeightConstraint" destination="Soj-7j-hoM" id="gTh-Hc-Ot2"/>
             </connections>
             <point key="canvasLocation" x="65.599999999999994" y="479.46026986506752"/>
         </collectionViewCell>

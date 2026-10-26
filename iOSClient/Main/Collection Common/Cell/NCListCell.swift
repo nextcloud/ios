@@ -265,6 +265,24 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         labelSubinfo.text = NCUtilityFileSystem().transformedSize(size)
     }
 
+    /// Wraps the whole name instead of truncating it and grows the cell to fit, for the context menu preview.
+    func showFullName() {
+        layoutIfNeeded()
+
+        let lineHeight = labelTitle.bounds.height
+
+        setBidiSafeWrappingFilename(titleLabel: labelTitle, extensionLabel: labelExtension)
+        separator.isHidden = true
+        layoutIfNeeded()
+
+        guard labelTitle.bounds.width > 0 else { return }
+
+        let titleHeight = labelTitle.sizeThatFits(CGSize(width: labelTitle.bounds.width, height: .greatestFiniteMagnitude)).height
+
+        frame.size.height += max(0, ceil(titleHeight - lineHeight))
+        layoutIfNeeded()
+    }
+
     func setAccessibility(label: String, value: String) {
         accessibilityLabel = label
         accessibilityValue = value

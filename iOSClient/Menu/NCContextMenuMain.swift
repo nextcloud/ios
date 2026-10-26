@@ -10,7 +10,7 @@ import NextcloudKit
 import LucidBanner
 
 /// A context menu used in ``NCCollectionViewCommon`` and ``NCMedia``
-/// See ``NCCollectionViewCommon/collectionView(_:contextMenuConfigurationForItemAt:point:)``,
+/// See ``NCCollectionViewCommon/collectionView(_:contextMenuConfigurationForItemsAt:point:)``,
 /// ``NCCollectionViewCommon/openContextMenu(with:button:sender:)``, ``NCMedia/collectionView(_:contextMenuConfigurationForItemAt:point:)`` for usage details.
 @MainActor
 class NCContextMenuMain: NSObject {

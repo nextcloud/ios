@@ -29,6 +29,9 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var iconsStackView: UIStackView!
 
+    @IBOutlet weak var imageItemBottomConstraint: NSLayoutConstraint!
+    @IBOutlet weak var titleHeightConstraint: NSLayoutConstraint!
+
     weak var delegate: NCGridCellDelegate?
 
     // Cell Protocol
@@ -183,6 +186,22 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
 
         labelInfo.text = dateFormatter.string(from: date as Date)
         labelSubinfo.text = NCUtilityFileSystem().transformedSize(size)
+    }
+
+    /// Wraps the whole name instead of truncating it and grows the cell below the image to fit, for the context menu preview.
+    func showFullName() {
+        setBidiSafeWrappingFilename(titleLabel: labelTitle, extensionLabel: labelExtension)
+        layoutIfNeeded()
+
+        guard labelTitle.bounds.width > 0 else { return }
+
+        let titleHeight = ceil(labelTitle.sizeThatFits(CGSize(width: labelTitle.bounds.width, height: .greatestFiniteMagnitude)).height)
+        let extraHeight = max(0, titleHeight - titleHeightConstraint.constant)
+
+        titleHeightConstraint.constant += extraHeight
+        imageItemBottomConstraint.constant += extraHeight
+        frame.size.height += extraHeight
+        layoutIfNeeded()
     }
 
     func setAccessibility(label: String, value: String) {
