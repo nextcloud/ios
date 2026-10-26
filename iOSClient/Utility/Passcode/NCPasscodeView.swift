@@ -55,7 +55,7 @@ struct NCPasscodeView: View {
     /// Covers an extension's existing panel without presenting another modal or changing its size.
     static func embed(in container: UIViewController,
                       completion: @escaping @MainActor (NCPasscodeModel.Result) -> Void) {
-        let navigationController = container as? UINavigationController
+        let navigationController = (container as? UINavigationController) ?? container.navigationController
         let wasNavigationBarHidden = navigationController?.isNavigationBarHidden ?? true
         navigationController?.setNavigationBarHidden(true, animated: false)
         let model = NCPasscodeModel(mode: .authenticate, allowCancel: true)
@@ -132,7 +132,8 @@ struct NCPasscodeView: View {
                     }
                     .padding(24)
                     .frame(maxWidth: 360)
-                    .frame(maxWidth: .infinity, minHeight: geometry.size.height)
+                    .frame(width: geometry.size.width)
+                    .frame(minHeight: geometry.size.height)
                 }
             }
             .background(Color(uiColor: .systemBackground))

@@ -577,9 +577,8 @@ extension NCShareExtension {
               !isPasscodeAuthenticated,
               !isPresentingPasscode else { return }
         isPresentingPasscode = true
-        // Cover the existing panel, including its navigation bar, without another modal.
-        let container = navigationController ?? self
-        NCPasscodeView.embed(in: container) { [weak self] result in
+        // Embed in the content controller; the helper hides the outer navigation bar.
+        NCPasscodeView.embed(in: self) { [weak self] result in
             guard let self else { return }
             self.isPresentingPasscode = false
             switch result {
