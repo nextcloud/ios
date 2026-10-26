@@ -56,7 +56,7 @@ extension UIAlertController {
                         if let banner {
                             banner.dismiss()
                         }
-                        completion?(NKError(errorCode: createFolderResults.error.errorCode, errorDescription: createFolderResults.error.errorDescription))
+                        completion?(createFolderResults.error)
                     }
                 }
             } else if isDirectoryEncrypted {

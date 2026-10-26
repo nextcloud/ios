@@ -170,7 +170,7 @@ extension NCNetworking {
             fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
         }
         if fileNameFolder.isEmpty {
-            return NKError(errorCode: global.errorIncorrectFileName, errorDescription: "")
+            return NKError(errorCode: global.errorIncorrectFileName, errorDescription: "", kind: .invalidName)
         }
         let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileNameFolder)
 
@@ -414,7 +414,7 @@ extension NCNetworking {
 
             let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew, windowScene: windowScene)
             if error != .success {
-                return NKError(errorCode: error.errorCode, errorDescription: error.errorDescription)
+                return error
             }
         } else {
             let ocId = metadata.ocId

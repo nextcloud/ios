@@ -876,7 +876,7 @@
 "_error_title_upload_" = "Couldn't upload “%@”";
 "_error_title_download_" = "Couldn't download “%@”";
 "_error_title_delete_" = "Couldn't delete “%@”";
-"_error_title_rename_" = "Couldn't rename the item";
+"_error_title_rename_" = "Couldn't rename the file or folder";
 "_error_title_move_copy_" = "Couldn't move or copy “%@”";
 "_error_title_create_folder_" = "Couldn't create the folder “%@”";
 "_error_title_favorite_" = "Couldn't update the favorite for “%@”";

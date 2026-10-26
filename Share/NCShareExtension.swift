@@ -349,8 +349,8 @@ class NCShareExtension: UIViewController {
                 Task {
                     await self.loadFolder()
                 }
-            } else {
-                self.showAlert(title: "_error_createsubfolders_upload_", description: error.errorDescription)
+            } else if let message = error.userFriendlyMessage() {
+                self.showAlert(title: "_error_createsubfolders_upload_", description: message)
             }
         }
         self.present(alertController, animated: true)
@@ -444,6 +444,7 @@ extension NCShareExtension {
         await NCNetworkingE2EE.beginNewServerKeyValidationCycle()
 
         var error: NKError?
+        var errorContext: NCErrorContext = .generic
         guard let window = self.view.window else {
             return
         }
@@ -468,6 +469,7 @@ extension NCShareExtension {
 
             error = await self.upload(metadata: metadata)
             if error != .success {
+                errorContext = .upload(fileName: metadata.fileNameView)
                 break
             }
         }
@@ -475,7 +477,7 @@ extension NCShareExtension {
         if error == .success {
             banner?.update(payload: LucidBannerPayload.Update(stage: .success, horizontalLayout: .centered(width: 100)), for: self.token)
         } else {
-            banner?.update(payload: LucidBannerPayload.Update(subtitle: error?.errorDescription, stage: .error), for: self.token)
+            banner?.update(payload: LucidBannerPayload.Update(subtitle: error?.userFriendlyMessage(for: errorContext) ?? "", stage: .error), for: self.token)
         }
 
         Task { @MainActor in

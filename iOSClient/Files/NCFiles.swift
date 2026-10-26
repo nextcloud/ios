@@ -380,7 +380,7 @@ class NCFiles: NCCollectionViewCommon {
         guard result.error == .success,
               let e2eMetadata = result.e2eMetadata,
               let version = result.version else {
-            nkLog(tag: self.global.logTagE2EE, message: returnError.errorDescription)
+            nkLog(tag: self.global.logTagE2EE, message: result.error.errorDescription)
             return result.error
         }
 

@@ -390,7 +390,9 @@ class NCContextMenuMain: NSObject {
                             if error == .success {
                                 completeHudBannerSuccess(token: results.token, banner: results.banner)
                             } else {
-                                completeHudBannerError(description: error.errorDescription, token: results.token, banner: results.banner)
+                                let message = error.userFriendlyMessage(for: .delete(fileName: metadata.fileNameView)) ?? error.localizedGenericMessage
+
+                                completeHudBannerError(description: message, token: results.token, banner: results.banner)
                             }
 
                             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
