@@ -52,6 +52,42 @@ struct NCPasscodeView: View {
         top.present(controller, animated: allowCancel)
     }
 
+    /// Covers an extension's existing panel without presenting another modal or changing its size.
+    static func embed(in container: UIViewController,
+                      completion: @escaping @MainActor (NCPasscodeModel.Result) -> Void) {
+        let navigationController = container as? UINavigationController
+        let wasNavigationBarHidden = navigationController?.isNavigationBarHidden ?? true
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        let model = NCPasscodeModel(mode: .authenticate, allowCancel: true)
+        let controller = UIHostingController(rootView: NCPasscodeView(model: model,
+                                                                      windowScene: container.view.window?.windowScene))
+        model.onCompletion = { [weak controller, weak navigationController] result in
+            guard let controller else { return }
+            // Keep protected content covered while the caller closes the extension on cancellation.
+            guard result == .authenticated else {
+                completion(result)
+                return
+            }
+            controller.willMove(toParent: nil)
+            controller.view.removeFromSuperview()
+            controller.removeFromParent()
+            navigationController?.setNavigationBarHidden(wasNavigationBarHidden, animated: false)
+            completion(result)
+        }
+        container.addChild(controller)
+        controller.view.backgroundColor = .systemBackground
+        controller.view.accessibilityViewIsModal = true
+        controller.view.translatesAutoresizingMaskIntoConstraints = false
+        container.view.addSubview(controller.view)
+        NSLayoutConstraint.activate([
+            controller.view.leadingAnchor.constraint(equalTo: container.view.leadingAnchor),
+            controller.view.trailingAnchor.constraint(equalTo: container.view.trailingAnchor),
+            controller.view.topAnchor.constraint(equalTo: container.view.topAnchor),
+            controller.view.bottomAnchor.constraint(equalTo: container.view.bottomAnchor)
+        ])
+        controller.didMove(toParent: container)
+    }
+
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
@@ -101,6 +137,7 @@ struct NCPasscodeView: View {
             }
             .background(Color(uiColor: .systemBackground))
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.hidden, for: .navigationBar)
             .toolbar {
                 if model.allowCancel {
                     ToolbarItem(placement: .cancellationAction) {
