@@ -162,7 +162,7 @@ struct NCPasscodeView: View {
                 } label: {
                     Image(systemName: model.biometricSymbol ?? "faceid")
                         .font(.title)
-                        .frame(minWidth: 64, minHeight: 64)
+                        .frame(minWidth: 80, minHeight: 80)
                 }
                 .accessibilityLabel(model.biometricSymbol == "touchid" ? "Touch ID" : "Face ID")
                 .disabled(!model.canEnterCode || model.biometricSymbol == nil)
@@ -173,7 +173,7 @@ struct NCPasscodeView: View {
                 } label: {
                     Image(systemName: "delete.left")
                         .font(.title2)
-                        .frame(minWidth: 64, minHeight: 64)
+                        .frame(minWidth: 80, minHeight: 80)
                 }
                 .accessibilityLabel(NSLocalizedString("_delete_", comment: ""))
                 .accessibilityIdentifier("passcode.delete")
@@ -189,7 +189,7 @@ struct NCPasscodeView: View {
         } label: {
             Text(String(digit))
                 .font(.largeTitle.monospacedDigit())
-                .frame(minWidth: 64, minHeight: 64)
+                .frame(minWidth: 80, minHeight: 80)
                 .background(Color(uiColor: .secondarySystemBackground), in: Circle())
         }
         .accessibilityIdentifier("passcode.digit.\(digit)")
