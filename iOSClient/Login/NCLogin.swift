@@ -368,6 +368,17 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         loginProvider.startPolling(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
                         loginProvider.startAuthentication()
                         self.activeLoginProvider = loginProvider
+                    } else {
+                        let loginFlowError = error == .success ? NKError.invalidData : error
+
+                        nkLog(error: "Login flow v2 failed: \(loginFlowError.errorCode) \(loginFlowError.errorDescription)")
+
+                        loginButton.hideSpinnerAndShowButton()
+                        loginButton.isEnabled = true
+
+                        let alertController = UIAlertController(title: NSLocalizedString("_connection_error_", comment: ""), message: loginFlowError.localizedGenericMessage, preferredStyle: .alert)
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                        self.present(alertController, animated: true, completion: { })
                     }
                 }
             case .failure(let error):
@@ -413,7 +424,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     self.present(alertController, animated: true)
                     #endif
                 } else {
-                    let alertController = UIAlertController(title: NSLocalizedString("_connection_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
+                    let alertController = UIAlertController(title: NSLocalizedString("_connection_error_", comment: ""), message: error.localizedGenericMessage, preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
                     self.present(alertController, animated: true, completion: { })
                 }
@@ -460,7 +471,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     await createAccount(urlBase: server, user: user, password: token)
                 } else {
                     let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
-                    await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
+
+                    let error = results.error == .success ? NKError.invalidData : results.error
+
+                    await showErrorBanner(windowScene: windowScene, error: error, context: .login)
                     dismiss(animated: true, completion: nil)
                 }
             } else if value.hasPrefix(protocolLogin) {
@@ -476,7 +490,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             await self.createAccount(urlBase: urlBase, user: user, password: password)
         } else {
             let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
-            await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
+
+            let error = results.error == .success ? NKError.invalidData : results.error
+
+            await showErrorBanner(windowScene: windowScene, error: error, context: .login)
             dismiss(animated: true, completion: nil)
         }
     }

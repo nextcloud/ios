@@ -62,7 +62,7 @@ class NCCreate: NSObject {
               let editorURL = results.url,
               !editorURL.isEmpty else {
             let error: NKError = results.error == .success ? .invalidData : results.error
-            await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+            await showErrorBanner(windowScene: windowScene, error: error, context: .createDocument(fileName: fileName))
             return
         }
 
@@ -99,7 +99,7 @@ class NCCreate: NSObject {
               let editorURL = results.url,
               !editorURL.isEmpty else {
             let error: NKError = results.error == .success ? .invalidData : results.error
-            await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+            await showErrorBanner(windowScene: windowScene, error: error, context: .createDocument(fileName: fileName))
             return
         }
 

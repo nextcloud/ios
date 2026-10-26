@@ -57,6 +57,15 @@ extension NKError {
         case (.createFolder, .conflict):
             return NSLocalizedString("_error_create_folder_no_parent_", comment: "")
 
+        case (.createDocument, .forbidden):
+            return NSLocalizedString("_error_create_document_", comment: "")
+
+        case (.openDocument, .forbidden):
+            return NSLocalizedString("_error_open_document_", comment: "")
+
+        case (.login, .unauthorized), (.login, .forbidden):
+            return NSLocalizedString("_error_login_credentials_", comment: "")
+
         default:
             return nil
         }

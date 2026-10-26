@@ -258,12 +258,12 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     func createFolderButtonPressed(_ sender: UIButton) {
         Task { @MainActor in
             let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
-            let alertController = UIAlertController.createFolderWith(serverUrl: serverUrl, session: session, capabilities: capabilities) { error in
+            let alertController = UIAlertController.createFolderWith(serverUrl: serverUrl, session: session, capabilities: capabilities) { error, folderName in
                 if error != .success {
                     Task {
                         await showErrorBanner(windowScene: self.windowScene,
-                                              text: error.errorDescription,
-                                              errorCode: error.errorCode)
+                                              error: error,
+                                              context: .createFolder(folderName: folderName))
                     }
                 }
             }

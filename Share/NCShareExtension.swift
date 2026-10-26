@@ -344,12 +344,12 @@ class NCShareExtension: UIViewController {
         guard let capabilities = NCNetworking.shared.capabilities[session.account] else {
             return
         }
-        let alertController = UIAlertController.createFolderWith(serverUrl: serverUrl, session: session, capabilities: capabilities) { error in
+        let alertController = UIAlertController.createFolderWith(serverUrl: serverUrl, session: session, capabilities: capabilities) { error, folderName in
             if error == .success {
                 Task {
                     await self.loadFolder()
                 }
-            } else if let message = error.userFriendlyMessage() {
+            } else if let message = error.userFriendlyMessage(for: .createFolder(folderName: folderName)) {
                 self.showAlert(title: "_error_createsubfolders_upload_", description: message)
             }
         }

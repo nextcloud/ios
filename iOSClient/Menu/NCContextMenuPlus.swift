@@ -138,12 +138,12 @@ class NCContextMenuPlus: NSObject {
                     serverUrl: serverUrl,
                     session: session,
                     sceneIdentifier: controller.sceneIdentifier,
-                    capabilities: capabilities) { error in
+                    capabilities: capabilities) { error, folderName in
                         if error != .success {
                             Task {
                                 await showErrorBanner(windowScene: self.windowScene,
-                                                      text: error.errorDescription,
-                                                      errorCode: error.errorCode)
+                                                      error: error,
+                                                      context: .createFolder(folderName: folderName))
                             }
                         }
                     }
@@ -164,12 +164,10 @@ class NCContextMenuPlus: NSObject {
                         session: session,
                         markE2ee: true,
                         sceneIdentifier: controller.sceneIdentifier,
-                        capabilities: capabilities) { error in
+                        capabilities: capabilities) { error, _ in
                             if error != .success {
                                 Task {
-                                    await showErrorBanner(windowScene: self.windowScene,
-                                                          text: error.errorDescription,
-                                                          errorCode: error.errorCode)
+                                    await showErrorBanner(windowScene: self.windowScene, error: error)
                                 }
                             }
                         }
@@ -628,8 +626,7 @@ class NCContextMenuPlus: NSObject {
               let selectedTemplate = result.selectedTemplate else {
             await showErrorBanner(
                 windowScene: windowScene,
-                text: result.error.errorDescription,
-                errorCode: result.error.errorCode
+                error: result.error
             )
             return
         }

@@ -82,13 +82,12 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscode
             }
             await showErrorBanner(
                 windowScene: windowScene,
-                text: error.errorDescription
+                error: error
             )
         } catch {
-            // fallback (non NKError)
             await showErrorBanner(
                 windowScene: windowScene,
-                text: error.localizedDescription
+                error: NKError(error: error)
             )
         }
     }
@@ -148,10 +147,9 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscode
                         error: error
                     )
                 } catch {
-                    // fallback (non NKError)
                     await showErrorBanner(
                         windowScene: windowScene,
-                        text: error.localizedDescription
+                        error: NKError(error: error)
                     )
                 }
             }

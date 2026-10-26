@@ -23,17 +23,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                         if error.errorCode == NSUserCancelledError {
                             return
                         }
-                        await showErrorBanner(
-                            windowScene: windowScene,
-                            text: error.errorDescription
-                        )
+                        await showErrorBanner(windowScene: windowScene, error: error)
                         return
                     } catch {
-                        // fallback (non NKError)
-                        await showErrorBanner(
-                            windowScene: windowScene,
-                            text: error.localizedDescription
-                        )
+                        await showErrorBanner(windowScene: windowScene, error: NKError(error: error))
                         return
                     }
                 }

@@ -238,7 +238,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     let footerText = "Files " + NSLocalizedString("_of_", comment: "") + " " + activeTableAccount.displayName + alias
 
     if results.error != .success {
-        return(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: activeTableAccount.userId, url: activeTableAccount.urlBase, account: activeTableAccount.account, tile: title, footerImage: "xmark.icloud", footerText: results.error.errorDescription))
+        return(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: activeTableAccount.userId, url: activeTableAccount.urlBase, account: activeTableAccount.account, tile: title, footerImage: "xmark.icloud", footerText: results.error.localizedGenericMessage))
     } else {
         return(FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: datas.isEmpty, userId: activeTableAccount.userId, url: activeTableAccount.urlBase, account: activeTableAccount.account, tile: title, footerImage: "checkmark.icloud", footerText: footerText))
     }

@@ -38,7 +38,12 @@ class NCAccount: NSObject {
 
         guard resultsGetUserProfile.error == .success, let userProfile = resultsGetUserProfile.userProfile else {
             NextcloudKit.shared.nkCommonInstance.nksessions.remove(account: account)
-            let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: resultsGetUserProfile.error.errorDescription, preferredStyle: .alert)
+
+            let error = resultsGetUserProfile.error == .success ? NKError.invalidData : resultsGetUserProfile.error
+
+            nkLog(error: "Getting the user profile failed: \(error.errorCode) \(error.errorDescription)")
+
+            let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.userFriendlyMessage(for: .login) ?? error.localizedGenericMessage, preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
             viewController.present(alertController, animated: true)
 

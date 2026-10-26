@@ -776,6 +776,9 @@
 "_e2ee_checksum_error_message_" = "The encrypted file checksum is missing or invalid.\n\nThis may be caused by incomplete, outdated, or inconsistent encryption metadata and does not necessarily mean that the file or server has been compromised.\n\nContinue only if you trust this server and understand the risk. Otherwise, exit without opening the file.";
 "_e2ee_key_checksum_" = "End-to-end encryption error, key checksum failed";
 "_e2ee_decode_metadata_" = "End-to-end encryption error, cannot decode metadata";
+"_e2ee_encode_metadata_" = "End-to-end encryption error, cannot encode metadata";
+"_e2ee_version_not_supported_" = "End-to-end encryption error, unsupported encryption version";
+"_e2ee_store_keys_" = "End-to-end encryption error, cannot store the encryption keys";
 "_e2ee_no_lock_" = "End-to-end encryption error, unable to lock file";
 "_e2ee_no_decrypt_metadata_" = "End-to-end encryption error, cannot decrypt metadata";
 "_e2ee_no_enc_file_" = "End-to-end encryption error, cannot encrypt file";
@@ -882,3 +885,9 @@
 "_error_title_favorite_" = "Couldn't update the favorite for “%@”";
 "_error_upload_no_folder_" = "The folder you're uploading to doesn't exist anymore.";
 "_error_create_folder_no_parent_" = "The parent folder doesn't exist.";
+"_error_title_create_document_" = "Couldn't create “%@”";
+"_error_title_open_document_" = "Couldn't open “%@”";
+"_error_create_document_" = "A file with this name may already exist, or you can't add files here.";
+"_error_open_document_" = "The document may have been moved or deleted, or you no longer have access to it.";
+"_error_login_credentials_" = "The login details are incorrect. Please try again.";
+"_error_password_incorrect_" = "The password is incorrect.";

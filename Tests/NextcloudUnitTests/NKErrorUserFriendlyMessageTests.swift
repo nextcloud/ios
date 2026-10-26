@@ -49,6 +49,22 @@ struct NKErrorUserFriendlyMessageTests {
         #expect(forbidden.userFriendlyMessage(for: .upload(fileName: "a.jpg")) == generic)
     }
 
+    @Test("Explains document and login failures")
+    func documentAndLoginMessages() {
+        let forbidden = NKError(errorCode: 403, errorDescription: "403: Forbidden")
+        let notFound = NKError(errorCode: 404, errorDescription: "404: Not found")
+        let unauthorized = NKError(errorCode: 401, errorDescription: "401: Unauthorized")
+        let offline = NKError(errorCode: NSURLErrorNotConnectedToInternet, errorDescription: "The Internet connection appears to be offline.")
+
+        #expect(forbidden.userFriendlyMessage(for: .createDocument(fileName: "a.md")) == localized("_error_create_document_"))
+        #expect(forbidden.userFriendlyMessage(for: .openDocument(fileName: "a.md")) == localized("_error_open_document_"))
+        #expect(notFound.userFriendlyMessage(for: .openDocument(fileName: "a.md")) == notFound.userFriendlyMessage())
+        #expect(unauthorized.userFriendlyMessage(for: .login) == localized("_error_login_credentials_"))
+        #expect(forbidden.userFriendlyMessage(for: .login) == localized("_error_login_credentials_"))
+        #expect(offline.userFriendlyMessage(for: .login) == offline.userFriendlyMessage())
+        #expect(NKError(error: CancellationError()).userFriendlyMessage() == nil)
+    }
+
     @Test("Recognizes uploads rejected by the virus scanner")
     func virusDetected() {
         let error = NKError(errorCode: 415, errorDescription: "Virus Eicar-Signature is detected in the file. Upload cannot be completed.")
@@ -87,9 +103,10 @@ struct NKErrorUserFriendlyMessageTests {
 
     @Test("Titles say what failed")
     func failureTitles() throws {
-        let contexts: [NCErrorContext] = [.upload(fileName: "f"), .download(fileName: "f"), .delete(fileName: "f"), .rename, .moveOrCopy(fileName: "f"), .createFolder(folderName: "f"), .favorite(fileName: "f")]
+        let contexts: [NCErrorContext] = [.upload(fileName: "f"), .download(fileName: "f"), .delete(fileName: "f"), .rename, .moveOrCopy(fileName: "f"), .createFolder(folderName: "f"), .favorite(fileName: "f"), .createDocument(fileName: "f"), .openDocument(fileName: "f")]
 
         #expect(NCErrorContext.generic.failureTitle == nil)
+        #expect(NCErrorContext.login.failureTitle == nil)
         #expect(NCErrorContext.upload(fileName: "IMG_0042.jpg").failureTitle?.contains("IMG_0042.jpg") == true)
 
         for context in contexts {

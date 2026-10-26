@@ -588,6 +588,21 @@ class NCEndToEndSetup {
         }
 
         let deleteError = await NextcloudKit.shared.deleteE2EEPublicKeyAsync(account: session.account, password: password, options: options).error
+
+        let passwordRejectedCodes = [global.errorUnauthorized, global.errorForbidden, global.errorUnauthorized997]
+
+        if password?.isEmpty == false, passwordRejectedCodes.contains(deleteError.errorCode) {
+            nkLog(tag: global.logTagE2EE, emoji: .error, message: "Deleting the public key was rejected: \(deleteError.errorCode) \(deleteError.errorDescription)")
+
+            throw NKError(
+                errorCode: global.errorInternalError,
+                errorDescription: NSLocalizedString(
+                    "_error_password_incorrect_",
+                    comment: ""
+                )
+            )
+        }
+
         guard deleteError == .success else {
             throw deleteError
         }
