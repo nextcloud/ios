@@ -491,6 +491,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             NCNetworking.shared.writeCertificate(host: host)
         }
 
+        // No certificate is picked on these paths; don't save the active account's for the new one
+        NCNetworking.shared.p12Data = nil
+        NCNetworking.shared.p12Password = nil
+
         await NCAccount().createAccount(viewController: self, urlBase: urlBase, user: user, password: password, controller: self.controller)
     }
 }
@@ -499,6 +503,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
 extension NCLogin: NCShareAccountsDelegate {
     func selected(url: String, user: String) {
+        NCNetworking.shared.p12Data = nil
+        NCNetworking.shared.p12Password = nil
         attemptLogin(url: url)
     }
 }

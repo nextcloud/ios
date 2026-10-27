@@ -52,13 +52,14 @@ class NCAccount: NSObject {
         NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
         await self.database.addAccountAsync(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
 
+        // Persist the certificate picked at login before changeAccount() loads it from the keychain
+        NCPreferences().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
+
         // FPE Domains
         try? await FileProviderDomain().ensureDomainRegistered(userId: userProfile.userId, user: "\(user)", urlBase: urlBase)
 
         await changeAccount(account, userProfile: userProfile, controller: controller)
         nkLog(debug: "NCAccount changed user profile to \(userProfile.userId).")
-
-        NCPreferences().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
 
         if let controller {
             controller.account = account
