@@ -266,12 +266,24 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     }
 
     /// Wraps the whole name instead of truncating it and grows the cell to fit, for the context menu preview.
+    /// Only for names `NCContextMenuPreviewView.isProblematic` lets through: one label shows those in order.
     func showFullName() {
         layoutIfNeeded()
 
         let lineHeight = labelTitle.bounds.height
+        let title = NSMutableAttributedString(attributedString: labelTitle.attributedText ?? NSAttributedString())
 
-        setBidiSafeWrappingFilename(titleLabel: labelTitle, extensionLabel: labelExtension)
+        if !labelExtension.isHidden {
+            title.append(NSAttributedString(string: labelExtension.text ?? "", attributes: [
+                .font: labelExtension.font as UIFont,
+                .foregroundColor: labelExtension.textColor as UIColor
+            ]))
+        }
+
+        labelTitle.attributedText = title
+        labelTitle.numberOfLines = 0
+        labelTitle.lineBreakMode = .byWordWrapping
+        labelExtension.isHidden = true
         separator.isHidden = true
         layoutIfNeeded()
 

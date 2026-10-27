@@ -186,8 +186,11 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfiguration configuration: UIContextMenuConfiguration, highlightPreviewForItemAt indexPath: IndexPath) -> UITargetedPreview? {
         contextMenuPreview = nil
 
+        // A problematic name keeps the standard preview, where the extension has its own label.
         guard let cell = collectionView.cellForItem(at: indexPath),
-              let copies = cellCopies(of: cell, at: indexPath)
+              let metadata = dataSource.getMetadata(indexPath: indexPath),
+              !NCContextMenuPreviewView.isProblematic(metadata.fileNameView),
+              let copies = cellCopies(of: cell, at: indexPath, metadata: metadata)
         else {
             return nil
         }
@@ -246,12 +249,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     }
 
     /// Copies of the item's list or grid cell, one as is and one wrapping its whole name; `nil` for photo cells, which show no name.
-    private func cellCopies(of cell: UICollectionViewCell, at indexPath: IndexPath) -> (row: UICollectionViewCell, fullName: UICollectionViewCell)? {
-        guard cell is NCListCell || cell is NCGridCell,
-              let metadata = dataSource.getMetadata(indexPath: indexPath)
-        else {
-            return nil
-        }
+    private func cellCopies(of cell: UICollectionViewCell, at indexPath: IndexPath, metadata: tableMetadata) -> (row: UICollectionViewCell, fullName: UICollectionViewCell)? {
+        guard cell is NCListCell || cell is NCGridCell else { return nil }
+
         let nib = UINib(nibName: cell is NCListCell ? "NCListCell" : "NCGridCell", bundle: nil)
         let existsImagePreview = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
 

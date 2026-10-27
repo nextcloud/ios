@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
+import CoreText
 
 /// Context menu preview that covers the pressed cell with a copy of it, then reveals its whole name once the menu opens.
 /// It is sized for the whole name from the start, since UIKit fixes a targeted preview's size when the press begins.
@@ -79,6 +80,27 @@ class NCContextMenuPreviewView: UIView {
         animator.addCompletion { [weak self] in
             self?.sourceCell?.isHidden = visible
         }
+    }
+
+    /// Whether one label could show `fileName` out of its stored order, so the extension might no longer read last:
+    /// a control, format or line separator character, or any right-to-left run. Such a name keeps the standard
+    /// preview, whose separate extension label stops bidi tricks from disguising the extension.
+    static func isProblematic(_ fileName: String) -> Bool {
+        let hasHiddenOrBreakingCharacters = fileName.unicodeScalars.contains {
+            switch $0.properties.generalCategory {
+            case .control, .format, .lineSeparator, .paragraphSeparator:
+                return true
+            default:
+                return false
+            }
+        }
+
+        guard !hasHiddenOrBreakingCharacters else { return true }
+
+        let line = CTLineCreateWithAttributedString(NSAttributedString(string: fileName))
+        let runs = CTLineGetGlyphRuns(line) as? [CTRun] ?? []
+
+        return runs.contains { CTRunGetStatus($0).contains(.rightToLeft) }
     }
 
     /// UIKit rounds only the platter's outer corners; the row copy sits inside it, so round its corners alike.

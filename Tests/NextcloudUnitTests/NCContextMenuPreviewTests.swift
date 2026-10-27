@@ -20,7 +20,7 @@ struct NCContextMenuPreviewTests {
         cell.showFullName()
 
         #expect(cell.bounds.height == listSize.height)
-        #expect(plainText(cell.labelTitle) == "Report.pdf")
+        #expect(cell.labelTitle.text == "Report.pdf")
         #expect(cell.labelExtension.isHidden)
     }
 
@@ -31,7 +31,7 @@ struct NCContextMenuPreviewTests {
         cell.showFullName()
 
         #expect(cell.bounds.height > listSize.height)
-        #expect(plainText(cell.labelTitle) == longName)
+        #expect(cell.labelTitle.text == longName)
         #expect(cell.bounds.contains(cell.labelTitle.convert(cell.labelTitle.bounds, to: cell).insetBy(dx: 1, dy: 1)))
     }
 
@@ -45,8 +45,51 @@ struct NCContextMenuPreviewTests {
 
         #expect(cell.bounds.height > gridSize.height)
         #expect(cell.imageItem.bounds.size == imageSize)
-        #expect(plainText(cell.labelTitle) == longName)
+        #expect(cell.labelTitle.text == longName)
         #expect(cell.bounds.contains(cell.labelTitle.convert(cell.labelTitle.bounds, to: cell).insetBy(dx: 1, dy: 1)))
+    }
+
+    @Test("Every bidi attack from the bidi-safe filename tests keeps the standard preview", arguments: [
+        "malware\u{202E}fdp.exe",                        // RLO
+        "invoice\u{2067}cod.exe",                        // RLI
+        "report\u{202D}exe.pdf",                         // LRO
+        "\u{202E}\u{2066}safe_document\u{2069}cod.exe", // RLO + LRI + PDI
+        "image\u{2066}exe.jpg\u{2069}.png",              // LRI + PDI
+        "notes\u{2068}exe.bat",                          // FSI
+        "folder\u{202E}exe.txt"                          // RLO in a folder name
+    ])
+    func bidiAttacksAreProblematic(name: String) {
+        #expect(NCContextMenuPreviewView.isProblematic(name))
+    }
+
+    @Test("Names one label could reorder or break keep the standard preview", arguments: [
+        "report\u{2069}\u{202E}fdp..exe",                 // stray PDI + RLO
+        "file\u{200F}.exe",                              // RLM
+        "file\u{061C}.exe",                              // ALM
+        "Invoice\u{2029}\u{200F}payment.pdf.exe",        // paragraph separator + RLM
+        "photo\n.exe",                                   // newline
+        "שלום.txt",                                       // Hebrew
+        "تقرير.pdf",                                      // Arabic
+        "invoice \u{05D0}.pdf.exe"                       // Hebrew letter in a Latin name
+    ])
+    func reorderingNamesAreProblematic(name: String) {
+        #expect(NCContextMenuPreviewView.isProblematic(name))
+    }
+
+    @Test("Plain names get the full name preview", arguments: [
+        "photo.jpg",
+        "document.pdf",
+        "archive.tar.gz",
+        "README",
+        ".gitignore",
+        "My Folder.backup",
+        "ExportBlock-52f1c0de-a8b9-4c3d-9e2f-774cebeb-Part-1",
+        "Résumé – final (2).docx",
+        "😀 party.png",
+        "日本語のファイル名.txt"
+    ])
+    func plainNamesAreNotProblematic(name: String) {
+        #expect(!NCContextMenuPreviewView.isProblematic(name))
     }
 
     private func makeListCell(fileName: String) throws -> NCListCell {
@@ -61,11 +104,6 @@ struct NCContextMenuPreviewTests {
         cell.setBidiSafeFilename(fileName, isDirectory: false, titleLabel: cell.labelTitle, extensionLabel: cell.labelExtension)
 
         return cell
-    }
-
-    /// The title without the isolates `setBidiSafeWrappingFilename` adds around base and extension.
-    private func plainText(_ label: UILabel) -> String? {
-        label.text?.filter { !"\u{2068}\u{2069}".contains($0) }
     }
 
     private func makeCell<Cell: UICollectionViewCell>(_ type: Cell.Type, size: CGSize) throws -> Cell {
