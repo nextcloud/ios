@@ -491,6 +491,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             NCNetworking.shared.writeCertificate(host: host)
         }
 
+        // No client certificate is picked on the QR code and MDM paths; don't save the active account's for the new one
+        NCNetworking.shared.p12Data = nil
+        NCNetworking.shared.p12Password = nil
+
         await NCAccount().createAccount(viewController: self, urlBase: urlBase, user: user, password: password, controller: self.controller)
     }
 }
@@ -499,6 +503,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
 extension NCLogin: NCShareAccountsDelegate {
     func selected(url: String, user: String) {
+        NCNetworking.shared.p12Data = nil
+        NCNetworking.shared.p12Password = nil
         attemptLogin(url: url)
     }
 }
@@ -510,7 +516,7 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         let alertNoCertFound = UIAlertController(title: NSLocalizedString("_no_client_cert_found_", comment: ""), message: NSLocalizedString("_no_client_cert_found_desc_", comment: ""), preferredStyle: .alert)
         alertNoCertFound.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
         alertNoCertFound.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
-            let documentProviderMenu = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.pkcs12], asCopy: true)
+            let documentProviderMenu = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.pkcs12])
             documentProviderMenu.delegate = self
             self.present(documentProviderMenu, animated: true, completion: nil)
         }))
@@ -520,13 +526,18 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let url = urls.first else { return }
+        // Files outside the app container need security-scoped access
+        let didStartAccessing = url.startAccessingSecurityScopedResource()
+        let p12Data = try? Data(contentsOf: url)
+        if didStartAccessing {
+            url.stopAccessingSecurityScopedResource()
+        }
+
         let alertEnterPassword = UIAlertController(title: NSLocalizedString("_client_cert_enter_password_", comment: ""), message: "", preferredStyle: .alert)
         alertEnterPassword.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
         alertEnterPassword.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
-            guard let url = urls.first else { return }
-            let scoped = url.startAccessingSecurityScopedResource()
-            defer { if scoped { url.stopAccessingSecurityScopedResource() } }
-            NCNetworking.shared.p12Data = try? Data(contentsOf: url)
+            NCNetworking.shared.p12Data = p12Data
             NCNetworking.shared.p12Password = alertEnterPassword.textFields?[0].text
             self.login()
         }))

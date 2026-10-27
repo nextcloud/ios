@@ -54,7 +54,7 @@ class PKCS12 {
         // kSecImportItemCertChain is an array of SecCertificate with the leaf first.
         // See https://developer.apple.com/documentation/foundation/urlcredential/1418121-init
         let intermediates = pkcs12.certChain.map { Array($0.dropFirst()) } ?? []
-        return URLCredential(identity: identity, certificates: intermediates.isEmpty ? nil : intermediates, persistence: .forSession)
+        return URLCredential(identity: identity, certificates: intermediates.isEmpty ? nil : intermediates, persistence: .none)
     }
 }
 
