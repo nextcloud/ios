@@ -306,6 +306,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCPreferences().removeAll()
 
+#if DEBUG
+        // Let UI tests observe the completed reset before terminating the process themselves.
+        if isUiTestingEnabled,
+           ProcessInfo.processInfo.arguments.contains("UI_TESTING_NO_EXIT"),
+           let window = UIApplication.shared.mainAppWindow {
+            let controller = UIViewController()
+            controller.view.backgroundColor = .systemBackground
+            controller.view.isAccessibilityElement = true
+            controller.view.accessibilityIdentifier = "uiTesting.resetCompleted"
+            controller.view.accessibilityLabel = "Reset completed"
+            window.rootViewController = controller
+            window.makeKeyAndVisible()
+            return
+        }
+#endif
+
         exit(0)
     }
 

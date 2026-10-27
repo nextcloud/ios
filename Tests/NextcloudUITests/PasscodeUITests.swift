@@ -10,6 +10,7 @@ final class PasscodeUITests: BaseUIXCTestCase {
     private let originalCode = "135790"
     private let replacementCode = "246801"
     private let wrongCode = "000000"
+    private let resetTestLockoutSeconds = 10
     private var currentCode: String?
     private let languageArguments = ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
 
@@ -25,7 +26,10 @@ final class PasscodeUITests: BaseUIXCTestCase {
         continueAfterFailure = false
         addUIInterruptionMonitor(withDescription: "Allow Notifications", for: "Allow")
         app = XCUIApplication()
-        app.launchArguments = ["UI_TESTING", "UI_TESTING_PASSCODE"] + languageArguments
+        app.launchArguments = ["UI_TESTING", "UI_TESTING_PASSCODE", "UI_TESTING_NO_EXIT"] + languageArguments
+        if name.contains("testAppResetAfterTenFailuresAcrossLockouts") {
+            app.launchEnvironment["UI_TESTING_PASSCODE_LOCKOUT_SECONDS"] = String(resetTestLockoutSeconds)
+        }
         app.launch()
         try await logIn()
         openSettings()
@@ -268,16 +272,18 @@ final class PasscodeUITests: BaseUIXCTestCase {
             enter(wrongCode)
             if attempt.isMultiple(of: 3) {
                 assertLockedOut()
-                XCTAssertTrue(lockout.waitForNonExistence(timeout: 65))
+                XCTAssertTrue(lockout.waitForNonExistence(timeout: TimeInterval(resetTestLockoutSeconds + 5)))
                 XCTAssertTrue(app.buttons["passcode.digit.1"].isEnabled)
             } else if attempt < 10 {
                 XCTAssertTrue(title.exists, "The app must remain locked until the reset threshold.")
             }
         }
 
-        // The real reset clears local data and exits. Relaunch without the test-setup reset.
-        XCTAssertTrue(app.wait(for: .notRunning, timeout: 10))
+        // Wait for real cleanup, then terminate through XCTest to avoid TSan's exit finalizer.
+        XCTAssertTrue(app.otherElements["uiTesting.resetCompleted"].waitForExistence(timeout: 10))
         currentCode = nil
+        app.terminate()
+        // Relaunch without setup flags so they cannot hide an incomplete reset.
         app.launchArguments = languageArguments
         app.launch()
         XCTAssertTrue(app.buttons["login"].waitForExistence(timeout: TestConstants.controlExistenceTimeout))

@@ -44,6 +44,20 @@ final class NCPasscodeModel: ObservableObject {
     private var didStart = false
     private let preferences = NCPreferences()
 
+    /// UI tests of the reset threshold can shorten the delay without changing release policy.
+    private var lockoutDuration: TimeInterval {
+#if DEBUG
+        let process = ProcessInfo.processInfo
+        if process.arguments.contains("UI_TESTING"),
+           process.arguments.contains("UI_TESTING_PASSCODE"),
+           let value = process.environment["UI_TESTING_PASSCODE_LOCKOUT_SECONDS"],
+           let seconds = Int(value), (1...NCBrandOptions.shared.passcodeSecondsFail).contains(seconds) {
+            return TimeInterval(seconds)
+        }
+#endif
+        return TimeInterval(NCBrandOptions.shared.passcodeSecondsFail)
+    }
+
     init(mode: NCPasscodeModel.Mode, allowCancel: Bool) {
         self.mode = mode
         self.allowCancel = allowCancel
@@ -104,7 +118,7 @@ final class NCPasscodeModel: ObservableObject {
         }
         let startsLockout = preferences.passcodeCounterFail >= 3 && preferences.passcodeLockoutEnd == nil
         if startsLockout {
-            preferences.passcodeLockoutEnd = Date().addingTimeInterval(TimeInterval(NCBrandOptions.shared.passcodeSecondsFail))
+            preferences.passcodeLockoutEnd = Date().addingTimeInterval(lockoutDuration)
         }
         lockoutEnd = preferences.passcodeLockoutEnd
         if lockoutEnd != nil {

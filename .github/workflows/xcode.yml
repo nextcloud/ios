@@ -69,6 +69,51 @@ jobs:
     
     steps:
     - uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+
+    - name: Detect passcode changes
+      id: passcode_changes
+      shell: bash
+      env:
+        PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        PUSH_BEFORE_SHA: ${{ github.event.before }}
+      run: |
+        run_passcode_tests=false
+        if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+          compare_base=$(git merge-base "$PR_BASE_SHA" "$PR_HEAD_SHA")
+          compare_head="$PR_HEAD_SHA"
+        else
+          compare_base="$PUSH_BEFORE_SHA"
+          compare_head="$GITHUB_SHA"
+        fi
+
+        if [ -z "$compare_base" ] || [ "$compare_base" = "0000000000000000000000000000000000000000" ]; then
+          run_passcode_tests=true
+        else
+          git diff --name-only -z "$compare_base" "$compare_head" > "$RUNNER_TEMP/passcode-changed-files"
+          while IFS= read -r -d '' changed_file; do
+            case "$changed_file" in
+              iOSClient/Utility/Passcode/* | \
+              iOSClient/Settings/Settings/* | \
+              iOSClient/Settings/NCPreferences.swift | \
+              iOSClient/SceneDelegate.swift | \
+              iOSClient/AppDelegate.swift | \
+              Share/NCShareExtension.swift | \
+              Brand/* | \
+              Tests/NextcloudUITests/* | \
+              Tests/TestConstants.swift | \
+              Nextcloud.xcodeproj/* | \
+              .github/workflows/xcode.yml)
+                run_passcode_tests=true
+                break
+                ;;
+            esac
+          done < "$RUNNER_TEMP/passcode-changed-files"
+        fi
+        echo "run=$run_passcode_tests" >> "$GITHUB_OUTPUT"
+        echo "Run passcode UI tests: $run_passcode_tests"
 
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
@@ -141,18 +186,25 @@ jobs:
 
     - name: Run Xcode Test
       timeout-minutes: 25
+      shell: bash
+      env:
+        RUN_PASSCODE_TESTS: ${{ steps.passcode_changes.outputs.run }}
       run: |
-        set -o pipefail && \
+        set -o pipefail
+        test_selection=()
+        if [ "$RUN_PASSCODE_TESTS" != "true" ]; then
+          test_selection+=(-skip-testing:NextcloudUITests/PasscodeUITests)
+        fi
         xcodebuild test-without-building \
         -xctestrun $(find . -type f -name "*.xctestrun") \
         -destination "${{ env.DESTINATION }}" \
         -derivedDataPath "DerivedData" \
-        -skip-testing:NextcloudUITests/PasscodeUITests \
+        "${test_selection[@]}" \
         -test-iterations 3 \
         -retry-tests-on-failure \
         -test-timeouts-enabled YES \
-        -default-test-execution-time-allowance 360 \
-        -maximum-test-execution-time-allowance 360 \
+        -default-test-execution-time-allowance 600 \
+        -maximum-test-execution-time-allowance 600 \
         -resultBundlePath "TestResult.xcresult"
 
     - name: Upload Xcode Test Results
