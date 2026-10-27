@@ -24,11 +24,14 @@ final class NCPasscodeModel: ObservableObject {
     let allowCancel: Bool
     @Published private(set) var digits = ""
     @Published private(set) var message = ""
+    @Published private(set) var errorFeedback = 0
     @Published private(set) var lockoutEnd: Date?
     @Published private(set) var isAuthenticating = false
     @Published private(set) var result: NCPasscodeModel.Result?
     @Published private var step: Step
     var onCompletion: (@MainActor (NCPasscodeModel.Result) -> Void)?
+
+    static let lockoutNotification = Notification.Name("NCPasscodeLockoutStarted")
 
     static var isPasscodeReset: Bool {
         NCPreferences().resetAppCounterFail && NCPreferences().passcodeCounterFailReset >= NCBrandOptions.shared.resetAppPasscodeAttempts
@@ -99,13 +102,17 @@ final class NCPasscodeModel: ObservableObject {
             finish(.reset)
             return
         }
-        if preferences.passcodeCounterFail >= 3 && preferences.passcodeLockoutEnd == nil {
+        let startsLockout = preferences.passcodeCounterFail >= 3 && preferences.passcodeLockoutEnd == nil
+        if startsLockout {
             preferences.passcodeLockoutEnd = Date().addingTimeInterval(TimeInterval(NCBrandOptions.shared.passcodeSecondsFail))
         }
         lockoutEnd = preferences.passcodeLockoutEnd
         if lockoutEnd != nil {
             digits = ""
             cancelBiometrics()
+        }
+        if startsLockout {
+            NotificationCenter.default.post(name: Self.lockoutNotification, object: nil)
         }
     }
 
@@ -191,6 +198,7 @@ final class NCPasscodeModel: ObservableObject {
                 newPasscode = ""
                 step = .enterNew
                 message = "Passcodes didn't match. Try again."
+                errorFeedback += 1
                 return
             }
             preferences.passcode = code
@@ -220,6 +228,9 @@ final class NCPasscodeModel: ObservableObject {
         preferences.passcodeCounterFailReset += 1
         message = "_passcode_incorrect_"
         refreshProtection()
+        if result == nil {
+            errorFeedback += 1
+        }
     }
 
     private func finish(_ result: NCPasscodeModel.Result) {

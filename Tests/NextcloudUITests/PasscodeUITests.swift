@@ -98,15 +98,15 @@ final class PasscodeUITests: BaseUIXCTestCase {
         assertLockedOut()
         let deadline = Date().addingTimeInterval(TimeInterval(remainingSeconds()))
 
-        // Reopening must neither enable the keypad nor restart the countdown.
-        closeButton.tap()
-        XCTAssertTrue(title.waitForNonExistence(timeout: 5))
-        lockSetting.tap()
+        // The third error promotes the request to a mandatory app lock.
+        XCTAssertTrue(lockWindow.waitForExistence(timeout: 5))
+        XCTAssertFalse(closeButton.exists)
+        XCTAssertFalse(lockSetting.isHittable)
         assertLockedOut()
         waitForCountdown(toDropBelow: 56)
         assertOriginalDeadline(deadline)
 
-        // Background cancels the optional request; foreground requires the mandatory lock.
+        // Background and foreground must preserve the mandatory lock.
         backgroundAndActivate()
         assertTitle("Enter Passcode")
         XCTAssertFalse(closeButton.exists)
@@ -141,11 +141,20 @@ final class PasscodeUITests: BaseUIXCTestCase {
         }
         assertLockedOut()
         let deadline = Date().addingTimeInterval(TimeInterval(remainingSeconds()))
-        closeButton.tap()
-        XCTAssertTrue(title.waitForNonExistence(timeout: 5))
-        changeSetting.tap()
-        assertLockedOut()
+        XCTAssertTrue(lockWindow.waitForExistence(timeout: 5))
+        XCTAssertFalse(closeButton.exists)
+        XCTAssertFalse(changeSetting.isHittable)
+        XCTAssertFalse(lockSetting.isHittable)
         assertOriginalDeadline(deadline)
+
+        // Waiting unlocks the keypad, never the app itself.
+        XCTAssertTrue(lockout.waitForNonExistence(timeout: max(0, deadline.timeIntervalSinceNow) + 5))
+        XCTAssertTrue(lockWindow.exists)
+        XCTAssertFalse(closeButton.exists)
+        XCTAssertFalse(changeSetting.isHittable)
+        enter(originalCode)
+        XCTAssertTrue(lockWindow.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(changeSetting.waitForExistence(timeout: 5))
     }
 
     func testBackgroundCannotBypassMandatoryAppLock() {

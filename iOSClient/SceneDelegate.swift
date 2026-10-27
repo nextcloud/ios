@@ -24,6 +24,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else {
             return
         }
+        NotificationCenter.default.removeObserver(self, name: NCPasscodeModel.lockoutNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(passcodeLockoutStarted),
+                                               name: NCPasscodeModel.lockoutNotification, object: nil)
         let versionApp = NCUtility().getVersionMaintenance()
         var lastVersion: String?
 
@@ -525,6 +528,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private func hidePrivacyProtectionWindow() {
         privacyProtectionWindow?.isHidden = true
         privacyProtectionWindow = nil
+    }
+
+    /// A failed settings authentication must protect every scene, independently of modal transitions.
+    @objc private func passcodeLockoutStarted() {
+        guard let controller = window?.rootViewController as? NCMainTabBarController else { return }
+        requestPasscodeIfNeeded(controller: controller)
     }
 
     /// Request the mandatory lock; return whether authentication is required, including while the UI is not ready.

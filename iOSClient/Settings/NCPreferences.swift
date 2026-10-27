@@ -161,7 +161,8 @@ final class NCPreferences: NSObject {
     }
 
     var presentPasscode: Bool {
-        return passcode != nil && requestPasscodeAtStart
+        // After a lockout, only successful authentication may restore access, even after relaunch.
+        return passcode != nil && (requestPasscodeAtStart || passcodeCounterFailReset >= 3)
     }
 
     var incrementalNumber: String {

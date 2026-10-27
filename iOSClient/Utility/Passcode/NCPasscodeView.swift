@@ -8,6 +8,7 @@ import SwiftUI
 @MainActor
 struct NCPasscodeView: View {
     @StateObject private var model: NCPasscodeModel
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private weak var windowScene: UIWindowScene?
 
     init(model: NCPasscodeModel, windowScene: UIWindowScene? = nil) {
@@ -101,16 +102,18 @@ struct NCPasscodeView: View {
                             .accessibilityIdentifier("passcode.title")
                             .multilineTextAlignment(.center)
                             .accessibilityAddTraits(.isHeader)
-                        HStack(spacing: 16) {
-                            ForEach(0..<6) { index in
-                                Image(systemName: index < model.digits.count ? "circle.fill" : "circle")
-                                    .font(.body)
+                        shakeOnError {
+                            HStack(spacing: 16) {
+                                ForEach(0..<6) { index in
+                                    Image(systemName: index < model.digits.count ? "circle.fill" : "circle")
+                                        .font(.body)
+                                }
                             }
+                            .accessibilityElement(children: .ignore)
+                            .accessibilityLabel(NSLocalizedString("_passcode_digits_entered_", comment: ""))
+                            .accessibilityValue("\(model.digits.count) / 6")
+                            .accessibilityIdentifier("passcode.progress")
                         }
-                        .accessibilityElement(children: .ignore)
-                        .accessibilityLabel(NSLocalizedString("_passcode_digits_entered_", comment: ""))
-                        .accessibilityValue("\(model.digits.count) / 6")
-                        .accessibilityIdentifier("passcode.progress")
 
                         if let deadline = model.lockoutEnd {
                             TimelineView(.periodic(from: .now, by: 1)) { timeline in
@@ -122,11 +125,13 @@ struct NCPasscodeView: View {
                                 .multilineTextAlignment(.center)
                             }
                         } else {
-                            Text(NSLocalizedString(model.message, comment: ""))
-                                .accessibilityIdentifier("passcode.error")
-                                .foregroundStyle(.red)
-                                .multilineTextAlignment(.center)
-                                .frame(minHeight: 24)
+                            shakeOnError {
+                                Text(NSLocalizedString(model.message, comment: ""))
+                                    .accessibilityIdentifier("passcode.error")
+                                    .foregroundStyle(.red)
+                                    .multilineTextAlignment(.center)
+                                    .frame(minHeight: 24)
+                            }
                         }
                         keypad
                     }
@@ -154,6 +159,7 @@ struct NCPasscodeView: View {
             }
         }
         .interactiveDismissDisabled(!model.allowCancel)
+        .sensoryFeedback(.error, trigger: model.errorFeedback)
         .task {
             if let windowScene, windowScene.activationState != .foregroundActive {
                 model.refreshProtection()
@@ -183,6 +189,21 @@ struct NCPasscodeView: View {
             model.cancelBiometrics()
             model.cancel()
         }
+    }
+
+    /// Shake on each new error, including repeated failures with the same message.
+    private func shakeOnError<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        let shouldReduceMotion = reduceMotion
+        return content()
+            .keyframeAnimator(initialValue: CGFloat.zero, trigger: model.errorFeedback) { content, offset in
+                content.offset(x: shouldReduceMotion ? 0 : offset)
+            } keyframes: { _ in
+                LinearKeyframe(-10, duration: 0.06)
+                LinearKeyframe(10, duration: 0.08)
+                LinearKeyframe(-8, duration: 0.08)
+                LinearKeyframe(8, duration: 0.08)
+                LinearKeyframe(0, duration: 0.06)
+            }
     }
 
     private var keypad: some View {

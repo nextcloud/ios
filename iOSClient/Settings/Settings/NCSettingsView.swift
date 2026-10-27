@@ -48,7 +48,7 @@ struct NCSettingsView: View {
                             .opacity(NCBrandOptions.shared.enforce_passcode_lock ? 0.5 : 1)
                             .frame(width: 39)
 
-                        Text(model.isLockActive ? NSLocalizedString("_lock_active_", comment: "") : NSLocalizedString("_lock_not_active_", comment: ""))
+                        Text(model.isLockActive ? NSLocalizedString("_turn_passcode_off_", comment: "") : NSLocalizedString("_turn_passcode_on_", comment: ""))
                             .font(.body)
                     }
                 })
@@ -80,11 +80,16 @@ struct NCSettingsView: View {
                         })
                         .accessibilityIdentifier("settings.passcode.change")
                         // Enable Touch ID
-                        Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchFaceID)
-                            .font(.body)
-                            .onChange(of: model.enableTouchFaceID) {
-                                model.updateTouchIDSetting()
+                        Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: Binding(
+                            get: { model.enableTouchFaceID },
+                            set: { enabled in
+                                Task { @MainActor in
+                                    await model.updateTouchIDSettingAsync(enabled)
+                                }
                             }
+                        ))
+                        .font(.body)
+                        .disabled(model.isUpdatingTouchID)
 
                         if !NCBrandOptions.shared.enforce_passcode_lock {
                             // Do not ask for passcode on startup
@@ -307,6 +312,12 @@ struct NCSettingsView: View {
                 Text(model.footerApp + model.footerServer + model.footerSlogan)
                     .font(.footnote)
             })
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NCPasscodeModel.lockoutNotification)) { _ in
+            // The scene's mandatory window takes over; do not leave the settings operation open underneath.
+            if showPasscode || showChangePasscode {
+                completePasscode(.cancelled)
+            }
         }
         .sheet(isPresented: $showPasscode) {
             NCPasscodeView(mode: NCPreferences().passcode == nil ? .create : .disable,
