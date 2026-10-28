@@ -426,7 +426,7 @@ struct NCShareAccountItem: Identifiable, Sendable {
     let isSelected: Bool
 }
 
-#if DEBUG
+#if DEBUG && SHARE_PREVIEWS
 extension NCShareViewModel {
     /// Static preview state. The entry controller never starts a share request.
     /// Session storage stays lazy so constructing this model does not read accounts.

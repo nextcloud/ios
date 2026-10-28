@@ -155,7 +155,7 @@ struct NCShareView: View {
     }
 }
 
-#if DEBUG
+#if DEBUG && SHARE_PREVIEWS
 #Preview("Share") {
     NCShareView(model: .preview())
         .allowsHitTesting(false)

@@ -51,7 +51,7 @@ struct NCShareUploadConflictView: View {
     }
 }
 
-#if DEBUG
+#if DEBUG && SHARE_PREVIEWS
 #Preview("Single file conflict") {
     NCShareUploadConflictView(
         confirmation: NCShareUploadConfirmation(

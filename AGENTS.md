@@ -32,7 +32,7 @@ Other platforms like Android are irrelevant for this project.
 | `File Provider Extension` | Contains business logic for the iOS File Provider extension. | — |
 | `File Provider Extension UI` | Contains UI logic for the iOS File Provider extension. | — |
 | `Share` | Contains the active Share extension entry point, launched through `NSExtensionPrincipalClass`, plus input preparation and session storage. | — |
-| `Share/View` | Contains the SwiftUI Share extension interface. | — |
+| `Share/View` | Contains the SwiftUI Share extension interface. | Select the `Nextcloud` scheme for Xcode previews. Shared Share sources are hosted by the app only in Debug (`SHARE_PREVIEWS`) and excluded from app Release builds. |
 | `Share/Model` | Contains Share extension state, account handling and upload logic. | — |
 | `Share/UIKit` | Contains the previous UIKit Share extension sources and storyboard for reference. | Keep these reference files out of the Share target build. |
 | `Widget` | Contains code for iOS Widgets. | — |

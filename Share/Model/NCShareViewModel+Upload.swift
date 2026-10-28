@@ -5,7 +5,7 @@
 import Foundation
 
 // The unit-test target compiles only the pure name planner below.
-#if EXTENSION_SHARE
+#if EXTENSION_SHARE || SHARE_PREVIEWS
 import UIKit
 import NextcloudKit
 import LucidBanner

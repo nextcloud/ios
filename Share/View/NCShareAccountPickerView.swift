@@ -52,7 +52,7 @@ struct NCShareAccountPickerView: View {
     }
 }
 
-#if DEBUG
+#if DEBUG && SHARE_PREVIEWS
 #Preview("Accounts") {
     NCShareAccountPickerView(model: .preview())
         .allowsHitTesting(false)

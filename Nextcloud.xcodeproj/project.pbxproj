@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB1028260000000000080008 /* NCShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000020009 /* NCShareView.swift */; };
+		AB1028260000000000080007 /* NCShareUploadConflictView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000050001 /* NCShareUploadConflictView.swift */; };
+		AB1028260000000000080006 /* NCShareAccountPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000060000 /* NCShareAccountPickerView.swift */; };
+		AB1028260000000000080005 /* NCShareSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000020008 /* NCShareSessionStore.swift */; };
+		AB1028260000000000080004 /* NCShareLoaderItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000020006 /* NCShareLoaderItemProvider.swift */; };
+		AB1028260000000000080003 /* NCShareViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB102826000000000002000A /* NCShareViewModel.swift */; };
+		AB1028260000000000080002 /* NCShareViewModel+Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000020004 /* NCShareViewModel+Upload.swift */; };
+		AB1028260000000000080001 /* NCShareViewModel+Folders.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000020003 /* NCShareViewModel+Folders.swift */; };
+		AB1028260000000000080000 /* NCShareViewModel+Accounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000020002 /* NCShareViewModel+Accounts.swift */; };
 		AB1028260000000000060001 /* NCShareAccountPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000060000 /* NCShareAccountPickerView.swift */; };
 		AB1028260000000000050200 /* NCShareUploadNamePlannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000050300 /* NCShareUploadNamePlannerTests.swift */; };
 		AB1028260000000000050201 /* NCShareViewModel+Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000020004 /* NCShareViewModel+Upload.swift */; };
@@ -5094,6 +5103,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB1028260000000000080000 /* NCShareViewModel+Accounts.swift in Sources */,
+				AB1028260000000000080001 /* NCShareViewModel+Folders.swift in Sources */,
+				AB1028260000000000080002 /* NCShareViewModel+Upload.swift in Sources */,
+				AB1028260000000000080003 /* NCShareViewModel.swift in Sources */,
+				AB1028260000000000080004 /* NCShareLoaderItemProvider.swift in Sources */,
+				AB1028260000000000080005 /* NCShareSessionStore.swift in Sources */,
+				AB1028260000000000080006 /* NCShareAccountPickerView.swift in Sources */,
+				AB1028260000000000080007 /* NCShareUploadConflictView.swift in Sources */,
+				AB1028260000000000080008 /* NCShareView.swift in Sources */,
 				F76BED77306D0000002E1442 /* NCLocalDatabase.swift in Sources */,
 				F76BED78306D0000002E1442 /* NCLocalDatabaseMigrator.swift in Sources */,
 				F76BED7C306D0000002E1442 /* NCLocalDatabase+PhotoLibraryAsset.swift in Sources */,
@@ -6457,6 +6475,7 @@
 		F77B0F9B1D118A16002130FE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SHARE_PREVIEWS";
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
@@ -6479,6 +6498,18 @@
 		F77B0F9C1D118A16002130FE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				EXCLUDED_SOURCE_FILE_NAMES = (
+					"$(inherited)",
+					"NCShareViewModel+Accounts.swift",
+					"NCShareViewModel+Folders.swift",
+					"NCShareViewModel+Upload.swift",
+					"NCShareViewModel.swift",
+					"NCShareLoaderItemProvider.swift",
+					"NCShareSessionStore.swift",
+					"NCShareAccountPickerView.swift",
+					"NCShareUploadConflictView.swift",
+					"NCShareView.swift",
+				);
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
