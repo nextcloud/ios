@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A0C0DE0230E0000100C0D001 /* NCPasscodeWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C0DE0130E0000100C0D001 /* NCPasscodeWindow.swift */; };
 		22BA14432CF44BDBA2E6C291 /* NCDocumentEditorSupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B74B947E07444CC9CFE0A6C /* NCDocumentEditorSupportTests.swift */; };
 		2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
@@ -19,6 +18,7 @@
 		87768C6AB8E040219DF85898 /* NCPasscodeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131F8E2F43AD414E9DB53019 /* NCPasscodeModel.swift */; };
 		9310075861174A62B1C9FED6 /* NCPasscodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F902B24E44354B6D9F329F12 /* NCPasscodeView.swift */; };
 		9F0E3B428AB44A6480190C2D /* NCPasscodeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131F8E2F43AD414E9DB53019 /* NCPasscodeModel.swift */; };
+		A0C0DE0230E0000100C0D001 /* NCPasscodeWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C0DE0130E0000100C0D001 /* NCPasscodeWindow.swift */; };
 		A12720261001000000000001 /* NCBackgroundUploadExtensionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F793E7C230417C7100F011FE /* NCBackgroundUploadExtensionManager.swift */; };
 		A1E2EE010000000000000002 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
 		A1E2EE010000000000000003 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
@@ -1300,7 +1300,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		A0C0DE0130E0000100C0D001 /* NCPasscodeWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCPasscodeWindow.swift; sourceTree = "<group>"; };
 		131F8E2F43AD414E9DB53019 /* NCPasscodeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCPasscodeModel.swift; sourceTree = "<group>"; };
 		2C33C47F23E2C475005F963B /* Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C33C48123E2C475005F963B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -1309,6 +1308,7 @@
 		439616AAA50F4360A761E5EF /* NCAlbumsPersistenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAlbumsPersistenceTests.swift; sourceTree = "<group>"; };
 		4B74B947E07444CC9CFE0A6C /* NCDocumentEditorSupportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCDocumentEditorSupportTests.swift; sourceTree = "<group>"; };
 		8932E90EC4278026D86CCCC9 /* NCContextMenuComment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCContextMenuComment.swift; sourceTree = "<group>"; };
+		A0C0DE0130E0000100C0D001 /* NCPasscodeWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCPasscodeWindow.swift; sourceTree = "<group>"; };
 		A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySet.swift; sourceTree = "<group>"; };
 		A1E2EE010000000000000009 /* NCEndToEndKeySetArchiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySetArchiveTests.swift; sourceTree = "<group>"; };
 		A1E2EE020000000000000001 /* NCEndToEndKeySetAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySetAccess.swift; sourceTree = "<group>"; };
@@ -6663,7 +6663,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 35.2.1;
+				MARKETING_VERSION = 35.2.2;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
@@ -6729,7 +6729,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 35.2.1;
+				MARKETING_VERSION = 35.2.2;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
