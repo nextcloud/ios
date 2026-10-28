@@ -100,7 +100,7 @@ jobs:
               iOSClient/Settings/NCPreferences.swift | \
               iOSClient/SceneDelegate.swift | \
               iOSClient/AppDelegate.swift | \
-              Share/NCShareExtension.swift | \
+              Share/* | \
               Brand/* | \
               Tests/NextcloudUITests/* | \
               Tests/TestConstants.swift | \

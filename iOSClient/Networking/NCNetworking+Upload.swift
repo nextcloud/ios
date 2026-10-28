@@ -74,6 +74,8 @@ extension NCNetworking {
     func uploadChunkFile(metadata: tableMetadata,
                          performPostProcessing: Bool = true,
                          customHeaders: [String: String]? = nil,
+                         overwrite: Bool = true,
+                         ifMatch: String? = nil,
                          backgroundContext: ChunkUploadBackgroundContext? = nil,
                          chunkProgressHandler: @escaping (_ total: Int, _ counter: Int) -> Void = { _, _ in },
                          uploadStart: @escaping (_ filesChunk: [(fileName: String, size: Int64)]) -> Void = { _ in },
@@ -101,7 +103,9 @@ extension NCNetworking {
                 filesChunk: filesChunk,
                 chunkSize: self.global.chunkSize,
                 account: metadata.account,
-                options: options) { total, counter in
+                options: options,
+                ifMatch: ifMatch,
+                overwrite: overwrite) { total, counter in
                     chunkProgressHandler(total, counter)
                 } uploadStart: { filesChunk in
                     Task {

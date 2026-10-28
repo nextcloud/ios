@@ -31,7 +31,10 @@ Other platforms like Android are irrelevant for this project.
 | `Brand` | Branding layer: `NCBrand.swift` (app constants, colors), `Database.swift` (Realm database name and schema version), Info.plists and entitlements for all targets, launch screen and intro screens. | Bump `databaseSchemaVersion` in `Brand/Database.swift` when changing Realm models. |
 | `File Provider Extension` | Contains business logic for the iOS File Provider extension. | — |
 | `File Provider Extension UI` | Contains UI logic for the iOS File Provider extension. | — |
-| `Share` | Contains code for the iOS Share extension. | — |
+| `Share` | Contains the active Share extension entry point, launched through `NSExtensionPrincipalClass`, plus input preparation and session storage. | — |
+| `Share/View` | Contains the SwiftUI Share extension interface. | — |
+| `Share/Model` | Contains Share extension state, account handling and upload logic. | — |
+| `Share/UIKit` | Contains the previous UIKit Share extension sources and storyboard for reference. | Keep these reference files out of the Share target build. |
 | `Widget` | Contains code for iOS Widgets. | — |
 | `WidgetDashboardIntentHandler` | Contains the intent handler for the dashboard widget. | — |
 | `Notification Service Extension` | Contains the push notification service extension. | — |

@@ -884,3 +884,20 @@
 
 "_passcode_incorrect_" = "Incorrect passcode. Try again.";
 "_passcode_digits_entered_" = "Passcode digits entered";
+
+/* Share extension input preparation */
+"_share_import_preparing_" = "Preparing shared files…";
+"_share_import_failed_" = "Some shared items could not be prepared. Review the files before uploading.";
+"_share_import_no_files_" = "The shared items could not be prepared.";
+"_share_import_item_error_" = "Item %d: %@";
+"_share_import_copy_failed_" = "A shared file could not be prepared for upload. Please try again.";
+
+/* Share extension upload conflicts */
+"_share_conflict_title_" = "Files already exist";
+"_share_conflict_single_message_" = "An item named \"%@\" already exists in this folder. You can keep both files, or replace the existing file when available.";
+"_share_conflict_batch_message_" = "Some names are already in use. These files will be uploaded with new names, keeping the existing files.";
+"_share_conflict_new_names_" = "New file names";
+"_share_conflict_replace_" = "Replace";
+"_share_conflict_keep_both_" = "Keep both";
+"_share_conflict_checking_" = "Preparing upload…";
+"_share_conflict_read_failed_" = "The destination folder could not be checked. Please try again.";
