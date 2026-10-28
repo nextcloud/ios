@@ -257,6 +257,18 @@ class NCMainTabBarController: UITabBarController {
 }
 
 extension NCMainTabBarController: UITabBarControllerDelegate {
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        // Re-tapping Browse while it shows another sidebar section returns to All Files.
+        guard viewController === selectedViewController,
+              selectedIndex == 0,
+              let filesNavigationController,
+              viewController !== filesNavigationController || filesNavigationController.personalFilesOnly else { return true }
+
+        openSidebarFiles(personalFilesOnly: false)
+
+        return false
+    }
+
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         // Browse retains the sidebar destination, personal filter and folder stack when switching tabs.
         if previousIndex == tabBarController.selectedIndex {
