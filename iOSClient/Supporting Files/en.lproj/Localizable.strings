@@ -912,3 +912,8 @@
 "_share_retry_folder_" = "Retry loading folders";
 "_share_folder_unavailable_" = "This folder is no longer available.";
 "_share_upload_to_" = "Upload to %@";
+
+/* Share extension capabilities */
+"_share_capabilities_loading_" = "Loading server capabilities…";
+"_share_capabilities_unavailable_" = "Server capabilities could not be loaded. Please try again before uploading, renaming files, or creating folders.";
+"_share_capabilities_retry_" = "Try again";

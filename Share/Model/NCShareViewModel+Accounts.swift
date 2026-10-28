@@ -91,7 +91,72 @@ extension NCShareViewModel {
             serverUrl = utilityFileSystem.getHomeServer(session: session)
             setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)
             showAccountView()
-            await initializeFolderBrowser()
+            await loadServerCapabilities(account: account, changeID: changeID)
+            guard !Task.isCancelled, !isClosing, accountChangeID == changeID else { return }
+            if serverCapabilities != nil { await initializeFolderBrowser() }
         }
+    }
+
+    func requireCapabilities(account: String) throws -> NKCapabilities.Capabilities {
+        guard account == sessionStore.getSession().account else { throw CancellationError() }
+        guard !isLoadingCapabilities, let serverCapabilities else {
+            throw NKError(errorCode: NCGlobal.shared.errorInternalError,
+                          errorDescription: NSLocalizedString("_share_capabilities_unavailable_", comment: ""))
+        }
+        return serverCapabilities
+    }
+
+    func retryCapabilities() {
+        guard isAuthenticated, !isClosing, !isLoadingCapabilities, !isSwitchingAccount, !isPreparingUpload else { return }
+        let account = sessionStore.getSession().account
+        guard !account.isEmpty else { return }
+        let changeID = accountChangeID
+        capabilitiesTask = Task { @MainActor in
+            await loadServerCapabilities(account: account, changeID: changeID)
+            guard isCurrentCapabilitiesRequest(account: account, changeID: changeID), serverCapabilities != nil else { return }
+            if folders.isEmpty { await initializeFolderBrowser() }
+        }
+    }
+
+    private func loadServerCapabilities(account: String, changeID: UUID) async {
+        isLoadingCapabilities = true
+        serverCapabilities = nil
+        capabilitiesErrorMessage = ""
+        defer { if accountChangeID == changeID { isLoadingCapabilities = false } }
+        // Prefer the actual cached response, rather than default capabilities.
+        var capabilities = await NCManageDatabase.shared.getCapabilities(account: account)
+        guard isCurrentCapabilitiesRequest(account: account, changeID: changeID) else { return }
+        if capabilities == nil {
+            let result = await NextcloudKit.shared.getCapabilitiesAsync(account: account) { [weak self] task in
+                Task { @MainActor [weak self] in
+                    guard let self, !self.isClosing, self.accountChangeID == changeID else {
+                        task.cancel()
+                        return
+                    }
+                    self.capabilitiesRequest = task
+                }
+            }
+            guard isCurrentCapabilitiesRequest(account: account, changeID: changeID) else { return }
+            guard result.error == .success, let loaded = result.capabilities else {
+                capabilitiesErrorMessage = NSLocalizedString("_share_capabilities_unavailable_", comment: "")
+                return
+            }
+            if let data = result.responseData?.data {
+                await NCManageDatabase.shared.setDataCapabilities(data: data, account: account)
+            }
+            guard isCurrentCapabilitiesRequest(account: account, changeID: changeID) else { return }
+            capabilities = loaded
+        }
+        guard let capabilities else { return }
+        // Keep legacy networking services and NextcloudKit in sync with this request.
+        await NKCapabilities.shared.setCapabilities(for: account, capabilities: capabilities)
+        guard isCurrentCapabilitiesRequest(account: account, changeID: changeID) else { return }
+        NCNetworking.shared.capabilities[account] = capabilities
+        serverCapabilities = capabilities
+        NCBrandColor.shared.settingThemingColor(account: account, capabilities: capabilities)
+    }
+
+    private func isCurrentCapabilitiesRequest(account: String, changeID: UUID) -> Bool {
+        !Task.isCancelled && !isClosing && accountChangeID == changeID && sessionStore.getSession().account == account
     }
 }

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
+import UIKit
 import Testing
 import UniformTypeIdentifiers
 @testable import Nextcloud
@@ -72,6 +73,50 @@ struct NCShareLoaderItemProviderTests {
         let name = try #require(output.fileNames.first)
         #expect((name as NSString).pathExtension == "txt")
         #expect(try String(contentsOf: directory.appendingPathComponent(name), encoding: .utf8) == text)
+    }
+
+    @Test("Failed image and URL representations do not discard usable text")
+    func failedRepresentationsFallBackToText() async throws {
+        let directory = temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let text = "A note that must not be discarded"
+        let item = NSItemProvider(object: text as NSString)
+        for type in [UTType.png, UTType.url] {
+            item.registerDataRepresentation(forTypeIdentifier: type.identifier, visibility: .all) { completion in
+                completion(nil, CocoaError(.fileReadCorruptFile))
+                return nil
+            }
+        }
+
+        let output = try await load([item], directory: directory)
+
+        #expect(output.failures.isEmpty)
+        #expect(output.fileNames.count == 1)
+        let name = try #require(output.fileNames.first)
+        #expect(try String(contentsOf: directory.appendingPathComponent(name), encoding: .utf8) == text)
+    }
+
+    @Test("Attributed text is imported once, retaining a rich representation when available")
+    func attributedText() async throws {
+        let directory = temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let text = "A note with formatting\nCaffè ☕️"
+        let attributed = NSAttributedString(string: text, attributes: [.font: UIFont.boldSystemFont(ofSize: 17)])
+        let item = NSItemProvider(object: attributed)
+        item.suggestedName = "Note"
+
+        let output = try await load([item], directory: directory)
+
+        #expect(output.failures.isEmpty)
+        #expect(output.fileNames.count == 1)
+        let name = try #require(output.fileNames.first)
+        let file = directory.appendingPathComponent(name)
+        if file.pathExtension == "txt" {
+            #expect(try String(contentsOf: file, encoding: .utf8) == text)
+        } else {
+            let restored = try NSAttributedString(url: file, options: [:], documentAttributes: nil)
+            #expect(restored.string == text)
+        }
     }
 
     @Test("An empty file is valid input")

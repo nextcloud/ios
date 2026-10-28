@@ -147,16 +147,40 @@ final class NCShareLoaderItemProvider {
             }
         }
 
+        try Task.checkCancellation()
         if provider.canLoadObject(ofClass: UIImage.self) {
-            return try await loadImage(provider: provider, name: suggestedName, fallbackName: fallbackName, directory: directory)
+            do {
+                return try await loadImage(provider: provider, name: suggestedName, fallbackName: fallbackName, directory: directory)
+            } catch {
+                lastError = error
+            }
         }
+        try Task.checkCancellation()
         if provider.hasItemConformingToTypeIdentifier(UTType.url.identifier),
            provider.canLoadObject(ofClass: NSURL.self) {
-            return try await loadLink(provider: provider, name: suggestedName, fallbackName: fallbackName, directory: directory)
+            do {
+                return try await loadLink(provider: provider, name: suggestedName, fallbackName: fallbackName, directory: directory)
+            } catch {
+                lastError = error
+            }
         }
+        try Task.checkCancellation()
         if provider.canLoadObject(ofClass: NSString.self) {
-            return try await loadText(provider: provider, name: suggestedName, fallbackName: fallbackName, directory: directory)
+            do {
+                return try await loadText(provider: provider, name: suggestedName, fallbackName: fallbackName, directory: directory)
+            } catch {
+                lastError = error
+            }
         }
+        try Task.checkCancellation()
+        if provider.canLoadObject(ofClass: NSAttributedString.self) {
+            do {
+                return try await loadAttributedText(provider: provider, name: suggestedName, fallbackName: fallbackName, directory: directory)
+            } catch {
+                lastError = error
+            }
+        }
+        try Task.checkCancellation()
         throw lastError
     }
 
@@ -223,6 +247,26 @@ final class NCShareLoaderItemProvider {
                     guard let text = object as? String else { throw CocoaError(.fileReadCorruptFile) }
                     let destination = destination(name: name ?? fallbackName, type: .utf8PlainText, directory: directory)
                     try Data(text.utf8).write(to: destination, options: .atomic)
+                    pending.finish(.success(destination.lastPathComponent))
+                } catch {
+                    pending.finish(.failure(error))
+                }
+            }
+            return { progress.cancel() }
+        }
+    }
+
+    /// Last-resort text fallback for Notes-style providers. A file or data
+    /// representation (for example RTF) is preferred so formatting is preserved.
+    private static func loadAttributedText(provider: NSItemProvider, name: String?, fallbackName: String, directory: URL) async throws -> String {
+        try await request { pending in
+            let progress = provider.loadObject(ofClass: NSAttributedString.self) { object, error in
+                guard !pending.isCancelled else { return }
+                do {
+                    if let error { throw error }
+                    guard let text = object as? NSAttributedString else { throw CocoaError(.fileReadCorruptFile) }
+                    let destination = destination(name: name ?? fallbackName, type: .utf8PlainText, directory: directory)
+                    try Data(text.string.utf8).write(to: destination, options: .atomic)
                     pending.finish(.success(destination.lastPathComponent))
                 } catch {
                     pending.finish(.failure(error))

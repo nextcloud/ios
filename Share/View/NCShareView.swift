@@ -13,6 +13,7 @@ struct NCShareView: View {
             Group {
                 if model.isAvailable && model.isAuthenticated {
                     VStack(spacing: 0) {
+                        capabilitiesStatus
                         folderList
                         if model.isLoading {
                             ProgressView(NSLocalizedString("_request_in_progress_", comment: ""))
@@ -65,6 +66,23 @@ struct NCShareView: View {
         }
     }
 
+    @ViewBuilder
+    private var capabilitiesStatus: some View {
+        if model.isLoadingCapabilities {
+            ProgressView(NSLocalizedString("_share_capabilities_loading_", comment: ""))
+                .padding()
+        } else if !model.capabilitiesErrorMessage.isEmpty {
+            VStack(spacing: 8) {
+                Text(verbatim: model.capabilitiesErrorMessage)
+                    .font(.subheadline)
+                    .multilineTextAlignment(.center)
+                Button(NSLocalizedString("_share_capabilities_retry_", comment: ""), action: model.retryCapabilities)
+                    .disabled(model.isSwitchingAccount)
+            }
+            .padding()
+        }
+    }
+
     private var folderList: some View {
         List {
             Section(NSLocalizedString("_share_recent_folders_", comment: "")) {
@@ -106,7 +124,7 @@ struct NCShareView: View {
         .listStyle(.insetGrouped)
         .listSectionSpacing(8)
         .environment(\.defaultMinListRowHeight, 44)
-        .disabled(model.isLoading || model.isPreparingUpload || model.isSwitchingAccount || model.isLoadingAccounts)
+        .disabled(model.isLoading || model.isPreparingUpload || model.isSwitchingAccount || model.isLoadingAccounts || model.isLoadingCapabilities || model.serverCapabilities == nil)
     }
 
     private var allFoldersHeader: some View {
@@ -237,7 +255,7 @@ struct NCShareView: View {
         }
         .padding()
         .background(Color(uiColor: .secondarySystemBackground))
-        .disabled(model.isPreparingUpload || model.isPreparingInput || model.isSwitchingAccount || model.isLoadingAccounts || !model.inputErrorMessage.isEmpty)
+        .disabled(model.isPreparingUpload || model.isPreparingInput || model.isSwitchingAccount || model.isLoadingAccounts || model.isLoadingCapabilities || model.serverCapabilities == nil || !model.inputErrorMessage.isEmpty)
     }
 }
 
@@ -260,6 +278,21 @@ struct NCShareView: View {
     let model = NCShareViewModel.preview()
     model.fileNames = []
     model.isPreparingInput = true
+    return NCShareView(model: model)
+        .allowsHitTesting(false)
+}
+#Preview("Capabilities unavailable") {
+    let model = NCShareViewModel.preview()
+    model.serverCapabilities = nil
+    model.capabilitiesErrorMessage = NSLocalizedString("_share_capabilities_unavailable_", comment: "")
+    return NCShareView(model: model)
+        .allowsHitTesting(false)
+}
+
+#Preview("Loading capabilities") {
+    let model = NCShareViewModel.preview()
+    model.serverCapabilities = nil
+    model.isLoadingCapabilities = true
     return NCShareView(model: model)
         .allowsHitTesting(false)
 }

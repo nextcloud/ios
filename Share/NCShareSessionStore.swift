@@ -13,12 +13,8 @@ final class NCShareSessionStore {
     /// Re-read even the current account because it may have been removed by the app.
     func setSessionAccount(_ account: String) async -> NCSession.Session? {
         guard let selected = await NCManageDatabase.shared.getTableAccountAsync(account: account) else { return nil }
-        let capabilities = await NCManageDatabase.shared.getCapabilities(account: account)
         guard !Task.isCancelled else { return nil }
         tblAccount = selected
-        if let capabilities {
-            NCBrandColor.shared.settingThemingColor(account: account, capabilities: capabilities)
-        }
         return getSession()
     }
 

@@ -41,6 +41,11 @@ final class NCShareViewModel: NSObject, ObservableObject {
     @Published var isShowingAccounts = false
     @Published var isLoadingAccounts = false
     @Published var isSwitchingAccount = false
+    @Published var serverCapabilities: NKCapabilities.Capabilities?
+    @Published var isLoadingCapabilities = false
+    @Published var capabilitiesErrorMessage = ""
+    var capabilitiesTask: Task<Void, Never>?
+    var capabilitiesRequest: URLSessionTask?
     var pendingAccountSelection: String?
     var accountPickerTask: Task<Void, Never>?
     var accountChangeTask: Task<Void, Never>?
@@ -195,6 +200,8 @@ final class NCShareViewModel: NSObject, ObservableObject {
         uploadTask?.cancel()
         accountPickerTask?.cancel()
         accountChangeTask?.cancel()
+        capabilitiesTask?.cancel()
+        capabilitiesRequest?.cancel()
         dataSourceTask?.cancel()
         folderSelectionTask?.cancel()
         for task in folderTasks.values { task.cancel() }
@@ -235,6 +242,11 @@ final class NCShareViewModel: NSObject, ObservableObject {
     }
 
     func clearAccountView() {
+        capabilitiesTask?.cancel()
+        capabilitiesRequest?.cancel()
+        serverCapabilities = nil
+        isLoadingCapabilities = false
+        capabilitiesErrorMessage = ""
         dataSourceTask?.cancel()
         dataSourceTask = nil
         metadataFolder = nil
@@ -258,6 +270,8 @@ final class NCShareViewModel: NSObject, ObservableObject {
         uploadTask?.cancel()
         accountPickerTask?.cancel()
         accountChangeTask?.cancel()
+        capabilitiesTask?.cancel()
+        capabilitiesRequest?.cancel()
         dataSourceTask?.cancel()
         folderSelectionTask?.cancel()
         for task in folderTasks.values { task.cancel() }
@@ -291,7 +305,14 @@ final class NCShareViewModel: NSObject, ObservableObject {
 
     func createFolder() {
         let session = sessionStore.getSession()
-        guard let folder = selectedFolder, !loadingFolderURLs.contains(folder.serverUrl), let capabilities = NCNetworking.shared.capabilities[session.account] else { return }
+        guard let folder = selectedFolder, !loadingFolderURLs.contains(folder.serverUrl) else { return }
+        let capabilities: NKCapabilities.Capabilities
+        do {
+            capabilities = try requireCapabilities(account: session.account)
+        } catch {
+            showAlert(description: error.localizedDescription)
+            return
+        }
         let alert = UIAlertController.createFolderWith(serverUrl: folder.serverUrl, session: session, capabilities: capabilities) { [weak self] error in
             guard let self else { return }
             guard !self.isClosing, self.sessionStore.getSession().account == session.account else { return }
@@ -306,7 +327,11 @@ final class NCShareViewModel: NSObject, ObservableObject {
     }
 
     func showRenameFileDialog(named fileName: String, account: String) {
-        guard let capabilities = NCNetworking.shared.capabilities[account] else {
+        let capabilities: NKCapabilities.Capabilities
+        do {
+            capabilities = try requireCapabilities(account: account)
+        } catch {
+            showAlert(description: error.localizedDescription)
             return
         }
         let alert = UIAlertController.renameFile(fileName: fileName, capabilities: capabilities, account: account) { [self] newFileName in
@@ -353,6 +378,12 @@ final class NCShareViewModel: NSObject, ObservableObject {
     func upload() {
         guard isAuthenticated, !isPreparingInput, inputErrorMessage.isEmpty, !isPreparingUpload,
               !isSwitchingAccount, !isLoadingAccounts, !isShowingAccounts, !isLoading, !fileNames.isEmpty else { return }
+        do {
+            _ = try requireCapabilities(account: sessionStore.getSession().account)
+        } catch {
+            showAlert(description: error.localizedDescription)
+            return
+        }
         isPreparingUpload = true
         actionUpload()
     }
@@ -450,6 +481,7 @@ extension NCShareViewModel {
     static func preview() -> NCShareViewModel {
         let model = NCShareViewModel()
         model.isAvailable = true
+        model.serverCapabilities = NKCapabilities.Capabilities()
         model.isAuthenticated = true
         model.accountName = "Personal"
         let home = "https://cloud.example.com/remote.php/dav/files/marino"

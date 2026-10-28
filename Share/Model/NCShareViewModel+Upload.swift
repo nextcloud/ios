@@ -64,9 +64,8 @@ extension NCShareViewModel {
         let session = sessionStore.getSession()
         let destination = serverUrl
         let sourceNames = filesName
-        guard !sourceNames.isEmpty, let capabilities = NCNetworking.shared.capabilities[session.account] else {
-            throw NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_share_conflict_read_failed_", comment: ""))
-        }
+        guard !sourceNames.isEmpty else { throw NCShareRequestError.noFiles }
+        let capabilities = try requireCapabilities(account: session.account)
         let renamer = FileAutoRenamer(capabilities: capabilities)
         let requestedNames = try sourceNames.map { name in
             let candidate = renamer.rename(filename: name).trimmingCharacters(in: .whitespacesAndNewlines)
@@ -130,8 +129,8 @@ extension NCShareViewModel {
     private func stageAndUpload(plan: NCShareUploadConfirmation, replacing: Bool) async throws {
         try Task.checkCancellation()
         let session = sessionStore.getSession()
-        guard !isClosing, isAuthenticated, plan.account == session.account, plan.serverUrl == serverUrl,
-              let capabilities = NCNetworking.shared.capabilities[session.account] else { throw CancellationError() }
+        guard !isClosing, isAuthenticated, plan.account == session.account, plan.serverUrl == serverUrl else { throw CancellationError() }
+        let capabilities = try requireCapabilities(account: session.account)
         uploadMetadata.removeAll()
         replacementETags.removeAll()
         counterUploaded = 0
