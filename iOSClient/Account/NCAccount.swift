@@ -169,6 +169,7 @@ class NCAccount: NSObject {
         NCNetworking.shared.capabilities.removeValue(forKey: account)
         // Remove keychain security
         NCPreferences().setPassword(account: account, password: nil)
+        NCPreferences().setClientCertificate(account: account, p12Data: nil, p12Password: nil)
         NCPreferences().clearAllKeysEndToEnd(account: account)
         NCPreferences().clearAllKeysPushNotification(account: account)
         // Remove Account Server in Error
