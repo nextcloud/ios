@@ -58,6 +58,148 @@ struct NCSidebarView: View {
     }
 
     var body: some View {
+        ZStack(alignment: .leading) {
+            Color.clear
+            if isVisible {
+                sidebarPanel
+                    .transition(.move(edge: .leading))
+            }
+        }
+        .task {
+            // Present the overlay before inserting the panel with its slide transition.
+            if !reduceMotion {
+                do {
+                    try await Task.sleep(for: .milliseconds(50))
+                } catch {
+                    return
+                }
+            }
+            guard !isClosing, !Task.isCancelled else { return }
+            updateHeaderLayout()
+            withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
+                isVisible = true
+            }
+        }
+        // Only the expanded phone portrait layout (Duo) inherits the navbar inset.
+        // Other phones and iPad retain their original safe-area behavior.
+        .ignoresSafeArea(.container, edges: usesExpandedPhonePortrait() ? .top : [])
+        .onGeometryChange(for: CGRect.self) { geometry in
+            geometry.frame(in: .global)
+        } action: { _ in
+            updateHeaderLayout()
+        }
+        .background {
+            // Only the backdrop extends beyond the safe area, not the panel's controls.
+            Color.black.opacity(isVisible ? 0.25 : 0)
+                .ignoresSafeArea()
+                .onTapGesture { close(then: onClose) }
+                .accessibilityHidden(true)
+        }
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 20)
+                .onEnded { value in
+                    // Ignore vertical scrolling and short accidental movements.
+                    let translation = value.translation
+                    guard translation.width < 0,
+                          abs(translation.width) > abs(translation.height) * 1.5,
+                          translation.width < -60 || value.predictedEndTranslation.width < -100 else { return }
+                    close(then: onClose)
+                }
+        )
+        .onReceive(NotificationCenter.default.publisher(for: Self.selectionChanged)
+            .receive(on: DispatchQueue.main)) { notification in
+            guard let controller = notification.object as? NCMainTabBarController,
+                  ObjectIdentifier(controller) == controllerIdentifier else { return }
+            selectedDestination = currentSelection()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: Self.closeRequested)
+            .receive(on: DispatchQueue.main)) { notification in
+            guard let controller = notification.object as? NCMainTabBarController,
+                  ObjectIdentifier(controller) == controllerIdentifier else { return }
+            close(then: onClose)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: Notification.Name(NCGlobal.shared.notificationCenterChangeUser))
+            .receive(on: DispatchQueue.main)) { notification in
+            guard let controller = notification.userInfo?["controller"] as? NCMainTabBarController,
+                  ObjectIdentifier(controller) == controllerIdentifier,
+                  let account = notification.userInfo?["account"] as? String,
+                  account == controller.account else { return }
+
+            // Hide the previous account's actions while loading the new cached capabilities.
+            updatedAccount = account
+            externalSites = []
+            autoUploadEnabled = nil
+            autoUploadCounter.stop(reset: true)
+            quotaDescription = ""
+            quotaProgress = 0
+            quotaHasLimit = false
+            showsAssistant = false
+            showsNotifications = false
+            notificationCount = nil
+            showsShares = false
+            showsGroupfolders = false
+            capabilitiesRevision = UUID()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: Notification.Name(NCGlobal.shared.notificationCenterServerDidUpdate))
+            .receive(on: DispatchQueue.main)) { notification in
+            guard let account = notification.userInfo?["account"] as? String,
+                  account == activeAccount else { return }
+            capabilitiesRevision = UUID()
+        }
+        .task(id: activeAccount) {
+            let account = activeAccount
+            autoUploadEnabled = nil
+            autoUploadCounter.stop(reset: true)
+            defer { autoUploadCounter.stop() }
+            // Keep sidebar counters current only while the overlay is visible.
+            while !Task.isCancelled {
+                let tableAccount = await NCManageDatabase.shared.getTableAccountAsync(account: account)
+                guard !Task.isCancelled else { return }
+                if let tableAccount, autoUploadEnabled != tableAccount.autoUploadStart {
+                    autoUploadCounter.stop(reset: true)
+                    autoUploadEnabled = tableAccount.autoUploadStart
+                    autoUploadCounter.start(account: account,
+                                            urlBase: tableAccount.urlBase,
+                                            userId: tableAccount.userId,
+                                            autoUploadStart: tableAccount.autoUploadStart)
+                }
+                await updateTransfersSubtitle()
+                do { try await Task.sleep(for: .seconds(2)) } catch { return }
+            }
+        }
+        .task(id: "\(activeAccount)-\(capabilitiesRevision)") {
+            // Account changes and server updates cancel the previous read automatically.
+            let capabilities = await NCManageDatabase.shared.getCapabilities(account: activeAccount)
+            let tableAccount = await NCManageDatabase.shared.getTableAccountAsync(account: activeAccount)
+            guard !Task.isCancelled else { return }
+            if !NCBrandOptions.shared.disable_more_external_site, capabilities?.externalSites == true {
+                externalSites = (NCManageDatabase.shared.getAllExternalSites(account: activeAccount) ?? [])
+                    .filter { !$0.name.isEmpty && !$0.url.isEmpty }
+            } else {
+                externalSites = []
+            }
+            showsShares = capabilities?.fileSharingApiEnabled ?? false
+            showsGroupfolders = capabilities?.groupfoldersEnabled ?? false
+            showsAssistant = capabilities?.assistantEnabled ?? false
+            showsNotifications = !(capabilities?.notification.isEmpty ?? true)
+            if let tableAccount {
+                updateQuota(tableAccount)
+            } else {
+                quotaDescription = ""
+            }
+            if showsNotifications {
+                let notificationAccount = activeAccount
+                let results = await NextcloudKit.shared.getNotificationsAsync(account: notificationAccount)
+                guard !Task.isCancelled, activeAccount == notificationAccount,
+                      results.error == .success, let notifications = results.notifications else { return }
+                notificationCount = notifications.count
+            } else {
+                notificationCount = nil
+            }
+        }
+    }
+
+    private var sidebarPanel: some View {
         GeometryReader { geometry in
             // Keep the content clear of the landscape camera area, while glass reaches the edge.
             let leadingInset = contentLeadingInset(geometry: geometry)
@@ -179,144 +321,8 @@ struct NCSidebarView: View {
                     sidebarBackground
                         .ignoresSafeArea(.container)
                 }
-                .offset(x: isVisible ? 0 : -width)
                 .accessibilityAddTraits(.isModal)
                 .accessibilityAction(.escape) { close(then: onClose) }
-            }
-            .task {
-                // Wait 50 ms so SwiftUI can render the panel in its initial offscreen position.
-                // Starting the animation during insertion can skip that first frame and make
-                // the sidebar appear immediately instead of sliding in. This delay only
-                // applies to opening; closing already starts from a rendered position.
-                if !reduceMotion {
-                    do {
-                        try await Task.sleep(for: .milliseconds(50))
-                    } catch {
-                        return
-                    }
-                }
-                guard !isClosing, !Task.isCancelled else { return }
-                updateHeaderLayout()
-                withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
-                    isVisible = true
-                }
-            }
-        }
-        // Only the expanded phone portrait layout (Duo) inherits the navbar inset.
-        // Other phones and iPad retain their original safe-area behavior.
-        .ignoresSafeArea(.container, edges: usesExpandedPhonePortrait() ? .top : [])
-        .onGeometryChange(for: CGRect.self) { geometry in
-            geometry.frame(in: .global)
-        } action: { _ in
-            updateHeaderLayout()
-        }
-        .background {
-            // Only the backdrop extends beyond the safe area, not the panel's controls.
-            Color.black.opacity(isVisible ? 0.25 : 0)
-                .ignoresSafeArea()
-                .onTapGesture { close(then: onClose) }
-                .accessibilityHidden(true)
-        }
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 20)
-                .onEnded { value in
-                    // Ignore vertical scrolling and short accidental movements.
-                    let translation = value.translation
-                    guard translation.width < 0,
-                          abs(translation.width) > abs(translation.height) * 1.5,
-                          translation.width < -60 || value.predictedEndTranslation.width < -100 else { return }
-                    close(then: onClose)
-                }
-        )
-        .onReceive(NotificationCenter.default.publisher(for: Self.selectionChanged)
-            .receive(on: DispatchQueue.main)) { notification in
-            guard let controller = notification.object as? NCMainTabBarController,
-                  ObjectIdentifier(controller) == controllerIdentifier else { return }
-            selectedDestination = currentSelection()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: Self.closeRequested)
-            .receive(on: DispatchQueue.main)) { notification in
-            guard let controller = notification.object as? NCMainTabBarController,
-                  ObjectIdentifier(controller) == controllerIdentifier else { return }
-            close(then: onClose)
-        }
-        .onReceive(NotificationCenter.default.publisher(for: Notification.Name(NCGlobal.shared.notificationCenterChangeUser))
-            .receive(on: DispatchQueue.main)) { notification in
-            guard let controller = notification.userInfo?["controller"] as? NCMainTabBarController,
-                  ObjectIdentifier(controller) == controllerIdentifier,
-                  let account = notification.userInfo?["account"] as? String,
-                  account == controller.account else { return }
-
-            // Hide the previous account's actions while loading the new cached capabilities.
-            updatedAccount = account
-            externalSites = []
-            autoUploadEnabled = nil
-            autoUploadCounter.stop(reset: true)
-            quotaDescription = ""
-            quotaProgress = 0
-            quotaHasLimit = false
-            showsAssistant = false
-            showsNotifications = false
-            notificationCount = nil
-            showsShares = false
-            showsGroupfolders = false
-            capabilitiesRevision = UUID()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: Notification.Name(NCGlobal.shared.notificationCenterServerDidUpdate))
-            .receive(on: DispatchQueue.main)) { notification in
-            guard let account = notification.userInfo?["account"] as? String,
-                  account == activeAccount else { return }
-            capabilitiesRevision = UUID()
-        }
-        .task(id: activeAccount) {
-            let account = activeAccount
-            autoUploadEnabled = nil
-            autoUploadCounter.stop(reset: true)
-            defer { autoUploadCounter.stop() }
-            // Keep sidebar counters current only while the overlay is visible.
-            while !Task.isCancelled {
-                let tableAccount = await NCManageDatabase.shared.getTableAccountAsync(account: account)
-                guard !Task.isCancelled else { return }
-                if let tableAccount, autoUploadEnabled != tableAccount.autoUploadStart {
-                    autoUploadCounter.stop(reset: true)
-                    autoUploadEnabled = tableAccount.autoUploadStart
-                    autoUploadCounter.start(account: account,
-                                            urlBase: tableAccount.urlBase,
-                                            userId: tableAccount.userId,
-                                            autoUploadStart: tableAccount.autoUploadStart)
-                }
-                await updateTransfersSubtitle()
-                do { try await Task.sleep(for: .seconds(2)) } catch { return }
-            }
-        }
-        .task(id: "\(activeAccount)-\(capabilitiesRevision)") {
-            // Account changes and server updates cancel the previous read automatically.
-            let capabilities = await NCManageDatabase.shared.getCapabilities(account: activeAccount)
-            let tableAccount = await NCManageDatabase.shared.getTableAccountAsync(account: activeAccount)
-            guard !Task.isCancelled else { return }
-            if !NCBrandOptions.shared.disable_more_external_site, capabilities?.externalSites == true {
-                externalSites = (NCManageDatabase.shared.getAllExternalSites(account: activeAccount) ?? [])
-                    .filter { !$0.name.isEmpty && !$0.url.isEmpty }
-            } else {
-                externalSites = []
-            }
-            showsShares = capabilities?.fileSharingApiEnabled ?? false
-            showsGroupfolders = capabilities?.groupfoldersEnabled ?? false
-            showsAssistant = capabilities?.assistantEnabled ?? false
-            showsNotifications = !(capabilities?.notification.isEmpty ?? true)
-            if let tableAccount {
-                updateQuota(tableAccount)
-            } else {
-                quotaDescription = ""
-            }
-            if showsNotifications {
-                let notificationAccount = activeAccount
-                let results = await NextcloudKit.shared.getNotificationsAsync(account: notificationAccount)
-                guard !Task.isCancelled, activeAccount == notificationAccount,
-                      results.error == .success, let notifications = results.notifications else { return }
-                notificationCount = notifications.count
-            } else {
-                notificationCount = nil
             }
         }
     }
