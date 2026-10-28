@@ -7,6 +7,34 @@ import NextcloudKit
 
 /// A collection of default UI actions used throughout the app.
 enum NCContextMenuActions {
+    @MainActor
+    static func viewInFolder(metadata: tableMetadata, controller: NCMainTabBarController, viewController: UIViewController?) -> UIAction {
+        UIAction(
+            title: NSLocalizedString("_view_in_folder_", comment: ""),
+            image: UIImage(systemName: "questionmark.folder")
+        ) { _ in
+            Task {
+                if let files = await NCNetworking.shared.moveInFolder(serverUrl: metadata.serverUrl, sceneIdentifier: controller.sceneIdentifier) {
+
+                    files.loadViewIfNeeded()
+                    files.view.layoutIfNeeded()
+                    files.collectionView.layoutIfNeeded()
+
+                    if let mediaViewer = viewController as? NCMediaViewerHostingController {
+                        mediaViewer.close()
+                    } else if let mediaViewer = viewController as? NCVideoVLCViewController {
+                        mediaViewer.closeImmediately()
+                    } else if let mediaViewer = viewController as? NCVideoAVPlayerViewController {
+                        mediaViewer.closeImmediately()
+                    }
+
+                    try? await Task.sleep(for: .seconds(0.6))
+                    files.blinkItem(ocId: metadata.ocId)
+                }
+            }
+        }
+    }
+
     static func inlineMenu(
         children: [UIMenuElement],
         preferredElementSize: UIMenu.ElementSize? = nil

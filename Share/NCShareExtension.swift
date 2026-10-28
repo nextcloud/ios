@@ -53,6 +53,8 @@ class NCShareExtension: UIViewController {
     var banner: LucidBanner?
     var sceneIdentifier: String = UUID().uuidString
     private var isPresentingNoAccountAlert = false
+    private var isPresentingPasscode = false
+    private var isPasscodeAuthenticated = false
 
     // MARK: - View Life Cycle
 
@@ -110,11 +112,8 @@ class NCShareExtension: UIViewController {
                 return
             }
 
-            if NCPreferences().presentPasscode {
-                NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
-                    NCPasscode.shared.enableTouchFaceID()
-                }
-            }
+            self.isPasscodeAuthenticated = false
+            self.requestPasscodeIfNeeded()
         }
 
         // Verify version
@@ -165,11 +164,7 @@ class NCShareExtension: UIViewController {
                 }
             }
 
-            if NCPreferences().presentPasscode {
-                NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
-                    NCPasscode.shared.enableTouchFaceID()
-                }
-            }
+            self.requestPasscodeIfNeeded()
 
             self.collectionView.reloadData()
         }
@@ -189,7 +184,7 @@ class NCShareExtension: UIViewController {
     }
 
     private func validateAccount() -> Bool {
-        guard !NCPasscode.shared.isPasscodeReset else {
+        guard !NCPasscodeModel.isPasscodeReset else {
             return showNoAccountAlert()
         }
 
@@ -577,18 +572,22 @@ extension NCShareExtension {
     }
 }
 
-extension NCShareExtension: NCPasscodeDelegate {
-    func passcodeReset(_ passcodeViewController: TOPasscodeViewController) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            passcodeViewController.dismiss(animated: false)
-            self.cancel(with: .noAccount)
-        }
-    }
-
-    func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool) {
-        if !isCorrectCode {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                passcodeViewController.dismiss(animated: false)
+extension NCShareExtension {
+    /// Require authentication once per foreground session without reopening after dismissal.
+    private func requestPasscodeIfNeeded() {
+        guard NCPreferences().presentPasscode,
+              !isPasscodeAuthenticated,
+              !isPresentingPasscode else { return }
+        isPresentingPasscode = true
+        // Embed in the content controller; the helper hides the outer navigation bar.
+        NCPasscodeView.embed(in: self) { [weak self] result in
+            guard let self else { return }
+            self.isPresentingPasscode = false
+            switch result {
+            case .authenticated:
+                self.isPasscodeAuthenticated = true
+                _ = self.validateAccount()
+            case .cancelled, .reset, .configured, .disabled:
                 self.cancel(with: .noAccount)
             }
         }

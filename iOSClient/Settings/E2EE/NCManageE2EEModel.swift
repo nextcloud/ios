@@ -5,11 +5,9 @@
 import UIKit
 import SwiftUI
 import NextcloudKit
-import LocalAuthentication
 
 @MainActor
-class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscodeViewControllerDelegate {
-    var passcodeType = ""
+class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling {
 
     let preference = NCPreferences()
     let networkingE2EE = NCNetworkingE2EE()
@@ -100,38 +98,27 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscode
 
     // MARK: - Passcode
 
+    /// Authenticate before performing the selected E2EE action, including in Debug builds.
     @objc func requestPasscodeType(_ passcodeType: String) {
-        #if DEBUG
-        self.passcodeType = passcodeType
-        correctPasscode()
-        return
-        #else
-        let laContext = LAContext()
-        var error: NSError?
-        let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: true)
-
-        passcodeViewController.delegate = self
-        passcodeViewController.keypadButtonShowLettering = false
-        if NCPreferences().touchFaceID, laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            if error == nil {
-                if laContext.biometryType == .faceID {
-                    passcodeViewController.biometryType = .faceID
-                    passcodeViewController.allowBiometricValidation = true
-                } else if laContext.biometryType == .touchID {
-                    passcodeViewController.biometryType = .touchID
-                }
-                passcodeViewController.allowBiometricValidation = true
-                passcodeViewController.automaticallyPromptForBiometricValidation = true
+        guard let presenter = controller?.topMostViewController() else { return }
+        let account = session.account
+        NCPasscodeView.present(from: presenter, allowCancel: true) { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .authenticated:
+                guard self.session.account == account,
+                      NCManageDatabase.shared.getTableAccount(account: account) != nil else { return }
+                self.performAuthenticatedAction(passcodeType)
+            case .reset:
+                (UIApplication.shared.delegate as? AppDelegate)?.resetApplication()
+            case .cancelled, .configured, .disabled:
+                break
             }
         }
-
-        self.passcodeType = passcodeType
-        controller?.topMostViewController().present(passcodeViewController, animated: true)
-        #endif
     }
 
-    @objc func correctPasscode() {
-        switch self.passcodeType {
+    private func performAuthenticatedAction(_ passcodeType: String) {
+        switch passcodeType {
         case "startE2E":
             Task {
                 do {
@@ -173,34 +160,6 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscode
             controller?.topMostViewController().present(alertController, animated: true)
         default:
             break
-        }
-    }
-
-    nonisolated func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
-        if code == NCPreferences().passcode {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self.correctPasscode()
-            }
-            return true
-        } else {
-            return false
-        }
-    }
-
-    nonisolated func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
-        LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { success, _ in
-            if success {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    passcodeViewController.dismiss(animated: true)
-                    self.correctPasscode()
-                }
-            }
-        }
-    }
-
-    nonisolated func didTapCancel(in passcodeViewController: TOPasscodeViewController) {
-        Task {@MainActor in
-            passcodeViewController.dismiss(animated: true)
         }
     }
 }

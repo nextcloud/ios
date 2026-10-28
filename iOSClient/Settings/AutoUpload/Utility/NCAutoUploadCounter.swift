@@ -160,14 +160,10 @@ final class NCAutoUploadCounter {
 
         let currentSinceDate = await NCManageDatabase.shared.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account))?.autoUploadSinceDate
         guard self.account == account, self.autoUploadServerUrlBase == autoUploadServerUrlBase else { return }
-        sinceDate = currentSinceDate
-        count = counts.pending
-        failedCount = counts.failed
+        let currentIsSuspended = NCPreferences().isBackgroundUploadSuspended(account: account)
+        var currentSuspensionError: String?
 
-        isSuspended = NCPreferences().isBackgroundUploadSuspended(account: account)
-        suspensionError = nil
-
-        if isSuspended {
+        if currentIsSuspended {
             // The newest stopped transfer contains the server error that opened the circuit breaker.
             let predicate = NSPredicate(
                 format: "account == %@ AND autoUploadServerUrlBase == %@ AND directory == false AND status == %d AND backgroundUploadJobIdentifier == %@",
@@ -185,10 +181,17 @@ final class NCAutoUploadCounter {
             let error = metadata?.sessionErrorMessage.trimmingCharacters(in: .whitespacesAndNewlines)
 
             if let error, !error.isEmpty {
-                suspensionError = error
+                currentSuspensionError = error
             }
         }
 
-        isLoaded = true
+        // Publish only after all reads finish, keeping the previous message visible across awaits.
+        guard !Task.isCancelled, self.account == account, self.autoUploadServerUrlBase == autoUploadServerUrlBase else { return }
+        if sinceDate != currentSinceDate { sinceDate = currentSinceDate }
+        if count != counts.pending { count = counts.pending }
+        if failedCount != counts.failed { failedCount = counts.failed }
+        if isSuspended != currentIsSuspended { isSuspended = currentIsSuspended }
+        if suspensionError != currentSuspensionError { suspensionError = currentSuspensionError }
+        if !isLoaded { isLoaded = true }
     }
 }

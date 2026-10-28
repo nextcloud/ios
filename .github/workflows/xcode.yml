@@ -62,12 +62,58 @@ jobs:
   test:
     name: Run Tests
     runs-on: xcode-27
+    timeout-minutes: 30
     needs: [build]
 
     if: github.event.pull_request.draft == false
     
     steps:
     - uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+
+    - name: Detect passcode changes
+      id: passcode_changes
+      shell: bash
+      env:
+        PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        PUSH_BEFORE_SHA: ${{ github.event.before }}
+      run: |
+        run_passcode_tests=false
+        if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+          compare_base=$(git merge-base "$PR_BASE_SHA" "$PR_HEAD_SHA")
+          compare_head="$PR_HEAD_SHA"
+        else
+          compare_base="$PUSH_BEFORE_SHA"
+          compare_head="$GITHUB_SHA"
+        fi
+
+        if [ -z "$compare_base" ] || [ "$compare_base" = "0000000000000000000000000000000000000000" ]; then
+          run_passcode_tests=true
+        else
+          git diff --name-only -z "$compare_base" "$compare_head" > "$RUNNER_TEMP/passcode-changed-files"
+          while IFS= read -r -d '' changed_file; do
+            case "$changed_file" in
+              iOSClient/Utility/Passcode/* | \
+              iOSClient/Settings/Settings/* | \
+              iOSClient/Settings/NCPreferences.swift | \
+              iOSClient/SceneDelegate.swift | \
+              iOSClient/AppDelegate.swift | \
+              Share/NCShareExtension.swift | \
+              Brand/* | \
+              Tests/NextcloudUITests/* | \
+              Tests/TestConstants.swift | \
+              Nextcloud.xcodeproj/* | \
+              .github/workflows/xcode.yml)
+                run_passcode_tests=true
+                break
+                ;;
+            esac
+          done < "$RUNNER_TEMP/passcode-changed-files"
+        fi
+        echo "run=$run_passcode_tests" >> "$GITHUB_OUTPUT"
+        echo "Run passcode UI tests: $run_passcode_tests"
 
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
@@ -103,6 +149,7 @@ jobs:
       run: |
         mkdir server/data
         ./server/occ maintenance:install --verbose --database=sqlite --database-name=nextcloud --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass admin
+        ./server/occ config:system:set force_language --value=en
         ./server/occ config:system:set hashing_default_password --value=true --type=boolean
         ./server/occ config:system:set auth.bruteforce.protection.enabled --value false --type bool
         ./server/occ config:system:set ratelimit.protection.enabled --value false --type bool
@@ -116,12 +163,17 @@ jobs:
         name: Nextcloud for iOS
 
     - name: Assert Nextcloud Server Status
-      run: curl -s --retry 5 --retry-delay 60 --retry-all-errors http://localhost:8080/status.php || true
+      run: curl --fail --show-error --silent --max-time 5 --retry 5 --retry-delay 2 --retry-max-time 30 --retry-all-errors http://localhost:8080/status.php
 
     - name: Boot iOS Simulator
       run: |
         xcrun simctl boot "iPhone 17"
-        xcrun simctl bootstatus "iPhone 17" || echo "Simulator booted"
+        xcrun simctl bootstatus "iPhone 17" -b
+        xcrun simctl spawn "iPhone 17" defaults write NSGlobalDomain AppleLanguages -array en
+        xcrun simctl spawn "iPhone 17" defaults write NSGlobalDomain AppleLocale -string en_US
+        xcrun simctl shutdown "iPhone 17"
+        xcrun simctl boot "iPhone 17"
+        xcrun simctl bootstatus "iPhone 17" -b
 
     - name: Check if Safari is installed
       run: |
@@ -133,19 +185,31 @@ jobs:
         fi
 
     - name: Run Xcode Test
+      timeout-minutes: 25
+      shell: bash
+      env:
+        RUN_PASSCODE_TESTS: ${{ steps.passcode_changes.outputs.run }}
       run: |
-        set -o pipefail && \
+        set -o pipefail
+        test_selection=()
+        if [ "$RUN_PASSCODE_TESTS" != "true" ]; then
+          test_selection+=(-skip-testing:NextcloudUITests/PasscodeUITests)
+        fi
         xcodebuild test-without-building \
         -xctestrun $(find . -type f -name "*.xctestrun") \
         -destination "${{ env.DESTINATION }}" \
         -derivedDataPath "DerivedData" \
+        "${test_selection[@]}" \
         -test-iterations 3 \
         -retry-tests-on-failure \
+        -test-timeouts-enabled YES \
+        -default-test-execution-time-allowance 600 \
+        -maximum-test-execution-time-allowance 600 \
         -resultBundlePath "TestResult.xcresult"
 
     - name: Upload Xcode Test Results
       uses: actions/upload-artifact@v7
-      if: ${{ !cancelled() }}
+      if: ${{ always() }}
       with:
         name: TestResult.xcresult
         path: "TestResult.xcresult"
