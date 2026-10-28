@@ -41,6 +41,7 @@ struct NCAcknowledgementsView: View {
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                     }
                 }
+                .accessibilityIdentifier("settings.acknowledgements.close")
                 .padding()
             }
             Divider()

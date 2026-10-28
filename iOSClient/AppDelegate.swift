@@ -32,11 +32,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var pushSubscriptionTask: Task<Void, Never>?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        if isUiTestingEnabled {
-            Task {
-                await NCAccount().deleteAllAccounts()
-            }
+#if DEBUG
+        // Give security UI tests a repeatable starting state on their dedicated simulator.
+        if isUiTestingEnabled && ProcessInfo.processInfo.arguments.contains("UI_TESTING_PASSCODE") {
+            let preferences = NCPreferences()
+            preferences.passcode = nil
+            preferences.clearPasscodeFailures()
+            preferences.touchFaceID = false
+            preferences.requestPasscodeAtStart = true
+            preferences.resetAppCounterFail = false
         }
+#endif
         let utilityFileSystem = NCUtilityFileSystem()
         let utility = NCUtility()
 
@@ -299,6 +305,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         utilityFileSystem.removeTemporaryDirectory()
 
         NCPreferences().removeAll()
+
+#if DEBUG
+        // Let UI tests observe the completed reset before terminating the process themselves.
+        if isUiTestingEnabled,
+           ProcessInfo.processInfo.arguments.contains("UI_TESTING_NO_EXIT"),
+           let window = UIApplication.shared.mainAppWindow {
+            let controller = UIViewController()
+            controller.view.backgroundColor = .systemBackground
+            controller.view.isAccessibilityElement = true
+            controller.view.accessibilityIdentifier = "uiTesting.resetCompleted"
+            controller.view.accessibilityLabel = "Reset completed"
+            window.rootViewController = controller
+            window.makeKeyAndVisible()
+            return
+        }
+#endif
 
         exit(0)
     }

@@ -25,6 +25,9 @@ docker run \
 echo "Please wait until the server is provisioned…"
 sleep 20
 
+# Keep web authentication labels consistent with the UI tests.
+docker exec --user www-data $CONTAINER_NAME php /var/www/html/occ config:system:set force_language --value=en
+
 # Enable File Download Limit App.
 docker exec $CONTAINER_NAME su www-data -c "git clone --depth 1 -b $SERVER_VERSION https://github.com/nextcloud/files_downloadlimit.git /var/www/html/apps/files_downloadlimit/"
 docker exec $CONTAINER_NAME su www-data -c "php /var/www/html/occ app:enable files_downloadlimit"

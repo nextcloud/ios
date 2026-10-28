@@ -16,6 +16,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     @Published var isLockActive: Bool = false
     // State to control the enable TouchID toggle
     @Published var enableTouchFaceID: Bool = false
+    @Published private(set) var isUpdatingTouchID = false
     // State to control
     @Published var lockScreen: Bool = false
     // State to control
@@ -60,9 +61,38 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     // MARK: - All functions
 
-    /// Function to update Touch ID / Face ID setting
-    func updateTouchIDSetting() {
-        keychain.touchFaceID = enableTouchFaceID
+    /// Request biometric authorization immediately and enable it only after successful authentication.
+    @MainActor
+    func updateTouchIDSettingAsync(_ enabled: Bool) async {
+        guard !isUpdatingTouchID else { return }
+        guard enabled else {
+            enableTouchFaceID = false
+            keychain.touchFaceID = false
+            return
+        }
+        guard isLockActive, keychain.passcode != nil else { return }
+
+        isUpdatingTouchID = true
+        let context = LAContext()
+        context.localizedFallbackTitle = ""
+        defer {
+            context.invalidate()
+            isUpdatingTouchID = false
+        }
+
+        var authenticated = false
+        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil) {
+            do {
+                authenticated = try await context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics,
+                                                                  localizedReason: NCBrandOptions.shared.brand)
+            } catch {
+                authenticated = false
+            }
+        }
+        // The passcode may have been removed while the system prompt was open.
+        let shouldEnable = authenticated && isLockActive && keychain.passcode != nil
+        keychain.touchFaceID = shouldEnable
+        enableTouchFaceID = shouldEnable
     }
 
     /// Function to update Lock Screen setting
