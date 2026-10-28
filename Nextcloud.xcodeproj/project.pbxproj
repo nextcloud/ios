@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB1028260000000000090121 /* NCShareRecentFoldersStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000090001 /* NCShareRecentFoldersStoreTests.swift */; };
+		AB1028260000000000090120 /* NCShareRecentFoldersStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000090000 /* NCShareRecentFoldersStore.swift */; };
+		AB1028260000000000090110 /* NCShareRecentFoldersStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000090000 /* NCShareRecentFoldersStore.swift */; };
+		AB1028260000000000090100 /* NCShareRecentFoldersStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000090000 /* NCShareRecentFoldersStore.swift */; };
 		AB1028260000000000080008 /* NCShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000020009 /* NCShareView.swift */; };
 		AB1028260000000000080007 /* NCShareUploadConflictView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000050001 /* NCShareUploadConflictView.swift */; };
 		AB1028260000000000080006 /* NCShareAccountPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000060000 /* NCShareAccountPickerView.swift */; };
@@ -1309,6 +1313,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AB1028260000000000090001 /* NCShareRecentFoldersStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareRecentFoldersStoreTests.swift; sourceTree = "<group>"; };
+		AB1028260000000000090000 /* NCShareRecentFoldersStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareRecentFoldersStore.swift; sourceTree = "<group>"; };
 		AB1028260000000000060000 /* NCShareAccountPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareAccountPickerView.swift; sourceTree = "<group>"; };
 		AB1028260000000000050300 /* NCShareUploadNamePlannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareUploadNamePlannerTests.swift; sourceTree = "<group>"; };
 		AB1028260000000000050001 /* NCShareUploadConflictView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareUploadConflictView.swift; sourceTree = "<group>"; };
@@ -2392,6 +2398,7 @@
 				F34BDB3B2F574A58007A222C /* BidiSafeFilenameTests.swift */,
 				439616AAA50F4360A761E5EF /* NCAlbumsPersistenceTests.swift */,
 				C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */,
+				AB1028260000000000090001 /* NCShareRecentFoldersStoreTests.swift */,
 				AB1028260000000000050300 /* NCShareUploadNamePlannerTests.swift */,
 				AB1028260000000000040000 /* NCShareLoaderItemProviderTests.swift */,
 				4B74B947E07444CC9CFE0A6C /* NCDocumentEditorSupportTests.swift */,
@@ -3651,6 +3658,7 @@
 		F7C0F46D1C8880540059EC54 /* Share */ = {
 			isa = PBXGroup;
 			children = (
+				AB1028260000000000090000 /* NCShareRecentFoldersStore.swift */,
 				AB1028260000000000020000 /* NCShareEntryController.swift */,
 				AB1028260000000000020006 /* NCShareLoaderItemProvider.swift */,
 				AB1028260000000000020008 /* NCShareSessionStore.swift */,
@@ -4759,6 +4767,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB1028260000000000090120 /* NCShareRecentFoldersStore.swift in Sources */,
+				AB1028260000000000090121 /* NCShareRecentFoldersStoreTests.swift in Sources */,
 				AC13ADAF2026101300000002 /* NCMediaAdaptiveLayoutViewTests.swift in Sources */,
 				C0DEDA7E30C1000100A00002 /* NCAutoUploadDateTests.swift in Sources */,
 				C0DEA070306D000100000008 /* NCAutoUploadAssetTests.swift in Sources */,
@@ -4857,6 +4867,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB1028260000000000090100 /* NCShareRecentFoldersStore.swift in Sources */,
 				F7864ACF2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */,
 				F71F6D0A2B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */,
 				F7245925289BB59100474787 /* ThreadSafeDictionary.swift in Sources */,
@@ -5103,6 +5114,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB1028260000000000090110 /* NCShareRecentFoldersStore.swift in Sources */,
 				AB1028260000000000080000 /* NCShareViewModel+Accounts.swift in Sources */,
 				AB1028260000000000080001 /* NCShareViewModel+Folders.swift in Sources */,
 				AB1028260000000000080002 /* NCShareViewModel+Upload.swift in Sources */,
@@ -6499,6 +6511,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				EXCLUDED_SOURCE_FILE_NAMES = (
+					NCShareRecentFoldersStore.swift,
 					"$(inherited)",
 					"NCShareViewModel+Accounts.swift",
 					"NCShareViewModel+Folders.swift",

@@ -91,9 +91,7 @@ extension NCShareViewModel {
             serverUrl = utilityFileSystem.getHomeServer(session: session)
             setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)
             showAccountView()
-            await reloadData()
-            guard !Task.isCancelled, !isClosing, accountChangeID == changeID else { return }
-            await loadFolder()
+            await initializeFolderBrowser()
         }
     }
 }

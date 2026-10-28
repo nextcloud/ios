@@ -14,6 +14,10 @@ struct NCShareView: View {
                 if model.isAvailable && model.isAuthenticated {
                     VStack(spacing: 0) {
                         folderList
+                        if model.isLoading {
+                            ProgressView(NSLocalizedString("_request_in_progress_", comment: ""))
+                                .padding(.vertical, 8)
+                        }
                         if model.isPreparingInput {
                             ProgressView(NSLocalizedString("_share_import_preparing_", comment: ""))
                                 .padding()
@@ -47,12 +51,6 @@ struct NCShareView: View {
             .toolbar {
                 ToolbarItemGroup(placement: .topBarLeading) {
                     if model.isAvailable && model.isAuthenticated {
-                        if model.canGoBack {
-                            Button(action: model.goBack) {
-                                Label(NSLocalizedString("_back_", comment: ""), systemImage: "chevron.left")
-                            }
-                            .disabled(model.isLoading || model.isPreparingUpload || model.isSwitchingAccount || model.isLoadingAccounts)
-                        }
                         Button(action: model.showAccountPicker) {
                             Label(model.accountName, systemImage: "person.crop.circle")
                                 .lineLimit(1)
@@ -68,47 +66,135 @@ struct NCShareView: View {
     }
 
     private var folderList: some View {
-        List(model.folders) { folder in
+        List {
+            Section(NSLocalizedString("_share_recent_folders_", comment: "")) {
+                if model.recentFolders.isEmpty {
+                    Text(NSLocalizedString("_share_recent_folders_empty_", comment: ""))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(model.recentFolders) { folder in
+                        folderRow(folder, depth: nil)
+                    }
+                }
+            }
+            Section {
+                ForEach(model.visibleFolderRows) { row in
+                    folderRow(row.folder, depth: row.depth)
+                    if model.expandedFolderURLs.contains(row.folder.serverUrl) {
+                        if let error = model.folderLoadErrors[row.folder.serverUrl] {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(verbatim: error)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Button(NSLocalizedString("_share_retry_folder_", comment: "")) { model.retryFolder(row.folder) }
+                            }
+                            .padding(.leading, CGFloat(min(row.depth + 1, 8)) * 16)
+                        } else if model.loadedFolderURLs.contains(row.folder.serverUrl),
+                                  model.folderChildren[row.folder.serverUrl]?.isEmpty == true {
+                            Text(NSLocalizedString("_files_no_folders_", comment: ""))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .padding(.leading, CGFloat(min(row.depth + 1, 8)) * 16)
+                        }
+                    }
+                }
+            } header: {
+                allFoldersHeader
+            }
+        }
+        .listStyle(.insetGrouped)
+        .listSectionSpacing(8)
+        .environment(\.defaultMinListRowHeight, 44)
+        .disabled(model.isLoading || model.isPreparingUpload || model.isSwitchingAccount || model.isLoadingAccounts)
+    }
+
+    private var allFoldersHeader: some View {
+        HStack {
+            Text(NSLocalizedString("_share_all_folders_", comment: ""))
+            Spacer()
+            Button(action: model.createFolder) {
+                Label(NSLocalizedString("_create_folder_", comment: ""), systemImage: "folder.badge.plus")
+                    .labelStyle(.iconOnly)
+                    .font(.body)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.borderless)
+            .disabled(model.isPreparingInput || !model.inputErrorMessage.isEmpty ||
+                      (model.selectedFolder.map { model.loadingFolderURLs.contains($0.serverUrl) } ?? true))
+        }
+        .textCase(nil)
+    }
+
+    private func folderRow(_ folder: NCShareFolderItem, depth: Int?) -> some View {
+        HStack(spacing: 4) {
+            if let depth {
+                Button {
+                    model.toggleFolder(folder)
+                } label: {
+                    Group {
+                        if model.loadingFolderURLs.contains(folder.serverUrl) {
+                            ProgressView()
+                        } else {
+                            Image(systemName: model.expandedFolderURLs.contains(folder.serverUrl) ? "chevron.down" : "chevron.right")
+                        }
+                    }
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.borderless)
+                .accessibilityLabel(String(format: NSLocalizedString(
+                    model.expandedFolderURLs.contains(folder.serverUrl) ? "_share_collapse_folder_" : "_share_expand_folder_", comment: ""), folder.name))
+                .padding(.leading, CGFloat(min(depth, 8)) * 16)
+            }
             Button {
-                model.openFolder(folder)
+                model.selectFolder(folder)
             } label: {
-                HStack(spacing: 12) {
+                HStack(spacing: 8) {
                     if let image = folder.image {
                         Image(uiImage: image)
+                            .renderingMode(.original)
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 36, height: 36)
+                            .frame(width: 22, height: 22)
                     }
-                    Text(verbatim: folder.name)
-                        .foregroundStyle(.primary)
-                        .lineLimit(2)
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .foregroundStyle(.secondary)
-                        .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(verbatim: folder.name)
+                            .font(.subheadline)
+                            .foregroundStyle(.primary)
+                            .lineLimit(1)
+                        if depth == nil {
+                            Text(verbatim: folder.path)
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                        }
+                    }
+                    Spacer(minLength: 4)
+                    if model.selectedFolder?.serverUrl == folder.serverUrl {
+                        Image(systemName: "checkmark")
+                            .accessibilityHidden(true)
+                    }
                 }
-                .padding(.vertical, 4)
+                .frame(minHeight: 44)
                 .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.borderless)
+            .accessibilityAddTraits(model.selectedFolder?.serverUrl == folder.serverUrl ? .isSelected : [])
         }
-        .listStyle(.plain)
-        .overlay {
-            if model.folders.isEmpty {
-                if model.isLoading {
-                    ProgressView(NSLocalizedString("_request_in_progress_", comment: ""))
-                } else {
-                    ContentUnavailableView(NSLocalizedString("_files_no_folders_", comment: ""), systemImage: "folder")
-                }
-            }
-        }
-        .disabled(model.isLoading || model.isPreparingUpload || model.isSwitchingAccount || model.isLoadingAccounts)
+        .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
+        .listRowBackground(model.selectedFolder?.serverUrl == folder.serverUrl ? Color.accentColor.opacity(0.1) : Color(uiColor: .secondarySystemGroupedBackground))
     }
 
     private var commands: some View {
         VStack(spacing: 12) {
-            Button(action: model.createFolder) {
-                Label(NSLocalizedString("_create_folder_", comment: ""), systemImage: "folder.badge.plus")
+            if let folder = model.selectedFolder {
+                Label(folder.path, systemImage: "folder")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             List(model.fileNames, id: \.self) { fileName in
@@ -143,11 +229,11 @@ struct NCShareView: View {
             .frame(height: CGFloat(min(max(model.fileNames.count, 1), 3)) * 64)
 
             Button(action: model.upload) {
-                Text(NSLocalizedString("_upload_", comment: "") + " \(model.fileNames.count) " + NSLocalizedString("_files_", comment: ""))
+                Text(String(format: NSLocalizedString("_share_upload_to_", comment: ""), model.selectedFolder?.name ?? ""))
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
-            .disabled(model.fileNames.isEmpty || model.isLoading || model.isShowingAccounts)
+            .disabled(model.fileNames.isEmpty || model.selectedFolder == nil || model.isLoading || model.isShowingAccounts)
         }
         .padding()
         .background(Color(uiColor: .secondarySystemBackground))
@@ -163,7 +249,9 @@ struct NCShareView: View {
 
 #Preview("No folders") {
     let model = NCShareViewModel.preview()
-    model.folders = []
+    model.folderChildren = [:]
+    model.recentFolders = []
+    model.loadedFolderURLs = Set(model.folders.map(\.serverUrl))
     return NCShareView(model: model)
         .allowsHitTesting(false)
 }

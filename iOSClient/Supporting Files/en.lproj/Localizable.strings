@@ -901,3 +901,14 @@
 "_share_conflict_keep_both_" = "Keep both";
 "_share_conflict_checking_" = "Preparing upload…";
 "_share_conflict_read_failed_" = "The destination folder could not be checked. Please try again.";
+
+/* Share extension destination browser */
+"_share_home_folder_" = "My files";
+"_share_recent_folders_" = "Recent folders";
+"_share_recent_folders_empty_" = "Your last three upload destinations will appear here.";
+"_share_all_folders_" = "All folders";
+"_share_expand_folder_" = "Expand %@";
+"_share_collapse_folder_" = "Collapse %@";
+"_share_retry_folder_" = "Retry loading folders";
+"_share_folder_unavailable_" = "This folder is no longer available.";
+"_share_upload_to_" = "Upload to %@";

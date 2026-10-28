@@ -9,6 +9,19 @@ import LucidBanner
 @MainActor
 final class NCShareViewModel: NSObject, ObservableObject {
     @Published var folders: [NCShareFolderItem] = []
+    @Published var recentFolders: [NCShareFolderItem] = []
+    @Published var selectedFolder: NCShareFolderItem?
+    @Published var folderChildren: [String: [NCShareFolderItem]] = [:]
+    @Published var expandedFolderURLs: Set<String> = []
+    @Published var loadingFolderURLs: Set<String> = []
+    @Published var loadedFolderURLs: Set<String> = []
+    @Published var folderLoadErrors: [String: String] = [:]
+    var folderTasks: [String: Task<Void, Never>] = [:]
+    var folderRequests: [String: URLSessionTask] = [:]
+    var folderSelectionTask: Task<Void, Never>?
+    var folderBrowserID = UUID()
+    lazy var recentFoldersStore = NCShareRecentFoldersStore(
+        defaults: UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) ?? .standard)
     @Published var fileNames: [String] = []
     @Published var isLoading = false
     @Published var isAvailable = false
@@ -32,7 +45,6 @@ final class NCShareViewModel: NSObject, ObservableObject {
     var accountPickerTask: Task<Void, Never>?
     var accountChangeTask: Task<Void, Never>?
     var accountChangeID = UUID()
-    @Published var canGoBack = false
     @Published private(set) var isAuthenticated = false
 
     weak var presenter: UIViewController?
@@ -184,6 +196,9 @@ final class NCShareViewModel: NSObject, ObservableObject {
         accountPickerTask?.cancel()
         accountChangeTask?.cancel()
         dataSourceTask?.cancel()
+        folderSelectionTask?.cancel()
+        for task in folderTasks.values { task.cancel() }
+        for request in folderRequests.values { request.cancel() }
         if !isPreparingInput { try? FileManager.default.removeItem(at: inputDirectory) }
         if let foregroundObserver { NotificationCenter.default.removeObserver(foregroundObserver) }
         if let backgroundObserver { NotificationCenter.default.removeObserver(backgroundObserver) }
@@ -224,9 +239,8 @@ final class NCShareViewModel: NSObject, ObservableObject {
         dataSourceTask = nil
         metadataFolder = nil
         isAvailable = false
-        folders = []
+        resetFolderBrowser()
         accountName = ""
-        canGoBack = false
         navigationTitle = NCBrandOptions.shared.brand
     }
 
@@ -245,6 +259,9 @@ final class NCShareViewModel: NSObject, ObservableObject {
         accountPickerTask?.cancel()
         accountChangeTask?.cancel()
         dataSourceTask?.cancel()
+        folderSelectionTask?.cancel()
+        for task in folderTasks.values { task.cancel() }
+        for request in folderRequests.values { request.cancel() }
         if !isPreparingInput { try? FileManager.default.removeItem(at: inputDirectory) }
         if let error {
             requestContext?.cancelRequest(withError: error)
@@ -266,18 +283,6 @@ final class NCShareViewModel: NSObject, ObservableObject {
         self.navigationTitle = navigationTitle
         guard let account = sessionStore.getTblAccoun() else { return }
         accountName = account.alias.isEmpty ? account.displayName : account.alias
-        canGoBack = serverUrl != utilityFileSystem.getHomeServer(session: sessionStore.getSession())
-    }
-
-    func goBack() {
-        guard canGoBack, !isLoading, !isPreparingUpload, !isSwitchingAccount else { return }
-        serverUrl = (serverUrl as NSString).deletingLastPathComponent
-        let home = utilityFileSystem.getHomeServer(session: sessionStore.getSession())
-        setNavigationBar(navigationTitle: serverUrl == home ? NCBrandOptions.shared.brand : (serverUrl as NSString).lastPathComponent)
-        Task {
-            await reloadData()
-            await loadFolder()
-        }
     }
 
     func setCommandView() {
@@ -286,11 +291,13 @@ final class NCShareViewModel: NSObject, ObservableObject {
 
     func createFolder() {
         let session = sessionStore.getSession()
-        guard let capabilities = NCNetworking.shared.capabilities[session.account] else { return }
-        let alert = UIAlertController.createFolderWith(serverUrl: serverUrl, session: session, capabilities: capabilities) { [weak self] error in
+        guard let folder = selectedFolder, !loadingFolderURLs.contains(folder.serverUrl), let capabilities = NCNetworking.shared.capabilities[session.account] else { return }
+        let alert = UIAlertController.createFolderWith(serverUrl: folder.serverUrl, session: session, capabilities: capabilities) { [weak self] error in
             guard let self else { return }
+            guard !self.isClosing, self.sessionStore.getSession().account == session.account else { return }
             if error == .success {
-                Task { await self.loadFolder() }
+                self.expandedFolderURLs.insert(folder.serverUrl)
+                self.requestFolderChildren(folder, refresh: true)
             } else {
                 self.showAlert(title: "_error_createsubfolders_upload_", description: error.errorDescription)
             }
@@ -386,9 +393,19 @@ extension NCShareViewModel {
 
 /// A UI snapshot, so SwiftUI does not retain live Realm objects.
 struct NCShareFolderItem: Identifiable {
-    let id: String
+    var id: String { serverUrl }
+    let ocId: String
     let name: String
+    let serverUrl: String
+    let path: String
     let image: UIImage?
+    let isEncrypted: Bool
+}
+
+struct NCShareFolderRow: Identifiable {
+    var id: String { folder.id }
+    let folder: NCShareFolderItem
+    let depth: Int
 }
 
 enum NCShareRequestError: Error {
@@ -435,11 +452,18 @@ extension NCShareViewModel {
         model.isAvailable = true
         model.isAuthenticated = true
         model.accountName = "Personal"
-        model.folders = [
-            NCShareFolderItem(id: "documents", name: "Documents", image: UIImage(systemName: "folder.fill")),
-            NCShareFolderItem(id: "photos", name: "Photos", image: UIImage(systemName: "folder.fill")),
-            NCShareFolderItem(id: "shared", name: "Shared with the team", image: UIImage(systemName: "person.2.fill"))
-        ]
+        let home = "https://cloud.example.com/remote.php/dav/files/marino"
+        let root = NCShareFolderItem(ocId: "root", name: "My files", serverUrl: home, path: "/", image: UIImage(systemName: "folder.fill"), isEncrypted: false)
+        let documents = NCShareFolderItem(ocId: "documents", name: "Documents", serverUrl: home + "/Documents", path: "/Documents", image: UIImage(systemName: "folder.fill"), isEncrypted: false)
+        let photos = NCShareFolderItem(ocId: "photos", name: "Photos", serverUrl: home + "/Photos", path: "/Photos", image: UIImage(systemName: "folder.fill"), isEncrypted: false)
+        let work = NCShareFolderItem(ocId: "work", name: "Work", serverUrl: home + "/Documents/Work", path: "/Documents/Work", image: UIImage(systemName: "folder.fill"), isEncrypted: false)
+        model.serverUrl = documents.serverUrl
+        model.selectedFolder = documents
+        model.folders = [root]
+        model.folderChildren = [home: [documents, photos], documents.serverUrl: [work]]
+        model.expandedFolderURLs = [home, documents.serverUrl]
+        model.loadedFolderURLs = [home, documents.serverUrl]
+        model.recentFolders = [documents, photos]
         model.fileNames = ["Report.pdf", "Photo.jpg", "Notes.txt"]
         model.accounts = [
             NCShareAccountItem(id: "personal", name: "Personal", user: "marino", serverUrl: "https://cloud.example.com", isSelected: true),

@@ -211,6 +211,7 @@ extension NCShareViewModel {
         }
 
         if error == .success {
+            recordRecentDestination()
             banner?.update(payload: LucidBannerPayload.Update(stage: .success, horizontalLayout: .centered(width: 100)), for: self.token)
         } else {
             banner?.update(payload: LucidBannerPayload.Update(subtitle: error?.errorDescription, stage: .error), for: self.token)

@@ -31,7 +31,7 @@ Other platforms like Android are irrelevant for this project.
 | `Brand` | Branding layer: `NCBrand.swift` (app constants, colors), `Database.swift` (Realm database name and schema version), Info.plists and entitlements for all targets, launch screen and intro screens. | Bump `databaseSchemaVersion` in `Brand/Database.swift` when changing Realm models. |
 | `File Provider Extension` | Contains business logic for the iOS File Provider extension. | — |
 | `File Provider Extension UI` | Contains UI logic for the iOS File Provider extension. | — |
-| `Share` | Contains the active Share extension entry point, launched through `NSExtensionPrincipalClass`, plus input preparation and session storage. | — |
+| `Share` | Contains the active Share extension entry point, launched through `NSExtensionPrincipalClass`, plus input preparation, session storage and recent upload destinations. | — |
 | `Share/View` | Contains the SwiftUI Share extension interface. | Select the `Nextcloud` scheme for Xcode previews. Shared Share sources are hosted by the app only in Debug (`SHARE_PREVIEWS`) and excluded from app Release builds. |
 | `Share/Model` | Contains Share extension state, account handling and upload logic. | — |
 | `Share/UIKit` | Contains the previous UIKit Share extension sources and storyboard for reference. | Keep these reference files out of the Share target build. |
