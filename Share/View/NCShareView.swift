@@ -7,6 +7,7 @@ import SwiftUI
 @MainActor
 struct NCShareView: View {
     @ObservedObject var model: NCShareViewModel
+    @State private var fileActions: String?
 
     var body: some View {
         NavigationStack {
@@ -231,7 +232,7 @@ struct NCShareView: View {
                     VStack(alignment: .leading, spacing: 1) {
                         Text(verbatim: folder.name)
                             .font(.body)
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(Color(uiColor: .label))
                             .lineLimit(1)
                         if depth == nil {
                             Text(verbatim: folder.path)
@@ -258,6 +259,7 @@ struct NCShareView: View {
             if isSelected {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color.accentColor.opacity(0.1))
+                    .padding(.horizontal, 5)
             }
         }
         .listRowSeparator(.hidden)
@@ -267,13 +269,8 @@ struct NCShareView: View {
 
     private func fileList(fillsHeight: Bool = false, horizontalInset: CGFloat = 16) -> some View {
         List(model.fileNames, id: \.self) { fileName in
-            Menu {
-                Button(NSLocalizedString("_rename_file_", comment: "")) {
-                    model.rename(fileName)
-                }
-                Button(NSLocalizedString("_remove_file_", comment: ""), role: .destructive) {
-                    model.remove(fileName)
-                }
+            Button {
+                fileActions = fileName
             } label: {
                 HStack {
                     Label {
@@ -305,6 +302,18 @@ struct NCShareView: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            .confirmationDialog(Text(verbatim: fileName), isPresented: Binding(
+                get: { fileActions == fileName },
+                set: { if !$0 { fileActions = nil } }
+            ), titleVisibility: .visible) {
+                Button(NSLocalizedString("_rename_file_", comment: "")) {
+                    model.rename(fileName)
+                }
+                Button(NSLocalizedString("_remove_file_", comment: ""), role: .destructive) {
+                    model.remove(fileName)
+                }
+                Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
+            }
             .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 2))
             .listRowSeparator(.hidden)
         }
