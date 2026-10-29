@@ -84,69 +84,86 @@ struct NCShareView: View {
     }
 
     private var folderList: some View {
-        List {
-            Section(NSLocalizedString("_share_recent_folders_", comment: "")) {
-                if model.recentFolders.isEmpty {
-                    Text(NSLocalizedString("_share_recent_folders_empty_", comment: ""))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                } else {
-                    ForEach(model.recentFolders) { folder in
-                        folderRow(folder, depth: nil)
+        VStack(spacing: 0) {
+            createFolderHeader
+                .padding(.horizontal, 16)
+            List {
+                Section {
+                    if !model.recentFolders.isEmpty {
+                        ForEach(model.recentFolders) { folder in
+                            folderRow(folder, depth: nil)
+                        }
                     }
-                }
-            }
-            Section {
-                ForEach(model.visibleFolderRows) { row in
-                    folderRow(row.folder, depth: row.depth)
-                    if model.expandedFolderURLs.contains(row.folder.serverUrl) {
-                        if let error = model.folderLoadErrors[row.folder.serverUrl] {
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(verbatim: error)
+                    ForEach(model.visibleFolderRows) { row in
+                        folderRow(row.folder, depth: row.depth)
+                            .padding(.top, !model.recentFolders.isEmpty && row.id == model.visibleFolderRows.first?.id ? 12 : 0)
+                            .overlay(alignment: .top) {
+                                if !model.recentFolders.isEmpty, row.id == model.visibleFolderRows.first?.id {
+                                    Rectangle()
+                                        .fill(Color(uiColor: .separator))
+                                        .frame(height: 1)
+                                        .padding(.top, 6)
+                                        .padding(.horizontal, -12)
+                                        .allowsHitTesting(false)
+                                        .accessibilityHidden(true)
+                                }
+                            }
+                        if model.expandedFolderURLs.contains(row.folder.serverUrl) {
+                            if let error = model.folderLoadErrors[row.folder.serverUrl] {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text(verbatim: error)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    Button(NSLocalizedString("_share_retry_folder_", comment: "")) { model.retryFolder(row.folder) }
+                                }
+                                .padding(.leading, CGFloat(min(row.depth + 1, 8)) * 16)
+                            } else if model.loadedFolderURLs.contains(row.folder.serverUrl),
+                                      model.folderChildren[row.folder.serverUrl]?.isEmpty == true {
+                                Text(NSLocalizedString("_files_no_folders_", comment: ""))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
-                                Button(NSLocalizedString("_share_retry_folder_", comment: "")) { model.retryFolder(row.folder) }
+                                    .padding(.leading, CGFloat(min(row.depth + 1, 8)) * 16)
                             }
-                            .padding(.leading, CGFloat(min(row.depth + 1, 8)) * 16)
-                        } else if model.loadedFolderURLs.contains(row.folder.serverUrl),
-                                  model.folderChildren[row.folder.serverUrl]?.isEmpty == true {
-                            Text(NSLocalizedString("_files_no_folders_", comment: ""))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .padding(.leading, CGFloat(min(row.depth + 1, 8)) * 16)
                         }
                     }
                 }
-            } header: {
-                allFoldersHeader
             }
+            .listStyle(.plain)
+            .contentMargins(.vertical, 0, for: .scrollContent)
+            .scrollContentBackground(.hidden)
+            .environment(\.defaultMinListRowHeight, 44)
+            .background(Color(uiColor: .secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .padding(.horizontal, 16)
         }
-        .listStyle(.insetGrouped)
-        .listSectionSpacing(8)
-        .environment(\.defaultMinListRowHeight, 44)
+        .frame(maxHeight: .infinity)
+        .background(Color(uiColor: .systemGroupedBackground))
         .disabled(model.isLoading || model.isPreparingUpload || !model.isAccountReady || model.isLoadingAccounts)
     }
 
-    private var allFoldersHeader: some View {
+    private var createFolderHeader: some View {
         HStack {
-            Text(NSLocalizedString("_share_all_folders_", comment: ""))
             Spacer()
             Button(action: model.createFolder) {
-                Label(NSLocalizedString("_create_folder_", comment: ""), systemImage: "folder.badge.plus")
-                    .labelStyle(.iconOnly)
-                    .font(.body)
-                    .frame(minWidth: 44, minHeight: 44)
-                    .contentShape(Rectangle())
+                HStack(spacing: 8) {
+                    Text(NSLocalizedString("_create_folder_", comment: ""))
+                    Image(systemName: "folder.badge.plus")
+                }
+                .font(.subheadline)
+                .frame(minHeight: 44)
+                .contentShape(Rectangle())
             }
             .buttonStyle(.borderless)
             .disabled(model.isPreparingInput || !model.inputErrorMessage.isEmpty ||
                       (model.selectedFolder.map { model.loadingFolderURLs.contains($0.serverUrl) } ?? true))
         }
         .textCase(nil)
+        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
     }
 
     private func folderRow(_ folder: NCShareFolderItem, depth: Int?) -> some View {
-        HStack(spacing: 4) {
+        let isSelected = model.selectedFolder?.serverUrl == folder.serverUrl && model.isRecentFolderSelected == (depth == nil)
+        return HStack(spacing: 4) {
             if let depth {
                 Button {
                     model.toggleFolder(folder)
@@ -165,9 +182,15 @@ struct NCShareView: View {
                 .accessibilityLabel(String(format: NSLocalizedString(
                     model.expandedFolderURLs.contains(folder.serverUrl) ? "_share_collapse_folder_" : "_share_expand_folder_", comment: ""), folder.name))
                 .padding(.leading, CGFloat(min(depth, 8)) * 16)
+            } else {
+                Image(systemName: "clock")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .frame(width: 44, height: 44)
+                    .accessibilityHidden(true)
             }
             Button {
-                model.selectFolder(folder)
+                model.selectFolder(folder, fromRecents: depth == nil)
             } label: {
                 HStack(spacing: 8) {
                     if let image = folder.image {
@@ -191,7 +214,7 @@ struct NCShareView: View {
                         }
                     }
                     Spacer(minLength: 4)
-                    if model.selectedFolder?.serverUrl == folder.serverUrl {
+                    if isSelected {
                         Image(systemName: "checkmark")
                             .accessibilityHidden(true)
                     }
@@ -200,21 +223,15 @@ struct NCShareView: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.borderless)
-            .accessibilityAddTraits(model.selectedFolder?.serverUrl == folder.serverUrl ? .isSelected : [])
+            .accessibilityAddTraits(isSelected ? .isSelected : [])
         }
+        .listRowSeparator(.hidden)
         .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
-        .listRowBackground(model.selectedFolder?.serverUrl == folder.serverUrl ? Color.accentColor.opacity(0.1) : Color(uiColor: .secondarySystemGroupedBackground))
+        .listRowBackground(isSelected ? Color.accentColor.opacity(0.1) : Color(uiColor: .secondarySystemGroupedBackground))
     }
 
     private var commands: some View {
         VStack(spacing: 12) {
-            if let folder = model.selectedFolder {
-                Label(folder.path, systemImage: "folder")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
             List(model.fileNames, id: \.self) { fileName in
                 HStack {
                     Button {
@@ -224,6 +241,7 @@ struct NCShareView: View {
                             Text(verbatim: fileName).lineLimit(2)
                         } icon: {
                             Image(systemName: "doc")
+                                .frame(width: 22, height: 22)
                         }
                         .foregroundStyle(.primary)
                     }
@@ -242,19 +260,35 @@ struct NCShareView: View {
                     }
                     .accessibilityLabel(Text(verbatim: fileName))
                 }
+                .font(.subheadline)
+                .frame(minHeight: 44)
+                .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
+                .listRowSeparator(.hidden)
             }
             .listStyle(.plain)
-            .frame(height: CGFloat(min(max(model.fileNames.count, 1), 3)) * 64)
+            .contentMargins(.vertical, 0, for: .scrollContent)
+            .scrollContentBackground(.hidden)
+            .environment(\.defaultMinListRowHeight, 44)
+            .frame(height: CGFloat(min(max(model.fileNames.count, 1), 3)) * 44)
+            .background(Color(uiColor: .secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .padding(.horizontal, 16)
 
             Button(action: model.upload) {
-                Text(String(format: NSLocalizedString("_share_upload_to_", comment: ""), model.selectedFolder?.name ?? ""))
+                Text(String.localizedStringWithFormat(NSLocalizedString("_share_upload_to_", comment: ""), model.fileNames.count))
+                    .lineLimit(2)
+                    .truncationMode(.middle)
+                    .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.roundedRectangle(radius: 12))
+            .padding(.horizontal, 16)
             .disabled(model.fileNames.isEmpty || model.selectedFolder == nil || model.isLoading || model.isShowingAccounts)
         }
-        .padding()
-        .background(Color(uiColor: .secondarySystemBackground))
+        .padding(.top, 10)
+        .padding(.bottom, 16)
+        .background(Color(uiColor: .systemGroupedBackground))
         .disabled(model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady || model.isLoadingAccounts || !model.inputErrorMessage.isEmpty)
     }
 }

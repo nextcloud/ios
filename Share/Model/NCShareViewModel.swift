@@ -11,6 +11,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
     @Published var folders: [NCShareFolderItem] = []
     @Published var recentFolders: [NCShareFolderItem] = []
     @Published var selectedFolder: NCShareFolderItem?
+    @Published var isRecentFolderSelected = false
     @Published var folderChildren: [String: [NCShareFolderItem]] = [:]
     @Published var expandedFolderURLs: Set<String> = []
     @Published var loadingFolderURLs: Set<String> = []

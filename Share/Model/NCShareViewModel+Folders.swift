@@ -30,6 +30,7 @@ extension NCShareViewModel {
         folders = []
         recentFolders = []
         selectedFolder = nil
+        isRecentFolderSelected = false
         folderChildren = [:]
         expandedFolderURLs = []
         loadingFolderURLs = []
@@ -92,7 +93,7 @@ extension NCShareViewModel {
         }
     }
 
-    func selectFolder(_ folder: NCShareFolderItem) {
+    func selectFolder(_ folder: NCShareFolderItem, fromRecents: Bool = false) {
         guard canUseFolderBrowser, let capabilities = serverCapabilities, canAccessFolder(folder) else { return }
         let session = sessionStore.getSession()
         let browserID = folderBrowserID
@@ -122,6 +123,7 @@ extension NCShareViewModel {
             serverUrl = folder.serverUrl
             metadataFolder = metadata
             selectedFolder = selected
+            isRecentFolderSelected = fromRecents
             setNavigationBar(navigationTitle: selected.name)
         }
     }

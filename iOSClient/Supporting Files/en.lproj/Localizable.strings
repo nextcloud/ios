@@ -911,7 +911,6 @@
 "_share_collapse_folder_" = "Collapse %@";
 "_share_retry_folder_" = "Retry loading folders";
 "_share_folder_unavailable_" = "This folder is no longer available.";
-"_share_upload_to_" = "Upload to %@";
 
 /* Share extension capabilities */
 "_share_capabilities_loading_" = "Loading server capabilities…";
