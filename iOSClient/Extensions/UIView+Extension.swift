@@ -33,6 +33,10 @@ extension UIView {
             extensionLabel?.text = "." + ext
             extensionLabel?.isHidden = false
         }
+
+        // When the labels live inside an NCFilenameView, it needs a layout pass
+        // to re-measure the truncated title and reposition the extension label.
+        titleLabel?.superview?.setNeedsLayout()
     }
 }
 

@@ -157,6 +157,7 @@
 		F343A4BB2A1E734600DDA874 /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
 		F34BDB3A2F5744EC007A222C /* UINavigationItem+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F34BDB392F5744E5007A222C /* UINavigationItem+Extension.swift */; };
 		F34BDB3C2F574A58007A222C /* BidiSafeFilenameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F34BDB3B2F574A58007A222C /* BidiSafeFilenameTests.swift */; };
+		AB17A0112F90000100FE2801 /* NCFilenameViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB17A0122F90000100FE2802 /* NCFilenameViewTests.swift */; };
 		F34E1AD72ECB937D00FA10C3 /* NCStatusMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F34E1AD62ECB937D00FA10C3 /* NCStatusMessageView.swift */; };
 		F34E1AD92ECC839100FA10C3 /* EmojiTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F34E1AD82ECC839100FA10C3 /* EmojiTextField.swift */; };
 		F34E1ADB2ECC842B00FA10C3 /* NCStatusMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F34E1ADA2ECC842200FA10C3 /* NCStatusMessageModel.swift */; };
@@ -403,6 +404,7 @@
 		F73EF7E52B02266D0087E6E9 /* NCManageDatabase+Trash.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7DE2B02266C0087E6E9 /* NCManageDatabase+Trash.swift */; };
 		F73EFF9B2DB11EC900FD434C /* NCFiles+UIScrollViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EFF9A2DB11EB900FD434C /* NCFiles+UIScrollViewDelegate.swift */; };
 		F740BEF02A35C2AD00E9B6D5 /* UILabel+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EE66AC2A20B226009AE765 /* UILabel+Extension.swift */; };
+		AB17A0012F90000100FE2801 /* NCFilenameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB17A0022F90000100FE2802 /* NCFilenameView.swift */; };
 		F7411C552D7B26D700F57358 /* NCNetworking+ServerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7411C532D7B26C600F57358 /* NCNetworking+ServerError.swift */; };
 		F741C2242B6B9FD600E849BB /* NCMediaSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F741C2232B6B9FD600E849BB /* NCMediaSelectTabBar.swift */; };
 		F74230F32C79B57200CA1ACA /* NCNetworking+Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74230F22C79B57200CA1ACA /* NCNetworking+Task.swift */; };
@@ -1470,6 +1472,7 @@
 		F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extension.swift"; sourceTree = "<group>"; };
 		F34BDB392F5744E5007A222C /* UINavigationItem+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationItem+Extension.swift"; sourceTree = "<group>"; };
 		F34BDB3B2F574A58007A222C /* BidiSafeFilenameTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BidiSafeFilenameTests.swift; sourceTree = "<group>"; };
+		AB17A0122F90000100FE2802 /* NCFilenameViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFilenameViewTests.swift; sourceTree = "<group>"; };
 		F34E1AD62ECB937D00FA10C3 /* NCStatusMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCStatusMessageView.swift; sourceTree = "<group>"; };
 		F34E1AD82ECC839100FA10C3 /* EmojiTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiTextField.swift; sourceTree = "<group>"; };
 		F34E1ADA2ECC842200FA10C3 /* NCStatusMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCStatusMessageModel.swift; sourceTree = "<group>"; };
@@ -2074,6 +2077,7 @@
 		F7EDE513262DC2CD00414FE6 /* NCSelectCommandViewSelect+CreateFolder.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "NCSelectCommandViewSelect+CreateFolder.xib"; sourceTree = "<group>"; };
 		F7EDE51A262DD0C400414FE6 /* NCSelectCommandViewCopyMove.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSelectCommandViewCopyMove.xib; sourceTree = "<group>"; };
 		F7EE66AC2A20B226009AE765 /* UILabel+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Extension.swift"; sourceTree = "<group>"; };
+		AB17A0022F90000100FE2802 /* NCFilenameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFilenameView.swift; sourceTree = "<group>"; };
 		F7EF2AE82E43157B0081B2C9 /* NCNotification.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCNotification.storyboard; sourceTree = "<group>"; };
 		F7EF2AE92E43157B0081B2C9 /* NCNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNotification.swift; sourceTree = "<group>"; };
 		F7EFA47725ADBA500083159A /* NCViewerProviderContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerProviderContextMenu.swift; sourceTree = "<group>"; };
@@ -2334,6 +2338,7 @@
 				F0A1B2C330B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift */,
 				F0A1B2C530B6000100D4E5F6 /* NCImageZoomViewTests.swift */,
 				F34BDB3B2F574A58007A222C /* BidiSafeFilenameTests.swift */,
+				AB17A0122F90000100FE2802 /* NCFilenameViewTests.swift */,
 				439616AAA50F4360A761E5EF /* NCAlbumsPersistenceTests.swift */,
 				C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */,
 				4B74B947E07444CC9CFE0A6C /* NCDocumentEditorSupportTests.swift */,
@@ -3428,6 +3433,7 @@
 				F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */,
 				F7B7504A2397D38E004E13EC /* UIImage+Extension.swift */,
 				F7EE66AC2A20B226009AE765 /* UILabel+Extension.swift */,
+				AB17A0022F90000100FE2802 /* NCFilenameView.swift */,
 				F77BB7492899857B0090FC19 /* UINavigationController+Extension.swift */,
 				F34BDB392F5744E5007A222C /* UINavigationItem+Extension.swift */,
 				F743C89D2E5B2595000173A9 /* UIScene+Extension.swift */,
@@ -4718,6 +4724,7 @@
 				F0A1B2C430B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift in Sources */,
 				F0A1B2C630B6000100D4E5F6 /* NCImageZoomViewTests.swift in Sources */,
 				F34BDB3C2F574A58007A222C /* BidiSafeFilenameTests.swift in Sources */,
+				AB17A0112F90000100FE2801 /* NCFilenameViewTests.swift in Sources */,
 				63563FE53573412998852DD3 /* NCAlbumsPersistenceTests.swift in Sources */,
 				C0DECA022F65000100C0D001 /* NCCameraRollTests.swift in Sources */,
 				22BA14432CF44BDBA2E6C291 /* NCDocumentEditorSupportTests.swift in Sources */,
@@ -5093,6 +5100,7 @@
 				F7C687E92D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */,
 				F7802B322BD5584F00D74270 /* NCMedia+DragDrop.swift in Sources */,
 				F7EE66AD2A20B226009AE765 /* UILabel+Extension.swift in Sources */,
+				AB17A0012F90000100FE2801 /* NCFilenameView.swift in Sources */,
 				F78ACD4221903CE00088454D /* NCListCell.swift in Sources */,
 				F7BD0A002C468925003A4A6D /* NCMedia+CollectionViewDataSource.swift in Sources */,
 				F76D3CF12428B40E005DFA87 /* NCViewerPDFSearch.swift in Sources */,
