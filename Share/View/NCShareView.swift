@@ -16,17 +16,24 @@ struct NCShareView: View {
                         statusView
                         GeometryReader { geometry in
                             if geometry.size.width >= 600 && geometry.size.height < 450 && geometry.size.width > geometry.size.height {
-                                HStack(alignment: .top, spacing: 0) {
-                                    folderList
-                                        .frame(maxWidth: .infinity)
-                                    commands(
-                                        visibleRows: min(3, max(1, Int((geometry.size.height - 100) / 50))),
-                                        fillsHeight: true)
-                                        .frame(width: min(320, geometry.size.width * 0.38))
+                                VStack(spacing: 0) {
+                                    createFolderHeader
+                                        .padding(.horizontal, 16)
+                                    HStack(spacing: 10) {
+                                        folderList(showHeader: false, horizontalInset: 0)
+                                            .frame(maxWidth: .infinity)
+                                        fileList(fillsHeight: true, horizontalInset: 0)
+                                            .frame(width: min(320, geometry.size.width * 0.38))
+                                    }
+                                    .padding(.horizontal, 16)
+                                    uploadButton
+                                        .padding(.top, 10)
+                                        .padding(.bottom, 16)
                                 }
+                                .background(Color(uiColor: .systemGroupedBackground))
                             } else {
                                 VStack(spacing: 0) {
-                                    folderList
+                                    folderList()
                                     commands()
                                 }
                             }
@@ -102,10 +109,12 @@ struct NCShareView: View {
         }
     }
 
-    private var folderList: some View {
+    private func folderList(showHeader: Bool = true, horizontalInset: CGFloat = 16) -> some View {
         VStack(spacing: 0) {
-            createFolderHeader
-                .padding(.horizontal, 16)
+            if showHeader {
+                createFolderHeader
+                    .padding(.horizontal, horizontalInset)
+            }
             List {
                 Section {
                     if !model.recentFolders.isEmpty {
@@ -153,7 +162,7 @@ struct NCShareView: View {
             .environment(\.defaultMinListRowHeight, 50)
             .background(Color(uiColor: .secondarySystemGroupedBackground))
             .clipShape(RoundedRectangle(cornerRadius: 12))
-            .padding(.horizontal, 16)
+            .padding(.horizontal, horizontalInset)
         }
         .frame(maxHeight: .infinity)
         .background(Color(uiColor: .systemGroupedBackground))
@@ -235,6 +244,7 @@ struct NCShareView: View {
                     Spacer(minLength: 4)
                     if isSelected {
                         Image(systemName: "checkmark")
+                            .frame(width: 50, height: 50)
                             .accessibilityHidden(true)
                     }
                 }
@@ -244,85 +254,100 @@ struct NCShareView: View {
             .buttonStyle(.borderless)
             .accessibilityAddTraits(isSelected ? .isSelected : [])
         }
+        .background {
+            if isSelected {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.accentColor.opacity(0.1))
+            }
+        }
         .listRowSeparator(.hidden)
-        .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
-        .listRowBackground(isSelected ? Color.accentColor.opacity(0.1) : Color(uiColor: .secondarySystemGroupedBackground))
+        .listRowInsets(EdgeInsets(top: 0, leading: 2, bottom: 0, trailing: 2))
+        .listRowBackground(Color(uiColor: .secondarySystemGroupedBackground))
     }
 
-    private func commands(visibleRows: Int = 3, fillsHeight: Bool = false) -> some View {
-        VStack(spacing: 12) {
-            List(model.fileNames, id: \.self) { fileName in
-                HStack {
-                    Button {
-                        model.rename(fileName)
-                    } label: {
-                        Label {
-                            Text(verbatim: fileName).lineLimit(2)
-                        } icon: {
-                            Group {
-                                if let thumbnail = model.fileThumbnails[fileName] {
-                                    Image(uiImage: thumbnail)
-                                        .resizable()
-                                        .scaledToFit()
-                                } else {
-                                    Image(systemName: model.fileIcon(named: fileName))
-                                }
-                            }
-                            .frame(width: 36, height: 36)
-                            .clipShape(RoundedRectangle(cornerRadius: 4))
-                            .accessibilityHidden(true)
-                            .task(id: fileName) { model.loadThumbnail(named: fileName) }
+    private func fileList(fillsHeight: Bool = false, horizontalInset: CGFloat = 16) -> some View {
+    List(model.fileNames, id: \.self) { fileName in
+        HStack {
+            Button {
+                model.rename(fileName)
+            } label: {
+                Label {
+                    Text(verbatim: fileName).lineLimit(2)
+                } icon: {
+                    Group {
+                        if let thumbnail = model.fileThumbnails[fileName] {
+                            Image(uiImage: thumbnail)
+                                .resizable()
+                                .scaledToFit()
+                        } else {
+                            Image(systemName: model.fileIcon(named: fileName))
                         }
-                        .foregroundStyle(.primary)
                     }
-                    .buttonStyle(.plain)
-                    Spacer()
-                    Menu {
-                        Button(NSLocalizedString("_rename_file_", comment: "")) {
-                            model.rename(fileName)
-                        }
-                        Button(NSLocalizedString("_remove_file_", comment: ""), role: .destructive) {
-                            model.remove(fileName)
-                        }
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
-                            .frame(minWidth: 50, minHeight: 50)
-                    }
-                    .accessibilityLabel(Text(verbatim: fileName))
+                    .frame(width: 36, height: 36)
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                    .accessibilityHidden(true)
+                    .task(id: fileName) { model.loadThumbnail(named: fileName) }
                 }
-                .font(.body)
-                .frame(minHeight: 50)
-                .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
-                .listRowSeparator(.hidden)
+                .foregroundStyle(.primary)
             }
-            .listStyle(.plain)
-            .contentMargins(.vertical, 0, for: .scrollContent)
-            .scrollContentBackground(.hidden)
-            .environment(\.defaultMinListRowHeight, 50)
-            .frame(height: CGFloat(min(max(model.fileNames.count, 1), visibleRows)) * 50)
-            .background(Color(uiColor: .secondarySystemGroupedBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .padding(.horizontal, 16)
-
-            if fillsHeight { Spacer(minLength: 0) }
-
-            Button(action: model.upload) {
-                Text(String.localizedStringWithFormat(NSLocalizedString("_share_upload_to_", comment: ""), model.fileNames.count))
-                    .lineLimit(2)
-                    .truncationMode(.middle)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity)
+            .buttonStyle(.plain)
+            Spacer()
+            Menu {
+                Button(NSLocalizedString("_rename_file_", comment: "")) {
+                    model.rename(fileName)
+                }
+                Button(NSLocalizedString("_remove_file_", comment: ""), role: .destructive) {
+                    model.remove(fileName)
+                }
+            } label: {
+                Image(systemName: "ellipsis.circle")
+                    .frame(minWidth: 50, minHeight: 50)
             }
-            .buttonStyle(.borderedProminent)
-            .buttonBorderShape(.roundedRectangle(radius: 12))
-            .padding(.horizontal, 16)
-            .disabled(model.fileNames.isEmpty || model.selectedFolder == nil || model.isLoading)
+            .accessibilityLabel(Text(verbatim: fileName))
+        }
+        .font(.body)
+        .frame(minHeight: 50)
+        .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 2))
+        .listRowSeparator(.hidden)
+    }
+    .listStyle(.plain)
+    .contentMargins(.vertical, 0, for: .scrollContent)
+    .scrollContentBackground(.hidden)
+    .environment(\.defaultMinListRowHeight, 50)
+    .frame(height: fillsHeight ? nil : CGFloat(min(max(model.fileNames.count, 1), 3)) * 50)
+        .frame(maxHeight: fillsHeight ? .infinity : nil)
+    .background(Color(uiColor: .secondarySystemGroupedBackground))
+    .clipShape(RoundedRectangle(cornerRadius: 12))
+    .padding(.horizontal, horizontalInset)
+
+        .disabled(model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady || model.isLoadingAccounts || !model.inputErrorMessage.isEmpty)
+    }
+
+    private var uploadButton: some View {
+    Button(action: model.upload) {
+        Text(String.localizedStringWithFormat(NSLocalizedString("_share_upload_to_", comment: ""), model.fileNames.count))
+            .lineLimit(2)
+            .truncationMode(.middle)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
+    }
+    .buttonStyle(.borderedProminent)
+    .buttonBorderShape(.roundedRectangle(radius: 12))
+    .padding(.horizontal, 16)
+    .disabled(model.fileNames.isEmpty || model.selectedFolder == nil || model.isLoading)
+        .disabled(model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady || model.isLoadingAccounts || !model.inputErrorMessage.isEmpty)
+    }
+
+    private func commands() -> some View {
+        VStack(spacing: 10) {
+            fileList()
+            uploadButton
         }
         .padding(.top, 10)
         .padding(.bottom, 16)
         .background(Color(uiColor: .systemGroupedBackground))
-        .disabled(model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady || model.isLoadingAccounts || !model.inputErrorMessage.isEmpty)
     }
+
 }
 
 #if DEBUG && SHARE_PREVIEWS
