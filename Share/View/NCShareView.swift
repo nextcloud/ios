@@ -13,24 +13,13 @@ struct NCShareView: View {
             Group {
                 if model.isAvailable && model.isAuthenticated {
                     VStack(spacing: 0) {
-                        capabilitiesStatus
+                        statusView
                         folderList
-                        if model.isLoading {
-                            ProgressView(NSLocalizedString("_request_in_progress_", comment: ""))
-                                .padding(.vertical, 8)
-                        }
-                        if model.isPreparingInput {
-                            ProgressView(NSLocalizedString("_share_import_preparing_", comment: ""))
-                                .padding()
-                        }
-                        if model.isPreparingUpload {
-                            ProgressView(NSLocalizedString("_share_conflict_checking_", comment: ""))
-                                .padding()
-                        }
                         commands
                     }
                 } else if model.isSwitchingAccount && model.isAuthenticated {
-                    ProgressView(NSLocalizedString("_request_in_progress_", comment: ""))
+                    ProgressView()
+                                .accessibilityLabel(NSLocalizedString("_request_in_progress_", comment: ""))
                 } else {
                     Color(uiColor: .systemBackground)
                 }
@@ -67,11 +56,8 @@ struct NCShareView: View {
     }
 
     @ViewBuilder
-    private var capabilitiesStatus: some View {
-        if model.isLoadingCapabilities {
-            ProgressView(NSLocalizedString("_share_capabilities_loading_", comment: ""))
-                .padding()
-        } else if !model.capabilitiesErrorMessage.isEmpty {
+    private var statusView: some View {
+        if !model.capabilitiesErrorMessage.isEmpty {
             VStack(spacing: 8) {
                 Text(verbatim: model.capabilitiesErrorMessage)
                     .font(.subheadline)
@@ -80,6 +66,19 @@ struct NCShareView: View {
                     .disabled(model.isSwitchingAccount)
             }
             .padding()
+        } else if model.isLoadingCapabilities {
+            ProgressView(NSLocalizedString("_share_capabilities_loading_", comment: ""))
+                .padding()
+        } else if model.isPreparingInput {
+            ProgressView(NSLocalizedString("_share_import_preparing_", comment: ""))
+                .padding()
+        } else if model.isPreparingUpload {
+            ProgressView(NSLocalizedString("_share_conflict_checking_", comment: ""))
+                .padding()
+        } else if model.isLoading {
+            ProgressView()
+                .accessibilityLabel(NSLocalizedString("_request_in_progress_", comment: ""))
+                .padding()
         }
     }
 

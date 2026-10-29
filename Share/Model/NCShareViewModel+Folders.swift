@@ -58,12 +58,11 @@ extension NCShareViewModel {
                 image: item.isEncrypted ? NCImageCache.shared.getFolderEncrypted(account: session.account) : NCImageCache.shared.getFolder(account: session.account),
                 isEncrypted: item.isEncrypted)
         }
-        isLoading = true
-        defer { if folderBrowserID == browserID { isLoading = false } }
         let cached = await cachedFolderChildren(at: home, parent: nil, session: session)
         guard isCurrentBrowser(browserID, account: session.account) else { return }
         folderChildren[home] = cached
-        await loadFolderChildren(root, browserID: browserID)
+        // Make cached destinations usable without waiting for the server refresh.
+        requestFolderChildren(root)
     }
 
     func toggleFolder(_ folder: NCShareFolderItem) {
