@@ -5,7 +5,8 @@
 import SwiftUI
 import NextcloudKit
 import LucidBanner
-import QuickLookThumbnailing
+import Network
+@preconcurrency import QuickLookThumbnailing
 import UniformTypeIdentifiers
 
 @MainActor
@@ -30,6 +31,8 @@ final class NCShareViewModel: NSObject, ObservableObject {
     private var thumbnailRequests: [String: QLThumbnailGenerator.Request] = [:]
     private var failedThumbnails: Set<String> = []
     @Published var isLoading = false
+    @Published private(set) var isOffline = false
+    private var connectionMonitor: NWPathMonitor?
     @Published var isAvailable = false
     @Published var isPreparingUpload = false
     @Published var uploadConfirmation: NCShareUploadConfirmation?
@@ -50,7 +53,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
     @Published var serverCapabilities: NKCapabilities.Capabilities?
     @Published var isLoadingCapabilities = false
     @Published var capabilitiesErrorMessage = ""
-    var isAccountReady: Bool { serverCapabilities != nil && !isSwitchingAccount }
+    var isAccountReady: Bool { serverCapabilities != nil && !isSwitchingAccount && !isOffline }
 
     var capabilitiesTask: Task<Void, Never>?
     var capabilitiesRequest: URLSessionTask?
@@ -95,6 +98,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
     func start(context: NSExtensionContext?, presenter: UIViewController) {
         guard !hasStarted else { return }
         hasStarted = true
+        monitorConnection()
         self.requestContext = context
         self.presenter = presenter
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionBuild())
@@ -186,6 +190,32 @@ final class NCShareViewModel: NSObject, ObservableObject {
         }
     }
 
+    private func monitorConnection() {
+        let monitor = NWPathMonitor()
+        connectionMonitor = monitor
+        monitor.pathUpdateHandler = { [weak self] path in
+            let offline = path.status != .satisfied
+            Task { @MainActor [weak self] in
+                guard let self, !self.isClosing else { return }
+                let wasOffline = self.isOffline
+                self.isOffline = offline
+                if wasOffline && !offline { self.retryConnection() }
+            }
+        }
+        monitor.start(queue: DispatchQueue(label: "com.nextcloud.share.connection"))
+    }
+
+    func retryConnection() {
+        guard !isOffline, isAuthenticated, !isClosing, !isSwitchingAccount, !isPreparingUpload else { return }
+        if serverCapabilities == nil {
+            retryCapabilities()
+        } else {
+            for row in visibleFolderRows where expandedFolderURLs.contains(row.folder.serverUrl) {
+                requestFolderChildren(row.folder, refresh: true)
+            }
+        }
+    }
+
     func loadThumbnail(named fileName: String) {
         guard !isClosing, fileThumbnails[fileName] == nil, thumbnailRequests[fileName] == nil,
               !failedThumbnails.contains(fileName), fileNames.contains(fileName) else { return }
@@ -248,6 +278,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
     }
 
     isolated deinit {
+        connectionMonitor?.cancel()
         for request in thumbnailRequests.values { QLThumbnailGenerator.shared.cancel(request) }
         inputTask?.cancel()
         uploadTask?.cancel()
@@ -315,6 +346,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
 
     func cancel(with error: NCShareRequestError? = nil) {
         isClosing = true
+        connectionMonitor?.cancel()
         cancelAccountLoading()
         uploadConfirmation = nil
         pendingUploadConfirmation = nil
@@ -359,7 +391,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
 
     func createFolder() {
         let session = sessionStore.getSession()
-        guard let folder = selectedFolder, !loadingFolderURLs.contains(folder.serverUrl) else { return }
+        guard isAccountReady, let folder = selectedFolder, !loadingFolderURLs.contains(folder.serverUrl) else { return }
         guard let capabilities = serverCapabilities else { return }
         let alert = UIAlertController.createFolderWith(serverUrl: folder.serverUrl, session: session, capabilities: capabilities) { [weak self] error in
             guard let self else { return }
@@ -420,7 +452,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
     }
 
     func upload() {
-        guard isAuthenticated, !isPreparingInput, inputErrorMessage.isEmpty, !isPreparingUpload,
+        guard isAccountReady, isAuthenticated, !isPreparingInput, inputErrorMessage.isEmpty, !isPreparingUpload,
               !isSwitchingAccount, !isLoadingAccounts, !isLoading, !fileNames.isEmpty else { return }
         guard let capabilities = serverCapabilities else { return }
         isPreparingUpload = true

@@ -14,8 +14,23 @@ struct NCShareView: View {
                 if model.isAvailable && model.isAuthenticated {
                     VStack(spacing: 0) {
                         statusView
-                        folderList
-                        commands
+                        GeometryReader { geometry in
+                            if geometry.size.width >= 600 && geometry.size.height < 450 && geometry.size.width > geometry.size.height {
+                                HStack(alignment: .top, spacing: 0) {
+                                    folderList
+                                        .frame(maxWidth: .infinity)
+                                    commands(
+                                        visibleRows: min(3, max(1, Int((geometry.size.height - 100) / 50))),
+                                        fillsHeight: true)
+                                        .frame(width: min(320, geometry.size.width * 0.38))
+                                }
+                            } else {
+                                VStack(spacing: 0) {
+                                    folderList
+                                    commands()
+                                }
+                            }
+                        }
                     }
                 } else if model.isSwitchingAccount && model.isAuthenticated {
                     ProgressView()
@@ -38,8 +53,15 @@ struct NCShareView: View {
             .toolbar {
                 ToolbarItemGroup(placement: .topBarLeading) {
                     if model.isAvailable && model.isAuthenticated {
-                        NCShareAccountMenu(model: model)
-                        .disabled(model.isLoading || model.isPreparingUpload || model.isSwitchingAccount || model.isLoadingAccounts)
+                        HStack(spacing: 8) {
+                            NCShareAccountMenu(model: model)
+                                .disabled(model.isLoading || model.isPreparingUpload || model.isSwitchingAccount || model.isLoadingAccounts)
+                            if model.isLoading || !model.loadingFolderURLs.isEmpty {
+                                ProgressView()
+                                    .accessibilityLabel(NSLocalizedString("_request_in_progress_", comment: ""))
+                                    .padding(.trailing, 8)
+                            }
+                        }
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -51,7 +73,15 @@ struct NCShareView: View {
 
     @ViewBuilder
     private var statusView: some View {
-        if !model.capabilitiesErrorMessage.isEmpty {
+        if model.isOffline {
+            VStack(spacing: 8) {
+                Label(NSLocalizedString("_share_online_required_", comment: ""), systemImage: "wifi.slash")
+                    .font(.subheadline)
+                    .multilineTextAlignment(.center)
+                Button(NSLocalizedString("_share_capabilities_retry_", comment: ""), action: model.retryConnection)
+            }
+            .padding()
+        } else if !model.capabilitiesErrorMessage.isEmpty {
             VStack(spacing: 8) {
                 Text(verbatim: model.capabilitiesErrorMessage)
                     .font(.subheadline)
@@ -68,10 +98,6 @@ struct NCShareView: View {
                 .padding()
         } else if model.isPreparingUpload {
             ProgressView(NSLocalizedString("_share_conflict_checking_", comment: ""))
-                .padding()
-        } else if model.isLoading {
-            ProgressView()
-                .accessibilityLabel(NSLocalizedString("_request_in_progress_", comment: ""))
                 .padding()
         }
     }
@@ -223,7 +249,7 @@ struct NCShareView: View {
         .listRowBackground(isSelected ? Color.accentColor.opacity(0.1) : Color(uiColor: .secondarySystemGroupedBackground))
     }
 
-    private var commands: some View {
+    private func commands(visibleRows: Int = 3, fillsHeight: Bool = false) -> some View {
         VStack(spacing: 12) {
             List(model.fileNames, id: \.self) { fileName in
                 HStack {
@@ -273,10 +299,12 @@ struct NCShareView: View {
             .contentMargins(.vertical, 0, for: .scrollContent)
             .scrollContentBackground(.hidden)
             .environment(\.defaultMinListRowHeight, 50)
-            .frame(height: CGFloat(min(max(model.fileNames.count, 1), 3)) * 50)
+            .frame(height: CGFloat(min(max(model.fileNames.count, 1), visibleRows)) * 50)
             .background(Color(uiColor: .secondarySystemGroupedBackground))
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .padding(.horizontal, 16)
+
+            if fillsHeight { Spacer(minLength: 0) }
 
             Button(action: model.upload) {
                 Text(String.localizedStringWithFormat(NSLocalizedString("_share_upload_to_", comment: ""), model.fileNames.count))
@@ -299,6 +327,11 @@ struct NCShareView: View {
 
 #if DEBUG && SHARE_PREVIEWS
 #Preview("Share") {
+    NCShareView(model: .preview())
+        .allowsHitTesting(false)
+}
+
+#Preview("Landscape", traits: .fixedLayout(width: 844, height: 390)) {
     NCShareView(model: .preview())
         .allowsHitTesting(false)
 }

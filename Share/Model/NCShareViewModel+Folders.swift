@@ -82,7 +82,7 @@ extension NCShareViewModel {
     }
 
     func requestFolderChildren(_ folder: NCShareFolderItem, refresh: Bool = false) {
-        guard !isClosing, !loadingFolderURLs.contains(folder.serverUrl),
+        guard !isOffline, !isClosing, !loadingFolderURLs.contains(folder.serverUrl),
               refresh || !loadedFolderURLs.contains(folder.serverUrl) else { return }
         let browserID = folderBrowserID
         // Mark synchronously, before scheduling, to prevent duplicate requests.

@@ -92,7 +92,7 @@ extension NCShareViewModel {
     }
 
     func retryCapabilities() {
-        guard isAuthenticated, !isClosing, !isLoadingCapabilities, !isSwitchingAccount, !isPreparingUpload else { return }
+        guard !isOffline, isAuthenticated, !isClosing, !isLoadingCapabilities, !isSwitchingAccount, !isPreparingUpload else { return }
         let account = sessionStore.getSession().account
         guard !account.isEmpty else { return }
         let changeID = accountChangeID
@@ -112,6 +112,7 @@ extension NCShareViewModel {
         var capabilities = await NCManageDatabase.shared.getCapabilities(account: account)
         guard isCurrentCapabilitiesRequest(account: account, changeID: changeID) else { return }
         if capabilities == nil {
+            guard !isOffline else { return }
             let result = await NextcloudKit.shared.getCapabilitiesAsync(account: account) { [weak self] task in
                 Task { @MainActor [weak self] in
                     guard let self, !self.isClosing, self.accountChangeID == changeID else {

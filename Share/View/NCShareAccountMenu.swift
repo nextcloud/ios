@@ -26,13 +26,13 @@ struct NCShareAccountMenu: View {
             }
             .pickerStyle(.inline)
         } label: {
-            Label {
+            HStack(spacing: 8) {
+                avatar(for: model.accounts.first(where: \.isSelected)?.id ?? "")
                 Text(verbatim: model.accountName)
                     .lineLimit(1)
-            } icon: {
-                avatar(for: model.accounts.first(where: \.isSelected)?.id ?? "")
             }
         }
+        .buttonStyle(.plain)
         .disabled(model.accounts.count < 2)
 
     }

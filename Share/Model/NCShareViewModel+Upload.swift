@@ -127,6 +127,7 @@ extension NCShareViewModel {
 
     private func stageAndUpload(plan: NCShareUploadConfirmation, replacing: Bool, capabilities: NKCapabilities.Capabilities) async throws {
         try Task.checkCancellation()
+        guard !isOffline else { throw URLError(.notConnectedToInternet) }
         let session = sessionStore.getSession()
         guard !isClosing, isAuthenticated, plan.account == session.account, plan.serverUrl == serverUrl else { throw CancellationError() }
         uploadMetadata.removeAll()
