@@ -33,18 +33,12 @@ struct NCShareView: View {
             .sheet(item: $model.uploadConfirmation, onDismiss: { model.uploadConfirmationDismissed() }) { confirmation in
                 NCShareUploadConflictView(confirmation: confirmation, resolve: model.resolveUploadConfirmation)
             }
-            .sheet(isPresented: $model.isShowingAccounts, onDismiss: { model.accountPickerDismissed() }) {
-                NCShareAccountPickerView(model: model)
-            }
             .navigationTitle(model.navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarLeading) {
                     if model.isAvailable && model.isAuthenticated {
-                        Button(action: model.showAccountPicker) {
-                            Label(model.accountName, systemImage: "person.crop.circle")
-                                .lineLimit(1)
-                        }
+                        NCShareAccountMenu(model: model)
                         .disabled(model.isLoading || model.isPreparingUpload || model.isSwitchingAccount || model.isLoadingAccounts)
                     }
                 }
@@ -130,7 +124,7 @@ struct NCShareView: View {
             .listStyle(.plain)
             .contentMargins(.vertical, 0, for: .scrollContent)
             .scrollContentBackground(.hidden)
-            .environment(\.defaultMinListRowHeight, 44)
+            .environment(\.defaultMinListRowHeight, 50)
             .background(Color(uiColor: .secondarySystemGroupedBackground))
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .padding(.horizontal, 16)
@@ -149,7 +143,7 @@ struct NCShareView: View {
                     Image(systemName: "folder.badge.plus")
                 }
                 .font(.subheadline)
-                .frame(minHeight: 44)
+                .frame(minHeight: 50)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.borderless)
@@ -174,7 +168,7 @@ struct NCShareView: View {
                             Image(systemName: model.expandedFolderURLs.contains(folder.serverUrl) ? "chevron.down" : "chevron.right")
                         }
                     }
-                    .frame(width: 44, height: 44)
+                    .frame(width: 50, height: 50)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.borderless)
@@ -185,7 +179,7 @@ struct NCShareView: View {
                 Image(systemName: "clock")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                    .frame(width: 44, height: 44)
+                    .frame(width: 50, height: 50)
                     .accessibilityHidden(true)
             }
             Button {
@@ -197,11 +191,11 @@ struct NCShareView: View {
                             .renderingMode(.original)
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 22, height: 22)
+                            .frame(width: 26, height: 26)
                     }
                     VStack(alignment: .leading, spacing: 1) {
                         Text(verbatim: folder.name)
-                            .font(.subheadline)
+                            .font(.body)
                             .foregroundStyle(.primary)
                             .lineLimit(1)
                         if depth == nil {
@@ -218,7 +212,7 @@ struct NCShareView: View {
                             .accessibilityHidden(true)
                     }
                 }
-                .frame(minHeight: 44)
+                .frame(minHeight: 50)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.borderless)
@@ -239,8 +233,19 @@ struct NCShareView: View {
                         Label {
                             Text(verbatim: fileName).lineLimit(2)
                         } icon: {
-                            Image(systemName: "doc")
-                                .frame(width: 22, height: 22)
+                            Group {
+                                if let thumbnail = model.fileThumbnails[fileName] {
+                                    Image(uiImage: thumbnail)
+                                        .resizable()
+                                        .scaledToFit()
+                                } else {
+                                    Image(systemName: model.fileIcon(named: fileName))
+                                }
+                            }
+                            .frame(width: 36, height: 36)
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                            .accessibilityHidden(true)
+                            .task(id: fileName) { model.loadThumbnail(named: fileName) }
                         }
                         .foregroundStyle(.primary)
                     }
@@ -255,20 +260,20 @@ struct NCShareView: View {
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")
-                            .frame(minWidth: 44, minHeight: 44)
+                            .frame(minWidth: 50, minHeight: 50)
                     }
                     .accessibilityLabel(Text(verbatim: fileName))
                 }
-                .font(.subheadline)
-                .frame(minHeight: 44)
+                .font(.body)
+                .frame(minHeight: 50)
                 .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
                 .listRowSeparator(.hidden)
             }
             .listStyle(.plain)
             .contentMargins(.vertical, 0, for: .scrollContent)
             .scrollContentBackground(.hidden)
-            .environment(\.defaultMinListRowHeight, 44)
-            .frame(height: CGFloat(min(max(model.fileNames.count, 1), 3)) * 44)
+            .environment(\.defaultMinListRowHeight, 50)
+            .frame(height: CGFloat(min(max(model.fileNames.count, 1), 3)) * 50)
             .background(Color(uiColor: .secondarySystemGroupedBackground))
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .padding(.horizontal, 16)
@@ -283,7 +288,7 @@ struct NCShareView: View {
             .buttonStyle(.borderedProminent)
             .buttonBorderShape(.roundedRectangle(radius: 12))
             .padding(.horizontal, 16)
-            .disabled(model.fileNames.isEmpty || model.selectedFolder == nil || model.isLoading || model.isShowingAccounts)
+            .disabled(model.fileNames.isEmpty || model.selectedFolder == nil || model.isLoading)
         }
         .padding(.top, 10)
         .padding(.bottom, 16)

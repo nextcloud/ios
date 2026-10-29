@@ -5,6 +5,8 @@
 import SwiftUI
 import NextcloudKit
 import LucidBanner
+import QuickLookThumbnailing
+import UniformTypeIdentifiers
 
 @MainActor
 final class NCShareViewModel: NSObject, ObservableObject {
@@ -24,6 +26,9 @@ final class NCShareViewModel: NSObject, ObservableObject {
     lazy var recentFoldersStore = NCShareRecentFoldersStore(
         defaults: UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) ?? .standard)
     @Published var fileNames: [String] = []
+    @Published var fileThumbnails: [String: UIImage] = [:]
+    private var thumbnailRequests: [String: QLThumbnailGenerator.Request] = [:]
+    private var failedThumbnails: Set<String> = []
     @Published var isLoading = false
     @Published var isAvailable = false
     @Published var isPreparingUpload = false
@@ -39,7 +44,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
     @Published var navigationTitle = NCBrandOptions.shared.brand
     @Published var accountName = ""
     @Published var accounts: [NCShareAccountItem] = []
-    @Published var isShowingAccounts = false
+    @Published var accountAvatars: [String: UIImage] = [:]
     @Published var isLoadingAccounts = false
     @Published var isSwitchingAccount = false
     @Published var serverCapabilities: NKCapabilities.Capabilities?
@@ -49,8 +54,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
 
     var capabilitiesTask: Task<Void, Never>?
     var capabilitiesRequest: URLSessionTask?
-    var pendingAccountSelection: String?
-    var accountPickerTask: Task<Void, Never>?
+    var accountsTask: Task<Void, Never>?
     var accountChangeTask: Task<Void, Never>?
     var accountChangeID = UUID()
     @Published private(set) var isAuthenticated = false
@@ -106,14 +110,14 @@ final class NCShareViewModel: NSObject, ObservableObject {
         backgroundObserver = NotificationCenter.default.addObserver(
             forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main
         ) { [weak self] _ in
-            Task { @MainActor [weak self] in self?.dismissAccountPicker() }
+            Task { @MainActor [weak self] in self?.cancelAccountLoading() }
         }
         foregroundObserver = NotificationCenter.default.addObserver(
             forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main
         ) { [weak self] _ in
             Task { @MainActor [weak self] in
                 guard let self, !self.isClosing else { return }
-                self.dismissAccountPicker()
+                self.cancelAccountLoading()
                 guard !self.maintenanceMode, self.validateAccount() else { return }
                 self.resolveUploadConfirmation(nil)
                 self.isPasscodeAuthenticated = false
@@ -182,13 +186,58 @@ final class NCShareViewModel: NSObject, ObservableObject {
         }
     }
 
+    func loadThumbnail(named fileName: String) {
+        guard !isClosing, fileThumbnails[fileName] == nil, thumbnailRequests[fileName] == nil,
+              !failedThumbnails.contains(fileName), fileNames.contains(fileName) else { return }
+        let request = QLThumbnailGenerator.Request(
+            fileAt: inputFileURL(named: fileName), size: CGSize(width: 36, height: 36),
+            scale: presenter?.view.window?.screen.scale ?? 2, representationTypes: .all)
+        thumbnailRequests[fileName] = request
+        QLThumbnailGenerator.shared.generateBestRepresentation(for: request) { [weak self] representation, _ in
+            let image = representation?.uiImage
+            Task { @MainActor [weak self] in
+                guard let self, !self.isClosing, self.thumbnailRequests[fileName] === request else { return }
+                self.thumbnailRequests[fileName] = nil
+                guard self.fileNames.contains(fileName) else { return }
+                if let image {
+                    // Keep extension memory bounded even when sharing many files.
+                    if self.fileThumbnails.count >= 64, let oldest = self.fileThumbnails.keys.first {
+                        self.fileThumbnails[oldest] = nil
+                    }
+                    self.fileThumbnails[fileName] = image
+                } else {
+                    self.failedThumbnails.insert(fileName)
+                }
+            }
+        }
+    }
+
+    func fileIcon(named fileName: String) -> String {
+        guard let type = UTType(filenameExtension: (fileName as NSString).pathExtension) else { return "doc" }
+        if type.conforms(to: .image) { return "photo" }
+        if type.conforms(to: .movie) { return "film" }
+        if type.conforms(to: .audio) { return "music.note" }
+        if type.conforms(to: .pdf) { return "doc.richtext" }
+        if type.conforms(to: .archive) { return "doc.zipper" }
+        if type.conforms(to: .text) { return "doc.text" }
+        return "doc"
+    }
+
+    private func discardThumbnail(named fileName: String) {
+        if let request = thumbnailRequests.removeValue(forKey: fileName) {
+            QLThumbnailGenerator.shared.cancel(request)
+        }
+        fileThumbnails[fileName] = nil
+        failedThumbnails.remove(fileName)
+    }
+
     func inputFileURL(named fileName: String) -> URL {
         inputDirectory.appendingPathComponent(fileName)
     }
 
     func showInputErrorIfNeeded() {
         // Do not present import errors over the passcode screen.
-        if isAuthenticated && !isShowingAccounts && !isLoadingAccounts && !inputErrorMessage.isEmpty {
+        if isAuthenticated && !isLoadingAccounts && !inputErrorMessage.isEmpty {
             isShowingInputError = true
         }
     }
@@ -199,9 +248,10 @@ final class NCShareViewModel: NSObject, ObservableObject {
     }
 
     isolated deinit {
+        for request in thumbnailRequests.values { QLThumbnailGenerator.shared.cancel(request) }
         inputTask?.cancel()
         uploadTask?.cancel()
-        accountPickerTask?.cancel()
+        accountsTask?.cancel()
         accountChangeTask?.cancel()
         capabilitiesTask?.cancel()
         capabilitiesRequest?.cancel()
@@ -265,13 +315,13 @@ final class NCShareViewModel: NSObject, ObservableObject {
 
     func cancel(with error: NCShareRequestError? = nil) {
         isClosing = true
-        dismissAccountPicker()
+        cancelAccountLoading()
         uploadConfirmation = nil
         pendingUploadConfirmation = nil
         uploadChoice = nil
         inputTask?.cancel()
         uploadTask?.cancel()
-        accountPickerTask?.cancel()
+        accountsTask?.cancel()
         accountChangeTask?.cancel()
         capabilitiesTask?.cancel()
         capabilitiesRequest?.cancel()
@@ -299,7 +349,8 @@ final class NCShareViewModel: NSObject, ObservableObject {
     func setNavigationBar(navigationTitle: String) {
         self.navigationTitle = navigationTitle
         guard let account = sessionStore.getTblAccoun() else { return }
-        accountName = account.alias.isEmpty ? account.displayName : account.alias
+        let name = account.displayName.isEmpty ? account.user : account.displayName
+        accountName = account.alias.isEmpty ? name : name + " - " + account.alias
     }
 
     func setCommandView() {
@@ -341,6 +392,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
             return showAlert(title: "_single_file_conflict_title_", description: "'\(oldName)' -> '\(newName)'")
         }
 
+        discardThumbnail(named: oldName)
         filesName[fileIx] = newName
 
     }
@@ -349,6 +401,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
         guard let index = self.filesName.firstIndex(of: fileName) else {
             return showAlert(title: "_file_not_found_", description: fileName)
         }
+        discardThumbnail(named: fileName)
         try? FileManager.default.removeItem(at: inputFileURL(named: fileName))
         self.filesName.remove(at: index)
         if self.filesName.isEmpty {
@@ -368,7 +421,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
 
     func upload() {
         guard isAuthenticated, !isPreparingInput, inputErrorMessage.isEmpty, !isPreparingUpload,
-              !isSwitchingAccount, !isLoadingAccounts, !isShowingAccounts, !isLoading, !fileNames.isEmpty else { return }
+              !isSwitchingAccount, !isLoadingAccounts, !isLoading, !fileNames.isEmpty else { return }
         guard let capabilities = serverCapabilities else { return }
         isPreparingUpload = true
         actionUpload(capabilities: capabilities)

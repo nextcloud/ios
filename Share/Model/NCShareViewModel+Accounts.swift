@@ -6,11 +6,11 @@ import NextcloudKit
 import UIKit
 
 extension NCShareViewModel {
-    func showAccountPicker() {
+    func loadAccounts() {
         guard isAuthenticated, !isClosing, !isLoading, !isPreparingUpload,
-              !isSwitchingAccount, !isLoadingAccounts, !isShowingAccounts, !isShowingInputError else { return }
+              !isLoadingAccounts, !isShowingInputError else { return }
         isLoadingAccounts = true
-        accountPickerTask = Task { @MainActor in
+        accountsTask = Task { @MainActor in
             defer {
                 isLoadingAccounts = false
                 showInputErrorIfNeeded()
@@ -24,37 +24,30 @@ extension NCShareViewModel {
                 showAlert(description: "_no_active_account_") { self.cancel(with: .noAccount) }
                 return
             }
+            accountAvatars = Dictionary(uniqueKeysWithValues: storedAccounts.map { account in
+                (account.account, utility.loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase))
+            })
             accounts = storedAccounts.map { account in
-                NCShareAccountItem(
+                let name = account.displayName.isEmpty ? account.user : account.displayName
+                return NCShareAccountItem(
                     id: account.account,
-                    name: account.alias.isEmpty ? (account.displayName.isEmpty ? account.user : account.displayName) : account.alias,
+                    name: account.alias.isEmpty ? name : name + " - " + account.alias,
                     user: account.user,
                     serverUrl: account.urlBase,
                     isSelected: account.account == selected)
             }.sorted { $0.isSelected && !$1.isSelected }
-            if accounts.count > 1 { isShowingAccounts = true }
         }
     }
 
     func selectAccount(_ account: String) {
         guard isAuthenticated, !isClosing, !isPreparingUpload, !isSwitchingAccount,
               accounts.contains(where: { $0.id == account }) else { return }
-        pendingAccountSelection = account == sessionStore.getSession().account ? nil : account
-        isShowingAccounts = false
+        guard account != sessionStore.getSession().account else { return }
+        changeAccount(account)
     }
 
-    func dismissAccountPicker() {
-        accountPickerTask?.cancel()
-        pendingAccountSelection = nil
-        isShowingAccounts = false
-    }
-
-    func accountPickerDismissed() {
-        showInputErrorIfNeeded()
-        let selected = pendingAccountSelection
-        pendingAccountSelection = nil
-        guard let selected, isAuthenticated, !isClosing, !isPreparingUpload else { return }
-        changeAccount(selected)
+    func cancelAccountLoading() {
+        accountsTask?.cancel()
     }
 
     func changeAccount(_ account: String) {
@@ -91,6 +84,7 @@ extension NCShareViewModel {
             serverUrl = utilityFileSystem.getHomeServer(session: session)
             setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)
             showAccountView()
+            loadAccounts()
             await loadServerCapabilities(account: account, changeID: changeID)
             guard !Task.isCancelled, !isClosing, accountChangeID == changeID else { return }
             if serverCapabilities != nil { await initializeFolderBrowser() }
