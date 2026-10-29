@@ -124,7 +124,7 @@ struct NCShareView: View {
         .listStyle(.insetGrouped)
         .listSectionSpacing(8)
         .environment(\.defaultMinListRowHeight, 44)
-        .disabled(model.isLoading || model.isPreparingUpload || model.isSwitchingAccount || model.isLoadingAccounts || model.isLoadingCapabilities || model.serverCapabilities == nil)
+        .disabled(model.isLoading || model.isPreparingUpload || !model.isAccountReady || model.isLoadingAccounts)
     }
 
     private var allFoldersHeader: some View {
@@ -255,7 +255,7 @@ struct NCShareView: View {
         }
         .padding()
         .background(Color(uiColor: .secondarySystemBackground))
-        .disabled(model.isPreparingUpload || model.isPreparingInput || model.isSwitchingAccount || model.isLoadingAccounts || model.isLoadingCapabilities || model.serverCapabilities == nil || !model.inputErrorMessage.isEmpty)
+        .disabled(model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady || model.isLoadingAccounts || !model.inputErrorMessage.isEmpty)
     }
 }
 

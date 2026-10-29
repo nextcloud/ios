@@ -12,18 +12,18 @@ import LucidBanner
 
 // MARK: - Upload
 extension NCShareViewModel {
-    func actionUpload() {
+    func actionUpload(capabilities: NKCapabilities.Capabilities) {
         uploadTask = Task { @MainActor in
             defer { if pendingUploadConfirmation == nil { isPreparingUpload = false } }
             do {
-                let plan = try await prepareUploadPlan()
+                let plan = try await prepareUploadPlan(capabilities: capabilities)
                 try Task.checkCancellation()
                 guard !isClosing, isAuthenticated else { return }
                 if plan.requiresConfirmation {
                     pendingUploadConfirmation = plan
                     uploadConfirmation = plan
                 } else {
-                    try await stageAndUpload(plan: plan, replacing: false)
+                    try await stageAndUpload(plan: plan, replacing: false, capabilities: capabilities)
                 }
             } catch is CancellationError {
                 // The extension was closed; do not present another screen.
@@ -44,14 +44,14 @@ extension NCShareViewModel {
         let choice = uploadChoice
         pendingUploadConfirmation = nil
         uploadChoice = nil
-        guard let choice, isAuthenticated, !isClosing else {
+        guard let choice, let capabilities = serverCapabilities, isAuthenticated, !isClosing else {
             isPreparingUpload = false
             return
         }
         uploadTask = Task { @MainActor in
             defer { isPreparingUpload = false }
             do {
-                try await stageAndUpload(plan: plan, replacing: choice == .replace)
+                try await stageAndUpload(plan: plan, replacing: choice == .replace, capabilities: capabilities)
             } catch is CancellationError {
                 // No upload after cancellation or a destination change.
             } catch {
@@ -60,12 +60,11 @@ extension NCShareViewModel {
         }
     }
 
-    private func prepareUploadPlan() async throws -> NCShareUploadConfirmation {
+    private func prepareUploadPlan(capabilities: NKCapabilities.Capabilities) async throws -> NCShareUploadConfirmation {
         let session = sessionStore.getSession()
         let destination = serverUrl
         let sourceNames = filesName
         guard !sourceNames.isEmpty else { throw NCShareRequestError.noFiles }
-        let capabilities = try requireCapabilities(account: session.account)
         let renamer = FileAutoRenamer(capabilities: capabilities)
         let requestedNames = try sourceNames.map { name in
             let candidate = renamer.rename(filename: name).trimmingCharacters(in: .whitespacesAndNewlines)
@@ -126,11 +125,10 @@ extension NCShareViewModel {
             requiresConfirmation: allocated != requestedNames)
     }
 
-    private func stageAndUpload(plan: NCShareUploadConfirmation, replacing: Bool) async throws {
+    private func stageAndUpload(plan: NCShareUploadConfirmation, replacing: Bool, capabilities: NKCapabilities.Capabilities) async throws {
         try Task.checkCancellation()
         let session = sessionStore.getSession()
         guard !isClosing, isAuthenticated, plan.account == session.account, plan.serverUrl == serverUrl else { throw CancellationError() }
-        let capabilities = try requireCapabilities(account: session.account)
         uploadMetadata.removeAll()
         replacementETags.removeAll()
         counterUploaded = 0

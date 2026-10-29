@@ -93,7 +93,7 @@ extension NCShareViewModel {
     }
 
     func selectFolder(_ folder: NCShareFolderItem) {
-        guard canUseFolderBrowser, canAccessFolder(folder) else { return }
+        guard canUseFolderBrowser, let capabilities = serverCapabilities, canAccessFolder(folder) else { return }
         let session = sessionStore.getSession()
         let browserID = folderBrowserID
         isLoading = true
@@ -112,10 +112,6 @@ extension NCShareViewModel {
             }
             let selected = folderSnapshot(metadata, url: folder.serverUrl, parent: nil, session: session)
             guard canAccessFolder(selected) else { return }
-            guard let capabilities = serverCapabilities, !isLoadingCapabilities else {
-                showAlert(description: "_share_capabilities_unavailable_")
-                return
-            }
             guard isCurrentBrowser(browserID, account: session.account), isAuthenticated else { return }
             let home = utilityFileSystem.getHomeServer(session: session)
             if folder.serverUrl != home,
@@ -139,7 +135,7 @@ extension NCShareViewModel {
     }
 
     private var canUseFolderBrowser: Bool {
-        isAuthenticated && !isClosing && !isSwitchingAccount && !isLoading && !isPreparingUpload && !isLoadingAccounts && !isLoadingCapabilities && serverCapabilities != nil
+        isAuthenticated && !isClosing && isAccountReady && !isLoading && !isPreparingUpload && !isLoadingAccounts
     }
 
     private func canAccessFolder(_ folder: NCShareFolderItem) -> Bool {

@@ -97,15 +97,6 @@ extension NCShareViewModel {
         }
     }
 
-    func requireCapabilities(account: String) throws -> NKCapabilities.Capabilities {
-        guard account == sessionStore.getSession().account else { throw CancellationError() }
-        guard !isLoadingCapabilities, let serverCapabilities else {
-            throw NKError(errorCode: NCGlobal.shared.errorInternalError,
-                          errorDescription: NSLocalizedString("_share_capabilities_unavailable_", comment: ""))
-        }
-        return serverCapabilities
-    }
-
     func retryCapabilities() {
         guard isAuthenticated, !isClosing, !isLoadingCapabilities, !isSwitchingAccount, !isPreparingUpload else { return }
         let account = sessionStore.getSession().account

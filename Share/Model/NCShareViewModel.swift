@@ -44,6 +44,8 @@ final class NCShareViewModel: NSObject, ObservableObject {
     @Published var serverCapabilities: NKCapabilities.Capabilities?
     @Published var isLoadingCapabilities = false
     @Published var capabilitiesErrorMessage = ""
+    var isAccountReady: Bool { serverCapabilities != nil && !isSwitchingAccount }
+
     var capabilitiesTask: Task<Void, Never>?
     var capabilitiesRequest: URLSessionTask?
     var pendingAccountSelection: String?
@@ -306,13 +308,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
     func createFolder() {
         let session = sessionStore.getSession()
         guard let folder = selectedFolder, !loadingFolderURLs.contains(folder.serverUrl) else { return }
-        let capabilities: NKCapabilities.Capabilities
-        do {
-            capabilities = try requireCapabilities(account: session.account)
-        } catch {
-            showAlert(description: error.localizedDescription)
-            return
-        }
+        guard let capabilities = serverCapabilities else { return }
         let alert = UIAlertController.createFolderWith(serverUrl: folder.serverUrl, session: session, capabilities: capabilities) { [weak self] error in
             guard let self else { return }
             guard !self.isClosing, self.sessionStore.getSession().account == session.account else { return }
@@ -327,13 +323,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
     }
 
     func showRenameFileDialog(named fileName: String, account: String) {
-        let capabilities: NKCapabilities.Capabilities
-        do {
-            capabilities = try requireCapabilities(account: account)
-        } catch {
-            showAlert(description: error.localizedDescription)
-            return
-        }
+        guard let capabilities = serverCapabilities else { return }
         let alert = UIAlertController.renameFile(fileName: fileName, capabilities: capabilities, account: account) { [self] newFileName in
             renameFile(oldName: fileName, newName: newFileName, account: account)
         }
@@ -378,14 +368,9 @@ final class NCShareViewModel: NSObject, ObservableObject {
     func upload() {
         guard isAuthenticated, !isPreparingInput, inputErrorMessage.isEmpty, !isPreparingUpload,
               !isSwitchingAccount, !isLoadingAccounts, !isShowingAccounts, !isLoading, !fileNames.isEmpty else { return }
-        do {
-            _ = try requireCapabilities(account: sessionStore.getSession().account)
-        } catch {
-            showAlert(description: error.localizedDescription)
-            return
-        }
+        guard let capabilities = serverCapabilities else { return }
         isPreparingUpload = true
-        actionUpload()
+        actionUpload(capabilities: capabilities)
     }
 }
 
