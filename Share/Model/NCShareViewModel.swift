@@ -502,6 +502,7 @@ struct NCShareFolderItem: Identifiable {
     let path: String
     let image: UIImage?
     let isEncrypted: Bool
+    var isFavorite = false
 }
 
 struct NCShareFolderRow: Identifiable {
@@ -557,7 +558,7 @@ extension NCShareViewModel {
         model.accountName = "Personal"
         let home = "https://cloud.example.com/remote.php/dav/files/marino"
         let root = NCShareFolderItem(ocId: "root", name: "My files", serverUrl: home, path: "/", image: UIImage(systemName: "folder.fill"), isEncrypted: false)
-        let documents = NCShareFolderItem(ocId: "documents", name: "Documents", serverUrl: home + "/Documents", path: "/Documents", image: UIImage(systemName: "folder.fill"), isEncrypted: false)
+        let documents = NCShareFolderItem(ocId: "documents", name: "Documents", serverUrl: home + "/Documents", path: "/Documents", image: UIImage(systemName: "folder.fill"), isEncrypted: false, isFavorite: true)
         let photos = NCShareFolderItem(ocId: "photos", name: "Photos", serverUrl: home + "/Photos", path: "/Photos", image: UIImage(systemName: "folder.fill"), isEncrypted: false)
         let work = NCShareFolderItem(ocId: "work", name: "Work", serverUrl: home + "/Documents/Work", path: "/Documents/Work", image: UIImage(systemName: "folder.fill"), isEncrypted: false)
         model.serverUrl = documents.serverUrl

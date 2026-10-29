@@ -918,3 +918,5 @@
 "_share_capabilities_retry_" = "Try again";
 
 "_share_online_required_" = "An internet connection is required to upload files. Reconnect to continue.";
+
+"_share_favorite_folder_" = "Favorite folder";

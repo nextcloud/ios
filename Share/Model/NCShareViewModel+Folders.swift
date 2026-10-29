@@ -201,7 +201,8 @@ extension NCShareViewModel {
             ? NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true AND fileName != %@", session.account, url, NextcloudKit.shared.nkCommonInstance.rootFileName)
             : NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true AND fileName != %@ AND NOT fileName BEGINSWITH[c] %@", session.account, url, NextcloudKit.shared.nkCommonInstance.rootFileName, ".")
         let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicate, withLayout: layout, withAccount: session.account)
-        return metadatas.map { metadata in
+        let ordered = metadatas.filter(\.favorite) + metadatas.filter { !$0.favorite }
+        return ordered.map { metadata in
             let childUrl = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
             return folderSnapshot(metadata, url: childUrl, parent: parent, session: session)
         }
@@ -229,7 +230,8 @@ extension NCShareViewModel {
         }
         return NCShareFolderItem(
             ocId: metadata.ocId, name: url == home ? NSLocalizedString("_share_home_folder_", comment: "") : metadata.fileNameView,
-            serverUrl: url, path: folderPath(url, home: home), image: image, isEncrypted: metadata.e2eEncrypted)
+            serverUrl: url, path: folderPath(url, home: home), image: image,
+            isEncrypted: metadata.e2eEncrypted, isFavorite: metadata.favorite)
     }
 
     private func folderPath(_ url: String, home: String) -> String {

@@ -228,6 +228,25 @@ struct NCShareView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 26, height: 26)
+                            .overlay(alignment: .topTrailing) {
+                                if folder.isFavorite {
+                                    Image(systemName: "star.fill")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .foregroundStyle(Color(uiColor: NCBrandColor.shared.yellowFavorite))
+                                        .frame(width: 10, height: 10)
+                                        .background {
+                                            Image(systemName: "star")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .fontWeight(.thin)
+                                                .foregroundStyle(Color(uiColor: .systemBackground))
+                                                .frame(width: 12, height: 12)
+                                        }
+                                        .offset(x: 3, y: -3)
+                                        .accessibilityLabel(NSLocalizedString("_share_favorite_folder_", comment: ""))
+                                }
+                            }
                     }
                     VStack(alignment: .leading, spacing: 1) {
                         Text(verbatim: folder.name)
@@ -280,7 +299,7 @@ struct NCShareView: View {
                             if let thumbnail = model.fileThumbnails[fileName] {
                                 Image(uiImage: thumbnail)
                                     .resizable()
-                                    .scaledToFit()
+                                    .scaledToFill()
                             } else {
                                 Image(systemName: model.fileIcon(named: fileName))
                             }
