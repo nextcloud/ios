@@ -266,32 +266,7 @@ struct NCShareView: View {
     }
 
     private func fileList(fillsHeight: Bool = false, horizontalInset: CGFloat = 16) -> some View {
-    List(model.fileNames, id: \.self) { fileName in
-        HStack {
-            Button {
-                model.rename(fileName)
-            } label: {
-                Label {
-                    Text(verbatim: fileName).lineLimit(2)
-                } icon: {
-                    Group {
-                        if let thumbnail = model.fileThumbnails[fileName] {
-                            Image(uiImage: thumbnail)
-                                .resizable()
-                                .scaledToFit()
-                        } else {
-                            Image(systemName: model.fileIcon(named: fileName))
-                        }
-                    }
-                    .frame(width: 36, height: 36)
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                    .accessibilityHidden(true)
-                    .task(id: fileName) { model.loadThumbnail(named: fileName) }
-                }
-                .foregroundStyle(.primary)
-            }
-            .buttonStyle(.plain)
-            Spacer()
+        List(model.fileNames, id: \.self) { fileName in
             Menu {
                 Button(NSLocalizedString("_rename_file_", comment: "")) {
                     model.rename(fileName)
@@ -300,26 +275,48 @@ struct NCShareView: View {
                     model.remove(fileName)
                 }
             } label: {
-                Image(systemName: "ellipsis.circle")
-                    .frame(minWidth: 50, minHeight: 50)
+                HStack {
+                    Label {
+                        Text(verbatim: fileName).lineLimit(2)
+                    } icon: {
+                        Group {
+                            if let thumbnail = model.fileThumbnails[fileName] {
+                                Image(uiImage: thumbnail)
+                                    .resizable()
+                                    .scaledToFit()
+                            } else {
+                                Image(systemName: model.fileIcon(named: fileName))
+                            }
+                        }
+                        .frame(width: 36, height: 36)
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                        .accessibilityHidden(true)
+                        .task(id: fileName) { model.loadThumbnail(named: fileName) }
+                    }
+                    .foregroundStyle(.primary)
+                    Spacer(minLength: 0)
+                    Image(systemName: "ellipsis.circle")
+                        .foregroundStyle(Color.accentColor)
+                        .frame(width: 50, height: 50)
+                        .accessibilityHidden(true)
+                }
+                .font(.body)
+                .frame(maxWidth: .infinity, minHeight: 50)
+                .contentShape(Rectangle())
             }
-            .accessibilityLabel(Text(verbatim: fileName))
+            .buttonStyle(.plain)
+            .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 2))
+            .listRowSeparator(.hidden)
         }
-        .font(.body)
-        .frame(minHeight: 50)
-        .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 2))
-        .listRowSeparator(.hidden)
-    }
-    .listStyle(.plain)
-    .contentMargins(.vertical, 0, for: .scrollContent)
-    .scrollContentBackground(.hidden)
-    .environment(\.defaultMinListRowHeight, 50)
-    .frame(height: fillsHeight ? nil : CGFloat(min(max(model.fileNames.count, 1), 3)) * 50)
+        .listStyle(.plain)
+        .contentMargins(.vertical, 0, for: .scrollContent)
+        .scrollContentBackground(.hidden)
+        .environment(\.defaultMinListRowHeight, 50)
+        .frame(height: fillsHeight ? nil : CGFloat(min(max(model.fileNames.count, 1), 3)) * 50)
         .frame(maxHeight: fillsHeight ? .infinity : nil)
-    .background(Color(uiColor: .secondarySystemGroupedBackground))
-    .clipShape(RoundedRectangle(cornerRadius: 12))
-    .padding(.horizontal, horizontalInset)
-
+        .background(Color(uiColor: .secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal, horizontalInset)
         .disabled(model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady || model.isLoadingAccounts || !model.inputErrorMessage.isEmpty)
     }
 
@@ -352,11 +349,6 @@ struct NCShareView: View {
 
 #if DEBUG && SHARE_PREVIEWS
 #Preview("Share") {
-    NCShareView(model: .preview())
-        .allowsHitTesting(false)
-}
-
-#Preview("Landscape", traits: .fixedLayout(width: 844, height: 390)) {
     NCShareView(model: .preview())
         .allowsHitTesting(false)
 }
