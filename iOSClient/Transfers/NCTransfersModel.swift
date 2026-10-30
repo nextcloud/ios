@@ -236,7 +236,7 @@ final class TransfersViewModel: ObservableObject, NCMetadataDownloadTransfersSuc
                     status += " – " + NSLocalizedString("_retry_soon_", comment: "")
                 }
             }
-            return (symbol, status, item.sessionError)
+            return (symbol, status, item.sessionErrorMessage)
         case global.metadataStatusNormal:
             return ("checkmark.circle", NSLocalizedString("_done_", comment: ""), sizeText)
         default:

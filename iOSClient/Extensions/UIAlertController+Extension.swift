@@ -11,15 +11,14 @@ extension UIAlertController {
     /// Creates a alert controller with a textfield, asking to create a new folder
     /// - Parameters:
     ///   - serverUrl: Server url of the location where the folder should be created
-    ///   - urlBase: UrlBase object
-    ///   - completion: If not` nil` it overrides the default behavior which shows an error
+    ///   - completion: Receives the result and the folder name.
     /// - Returns: The presentable alert controller
     static func createFolderWith(serverUrl: String,
                                  session: NCSession.Session,
                                  markE2ee: Bool = false,
                                  sceneIdentifier: String? = nil,
                                  capabilities: NKCapabilities.Capabilities,
-                                 completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
+                                 completion: ((_ error: NKError, _ folderName: String) -> Void)? = nil) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: nil, preferredStyle: .alert)
         let isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
 
@@ -28,7 +27,7 @@ extension UIAlertController {
 
             if markE2ee {
                 if NCNetworking.shared.isOffline {
-                    completion?(NKError(errorCode: NCGlobal.shared.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_"))
+                    completion?(NKError(errorCode: NCGlobal.shared.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_"), fileNameFolder)
                     return
                 }
                 Task {
@@ -51,30 +50,30 @@ extension UIAlertController {
                                 banner.dismiss()
                             }
                         }
-                        completion?(error)
+                        completion?(error, fileNameFolder)
                     } else {
                         if let banner {
                             banner.dismiss()
                         }
-                        completion?(NKError(errorCode: createFolderResults.error.errorCode, errorDescription: createFolderResults.error.errorDescription))
+                        completion?(createFolderResults.error, fileNameFolder)
                     }
                 }
             } else if isDirectoryEncrypted {
                 Task {
                     if NCNetworking.shared.isOffline {
-                        completion?(NKError(errorCode: NCGlobal.shared.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_"))
+                        completion?(NKError(errorCode: NCGlobal.shared.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_"), fileNameFolder)
                         return
                     }
 
                     let error = await NCNetworkingE2EECreateFolder().createFolder(fileName: fileNameFolder, serverUrl: serverUrl, sceneIdentifier: sceneIdentifier, session: session)
 
-                    completion?(error)
+                    completion?(error, fileNameFolder)
                 }
             } else {
 #if EXTENSION
                 Task {
                     let error = await NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, session: session)
-                    completion?(error)
+                    completion?(error, fileNameFolder)
                 }
 #else
                 var metadata = tableMetadata()

@@ -286,7 +286,7 @@ class NCViewerRichdocuments: UIViewController, WKNavigationDelegate, WKScriptMes
                                 } else {
                                     Task {
                                         let windowScene = SceneManager.shared.getWindow(sceneIdentifier: self.sceneIdentifier)?.windowScene
-                                        await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                                        await showErrorBanner(windowScene: windowScene, error: error)
                                     }
                                 }
                             })
@@ -343,7 +343,7 @@ class NCViewerRichdocuments: UIViewController, WKNavigationDelegate, WKScriptMes
                 } else {
                     Task {
                         let windowScene = SceneManager.shared.getWindow(sceneIdentifier: self.sceneIdentifier)?.windowScene
-                        await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                        await showErrorBanner(windowScene: windowScene, error: error == .success ? .invalidData : error)
                     }
                 }
             }
@@ -361,7 +361,7 @@ class NCViewerRichdocuments: UIViewController, WKNavigationDelegate, WKScriptMes
             } else {
                 Task {
                     let windowScene = SceneManager.shared.getWindow(sceneIdentifier: self.sceneIdentifier)?.windowScene
-                    await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                    await showErrorBanner(windowScene: windowScene, error: error == .success ? .invalidData : error)
                 }
             }
         }

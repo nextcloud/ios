@@ -226,7 +226,7 @@ class NCContextMenuMain: NSObject {
                     sceneIdentifier: self.sceneIdentifier
                 )
                 if error != .success {
-                    await showErrorBanner(windowScene: self.windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                    await showErrorBanner(windowScene: self.windowScene, error: error)
                 }
             }
         }
@@ -243,11 +243,7 @@ class NCContextMenuMain: NSObject {
                     account: metadata.account
                 )
                 guard accessError == .success else {
-                    await showErrorBanner(
-                        windowScene: self.windowScene,
-                        text: accessError.errorDescription,
-                        errorCode: accessError.errorCode
-                    )
+                    await showErrorBanner(windowScene: self.windowScene, error: accessError)
                     return
                 }
 
@@ -264,9 +260,7 @@ class NCContextMenuMain: NSObject {
                     await NCManageDatabase.shared.setMetadataEncryptedAsync(ocId: metadata.ocId, encrypted: false)
                     await (self.viewController as? NCCollectionViewCommon)?.reloadDataSource()
                 } else {
-                    await showErrorBanner(windowScene: self.windowScene,
-                                          text: results.error.errorDescription,
-                                          errorCode: results.error.errorCode)
+                    await showErrorBanner(windowScene: self.windowScene, error: results.error)
                 }
             }
         }
@@ -387,7 +381,9 @@ class NCContextMenuMain: NSObject {
                             if error == .success {
                                 completeHudBannerSuccess(token: results.token, banner: results.banner)
                             } else {
-                                completeHudBannerError(description: error.errorDescription, token: results.token, banner: results.banner)
+                                let message = error.userFriendlyMessage(for: .delete(fileName: metadata.fileNameView)) ?? error.localizedGenericMessage
+
+                                completeHudBannerError(description: message, token: results.token, banner: results.banner)
                             }
 
                             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
@@ -496,9 +492,7 @@ class NCContextMenuMain: NSObject {
                                         params: item.params
                                     )
                                     if results.error != .success {
-                                        await showErrorBanner(windowScene: self.windowScene,
-                                                              text: results.error.errorDescription,
-                                                              errorCode: results.error.errorCode)
+                                        await showErrorBanner(windowScene: self.windowScene, error: results.error)
                                     } else {
                                         if let tooltip = results.uiResponse?.ocs.data.tooltip {
                                             await showInfoBanner(windowScene: self.windowScene, text: tooltip)

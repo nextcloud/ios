@@ -89,7 +89,7 @@ class NCViewer: NSObject {
                 let editorError = (error as? NKError) ?? .invalidData
                 let windowScene = SceneManager.shared.getWindowScene(controller: delegate?.tabBarController as? NCMainTabBarController)
 
-                await showErrorBanner(windowScene: windowScene, text: editorError.errorDescription, errorCode: editorError.errorCode)
+                await showErrorBanner(windowScene: windowScene, error: editorError, context: .openDocument(fileName: metadata.fileNameView))
                 return nil
             }
 

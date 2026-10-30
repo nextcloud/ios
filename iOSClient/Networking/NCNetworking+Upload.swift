@@ -470,7 +470,9 @@ extension NCNetworking {
     @MainActor
     func uploadForbidden(metadata: tableMetadata, error: NKError) async {
         let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
-        let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
+
+        let title = error.userFriendlyMessage(for: .upload(fileName: metadata.fileNameView)) ?? error.localizedGenericMessage
+        let alertController = UIAlertController(title: title, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
 
         alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
             Task {
@@ -515,7 +517,7 @@ extension NCNetworking {
 
         let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
 
-        let alertController = UIAlertController(title: results.error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
+        let alertController = UIAlertController(title: results.error.userFriendlyMessage(), message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
 
         alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
             Task {

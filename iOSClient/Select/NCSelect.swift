@@ -217,7 +217,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         if error != .success {
             Task {
                 let windowScene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene
-                await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                await showErrorBanner(windowScene: windowScene, error: error, context: NCErrorContext(networkingStatus: networkingStatus, fileName: fileName))
             }
         }
 
@@ -258,12 +258,12 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     func createFolderButtonPressed(_ sender: UIButton) {
         Task { @MainActor in
             let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
-            let alertController = UIAlertController.createFolderWith(serverUrl: serverUrl, session: session, capabilities: capabilities) { error in
+            let alertController = UIAlertController.createFolderWith(serverUrl: serverUrl, session: session, capabilities: capabilities) { error, folderName in
                 if error != .success {
                     Task {
                         await showErrorBanner(windowScene: self.windowScene,
-                                              text: error.errorDescription,
-                                              errorCode: error.errorCode)
+                                              error: error,
+                                              context: .createFolder(folderName: folderName))
                     }
                 }
             }

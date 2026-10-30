@@ -86,8 +86,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
                 } else {
                     Task {
                         await showErrorBanner(windowScene: self.windowScene,
-                                              text: error.errorDescription,
-                                              errorCode: error.errorCode)
+                                              error: error)
                     }
                 }
             }
@@ -447,8 +446,7 @@ extension NCActivity {
             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
                 Task {
                     await showErrorBanner(windowScene: self.windowScene,
-                                          text: error.errorDescription,
-                                          errorCode: error.errorCode)
+                                          error: error)
                 }
             }
 

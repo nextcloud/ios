@@ -256,9 +256,12 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
                 }
             error = results.error
 
+            var errorContext = NCErrorContext.upload(fileName: fileName)
+
             if error == .success {
                 let results = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileName, account: metadata.account)
                 error = results.error
+                errorContext = .generic
 
                 if results.error == .success, let metadata = results.metadata {
                     // clean dir
@@ -279,7 +282,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
             }
 
             if error != .success {
-                await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                await showErrorBanner(windowScene: windowScene, error: error, context: errorContext)
             }
 
             self.dismiss(animated: true)

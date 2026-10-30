@@ -5,14 +5,18 @@
 import SwiftUI
 import LucidBanner
 import NextcloudKit
-import Alamofire
 
 @MainActor
 func showErrorBanner(windowScene: UIWindowScene?,
-                     error: NKError) async {
+                     error: NKError,
+                     context: NCErrorContext = .generic) async {
+    guard let text = error.userFriendlyMessage(for: context) else { return }
+
+    nkLog(error: "Error shown for \(context): \(error.errorCode) \(error.errorDescription)")
+
     await showErrorBanner(windowScene: windowScene,
-                          title: "_error_",
-                          text: error.errorDescription,
+                          title: context.failureTitle ?? "_error_",
+                          text: text,
                           errorCode: error.errorCode)
 }
 
@@ -21,8 +25,7 @@ func showErrorBanner(windowScene: UIWindowScene?,
                      title: String = "_error_",
                      text: String,
                      footnote: String? = nil,
-                     errorCode: Int? = nil,
-                     afError: AFError? = nil) async {
+                     errorCode: Int? = nil) async {
     guard let windowScene,
           let window = windowScene.resolvedWindow else {
         return

@@ -214,8 +214,9 @@ class NCNetworkingE2EE: NSObject {
             nkLog(tag: NCGlobal.shared.logTagE2EE, message: "Archived the active key set and marked it as stale.")
             return serverKeyChangedError
         } catch {
-            nkLog(tag: NCGlobal.shared.logTagE2EE, message: "Unable to archive the active key set after server-key validation.")
-            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription)
+            nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Unable to archive the active key set after server-key validation: \(error)")
+
+            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2ee_store_keys_", comment: ""))
         }
     }
 
@@ -255,7 +256,9 @@ class NCNetworkingE2EE: NSObject {
                 }
             }
         default:
-            return ("", "", nil, nil, nil, NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "version e2ee not available"))
+            nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Server E2EE version \(capabilities.e2EEApiVersion) is not supported.")
+
+            return ("", "", nil, nil, nil, NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2ee_version_not_supported_", comment: "")))
         }
     }
 
@@ -360,8 +363,10 @@ class NCNetworkingE2EE: NSObject {
                         session: session
                     )
                 } catch {
+                    nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Unable to resolve the stored E2EE key set: \(error)")
+
                     await unlock(account: session.account, serverUrl: serverUrl)
-                    return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription)
+                    return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: ""))
                 }
 
                 guard storedAccess.writeAccessError == .success else {
@@ -447,7 +452,9 @@ class NCNetworkingE2EE: NSObject {
                 session: session
             )
         } catch {
-            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription)
+            nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Unable to resolve E2EE key-set access: \(error)")
+
+            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: ""))
         }
 
         let writeAccessError = access.writeAccessError
@@ -505,7 +512,9 @@ class NCNetworkingE2EE: NSObject {
                         return storedAccess.writeAccessError
                     }
                 } catch {
-                    return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription)
+                    nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Unable to resolve the stored E2EE key set: \(error)")
+
+                    return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: ""))
                 }
             }
             return resultsGetE2EEMetadata.error

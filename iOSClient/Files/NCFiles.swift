@@ -317,7 +317,7 @@ class NCFiles: NCCollectionViewCommon {
 
             // Client Diagnostic
             await self.database.addDiagnosticAsync(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
-            await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+            await showErrorBanner(windowScene: windowScene, error: error)
         }
 
         return (metadatas, error, reloadRequired)
@@ -339,9 +339,9 @@ class NCFiles: NCCollectionViewCommon {
                 // Continue: the previous key was archived and can still offer
                 // read-only access to storage spaces encrypted with it.
             } catch let error as NKError {
-                await showErrorBanner(windowScene: windowScene, text: error.errorDescription)
+                await showErrorBanner(windowScene: windowScene, error: error)
             } catch {
-                await showErrorBanner(windowScene: windowScene, text: error.localizedDescription)
+                await showErrorBanner(windowScene: windowScene, error: NKError(error: error))
             }
         }
 
@@ -363,9 +363,11 @@ class NCFiles: NCCollectionViewCommon {
                         return storedAccess.writeAccessError
                     }
                 } catch {
+                    nkLog(tag: global.logTagE2EE, emoji: .error, message: "Unable to read the stored encryption keys: \(error)")
+
                     return NKError(
                         errorCode: global.errorInternalError,
-                        errorDescription: error.localizedDescription
+                        errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: "")
                     )
                 }
 
@@ -380,7 +382,7 @@ class NCFiles: NCCollectionViewCommon {
         guard result.error == .success,
               let e2eMetadata = result.e2eMetadata,
               let version = result.version else {
-            nkLog(tag: self.global.logTagE2EE, message: returnError.errorDescription)
+            nkLog(tag: self.global.logTagE2EE, message: result.error.errorDescription)
             return result.error
         }
 

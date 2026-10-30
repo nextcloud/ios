@@ -60,8 +60,8 @@ extension NCShareExtension {
         if resultsReadFolder.error == .success {
             self.metadataFolder = resultsReadFolder.metadataFolder
             await self.reloadData()
-        } else {
-            self.showAlert(description: resultsReadFolder.error.errorDescription)
+        } else if let message = resultsReadFolder.error.userFriendlyMessage() {
+            self.showAlert(description: message)
         }
     }
 }

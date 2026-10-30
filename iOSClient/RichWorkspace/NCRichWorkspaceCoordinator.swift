@@ -33,7 +33,7 @@ class NCRichWorkspaceCoordinator: NSObject {
                 let resultError: NKError = error == .success ? .invalidData : error
                 Task {
                     let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
-                    await showErrorBanner(windowScene: windowScene, text: resultError.errorDescription, errorCode: resultError.errorCode)
+                    await showErrorBanner(windowScene: windowScene, error: resultError, context: .createDocument(fileName: NCGlobal.shared.fileNameRichWorkspace))
                 }
                 return
             }
@@ -69,9 +69,11 @@ class NCRichWorkspaceCoordinator: NSObject {
                     NCActivityIndicator.shared.stop()
                     guard error == .success, let url else {
                         let resultError: NKError = error == .success ? .invalidData : error
+                        let fileName = metadata.fileNameView
+
                         Task {
                             let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
-                            await showErrorBanner(windowScene: windowScene, text: resultError.errorDescription, errorCode: resultError.errorCode)
+                            await showErrorBanner(windowScene: windowScene, error: resultError, context: .openDocument(fileName: fileName))
                         }
                         return
                     }

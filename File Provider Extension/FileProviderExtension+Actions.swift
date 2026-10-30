@@ -139,7 +139,7 @@ extension FileProviderExtension {
 
             } else {
 
-                completionHandler(nil, NSFileProviderError(.noSuchItem, userInfo: [NSLocalizedDescriptionKey: resultsMove.error.errorDescription, NSLocalizedFailureReasonErrorKey: ""]))
+                completionHandler(nil, NSFileProviderError(.noSuchItem, userInfo: [NSLocalizedDescriptionKey: resultsMove.error.localizedGenericMessage, NSLocalizedFailureReasonErrorKey: ""]))
                 return
             }
         }
@@ -176,7 +176,7 @@ extension FileProviderExtension {
 
             } else if resultsMove.error.errorCode == NCGlobal.shared.errorBadRequest {
 
-                completionHandler(nil, NSFileProviderError(.noSuchItem, userInfo: [NSLocalizedDescriptionKey: resultsMove.error.errorDescription, NSLocalizedFailureReasonErrorKey: ""]))
+                completionHandler(nil, NSFileProviderError(.noSuchItem, userInfo: [NSLocalizedDescriptionKey: resultsMove.error.localizedGenericMessage, NSLocalizedFailureReasonErrorKey: ""]))
                 return
 
             } else {
