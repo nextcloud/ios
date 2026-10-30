@@ -157,7 +157,7 @@ extension NCMedia: UICollectionViewDelegate {
             return NCViewerProviderContextMenu(metadata: metadata, image: image, sceneIdentifier: self.sceneIdentifier, sourceView: self.view)
         }, actionProvider: { _ in
             let contextMenu = NCContextMenuMain(metadata: metadata.detachedCopy(), viewController: self, controller: self.controller, sender: sender)
-            return contextMenu.viewMenu()
+            return contextMenu.viewMenu(showViewInFolder: true)
         })
     }
 

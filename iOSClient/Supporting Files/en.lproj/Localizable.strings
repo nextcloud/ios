@@ -169,6 +169,8 @@
 "_passcode_counter_fail_" = "Too many failed attempts. Please wait before trying again.";
 "_seconds_"               = "seconds";
 "_change_lock_passcode_"  = "Change passcode";
+"_turn_passcode_on_" = "Turn passcode on";
+"_turn_passcode_off_" = "Turn passcode off";
 "_lock_cannot_disable_mdm_" = "Disabling the passcode lock is not permitted by your configuration profile.";
 
 // MARK: User Status
@@ -411,11 +413,11 @@
 "_no_transfer_sub_"             = "Uploads and downloads from this device will show up here";
 "_no_transfer_in_progress_"     = "No transfers in progress";
 "_no_transfer_in_progress_sub_" = "Active uploads and downloads from this device will appear here.";
-"_no_transfer_in_waiting_"      = "No transfers waiting";
-"_no_transfer_in_waiting_sub_"  = "Transfers waiting to start will appear here.";
-"_no_transfer_in_error_"        = "No transfer errors";
+"_no_transfer_in_waiting_"      = "No scheduled transfers";
+"_no_transfer_in_waiting_sub_"  = "Scheduled transfers will appear here.";
+"_no_transfer_in_error_"        = "No failed transfers";
 "_no_transfer_in_error_sub_"    = "Transfers that need your attention will appear here.";
-"_transfers_waiting_shown_"     = "%1$d of %2$d transfers waiting";
+"_transfers_waiting_shown_"     = "%1$d of %2$d scheduled transfers";
 "_no_activity_footer_"              = "No more activities to load";
 "_transfers_"                       = "Transfers";
 "_activity_"                        = "Activity";
@@ -628,9 +630,9 @@
 "_download_in_progress_"    = "Download in progress …";
 "_upload_in_progress_"      = "Upload in progress …";
 "_transfer_in_progress_"    = "Transfer in progress …";
-"_in_waiting_"              = "In waiting";
+"_in_waiting_"              = "Scheduled";
 "_in_progress_"             = "In progress";
-"_in_error_"                = "In error";
+"_in_error_"                = "Failed";
 "_retry_minutes_"           = "min left to retry";
 "_retry_seconds_"           = "sec left to retry";
 "_retry_soon_"              = "retrying soon …";
@@ -879,3 +881,6 @@
 
 "_seek_backward_10_" = "Go back 10 seconds";
 "_seek_forward_10_" = "Go forward 10 seconds";
+
+"_passcode_incorrect_" = "Incorrect passcode. Try again.";
+"_passcode_digits_entered_" = "Passcode digits entered";

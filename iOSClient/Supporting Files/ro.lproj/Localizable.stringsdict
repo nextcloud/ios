@@ -13,9 +13,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d remaining download allowed</string>
+			<string>%d descărcare permisă rămasă</string>
+			<key>few</key>
+			<string>%d descărcări permise rămase</string>
 			<key>other</key>
-			<string>%d remaining downloads allowed</string>
+			<string>%d de descărcări permise rămase</string>
 		</dict>
 	</dict>
 	<key>_auto_upload_files_in_queue_</key>
@@ -29,9 +31,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d file in queue</string>
+			<string>%d fișier în coadă</string>
+			<key>few</key>
+			<string>%d fișiere în coadă</string>
 			<key>other</key>
-			<string>%d files in queue</string>
+			<string>%d de fișiere în coadă</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_photos_to_back_up_</key>
@@ -45,9 +49,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You have %d item to back up</string>
+			<string>Ai %d element de salvat în copia de rezervă</string>
+			<key>few</key>
+			<string>Ai %d elemente de salvat în copia de rezervă</string>
 			<key>other</key>
-			<string>You have %d items to back up</string>
+			<string>Ai %d de elemente de salvat în copia de rezervă</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>
@@ -61,9 +67,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d failed</string>
+			<string>%d eșuat</string>
+			<key>few</key>
+			<string>%d eșuate</string>
 			<key>other</key>
-			<string>%d failed</string>
+			<string>%d de eșuate</string>
 		</dict>
 	</dict>
 	<key>_albums_photos_count_</key>
@@ -77,9 +85,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d photo</string>
+			<string>%d fotografie</string>
+			<key>few</key>
+			<string>%d fotografii</string>
 			<key>other</key>
-			<string>%d photos</string>
+			<string>%d de fotografii</string>
 		</dict>
 	</dict>
 	<key>_albums_list_photos_and_videos_count_</key>
@@ -93,9 +103,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d photo or video</string>
+			<string>%d fotografie sau videoclip</string>
+			<key>few</key>
+			<string>%d fotografii și videoclipuri</string>
 			<key>other</key>
-			<string>%d photos and videos</string>
+			<string>%d de fotografii și videoclipuri</string>
 		</dict>
 	</dict>
 </dict>

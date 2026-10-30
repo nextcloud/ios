@@ -41,7 +41,10 @@ class NCContextMenuViewer: NSObject {
         }
 
         var topMenuItems: [UIMenuElement] = []
-        var menuElements: [UIMenuElement] = []
+        var openingActions: [UIMenuElement] = []
+        var editingActions: [UIMenuElement] = []
+        var savingActions: [UIMenuElement] = []
+        var deleteActions: [UIMenuElement] = []
         let localFile = database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         let isOffline = localFile?.offline == true
 
@@ -72,23 +75,17 @@ class NCContextMenuViewer: NSObject {
         }
 
         if !webView {
-            menuElements.append(makeViewInFolderAction(metadata: metadata, controller: controller, viewController: viewController))
+            openingActions.append(NCContextMenuActions.viewInFolder(metadata: metadata, controller: controller, viewController: viewController))
         }
 
         if !webView,
-           metadata.canSetAsAvailableOffline {
-            menuElements.append(NCContextMenuActions.setAvailableOffline(metadatas: [metadata], isAnyOffline: isOffline, controller: controller))
-        }
-
-        if !webView,
-           NCNetworking.shared.isOnline,
-           metadata.isSavebleAsImage {
-            menuElements.append(NCContextMenuActions.saveAsScan(metadata: metadata, sceneIdentifier: controller.sceneIdentifier))
+           metadata.isPDF {
+            openingActions.append(contentsOf: makePDFActions())
         }
 
         if !webView,
            metadata.isRenameable {
-            menuElements.append(NCContextMenuActions.rename(
+            editingActions.append(NCContextMenuActions.rename(
                 metadata: metadata,
                 presenter: viewController ?? controller,
                 windowScene: windowScene
@@ -100,32 +97,36 @@ class NCContextMenuViewer: NSObject {
 
         if !webView,
            metadata.isCopyableMovable {
-            menuElements.append(NCContextMenuActions.moveOrCopy(metadatas: [metadata], account: metadata.account, controller: controller))
-        }
-
-        if !webView,
-           NCNetworking.shared.isOnline,
-           let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-            menuElements.append(NCContextMenuActions.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, windowScene: windowScene))
-        }
-
-        if !webView,
-           metadata.isPDF {
-            menuElements.append(contentsOf: makePDFActions())
+            editingActions.append(NCContextMenuActions.moveOrCopy(metadatas: [metadata], account: metadata.account, controller: controller))
         }
 
         if !webView,
            metadata.isImage,
            metadata.isModifiableWithQuickLook,
            (NCNetworking.shared.isOnline || utilityFileSystem.fileProviderStorageExists(metadata)) {
-            menuElements.append(makeModifyPhoto())
+            editingActions.append(makeModifyPhoto())
+        }
+
+        if !webView,
+           metadata.canSetAsAvailableOffline {
+            savingActions.append(NCContextMenuActions.setAvailableOffline(metadatas: [metadata], isAnyOffline: isOffline, controller: controller))
+        }
+
+        if !webView,
+           NCNetworking.shared.isOnline,
+           let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+            savingActions.append(NCContextMenuActions.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, windowScene: windowScene))
+        }
+
+        if !webView,
+           NCNetworking.shared.isOnline,
+           metadata.isSavebleAsImage {
+            savingActions.append(NCContextMenuActions.saveAsScan(metadata: metadata, sceneIdentifier: controller.sceneIdentifier))
         }
 
         if !webView,
            metadata.isDeletable {
-            menuElements.append(UIMenu(options: .displayInline, children: [
-                NCContextMenuActions.delete(metadatas: [metadata], controller: controller, presentViewController: viewController)
-            ]))
+            deleteActions.append(NCContextMenuActions.delete(metadatas: [metadata], controller: controller, presentViewController: viewController))
         }
 
         var finalMenuElements: [UIMenuElement] = []
@@ -134,9 +135,9 @@ class NCContextMenuViewer: NSObject {
             finalMenuElements.append(topMenu)
         }
 
-        if let baseMenu = NCContextMenuActions.inlineMenu(children: menuElements) {
-            finalMenuElements.append(baseMenu)
-        }
+        finalMenuElements.append(contentsOf: [openingActions, editingActions, savingActions, deleteActions]
+            .compactMap { NCContextMenuActions.inlineMenu(children: $0) }
+        )
 
         return UIMenu(title: "", children: finalMenuElements)
     }
@@ -265,34 +266,6 @@ class NCContextMenuViewer: NSObject {
 
     private func shouldShowDetails(for capabilities: NKCapabilities.Capabilities) -> Bool {
         capabilities.fileSharingApiEnabled || capabilities.filesComments || !capabilities.activity.isEmpty
-    }
-
-    private func makeViewInFolderAction(metadata: tableMetadata, controller: NCMainTabBarController, viewController: UIViewController?) -> UIAction {
-        UIAction(
-            title: NSLocalizedString("_view_in_folder_", comment: ""),
-            image: UIImage(systemName: "questionmark.folder")
-        ) { _ in
-            Task {
-                if let files = await NCNetworking.shared.moveInFolder(serverUrl: metadata.serverUrl,
-                                                                      sceneIdentifier: controller.sceneIdentifier) {
-
-                    files.loadViewIfNeeded()
-                    files.view.layoutIfNeeded()
-                    files.collectionView.layoutIfNeeded()
-
-                    if let mediaViewer = viewController as? NCMediaViewerHostingController {
-                        mediaViewer.close()
-                    } else if let mediaViewer = viewController as? NCVideoVLCViewController {
-                        mediaViewer.closeImmediately()
-                    } else if let mediaViewer = viewController as? NCVideoAVPlayerViewController {
-                        mediaViewer.closeImmediately()
-                    }
-
-                    try? await Task.sleep(for: .seconds(0.6))
-                    files.blinkItem(ocId: metadata.ocId)
-                }
-            }
-        }
     }
 
     private func makePDFActions() -> [UIAction] {

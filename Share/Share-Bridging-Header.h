@@ -6,4 +6,3 @@
 
 #import "NCEndToEndEncryption.h"
 #import "UIImage+animatedGIF.h"
-#import "TOPasscodeViewController.h"

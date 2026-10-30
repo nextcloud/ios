@@ -58,148 +58,26 @@ struct NCSidebarView: View {
     }
 
     var body: some View {
-        GeometryReader { geometry in
-            // Keep the content clear of the landscape camera area, while glass reaches the edge.
-            let leadingInset = contentLeadingInset(geometry: geometry)
-            // Preserve the content width and a visible strip of the underlying screen.
-            let width = max(0, min(320 + leadingInset, geometry.size.width - 56))
-            ZStack(alignment: .leading) {
-                VStack {
-                    sidebarHeader
-                        .onGeometryChange(for: CGFloat.self) { geometry in
-                            geometry.size.height
-                        } action: { height in
-                            headerHeight = height
-                            navigationCenterY = navigationBarCenterY()
-                        }
-                        .padding(.leading, headerLeadingInset(geometry: geometry))
-                        .padding(.horizontal)
-                        .padding(.top, headerTopInset)
-                        .padding(.bottom, 16)
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 0) {
-                            Text("_home_")
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                                .padding(.horizontal, 32)
-                                .padding(.bottom, 8)
-                            sidebarItem("_all_files_", systemImage: "folder", isSelected: selectedDestination == "sidebarFiles", action: openFiles)
-                                .accessibilityIdentifier("sidebarFiles")
-                            sidebarItem("_personal_files_", systemImage: "person", isSelected: selectedDestination == "sidebarPersonalFiles", action: openPersonalFiles)
-                                .accessibilityIdentifier("sidebarPersonalFiles")
-                            sidebarItem("_recent_", systemImage: "clock.arrow.circlepath", isSelected: selectedDestination == "sidebarRecent", action: openRecent)
-                                .accessibilityIdentifier("sidebarRecent")
-                            if showsShares {
-                                sidebarItem("_list_shares_", systemImage: "person.badge.plus", isSelected: selectedDestination == "sidebarShares", action: openShares)
-                                    .accessibilityIdentifier("sidebarShares")
-                            }
-                            if showsGroupfolders {
-                                sidebarItem("_group_folders_", systemImage: "folder.badge.person.crop", isSelected: selectedDestination == "sidebarGroupfolders", action: openGroupfolders)
-                                    .accessibilityIdentifier("sidebarGroupfolders")
-                            }
-                            sidebarItem("_offline_files_", systemImage: "arrow.down.circle.dotted", isSelected: selectedDestination == "sidebarOffline", action: openOffline)
-                                .accessibilityIdentifier("sidebarOffline")
-                            sidebarItem("_trash_view_", systemImage: "trash", isSelected: selectedDestination == "sidebarTrash", action: openTrash)
-                                .accessibilityIdentifier("sidebarTrash")
-                            Text("_status_")
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                                .padding(.horizontal, 32)
-                                .padding(.top, 20)
-                                .padding(.bottom, 8)
-                            sidebarItem("_transfers_", systemImage: "arrow.left.arrow.right", isSelected: selectedDestination == "sidebarTransfers", subtitle: transfersSubtitle, action: openTransfers)
-                                .accessibilityIdentifier("sidebarTransfers")
-                            Text("_media_")
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                                .padding(.horizontal, 32)
-                                .padding(.top, 20)
-                                .padding(.bottom, 8)
-                            sidebarItem("_auto_upload_folder_", icon: autoUploadIcon, subtitle: autoUploadSubtitle, action: openAutoUpload)
-                                .accessibilityIdentifier("sidebarAutoUpload")
-                            sidebarItem("_scanned_images_", systemImage: "doc.text.viewfinder", isSelected: false, action: openScannedImages)
-                                .accessibilityIdentifier("sidebarScannedImages")
-                            if !externalSites.isEmpty {
-                                Text("_external_sites_")
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(.secondary)
-                                    .padding(.horizontal, 32)
-                                    .padding(.top, 20)
-                                    .padding(.bottom, 8)
-                                ForEach(externalSites, id: \.idExternalSite) { site in
-                                    sidebarItem(LocalizedStringKey(site.name),
-                                                systemImage: site.type == "settings" ? "gear" : "network",
-                                                isSelected: selectedDestination == "sidebarExternalSite-\(site.idExternalSite)") {
-                                        openExternalSite(site.url, site.name, site.idExternalSite)
-                                    }
-                                    .accessibilityIdentifier("sidebarExternalSite-\(site.idExternalSite)")
-                                }
-                            }
-                            if !NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
-                                Text("_apps_")
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(.secondary)
-                                    .padding(.horizontal, 32)
-                                    .padding(.top, 20)
-                                    .padding(.bottom, 8)
-                                sidebarApp("Talk", image: "talk-template") {
-                                    openApp(NCGlobal.shared.talkSchemeUrl, NCGlobal.shared.talkAppStoreUrl)
-                                }
-                                .accessibilityIdentifier("sidebarTalk")
-                                sidebarApp("Notes", image: "notes-template") {
-                                    openApp(NCGlobal.shared.notesSchemeUrl, NCGlobal.shared.notesAppStoreUrl)
-                                }
-                                .accessibilityIdentifier("sidebarNotes")
-                                sidebarApp("_more_apps_", image: "more-apps-template") {
-                                    openApp(NCGlobal.shared.moreAppsUrl, nil)
-                                }
-                                .accessibilityIdentifier("sidebarMoreApps")
-                            }
-                        }
-                        // Let the final row scroll completely above the fade.
-                        .padding(.bottom, quotaDescription.isEmpty ? 0 : 32)
-                    }
-                    .mask {
-                        VStack(spacing: 0) {
-                            Rectangle()
-                            if !quotaDescription.isEmpty {
-                                LinearGradient(colors: [.black, .clear], startPoint: .top, endPoint: .bottom)
-                                    .frame(height: 32)
-                            }
-                        }
-                    }
-                    quotaFooter
-                }
-                .padding(.leading, leadingInset)
-                .frame(width: width)
-                .frame(maxHeight: .infinity)
-                .background {
-                    // Extend only the glass beneath the landscape camera margin.
-                    // Controls keep their safe-area positioning and navbar alignment.
-                    sidebarBackground
-                        .ignoresSafeArea(.container)
-                }
-                .offset(x: isVisible ? 0 : -width)
-                .accessibilityAddTraits(.isModal)
-                .accessibilityAction(.escape) { close(then: onClose) }
+        ZStack(alignment: .leading) {
+            Color.clear
+            if isVisible {
+                sidebarPanel
+                    .transition(.move(edge: .leading))
             }
-            .task {
-                // Wait 50 ms so SwiftUI can render the panel in its initial offscreen position.
-                // Starting the animation during insertion can skip that first frame and make
-                // the sidebar appear immediately instead of sliding in. This delay only
-                // applies to opening; closing already starts from a rendered position.
-                if !reduceMotion {
-                    do {
-                        try await Task.sleep(for: .milliseconds(50))
-                    } catch {
-                        return
-                    }
+        }
+        .task {
+            // Present the overlay before inserting the panel with its slide transition.
+            if !reduceMotion {
+                do {
+                    try await Task.sleep(for: .milliseconds(50))
+                } catch {
+                    return
                 }
-                guard !isClosing, !Task.isCancelled else { return }
-                updateHeaderLayout()
-                withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
-                    isVisible = true
-                }
+            }
+            guard !isClosing, !Task.isCancelled else { return }
+            updateHeaderLayout()
+            withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
+                isVisible = true
             }
         }
         // Only the expanded phone portrait layout (Duo) inherits the navbar inset.
@@ -321,6 +199,134 @@ struct NCSidebarView: View {
         }
     }
 
+    private var sidebarPanel: some View {
+        GeometryReader { geometry in
+            // Keep the content clear of the landscape camera area, while glass reaches the edge.
+            let leadingInset = contentLeadingInset(geometry: geometry)
+            // Preserve the content width and a visible strip of the underlying screen.
+            let width = max(0, min(320 + leadingInset, geometry.size.width - 56))
+            ZStack(alignment: .leading) {
+                VStack {
+                    sidebarHeader
+                        .onGeometryChange(for: CGFloat.self) { geometry in
+                            geometry.size.height
+                        } action: { height in
+                            headerHeight = height
+                            navigationCenterY = navigationBarCenterY()
+                        }
+                        .padding(.leading, headerLeadingInset(geometry: geometry))
+                        .padding(.horizontal)
+                        .padding(.top, headerTopInset)
+                        .padding(.bottom, 16)
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("_home_")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 32)
+                                .padding(.bottom, 8)
+                            sidebarItem("_all_files_", systemImage: "folder", isSelected: selectedDestination == "sidebarFiles", action: openFiles)
+                                .accessibilityIdentifier("sidebarFiles")
+                            sidebarItem("_personal_files_", systemImage: "person", isSelected: selectedDestination == "sidebarPersonalFiles", action: openPersonalFiles)
+                                .accessibilityIdentifier("sidebarPersonalFiles")
+                            sidebarItem("_recent_", systemImage: "clock.arrow.circlepath", isSelected: selectedDestination == "sidebarRecent", action: openRecent)
+                                .accessibilityIdentifier("sidebarRecent")
+                            if showsShares {
+                                sidebarItem("_list_shares_", systemImage: "person.badge.plus", isSelected: selectedDestination == "sidebarShares", action: openShares)
+                                    .accessibilityIdentifier("sidebarShares")
+                            }
+                            if showsGroupfolders {
+                                sidebarItem("_group_folders_", systemImage: "folder.badge.person.crop", isSelected: selectedDestination == "sidebarGroupfolders", action: openGroupfolders)
+                                    .accessibilityIdentifier("sidebarGroupfolders")
+                            }
+                            sidebarItem("_offline_files_", systemImage: "arrow.down.circle.dotted", isSelected: selectedDestination == "sidebarOffline", action: openOffline)
+                                .accessibilityIdentifier("sidebarOffline")
+                            sidebarItem("_trash_view_", systemImage: "trash", isSelected: selectedDestination == "sidebarTrash", action: openTrash)
+                                .accessibilityIdentifier("sidebarTrash")
+                            Text("_status_")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 32)
+                                .padding(.top, 20)
+                                .padding(.bottom, 8)
+                            sidebarItem("_transfers_", systemImage: "arrow.left.arrow.right", isSelected: selectedDestination == "sidebarTransfers", subtitle: transfersSubtitle, action: openTransfers)
+                                .accessibilityIdentifier("sidebarTransfers")
+                            Text("_media_")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 32)
+                                .padding(.top, 20)
+                                .padding(.bottom, 8)
+                            sidebarItem("_auto_upload_folder_", icon: autoUploadIcon, subtitle: autoUploadSubtitle, action: openAutoUpload)
+                                .accessibilityIdentifier("sidebarAutoUpload")
+                            sidebarItem("_scanned_images_", systemImage: "doc.text.viewfinder", isSelected: false, action: openScannedImages)
+                                .accessibilityIdentifier("sidebarScannedImages")
+                            if !externalSites.isEmpty {
+                                Text("_external_sites_")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                                    .padding(.horizontal, 32)
+                                    .padding(.top, 20)
+                                    .padding(.bottom, 8)
+                                ForEach(externalSites, id: \.idExternalSite) { site in
+                                    sidebarItem(LocalizedStringKey(site.name),
+                                                systemImage: site.type == "settings" ? "gear" : "network",
+                                                isSelected: selectedDestination == "sidebarExternalSite-\(site.idExternalSite)") {
+                                        openExternalSite(site.url, site.name, site.idExternalSite)
+                                    }
+                                    .accessibilityIdentifier("sidebarExternalSite-\(site.idExternalSite)")
+                                }
+                            }
+                            if !NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
+                                Text("_apps_")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                                    .padding(.horizontal, 32)
+                                    .padding(.top, 20)
+                                    .padding(.bottom, 8)
+                                sidebarApp("Talk", image: "talk-template") {
+                                    openApp(NCGlobal.shared.talkSchemeUrl, NCGlobal.shared.talkAppStoreUrl)
+                                }
+                                .accessibilityIdentifier("sidebarTalk")
+                                sidebarApp("Notes", image: "notes-template") {
+                                    openApp(NCGlobal.shared.notesSchemeUrl, NCGlobal.shared.notesAppStoreUrl)
+                                }
+                                .accessibilityIdentifier("sidebarNotes")
+                                sidebarApp("_more_apps_", image: "more-apps-template") {
+                                    openApp(NCGlobal.shared.moreAppsUrl, nil)
+                                }
+                                .accessibilityIdentifier("sidebarMoreApps")
+                            }
+                        }
+                        // Let the final row scroll completely above the fade.
+                        .padding(.bottom, quotaDescription.isEmpty ? 0 : 32)
+                    }
+                    .mask {
+                        VStack(spacing: 0) {
+                            Rectangle()
+                            if !quotaDescription.isEmpty {
+                                LinearGradient(colors: [.black, .clear], startPoint: .top, endPoint: .bottom)
+                                    .frame(height: 32)
+                            }
+                        }
+                    }
+                    quotaFooter
+                }
+                .padding(.leading, leadingInset)
+                .frame(width: width)
+                .frame(maxHeight: .infinity)
+                .background {
+                    // Extend only the glass beneath the landscape camera margin.
+                    // Controls keep their safe-area positioning and navbar alignment.
+                    sidebarBackground
+                        .ignoresSafeArea(.container)
+                }
+                .accessibilityAddTraits(.isModal)
+                .accessibilityAction(.escape) { close(then: onClose) }
+            }
+        }
+    }
+
     private func updateTransfersSubtitle() async {
         let database = NCManageDatabase.shared
         async let progress = database.getMetadatasStatusCountAsync(status: TransfersFilter.progress.statuses)
@@ -329,11 +335,13 @@ struct NCSidebarView: View {
         let counts = await (progress, waiting, errors)
         guard !Task.isCancelled else { return }
         let states = [("_in_error_", counts.2), ("_in_progress_", counts.0), ("_in_waiting_", counts.1)]
+        let subtitle: String
         if let state = states.first(where: { $0.1 > 0 }) {
-            transfersSubtitle = "\(state.1) \(NSLocalizedString(state.0, comment: ""))"
+            subtitle = "\(state.1) \(NSLocalizedString(state.0, comment: ""))"
         } else {
-            transfersSubtitle = NSLocalizedString("_no_transfer_in_progress_", comment: "")
+            subtitle = NSLocalizedString("_no_transfer_in_progress_", comment: "")
         }
+        if transfersSubtitle != subtitle { transfersSubtitle = subtitle }
     }
 
     private var autoUploadIcon: some View {

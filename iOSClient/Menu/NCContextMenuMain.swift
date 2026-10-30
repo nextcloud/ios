@@ -38,13 +38,13 @@ class NCContextMenuMain: NSObject {
         self.sender = sender
     }
 
-    func viewMenu() -> UIMenu {
+    func viewMenu(showViewInFolder: Bool = false) -> UIMenu {
         guard let capabilities = NCNetworking.shared.capabilities[metadata.account] else {
             return UIMenu()
         }
 
         let topMenuItems = buildTopMenuItems(metadata: metadata)
-        let mainActionsMenu = buildMainActionsMenu(metadata: metadata, capabilities: capabilities)
+        let mainActionsMenu = buildMainActionsMenu(metadata: metadata, capabilities: capabilities, showViewInFolder: showViewInFolder)
         let clientIntegrationMenu = buildClientIntegrationMenuItems(capabilities: capabilities, metadata: metadata)
         let deleteMenu = buildDeleteMenu(metadata: metadata)
 
@@ -54,9 +54,10 @@ class NCContextMenuMain: NSObject {
             menuElements.append(topMenu)
         }
 
-        [mainActionsMenu, clientIntegrationMenu, deleteMenu]
+        menuElements.append(contentsOf: mainActionsMenu)
+        menuElements.append(contentsOf: [clientIntegrationMenu, deleteMenu]
             .compactMap { NCContextMenuActions.inlineMenu(children: $0) }
-            .forEach { menuElements.append($0) }
+        )
 
         return UIMenu(title: "", children: menuElements)
     }
@@ -94,23 +95,24 @@ class NCContextMenuMain: NSObject {
 
     // MARK: Main Actions Menu
 
-    private func buildMainActionsMenu(metadata: tableMetadata, capabilities: NKCapabilities.Capabilities) -> [UIMenuElement] {
-        var menuElements: [UIMenuElement] = []
+    private func buildMainActionsMenu(metadata: tableMetadata, capabilities: NKCapabilities.Capabilities, showViewInFolder: Bool) -> [UIMenuElement] {
+        // Keep the same section order as the viewer menu.
+        var openingActions: [UIMenuElement] = []
+        var editingActions: [UIMenuElement] = []
+        var savingActions: [UIMenuElement] = []
+        var securityActions: [UIMenuElement] = []
 
-        if NCNetworking.shared.isOnline,
-           !metadata.directory,
-           !capabilities.filesLockVersion.isEmpty {
-            menuElements.append(
-                NCContextMenuActions.lockUnlock(isLocked: metadata.lock,
-                                              metadata: metadata,
-                                              controller: controller)
-            )
+        if showViewInFolder, let controller {
+            openingActions.append(NCContextMenuActions.viewInFolder(metadata: metadata, controller: controller, viewController: viewController))
         }
 
         if !metadata.isDirectoryE2EE,
            metadata.classFile == NKTypeClassFile.document.rawValue,
            NextcloudKit.shared.isNetworkReachable() {
-            var availableEditors = Set(NCDocumentEditorSupport.directEditingEditorIdentifiers(account: metadata.account, contentType: metadata.contentType, fileName: metadata.fileNameView).map { $0.lowercased() })
+            var availableEditors = Set(
+                NCDocumentEditorSupport.directEditingEditorIdentifiers(account: metadata.account, contentType: metadata.contentType, fileName: metadata.fileNameView)
+                    .map { $0.lowercased() }
+            )
             if metadata.isLegacyRichdocumentsEditorAvailable {
                 availableEditors.insert(global.editorCollabora)
             }
@@ -132,60 +134,55 @@ class NCContextMenuMain: NSObject {
             }
 
             if officeActions.count == 1, let action = officeActions.first {
-                menuElements.append(action)
+                openingActions.append(action)
             } else if !officeActions.isEmpty {
-                menuElements.append(UIMenu(title: NSLocalizedString("_open_in_office_", comment: ""), image: UIImage(systemName: "doc.richtext"), children: officeActions))
+                openingActions.append(UIMenu(title: NSLocalizedString("_open_in_office_", comment: ""), image: UIImage(systemName: "doc.richtext"), children: officeActions))
             }
         }
 
-        addE2EEActions(metadata: metadata, capabilities: capabilities, mainActionsMenu: &menuElements)
-
-        if NCNetworking.shared.isOnline,
-           metadata.canSetAsAvailableOffline {
-            menuElements.append(
-                NCContextMenuActions.setAvailableOffline(
-                    metadatas: [metadata],
-                    isAnyOffline: metadata.isOffline,
-                    controller: controller
-                )
-            )
-        }
-
-        if NCNetworking.shared.isOnline,
-           let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-            menuElements.append(NCContextMenuActions.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, windowScene: windowScene))
-        }
-
-        if NCNetworking.shared.isOnline,
-           metadata.isSavebleAsImage {
-            menuElements.append(NCContextMenuActions.saveAsScan(metadata: metadata, sceneIdentifier: sceneIdentifier))
-        }
-
         if metadata.isRenameable {
-            menuElements.append(NCContextMenuActions.rename(metadata: metadata, presenter: viewController, windowScene: windowScene))
+            editingActions.append(NCContextMenuActions.rename(metadata: metadata, presenter: viewController, windowScene: windowScene))
         }
 
         if metadata.isCopyableMovable {
-            menuElements.append(
-                NCContextMenuActions.moveOrCopy(
-                    metadatas: [metadata],
-                    account: metadata.account,
-                    controller: controller
-                )
-            )
+            editingActions.append(NCContextMenuActions.moveOrCopy(metadatas: [metadata], account: metadata.account, controller: controller))
         }
 
         if NCNetworking.shared.isOnline,
            metadata.isModifiableWithQuickLook {
-            menuElements.append(makeModifyWithQuickLookAction(metadata: metadata))
+            editingActions.append(makeModifyWithQuickLookAction(metadata: metadata))
         }
 
         if viewController is NCFiles,
            metadata.directory {
-            menuElements.append(makeColorFolderAction(metadata: metadata))
+            editingActions.append(makeColorFolderAction(metadata: metadata))
         }
 
-        return menuElements
+        if NCNetworking.shared.isOnline,
+           metadata.canSetAsAvailableOffline {
+            savingActions.append(NCContextMenuActions.setAvailableOffline(metadatas: [metadata], isAnyOffline: metadata.isOffline, controller: controller))
+        }
+
+        if NCNetworking.shared.isOnline,
+           let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+            savingActions.append(NCContextMenuActions.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, windowScene: windowScene))
+        }
+
+        if NCNetworking.shared.isOnline,
+           metadata.isSavebleAsImage {
+            savingActions.append(NCContextMenuActions.saveAsScan(metadata: metadata, sceneIdentifier: sceneIdentifier))
+        }
+
+        if NCNetworking.shared.isOnline,
+           !metadata.directory,
+           !capabilities.filesLockVersion.isEmpty {
+            securityActions.append(NCContextMenuActions.lockUnlock(isLocked: metadata.lock, metadata: metadata, controller: controller))
+        }
+
+        addE2EEActions(metadata: metadata, capabilities: capabilities, mainActionsMenu: &securityActions)
+
+        return [openingActions, editingActions, savingActions, securityActions]
+            .compactMap { NCContextMenuActions.inlineMenu(children: $0) }
     }
 
     // MARK: E2EE Actions
