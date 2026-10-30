@@ -98,7 +98,9 @@ extension NCShareViewModel {
         let browserID = folderBrowserID
         isLoading = true
         folderSelectionTask = Task { @MainActor in
-            defer { if folderBrowserID == browserID { isLoading = false } }
+            defer {
+                if folderBrowserID == browserID { isLoading = false }
+            }
             // Recent destinations may have been deleted or moved since last use.
             let result = await NCNetworking.shared.readFileAsync(serverUrlFileName: folder.serverUrl, account: session.account)
             guard isCurrentBrowser(browserID, account: session.account) else { return }
@@ -166,7 +168,6 @@ extension NCShareViewModel {
                 folderTasks[folder.serverUrl] = nil
             }
         }
-        let started = Date()
         let result = await NextcloudKit.shared.readFileOrFolderAsync(
             serverUrlFileName: folder.serverUrl, depth: "1",
             showHiddenFiles: NCPreferences().getShowHiddenFiles(account: session.account), account: session.account
@@ -179,6 +180,7 @@ extension NCShareViewModel {
                 self.folderRequests[folder.serverUrl] = task
             }
         }
+
         guard isCurrentBrowser(browserID, account: session.account) else { return }
         guard result.error == .success else {
             folderLoadErrors[folder.serverUrl] = result.error.errorDescription
@@ -188,7 +190,6 @@ extension NCShareViewModel {
             folderLoadErrors[folder.serverUrl] = NSLocalizedString("_share_folder_unavailable_", comment: "")
             return
         }
-        let received = Date()
         // The destination browser needs only directories. Do not convert file
         // types or replace the app's complete metadata listing in the database.
         let directories = files.filter(\.directory)
@@ -215,8 +216,6 @@ extension NCShareViewModel {
             metadataFolder = metadata
             selectedFolder = updated
         }
-        nkLog(info: String(format: "Share folder listing: %d entries, %d directories; DAV %.2fs, preparation %.2fs",
-                           files.count, directories.count, received.timeIntervalSince(started), Date().timeIntervalSince(received)))
     }
 
     private func cachedFolderChildren(at url: String, parent: tableMetadata?, session: NCSession.Session) async -> [NCShareFolderItem] {
