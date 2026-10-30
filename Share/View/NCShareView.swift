@@ -53,11 +53,6 @@ struct NCShareView: View {
             }
             .dynamicTypeSize(.xSmall ... .accessibility2)
             .background(Color(uiColor: .systemBackground))
-            .alert(NSLocalizedString("_error_", comment: ""), isPresented: $model.isShowingInputError) {
-                Button(NSLocalizedString("_ok_", comment: "")) { model.acknowledgeInputError() }
-            } message: {
-                Text(verbatim: model.inputErrorMessage)
-            }
             .sheet(item: $model.uploadConfirmation, onDismiss: { model.uploadConfirmationDismissed() }) { confirmation in
                 NCShareUploadConflictView(confirmation: confirmation, resolve: model.resolveUploadConfirmation)
             }
@@ -88,7 +83,11 @@ struct NCShareView: View {
 
     @ViewBuilder
     private var statusView: some View {
-        if model.isOffline {
+        if !model.alertMessage.isEmpty {
+            statusError(model.alertMessage) { model.acknowledgeAlert() }
+        } else if !model.inputErrorMessage.isEmpty && model.isShowingInputError {
+            statusError(model.inputErrorMessage) { model.acknowledgeInputError() }
+        } else if model.isOffline {
             VStack(spacing: 8) {
                 Label(NSLocalizedString("_share_online_required_", comment: ""), systemImage: "wifi.slash")
                     .cappedFont(.subheadline, maxDynamicType: .accessibility2)
@@ -105,6 +104,15 @@ struct NCShareView: View {
                     .disabled(model.isSwitchingAccount)
             }
             .padding()
+        } else if let row = model.visibleFolderRows.first(where: { model.folderLoadErrors[$0.folder.serverUrl] != nil }),
+                  let error = model.folderLoadErrors[row.folder.serverUrl] {
+            VStack(spacing: 8) {
+                Text(verbatim: error)
+                    .cappedFont(.subheadline, maxDynamicType: .accessibility2)
+                    .multilineTextAlignment(.center)
+                Button(NSLocalizedString("_share_retry_folder_", comment: "")) { model.retryFolder(row.folder) }
+            }
+            .padding()
         } else if model.isLoadingCapabilities {
             ProgressView(NSLocalizedString("_share_capabilities_loading_", comment: ""))
                 .padding()
@@ -112,6 +120,16 @@ struct NCShareView: View {
             ProgressView(NSLocalizedString("_share_import_preparing_", comment: ""))
                 .padding()
         }
+    }
+
+    private func statusError(_ message: String, acknowledge: @escaping () -> Void) -> some View {
+        VStack(spacing: 8) {
+            Text(verbatim: message)
+                .cappedFont(.subheadline, maxDynamicType: .accessibility2)
+                .multilineTextAlignment(.center)
+            Button(NSLocalizedString("_ok_", comment: ""), action: acknowledge)
+        }
+        .padding()
     }
 
     private func folderList(showHeader: Bool = true, horizontalInset: CGFloat = 16) -> some View {
@@ -123,35 +141,18 @@ struct NCShareView: View {
             List {
                 Section {
                     if !model.recentFolders.isEmpty {
+                        folderListTitle("_share_recent_folders_")
                         ForEach(model.recentFolders) { folder in
                             folderRow(folder, depth: nil)
                         }
                     }
+                    folderListTitle("_share_all_folders_")
                     ForEach(model.visibleFolderRows) { row in
                         folderRow(row.folder, depth: row.depth)
-                            .padding(.top, !model.recentFolders.isEmpty && row.id == model.visibleFolderRows.first?.id ? 12 : 0)
-                            .overlay(alignment: .top) {
-                                if !model.recentFolders.isEmpty, row.id == model.visibleFolderRows.first?.id {
-                                    Rectangle()
-                                        .fill(Color(uiColor: .separator))
-                                        .frame(height: 1)
-                                        .padding(.top, 6)
-                                        .padding(.horizontal, -12)
-                                        .allowsHitTesting(false)
-                                        .accessibilityHidden(true)
-                                }
-                            }
                         if model.expandedFolderURLs.contains(row.folder.serverUrl) {
-                            if let error = model.folderLoadErrors[row.folder.serverUrl] {
-                                VStack(alignment: .leading, spacing: 6) {
-                                    Text(verbatim: error)
-                                        .cappedFont(.caption, maxDynamicType: .accessibility2)
-                                        .foregroundStyle(.secondary)
-                                    Button(NSLocalizedString("_share_retry_folder_", comment: "")) { model.retryFolder(row.folder) }
-                                }
-                                .padding(.leading, CGFloat(min(row.depth + 1, 8)) * 16)
-                            } else if model.loadedFolderURLs.contains(row.folder.serverUrl),
-                                      model.folderChildren[row.folder.serverUrl]?.isEmpty == true {
+                            if model.folderLoadErrors[row.folder.serverUrl] == nil,
+                               model.loadedFolderURLs.contains(row.folder.serverUrl),
+                               model.folderChildren[row.folder.serverUrl]?.isEmpty == true {
                                 Text(NSLocalizedString("_files_no_folders_", comment: ""))
                                     .cappedFont(.caption, maxDynamicType: .accessibility2)
                                     .foregroundStyle(.secondary)
@@ -164,7 +165,7 @@ struct NCShareView: View {
             .listStyle(.plain)
             .contentMargins(.vertical, 0, for: .scrollContent)
             .scrollContentBackground(.hidden)
-            .environment(\.defaultMinListRowHeight, 50)
+            .environment(\.defaultMinListRowHeight, 0)
             .background(Color(uiColor: .secondarySystemGroupedBackground))
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .padding(.horizontal, horizontalInset)
@@ -173,6 +174,19 @@ struct NCShareView: View {
         .clipped()
         .background(Color(uiColor: .systemGroupedBackground))
         .disabled(model.isLoading || model.isPreparingUpload || !model.isAccountReady || model.isLoadingAccounts)
+    }
+
+    private func folderListTitle(_ key: String) -> some View {
+        Text(NSLocalizedString(key, comment: ""))
+            .cappedFont(.caption, maxDynamicType: .accessibility2)
+            .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 8)
+            .padding(.bottom, 2)
+            .accessibilityAddTraits(.isHeader)
+            .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 12))
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color(uiColor: .secondarySystemGroupedBackground))
     }
 
     private var createFolderHeader: some View {
@@ -368,7 +382,7 @@ struct NCShareView: View {
         .buttonStyle(.borderedProminent)
         .buttonBorderShape(.roundedRectangle(radius: 12))
         .padding(.horizontal, 16)
-        .disabled(model.fileNames.isEmpty || model.selectedFolder == nil || model.isLoading ||
+        .disabled(model.fileNames.isEmpty || !model.isUploadDestinationReady || model.isLoading ||
                   model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady ||
                   model.isLoadingAccounts || !model.inputErrorMessage.isEmpty)
     }
@@ -388,6 +402,7 @@ struct NCShareView: View {
 #if DEBUG && SHARE_PREVIEWS
 #Preview("Share") {
     NCShareView(model: .preview())
+        .environment(\.locale, Locale(identifier: "en_US"))
         .allowsHitTesting(false)
 }
 
@@ -397,6 +412,7 @@ struct NCShareView: View {
     model.recentFolders = []
     model.loadedFolderURLs = Set(model.folders.map(\.serverUrl))
     return NCShareView(model: model)
+        .environment(\.locale, Locale(identifier: "en_US"))
         .allowsHitTesting(false)
 }
 
@@ -405,6 +421,7 @@ struct NCShareView: View {
     model.fileNames = []
     model.isPreparingInput = true
     return NCShareView(model: model)
+        .environment(\.locale, Locale(identifier: "en_US"))
         .allowsHitTesting(false)
 }
 #Preview("Capabilities unavailable") {
@@ -412,6 +429,7 @@ struct NCShareView: View {
     model.serverCapabilities = nil
     model.capabilitiesErrorMessage = NSLocalizedString("_share_capabilities_unavailable_", comment: "")
     return NCShareView(model: model)
+        .environment(\.locale, Locale(identifier: "en_US"))
         .allowsHitTesting(false)
 }
 
@@ -420,6 +438,7 @@ struct NCShareView: View {
     model.serverCapabilities = nil
     model.isLoadingCapabilities = true
     return NCShareView(model: model)
+        .environment(\.locale, Locale(identifier: "en_US"))
         .allowsHitTesting(false)
 }
 #endif

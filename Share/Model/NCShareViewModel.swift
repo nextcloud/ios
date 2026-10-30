@@ -44,6 +44,8 @@ final class NCShareViewModel: NSObject, ObservableObject {
     @Published var isPreparingInput = false
     @Published var isShowingInputError = false
     @Published var inputErrorMessage = ""
+    @Published var alertMessage = ""
+    private var alertDismissAction: (() -> Void)?
     @Published var navigationTitle = NCBrandOptions.shared.brand
     @Published var accountName = ""
     @Published var accounts: [NCShareAccountItem] = []
@@ -54,6 +56,12 @@ final class NCShareViewModel: NSObject, ObservableObject {
     @Published var isLoadingCapabilities = false
     @Published var capabilitiesErrorMessage = ""
     var isAccountReady: Bool { serverCapabilities != nil && !isSwitchingAccount && !isOffline }
+
+    var isUploadDestinationReady: Bool {
+        guard let selectedFolder else { return false }
+        return isAccountReady && !loadingFolderURLs.contains(selectedFolder.serverUrl) &&
+            folderLoadErrors[selectedFolder.serverUrl] == nil
+    }
 
     var capabilitiesTask: Task<Void, Never>?
     var capabilitiesRequest: URLSessionTask?
@@ -370,12 +378,15 @@ final class NCShareViewModel: NSObject, ObservableObject {
     }
 
     func showAlert(title: String = "_error_", description: String, onDismiss: (() -> Void)? = nil) {
-        let description = description.replacingOccurrences(of: "\t", with: "\n")
-        let alertController = UIAlertController(title: NSLocalizedString(title, comment: ""), message: NSLocalizedString(description, comment: ""), preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
-            onDismiss?()
-        }))
-        presenter?.present(alertController, animated: true)
+        alertMessage = NSLocalizedString(description.replacingOccurrences(of: "\t", with: "\n"), comment: "")
+        alertDismissAction = onDismiss
+    }
+
+    func acknowledgeAlert() {
+        let action = alertDismissAction
+        alertMessage = ""
+        alertDismissAction = nil
+        action?()
     }
 
     func setNavigationBar(navigationTitle: String) {
@@ -452,7 +463,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
     }
 
     func upload() {
-        guard isAccountReady, isAuthenticated, !isPreparingInput, inputErrorMessage.isEmpty, !isPreparingUpload,
+        guard isUploadDestinationReady, isAuthenticated, !isPreparingInput, inputErrorMessage.isEmpty, !isPreparingUpload,
               !isSwitchingAccount, !isLoadingAccounts, !isLoading, !fileNames.isEmpty else { return }
         guard let capabilities = serverCapabilities else { return }
         isPreparingUpload = true

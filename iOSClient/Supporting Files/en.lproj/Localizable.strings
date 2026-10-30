@@ -904,7 +904,7 @@
 
 /* Share extension destination browser */
 "_share_home_folder_" = "My files";
-"_share_recent_folders_" = "Recent folders";
+"_share_recent_folders_" = "Recent";
 "_share_recent_folders_empty_" = "Your last three upload destinations will appear here.";
 "_share_all_folders_" = "All folders";
 "_share_expand_folder_" = "Expand %@";
