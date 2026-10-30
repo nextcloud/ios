@@ -916,7 +916,7 @@
 "_share_capabilities_loading_" = "Loading server capabilities…";
 "_share_capabilities_unavailable_" = "Server capabilities could not be loaded. Please try again before uploading, renaming files, or creating folders.";
 "_share_capabilities_retry_" = "Try again";
-
 "_share_online_required_" = "An internet connection is required to upload files. Reconnect to continue.";
-
 "_share_favorite_folder_" = "Favorite folder";
+"_share_checking_folder_" = "Checking folder…";
+"_share_loading_folders_" = "Loading folders…";

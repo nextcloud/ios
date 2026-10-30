@@ -33,6 +33,7 @@ struct NCShareAccountMenu: View {
             }
         }
         .buttonStyle(.plain)
+        .dynamicTypeSize(.xSmall ... .accessibility2)
         .disabled(model.accounts.count < 2)
 
     }

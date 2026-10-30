@@ -21,7 +21,7 @@ struct NCShareUploadConflictView: View {
                     ForEach(confirmation.renamedItems, id: \.sourceName) { item in
                         VStack(alignment: .leading, spacing: 4) {
                             Text(verbatim: item.sourceName)
-                                .font(.caption)
+                                .cappedFont(.caption, maxDynamicType: .accessibility2)
                                 .foregroundStyle(.secondary)
                             Text(verbatim: item.fileName)
                         }

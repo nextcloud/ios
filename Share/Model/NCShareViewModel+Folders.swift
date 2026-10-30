@@ -166,7 +166,11 @@ extension NCShareViewModel {
                 folderTasks[folder.serverUrl] = nil
             }
         }
-        let result = await NCNetworking.shared.readFolderAsync(serverUrl: folder.serverUrl, account: session.account) { [weak self] task in
+        let started = Date()
+        let result = await NextcloudKit.shared.readFileOrFolderAsync(
+            serverUrlFileName: folder.serverUrl, depth: "1",
+            showHiddenFiles: NCPreferences().getShowHiddenFiles(account: session.account), account: session.account
+        ) { [weak self] task in
             Task { @MainActor [weak self] in
                 guard let self, self.folderBrowserID == browserID, !self.isClosing else {
                     task.cancel()
@@ -180,18 +184,39 @@ extension NCShareViewModel {
             folderLoadErrors[folder.serverUrl] = result.error.errorDescription
             return
         }
-        let children = await cachedFolderChildren(at: folder.serverUrl, parent: result.metadataFolder, session: session)
-        guard isCurrentBrowser(browserID, account: session.account) else { return }
-        folderChildren[folder.serverUrl] = children
-        loadedFolderURLs.insert(folder.serverUrl)
-        if let metadata = result.metadataFolder {
-            let updated = folderSnapshot(metadata, url: folder.serverUrl, parent: nil, session: session)
-            if folders.first?.serverUrl == folder.serverUrl { folders = [updated] }
-            if selectedFolder?.serverUrl == folder.serverUrl {
-                metadataFolder = metadata
-                selectedFolder = updated
-            }
+        guard let files = result.files else {
+            folderLoadErrors[folder.serverUrl] = NSLocalizedString("_share_folder_unavailable_", comment: "")
+            return
         }
+        let received = Date()
+        // The destination browser needs only directories. Do not convert file
+        // types or replace the app's complete metadata listing in the database.
+        let directories = files.filter(\.directory)
+        let listing = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(
+            directories, serverUrlMetadataFolder: folder.serverUrl)
+        guard isCurrentBrowser(browserID, account: session.account) else { return }
+        guard !listing.metadataFolder.ocId.isEmpty else {
+            folderLoadErrors[folder.serverUrl] = NSLocalizedString("_share_folder_unavailable_", comment: "")
+            return
+        }
+        let layout = NCManageDatabase.shared.getLayoutForView(account: session.account, key: keyLayout, serverUrl: folder.serverUrl)
+        let sorted = await NCManageDatabase.shared.sortedMetadata(layoutForView: layout, account: session.account, metadatas: listing.metadatas)
+        guard isCurrentBrowser(browserID, account: session.account) else { return }
+        let ordered = sorted.filter(\.favorite) + sorted.filter { !$0.favorite }
+        folderChildren[folder.serverUrl] = ordered.map { metadata in
+            let url = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+            return folderSnapshot(metadata, url: url, parent: listing.metadataFolder, session: session)
+        }
+        loadedFolderURLs.insert(folder.serverUrl)
+        let metadata = listing.metadataFolder
+        let updated = folderSnapshot(metadata, url: folder.serverUrl, parent: nil, session: session)
+        if folders.first?.serverUrl == folder.serverUrl { folders = [updated] }
+        if selectedFolder?.serverUrl == folder.serverUrl {
+            metadataFolder = metadata
+            selectedFolder = updated
+        }
+        nkLog(info: String(format: "Share folder listing: %d entries, %d directories; DAV %.2fs, preparation %.2fs",
+                           files.count, directories.count, received.timeIntervalSince(started), Date().timeIntervalSince(received)))
     }
 
     private func cachedFolderChildren(at url: String, parent: tableMetadata?, session: NCSession.Session) async -> [NCShareFolderItem] {

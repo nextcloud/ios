@@ -15,8 +15,11 @@ struct NCShareView: View {
                 if model.isAvailable && model.isAuthenticated {
                     VStack(spacing: 0) {
                         statusView
+                            .frame(maxWidth: .infinity)
+                            .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+                            .padding(.horizontal, 16)
                         GeometryReader { geometry in
-                            if geometry.size.width >= 600 && geometry.size.height < 450 && geometry.size.width > geometry.size.height {
+                            if UIDevice.current.userInterfaceIdiom == .phone && geometry.size.width > geometry.size.height {
                                 VStack(spacing: 0) {
                                     createFolderHeader
                                         .padding(.horizontal, 16)
@@ -40,6 +43,7 @@ struct NCShareView: View {
                             }
                         }
                     }
+                    .background(Color(uiColor: .systemGroupedBackground))
                 } else if model.isSwitchingAccount && model.isAuthenticated {
                     ProgressView()
                                 .accessibilityLabel(NSLocalizedString("_request_in_progress_", comment: ""))
@@ -47,6 +51,7 @@ struct NCShareView: View {
                     Color(uiColor: .systemBackground)
                 }
             }
+            .dynamicTypeSize(.xSmall ... .accessibility2)
             .background(Color(uiColor: .systemBackground))
             .alert(NSLocalizedString("_error_", comment: ""), isPresented: $model.isShowingInputError) {
                 Button(NSLocalizedString("_ok_", comment: "")) { model.acknowledgeInputError() }
@@ -58,6 +63,8 @@ struct NCShareView: View {
             }
             .navigationTitle(model.navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar(.visible, for: .navigationBar)
+            .toolbarBackground(.hidden, for: .navigationBar)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarLeading) {
                     if model.isAvailable && model.isAuthenticated {
@@ -66,7 +73,7 @@ struct NCShareView: View {
                                 .disabled(model.isLoading || model.isPreparingUpload || model.isSwitchingAccount || model.isLoadingAccounts)
                             if model.isLoading || !model.loadingFolderURLs.isEmpty {
                                 ProgressView()
-                                    .accessibilityLabel(NSLocalizedString("_request_in_progress_", comment: ""))
+                                    .accessibilityLabel(NSLocalizedString(model.isLoading ? "_share_checking_folder_" : "_share_loading_folders_", comment: ""))
                                     .padding(.trailing, 8)
                             }
                         }
@@ -84,7 +91,7 @@ struct NCShareView: View {
         if model.isOffline {
             VStack(spacing: 8) {
                 Label(NSLocalizedString("_share_online_required_", comment: ""), systemImage: "wifi.slash")
-                    .font(.subheadline)
+                    .cappedFont(.subheadline, maxDynamicType: .accessibility2)
                     .multilineTextAlignment(.center)
                 Button(NSLocalizedString("_share_capabilities_retry_", comment: ""), action: model.retryConnection)
             }
@@ -92,7 +99,7 @@ struct NCShareView: View {
         } else if !model.capabilitiesErrorMessage.isEmpty {
             VStack(spacing: 8) {
                 Text(verbatim: model.capabilitiesErrorMessage)
-                    .font(.subheadline)
+                    .cappedFont(.subheadline, maxDynamicType: .accessibility2)
                     .multilineTextAlignment(.center)
                 Button(NSLocalizedString("_share_capabilities_retry_", comment: ""), action: model.retryCapabilities)
                     .disabled(model.isSwitchingAccount)
@@ -103,9 +110,6 @@ struct NCShareView: View {
                 .padding()
         } else if model.isPreparingInput {
             ProgressView(NSLocalizedString("_share_import_preparing_", comment: ""))
-                .padding()
-        } else if model.isPreparingUpload {
-            ProgressView(NSLocalizedString("_share_conflict_checking_", comment: ""))
                 .padding()
         }
     }
@@ -141,7 +145,7 @@ struct NCShareView: View {
                             if let error = model.folderLoadErrors[row.folder.serverUrl] {
                                 VStack(alignment: .leading, spacing: 6) {
                                     Text(verbatim: error)
-                                        .font(.caption)
+                                        .cappedFont(.caption, maxDynamicType: .accessibility2)
                                         .foregroundStyle(.secondary)
                                     Button(NSLocalizedString("_share_retry_folder_", comment: "")) { model.retryFolder(row.folder) }
                                 }
@@ -149,7 +153,7 @@ struct NCShareView: View {
                             } else if model.loadedFolderURLs.contains(row.folder.serverUrl),
                                       model.folderChildren[row.folder.serverUrl]?.isEmpty == true {
                                 Text(NSLocalizedString("_files_no_folders_", comment: ""))
-                                    .font(.caption)
+                                    .cappedFont(.caption, maxDynamicType: .accessibility2)
                                     .foregroundStyle(.secondary)
                                     .padding(.leading, CGFloat(min(row.depth + 1, 8)) * 16)
                             }
@@ -166,6 +170,7 @@ struct NCShareView: View {
             .padding(.horizontal, horizontalInset)
         }
         .frame(maxHeight: .infinity)
+        .clipped()
         .background(Color(uiColor: .systemGroupedBackground))
         .disabled(model.isLoading || model.isPreparingUpload || !model.isAccountReady || model.isLoadingAccounts)
     }
@@ -178,11 +183,12 @@ struct NCShareView: View {
                     Text(NSLocalizedString("_create_folder_", comment: ""))
                     Image(systemName: "folder.badge.plus")
                 }
-                .font(.subheadline)
+                .cappedFont(.subheadline, maxDynamicType: .accessibility2)
                 .frame(minHeight: 50)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.borderless)
+            .tint(.blue)
             .disabled(model.isPreparingInput || !model.inputErrorMessage.isEmpty ||
                       (model.selectedFolder.map { model.loadingFolderURLs.contains($0.serverUrl) } ?? true))
         }
@@ -197,15 +203,9 @@ struct NCShareView: View {
                 Button {
                     model.toggleFolder(folder)
                 } label: {
-                    Group {
-                        if model.loadingFolderURLs.contains(folder.serverUrl) {
-                            ProgressView()
-                        } else {
-                            Image(systemName: model.expandedFolderURLs.contains(folder.serverUrl) ? "chevron.down" : "chevron.right")
-                        }
-                    }
-                    .frame(width: 50, height: 50)
-                    .contentShape(Rectangle())
+                    Image(systemName: model.expandedFolderURLs.contains(folder.serverUrl) ? "chevron.down" : "chevron.right")
+                        .frame(width: 50, height: 50)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.borderless)
                 .accessibilityLabel(String(format: NSLocalizedString(
@@ -213,7 +213,7 @@ struct NCShareView: View {
                 .padding(.leading, CGFloat(min(depth, 8)) * 16)
             } else {
                 Image(systemName: "clock")
-                    .font(.subheadline)
+                    .cappedFont(.subheadline, maxDynamicType: .accessibility2)
                     .foregroundStyle(.secondary)
                     .frame(width: 50, height: 50)
                     .accessibilityHidden(true)
@@ -250,12 +250,12 @@ struct NCShareView: View {
                     }
                     VStack(alignment: .leading, spacing: 1) {
                         Text(verbatim: folder.name)
-                            .font(.body)
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                             .foregroundStyle(Color(uiColor: .label))
                             .lineLimit(1)
                         if depth == nil {
                             Text(verbatim: folder.path)
-                                .font(.caption2)
+                                .cappedFont(.caption2, maxDynamicType: .accessibility2)
                                 .foregroundStyle(.secondary)
                                 .lineLimit(1)
                                 .truncationMode(.middle)
@@ -316,7 +316,7 @@ struct NCShareView: View {
                         .frame(width: 50, height: 50)
                         .accessibilityHidden(true)
                 }
-                .font(.body)
+                .cappedFont(.body, maxDynamicType: .accessibility2)
                 .frame(maxWidth: .infinity, minHeight: 50)
                 .contentShape(Rectangle())
             }
@@ -335,6 +335,7 @@ struct NCShareView: View {
             }
             .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 2))
             .listRowSeparator(.hidden)
+            .listRowBackground(Color(uiColor: .secondarySystemGroupedBackground))
         }
         .listStyle(.plain)
         .contentMargins(.vertical, 0, for: .scrollContent)
@@ -349,18 +350,27 @@ struct NCShareView: View {
     }
 
     private var uploadButton: some View {
-    Button(action: model.upload) {
-        Text(String.localizedStringWithFormat(NSLocalizedString("_share_upload_to_", comment: ""), model.fileNames.count))
+        Button(action: model.upload) {
+            HStack(spacing: 8) {
+                if model.isPreparingUpload {
+                    ProgressView()
+                        .tint(.white)
+                    Text(NSLocalizedString("_share_conflict_checking_", comment: ""))
+                } else {
+                    Text(String.localizedStringWithFormat(NSLocalizedString("_share_upload_to_", comment: ""), model.fileNames.count))
+                }
+            }
             .lineLimit(2)
             .truncationMode(.middle)
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity)
-    }
-    .buttonStyle(.borderedProminent)
-    .buttonBorderShape(.roundedRectangle(radius: 12))
-    .padding(.horizontal, 16)
-    .disabled(model.fileNames.isEmpty || model.selectedFolder == nil || model.isLoading)
-        .disabled(model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady || model.isLoadingAccounts || !model.inputErrorMessage.isEmpty)
+        }
+        .buttonStyle(.borderedProminent)
+        .buttonBorderShape(.roundedRectangle(radius: 12))
+        .padding(.horizontal, 16)
+        .disabled(model.fileNames.isEmpty || model.selectedFolder == nil || model.isLoading ||
+                  model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady ||
+                  model.isLoadingAccounts || !model.inputErrorMessage.isEmpty)
     }
 
     private func commands() -> some View {
