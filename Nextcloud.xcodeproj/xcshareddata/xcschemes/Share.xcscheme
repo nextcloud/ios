@@ -123,7 +123,7 @@
       <RemoteRunnable
          runnableDebuggingMode = "0"
          BundleIdentifier = "it.twsweb.Nextcloud"
-         RemotePath = "/var/containers/Bundle/Application/92F13FE8-7056-4509-8468-5856675AB1CA/Nextcloud.app">
+         RemotePath = "/var/containers/Bundle/Application/690609F7-C7AD-4102-9416-5C89CC5CD598/Nextcloud.app">
       </RemoteRunnable>
       <MacroExpansion>
          <BuildableReference
