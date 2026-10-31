@@ -102,7 +102,8 @@ class NCContextMenuViewer: NSObject {
 
         if !webView,
            metadata.isImage,
-           utilityFileSystem.fileSizeIfExists(metadata) {
+           metadata.isModifiableWithQuickLook,
+           (NCNetworking.shared.isOnline || utilityFileSystem.fileProviderStorageExists(metadata)) {
             editingActions.append(makeModifyPhoto())
         }
 
@@ -289,22 +290,33 @@ class NCContextMenuViewer: NSObject {
     }
 
     private func makeModifyPhoto() -> UIAction {
+        let metadata = self.metadata
         return UIAction(
-            title: NSLocalizedString("_modify_", comment: ""),
+            title: NSLocalizedString("_edit_", comment: ""),
             image: utility.loadImage(named: "pencil.tip.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
             Task {
-                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(
-                        networkingStatus: NCGlobal.shared.networkingStatusDownloaded,
-                        account: self.metadata.account,
-                        fileName: self.metadata.fileName,
-                        serverUrl: self.metadata.serverUrl,
-                        selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                        ocId: self.metadata.ocId,
-                        destination: nil,
-                        error: .success
-                    )
+                if self.utilityFileSystem.fileProviderStorageExists(metadata) {
+                    await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                        delegate.transferChange(
+                            networkingStatus: NCGlobal.shared.networkingStatusDownloaded,
+                            account: metadata.account,
+                            fileName: metadata.fileName,
+                            serverUrl: metadata.serverUrl,
+                            selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                            ocId: metadata.ocId,
+                            destination: nil,
+                            error: .success
+                        )
+                    }
+                } else if NCNetworking.shared.isOnline,
+                          let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(
+                            ocId: metadata.ocId,
+                            session: NCNetworking.shared.sessionDownload,
+                            selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                            sceneIdentifier: self.controller?.sceneIdentifier
+                          ) {
+                    await NCNetworking.shared.downloadFile(metadata: metadata)
                 }
             }
         }
