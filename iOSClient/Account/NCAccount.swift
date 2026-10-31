@@ -55,10 +55,12 @@ class NCAccount: NSObject {
         // FPE Domains
         try? await FileProviderDomain().ensureDomainRegistered(userId: userProfile.userId, user: "\(user)", urlBase: urlBase)
 
+        // Persist the imported client certificate before changeAccount(), which reloads
+        // it from the keychain via activeAccountCertificate(account:).
+        NCPreferences().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
+
         await changeAccount(account, userProfile: userProfile, controller: controller)
         nkLog(debug: "NCAccount changed user profile to \(userProfile.userId).")
-
-        NCPreferences().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
 
         if let controller {
             controller.account = account
@@ -167,6 +169,7 @@ class NCAccount: NSObject {
         NCNetworking.shared.capabilities.removeValue(forKey: account)
         // Remove keychain security
         NCPreferences().setPassword(account: account, password: nil)
+        NCPreferences().setClientCertificate(account: account, p12Data: nil, p12Password: nil)
         NCPreferences().clearAllKeysEndToEnd(account: account)
         NCPreferences().clearAllKeysPushNotification(account: account)
         // Remove Account Server in Error
