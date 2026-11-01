@@ -8,20 +8,17 @@ import UIKit
 extension NCShareViewModel {
     func loadAccounts() {
         guard isAuthenticated, !isClosing, !isLoading, !isPreparingUpload,
-              !isLoadingAccounts, !isShowingInputError else { return }
+              !isLoadingAccounts else { return }
         isLoadingAccounts = true
         accountsTask = Task { @MainActor in
-            defer {
-                isLoadingAccounts = false
-                showInputErrorIfNeeded()
-            }
+            defer { isLoadingAccounts = false }
             let selected = sessionStore.getSession().account
             let storedAccounts = await NCManageDatabase.shared.getAllAccountOrderAliasAsync()
             guard !Task.isCancelled, !isClosing, isAuthenticated,
                   sessionStore.getSession().account == selected else { return }
             guard !storedAccounts.isEmpty else {
                 clearAccountView()
-                showAlert(description: "_no_active_account_") { self.cancel(with: .noAccount) }
+                showAlert(description: "_no_active_account_") { [weak self] in self?.cancel(with: .noAccount) }
                 return
             }
             accountAvatars = Dictionary(uniqueKeysWithValues: storedAccounts.map { account in
@@ -46,10 +43,6 @@ extension NCShareViewModel {
         changeAccount(account)
     }
 
-    func cancelAccountLoading() {
-        accountsTask?.cancel()
-    }
-
     func changeAccount(_ account: String) {
         guard !isClosing, !isPreparingUpload else { return }
         accountChangeTask?.cancel()
@@ -63,8 +56,8 @@ extension NCShareViewModel {
             let selectedSession = await sessionStore.setSessionAccount(account)
             guard !Task.isCancelled, !isClosing, accountChangeID == changeID else { return }
             guard let session = selectedSession,
-                  let tblAccount = sessionStore.getTblAccoun(), tblAccount.account == account else {
-                showAlert(description: "_no_active_account_") { self.cancel(with: .noAccount) }
+                  let tblAccount = sessionStore.account, tblAccount.account == account else {
+                showAlert(description: "_no_active_account_") { [weak self] in self?.cancel(with: .noAccount) }
                 return
             }
             NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
@@ -82,11 +75,13 @@ extension NCShareViewModel {
             autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(
                 account: account, urlBase: session.urlBase, userId: session.userId)
             serverUrl = utilityFileSystem.getHomeServer(session: session)
-            setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)
+            navigationTitle = NCBrandOptions.shared.brand
+            let name = tblAccount.displayName.isEmpty ? tblAccount.user : tblAccount.displayName
+            accountName = tblAccount.alias.isEmpty ? name : name + " - " + tblAccount.alias
             // Publish the local browser before capabilities can trigger a network request.
             await initializeFolderBrowser(refreshFromServer: false)
             guard !Task.isCancelled, !isClosing, accountChangeID == changeID else { return }
-            showAccountView()
+            isAvailable = true
             isSwitchingAccount = false
             loadAccounts()
             await loadServerCapabilities(account: account, changeID: changeID)

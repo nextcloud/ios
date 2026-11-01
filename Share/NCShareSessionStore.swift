@@ -7,25 +7,22 @@ import NextcloudKit
 
 @MainActor
 final class NCShareSessionStore {
-    private var tblAccount: tableAccount? = NCManageDatabase.shared.getActiveTableAccount()
+    private(set) var account: tableAccount? = NCManageDatabase.shared.getActiveTableAccount()
 
     /// Selection belongs to this share request; do not change the app's active account.
     /// Re-read even the current account because it may have been removed by the app.
     func setSessionAccount(_ account: String) async -> NCSession.Session? {
         guard let selected = await NCManageDatabase.shared.getTableAccountAsync(account: account) else { return nil }
         guard !Task.isCancelled else { return nil }
-        tblAccount = selected
+        self.account = selected
         return getSession()
     }
 
     func getSession() -> NCSession.Session {
-        if let tblAccount {
-            return NCSession.Session(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user, userId: tblAccount.userId)
+        if let account {
+            return NCSession.Session(account: account.account, urlBase: account.urlBase, user: account.user, userId: account.userId)
         }
         return NCSession.Session(account: "", urlBase: "", user: "", userId: "")
     }
 
-    func getTblAccoun() -> tableAccount? {
-        tblAccount
-    }
 }

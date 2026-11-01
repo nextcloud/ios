@@ -12,7 +12,11 @@ import LucidBanner
 
 // MARK: - Upload
 extension NCShareViewModel {
-    func actionUpload(capabilities: NKCapabilities.Capabilities) {
+    func upload() {
+        guard isUploadDestinationReady, isAuthenticated, !isPreparingInput, inputErrorMessage.isEmpty, !isPreparingUpload,
+              !isSwitchingAccount, !isLoadingAccounts, !isLoading, !fileNames.isEmpty else { return }
+        guard let capabilities = serverCapabilities else { return }
+        isPreparingUpload = true
         uploadTask = Task { @MainActor in
             defer { if pendingUploadConfirmation == nil { isPreparingUpload = false } }
             do {
@@ -63,7 +67,7 @@ extension NCShareViewModel {
     private func prepareUploadPlan(capabilities: NKCapabilities.Capabilities) async throws -> NCShareUploadConfirmation {
         let session = sessionStore.getSession()
         let destination = serverUrl
-        let sourceNames = filesName
+        let sourceNames = fileNames
         guard !sourceNames.isEmpty else { throw NCShareRequestError.noFiles }
         let renamer = FileAutoRenamer(capabilities: capabilities)
         let requestedNames = try sourceNames.map { name in
@@ -112,7 +116,6 @@ extension NCShareViewModel {
         // Retain the current encrypted-name mapping for the shared E2EE service.
         await NCManageDatabase.shared.createDirectory(metadata: listing.metadataFolder)
         await NCManageDatabase.shared.updateMetadatasFilesAsync(listing.metadatas, serverUrl: destination, account: session.account)
-        metadataFolder = listing.metadataFolder
         let names = Set(listing.metadatas.map(\.fileNameView))
         let allocated = NCShareUploadNamePlanner.fileNames(for: requestedNames, existingNames: names)
         let items = zip(sourceNames, allocated).map { NCShareUploadItem(sourceName: $0.0, fileName: $0.1) }
@@ -132,7 +135,6 @@ extension NCShareViewModel {
         guard !isClosing, isAuthenticated, plan.account == session.account, plan.serverUrl == serverUrl else { throw CancellationError() }
         uploadMetadata.removeAll()
         replacementETags.removeAll()
-        counterUploaded = 0
         var stagedDirectories: [String] = []
         var staged = false
         defer {
@@ -172,8 +174,7 @@ extension NCShareViewModel {
         await uploadAndExit()
     }
 
-    @MainActor
-    func uploadAndExit() async {
+    private func uploadAndExit() async {
         // A Share extension process can be reused by the system. Treat each
         // explicit share operation as a new server-key validation cycle.
         await NCNetworkingE2EE.beginNewServerKeyValidationCycle()
@@ -192,11 +193,11 @@ extension NCShareViewModel {
             self.cancel()
         })
 
-        for metadata in self.uploadMetadata {
+        for (index, metadata) in uploadMetadata.enumerated() {
             guard !Task.isCancelled, !isClosing else { return }
             // BANNER
             let payloadUpdate = LucidBannerPayload.Update(
-                title: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)",
+                title: NSLocalizedString("_upload_file_", comment: "") + " \(index + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.fileNames.count)",
                 systemImage: "arrowshape.up.circle",
                 imageAnimation: .breathe,
                 progress: 0)
@@ -209,26 +210,35 @@ extension NCShareViewModel {
         }
 
         if error == .success {
-            recordRecentDestination()
+            if let uploaded = uploadMetadata.first, let folder = selectedFolder,
+               uploaded.serverUrl == folder.serverUrl {
+                recentFoldersStore.record(.init(
+                    serverUrl: folder.serverUrl, name: folder.name, ocId: folder.ocId, isEncrypted: folder.isEncrypted),
+                    account: uploaded.account)
+            }
             banner?.update(payload: LucidBannerPayload.Update(stage: .success, horizontalLayout: .centered(width: 100)), for: self.token)
         } else {
             banner?.update(payload: LucidBannerPayload.Update(subtitle: error?.errorDescription, stage: .error), for: self.token)
         }
 
         guard !Task.isCancelled, !isClosing else { return }
-        Task { @MainActor in
-            try? await Task.sleep(for: .seconds(2))
-            banner?.dismiss()
-            cancel()
+        do {
+            try await Task.sleep(for: .seconds(2))
+        } catch {
+            return
         }
+        guard !isClosing else { return }
+        banner?.dismiss()
+        cancel()
     }
 
-    @MainActor
-    func upload(metadata: tableMetadata) async -> NKError? {
+    private func upload(metadata: tableMetadata) async -> NKError {
         let session = sessionStore.getSession()
-        var error: NKError = .success
 
         let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: session.account)
+        guard !Task.isCancelled, !isClosing else {
+            return NKError(errorCode: NSURLErrorCancelled, errorDescription: "Transfer was cancelled.")
+        }
         metadata.contentType = results.mimeType
         metadata.iconName = results.iconName
         metadata.classFile = results.classFile
@@ -244,10 +254,8 @@ extension NCShareViewModel {
         // E2EE
         metadata.e2eEncrypted = metadata.isDirectoryE2EE
 
-        self.counterUploaded += 1
-
         if metadata.isDirectoryE2EE {
-            error = await NCNetworkingE2EEUpload().upload(metadata: metadata,
+            return await NCNetworkingE2EEUpload().upload(metadata: metadata,
                                                           session: session,
                                                           controller: presenter,
                                                           banner: banner,
@@ -257,41 +265,35 @@ extension NCShareViewModel {
             banner?.update(payload: LucidBannerPayload.Update(systemImage: "gearshape.arrow.triangle.2.circlepath",
                                                               imageAnimation: .rotate),
                                       for: self.token)
-            let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
-                let results = await NCNetworking.shared.uploadChunkFile(
-                    metadata: metadata,
-                    overwrite: self.replacementETags[metadata.ocId] != nil,
-                    ifMatch: self.replacementETags[metadata.ocId]) { total, counter in
-                    Task {@MainActor in
-                        self.banner?.update(payload: LucidBannerPayload.Update(progress: Double(counter) / Double(total)), for: self.token)
-                    }
-                } uploadStart: { _ in
-                    Task {@MainActor in
-                        let payload = LucidBannerPayload.Update(
-                            systemImage: "arrowshape.up.circle",
-                            imageAnimation: .breathe
-                        )
-                        self.banner?.update(payload: payload, for: self.token)
-                    }
-                } uploadProgressHandler: { _, _, progress in
-                    Task {@MainActor in
-                        self.banner?.update(payload: LucidBannerPayload.Update(progress: progress), for: self.token)
-                    }
-                } assembling: {
-                    Task {@MainActor in
-                        let payload = LucidBannerPayload.Update(
-                            systemImage: "gearshape.arrow.triangle.2.circlepath",
-                            imageAnimation: .rotate
-                        )
-                        self.banner?.update(payload: payload, for: self.token)
-                    }
+            let results = await NCNetworking.shared.uploadChunkFile(
+                metadata: metadata,
+                overwrite: self.replacementETags[metadata.ocId] != nil,
+                ifMatch: self.replacementETags[metadata.ocId]) { total, counter in
+                Task {@MainActor in
+                    self.banner?.update(payload: LucidBannerPayload.Update(progress: Double(counter) / Double(total)), for: self.token)
                 }
-
-                return results
+            } uploadStart: { _ in
+                Task {@MainActor in
+                    let payload = LucidBannerPayload.Update(
+                        systemImage: "arrowshape.up.circle",
+                        imageAnimation: .breathe
+                    )
+                    self.banner?.update(payload: payload, for: self.token)
+                }
+            } uploadProgressHandler: { _, _, progress in
+                Task {@MainActor in
+                    self.banner?.update(payload: LucidBannerPayload.Update(progress: progress), for: self.token)
+                }
+            } assembling: {
+                Task {@MainActor in
+                    let payload = LucidBannerPayload.Update(
+                        systemImage: "gearshape.arrow.triangle.2.circlepath",
+                        imageAnimation: .rotate
+                    )
+                    self.banner?.update(payload: payload, for: self.token)
+                }
             }
-
-            let results = await task.value
-            error = results.error
+            return results.error
         } else {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                       fileName: metadata.fileName,
@@ -303,17 +305,16 @@ extension NCShareViewModel {
                                                                serverUrlFileName: metadata.serverUrlFileName,
                                                                creationDate: metadata.creationDate as Date,
                                                                dateModificationFile: metadata.date as Date,
-                                                               customHeaders: replacementETags[metadata.ocId].map { ["If-Match": $0] } ?? ["If-None-Match": "*"]) { _ in
-            } progressHandler: { _, _, fractionCompleted in
+                                                               customHeaders: replacementETags[metadata.ocId].map { ["If-Match": $0] } ?? ["If-None-Match": "*"],
+                                                               progressHandler: { _, _, fractionCompleted in
                 Task {@MainActor in
                     self.banner?.update(payload: LucidBannerPayload.Update(progress: fractionCompleted),
                                         for: self.token)
                 }
-            }
-            error = results.error
+            })
+            return results.error
         }
 
-        return error
     }
 }
 #endif
@@ -323,11 +324,9 @@ extension NCShareViewModel {
 struct NCShareUploadNamePlanner {
     static func fileNames(for names: [String], existingNames: Set<String>) -> [String] {
         var occupied = existingNames
-        var reserved = Set(names)
-        var assigned: Set<String> = []
+        let reserved = Set(names)
         return names.map { name in
-            if !occupied.contains(name), !assigned.contains(name) {
-                assigned.insert(name)
+            if !occupied.contains(name) {
                 occupied.insert(name)
                 return name
             }
@@ -347,8 +346,6 @@ struct NCShareUploadNamePlanner {
                 candidate = stem + " (\(number))" + suffix
             }
             occupied.insert(candidate)
-            reserved.insert(candidate)
-            assigned.insert(candidate)
             return candidate
         }
     }

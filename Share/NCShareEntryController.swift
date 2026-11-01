@@ -3,11 +3,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
+import LucidBanner
 
 /// Loads the SwiftUI interface directly as the extension's principal controller.
 @MainActor
 final class NCShareEntryController: UIHostingController<NCShareView> {
     private let model: NCShareViewModel
+    private var hasAppeared = false
 
     // The extension system instantiates the principal class through Objective-C.
     @objc init() {
@@ -28,6 +30,12 @@ final class NCShareEntryController: UIHostingController<NCShareView> {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        model.activate()
+        guard !hasAppeared, !model.isClosing else { return }
+        hasAppeared = true
+        NCNetworking.shared.setupScene(sceneIdentifier: model.sceneIdentifier, controller: self)
+        if let windowScene = view.window?.windowScene {
+            model.banner = LucidBannerRegistry.shared.banner(for: windowScene)
+        }
+        model.validateAccountAndRequestPasscode()
     }
 }

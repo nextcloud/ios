@@ -42,7 +42,6 @@ final class NCShareViewModel: NSObject, ObservableObject {
     var replacementETags: [String: String] = [:]
     var isClosing = false
     @Published var isPreparingInput = false
-    @Published var isShowingInputError = false
     @Published var inputErrorMessage = ""
     @Published var alertMessage = ""
     private var alertDismissAction: (() -> Void)?
@@ -59,7 +58,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
 
     var isUploadDestinationReady: Bool {
         guard let selectedFolder else { return false }
-        return isAccountReady && !loadingFolderURLs.contains(selectedFolder.serverUrl) &&
+        return isAccountReady && alertMessage.isEmpty && !loadingFolderURLs.contains(selectedFolder.serverUrl) &&
             folderLoadErrors[selectedFolder.serverUrl] == nil
     }
 
@@ -74,10 +73,6 @@ final class NCShareViewModel: NSObject, ObservableObject {
     var requestContext: NSExtensionContext?
     lazy var sessionStore = NCShareSessionStore()
     var serverUrl = ""
-    var filesName: [String] {
-        get { fileNames }
-        set { fileNames = newValue }
-    }
     let inputDirectory = FileManager.default.temporaryDirectory.appendingPathComponent("NextcloudShare-" + UUID().uuidString, isDirectory: true)
     private var inputTask: Task<Void, Never>?
     private var hasStarted = false
@@ -85,12 +80,8 @@ final class NCShareViewModel: NSObject, ObservableObject {
     private var backgroundObserver: NSObjectProtocol?
 
     let keyLayout = NCGlobal.shared.layoutViewShareExtension
-    var metadataFolder: tableMetadata?
-    var dataSourceTask: URLSessionTask?
     var autoUploadFileName = ""
     var autoUploadDirectory = ""
-    var progress: CGFloat = 0
-    var counterUploaded: Int = 0
     var uploadMetadata: [tableMetadata] = []
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
@@ -99,7 +90,6 @@ final class NCShareViewModel: NSObject, ObservableObject {
     var token: Int?
     var banner: LucidBanner?
     var sceneIdentifier: String = UUID().uuidString
-    private var hasActivated = false
     private var isPresentingNoAccountAlert = false
     private var isPresentingPasscode = false
     private var isPasscodeAuthenticated = false
@@ -107,7 +97,18 @@ final class NCShareViewModel: NSObject, ObservableObject {
     func start(context: NSExtensionContext?, presenter: UIViewController) {
         guard !hasStarted else { return }
         hasStarted = true
-        monitorConnection()
+        let monitor = NWPathMonitor()
+        connectionMonitor = monitor
+        monitor.pathUpdateHandler = { [weak self] path in
+            let offline = path.status != .satisfied
+            Task { @MainActor [weak self] in
+                guard let self, !self.isClosing else { return }
+                let wasOffline = self.isOffline
+                self.isOffline = offline
+                if wasOffline && !offline { self.retryConnection() }
+            }
+        }
+        monitor.start(queue: DispatchQueue(label: "com.nextcloud.share.connection"))
         self.requestContext = context
         self.presenter = presenter
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionBuild())
@@ -123,14 +124,14 @@ final class NCShareViewModel: NSObject, ObservableObject {
         backgroundObserver = NotificationCenter.default.addObserver(
             forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main
         ) { [weak self] _ in
-            Task { @MainActor [weak self] in self?.cancelAccountLoading() }
+            Task { @MainActor [weak self] in self?.accountsTask?.cancel() }
         }
         foregroundObserver = NotificationCenter.default.addObserver(
             forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main
         ) { [weak self] _ in
             Task { @MainActor [weak self] in
                 guard let self, !self.isClosing else { return }
-                self.cancelAccountLoading()
+                self.accountsTask?.cancel()
                 guard !self.maintenanceMode, self.validateAccount() else { return }
                 self.resolveUploadConfirmation(nil)
                 self.isPasscodeAuthenticated = false
@@ -147,34 +148,10 @@ final class NCShareViewModel: NSObject, ObservableObject {
             }
         }
 
-        if let account = sessionStore.getTblAccoun()?.account {
+        if let account = sessionStore.account?.account {
             isAuthenticated = !NCPreferences().presentPasscode
             changeAccount(account)
         }
-        prepareInput()
-    }
-
-    func activate() {
-        guard !hasActivated, !isClosing, let presenter else { return }
-        hasActivated = true
-        NCNetworking.shared.setupScene(sceneIdentifier: sceneIdentifier, controller: presenter)
-        if let windowScene = presenter.view.window?.windowScene {
-            banner = LucidBannerRegistry.shared.banner(for: windowScene)
-        }
-        appear()
-    }
-
-    private func appear() {
-        guard !maintenanceMode else {
-            return showAlert(description: "_version_mismatch_error_") {
-                self.cancel(with: .versionMismatch)
-            }
-        }
-        guard validateAccount() else { return }
-        requestPasscodeIfNeeded()
-    }
-
-    private func prepareInput() {
         guard let items = requestContext?.inputItems as? [NSExtensionItem] else {
             cancel(with: .noFiles)
             return
@@ -188,12 +165,11 @@ final class NCShareViewModel: NSObject, ObservableObject {
             do {
                 let output = try await NCShareLoaderItemProvider.load(items: items, directory: directory)
                 guard let self, !Task.isCancelled else { return }
-                self.filesName = output.fileNames
+                self.fileNames = output.fileNames
                 self.isPreparingInput = false
                 if !output.failures.isEmpty || output.fileNames.isEmpty {
                     let key = output.fileNames.isEmpty ? "_share_import_no_files_" : "_share_import_failed_"
                     self.inputErrorMessage = ([NSLocalizedString(key, comment: "")] + output.failures).joined(separator: "\n\n")
-                    self.showInputErrorIfNeeded()
                 }
             } catch is CancellationError {
                 // The loader removes its own request directory on cancellation.
@@ -201,24 +177,19 @@ final class NCShareViewModel: NSObject, ObservableObject {
                 guard let self, !Task.isCancelled else { return }
                 self.isPreparingInput = false
                 self.inputErrorMessage = NSLocalizedString("_share_import_no_files_", comment: "") + "\n\n" + error.localizedDescription
-                self.showInputErrorIfNeeded()
             }
         }
     }
 
-    private func monitorConnection() {
-        let monitor = NWPathMonitor()
-        connectionMonitor = monitor
-        monitor.pathUpdateHandler = { [weak self] path in
-            let offline = path.status != .satisfied
-            Task { @MainActor [weak self] in
-                guard let self, !self.isClosing else { return }
-                let wasOffline = self.isOffline
-                self.isOffline = offline
-                if wasOffline && !offline { self.retryConnection() }
+    func validateAccountAndRequestPasscode() {
+        guard !isClosing else { return }
+        guard !maintenanceMode else {
+            return showAlert(description: "_version_mismatch_error_") { [weak self] in
+                self?.cancel(with: .versionMismatch)
             }
         }
-        monitor.start(queue: DispatchQueue(label: "com.nextcloud.share.connection"))
+        guard validateAccount() else { return }
+        requestPasscodeIfNeeded()
     }
 
     func retryConnection() {
@@ -281,16 +252,9 @@ final class NCShareViewModel: NSObject, ObservableObject {
         inputDirectory.appendingPathComponent(fileName)
     }
 
-    func showInputErrorIfNeeded() {
-        // Do not present import errors over the passcode screen.
-        if isAuthenticated && !isLoadingAccounts && !inputErrorMessage.isEmpty {
-            isShowingInputError = true
-        }
-    }
-
     func acknowledgeInputError() {
         inputErrorMessage = ""
-        if filesName.isEmpty { cancel(with: .noFiles) }
+        if fileNames.isEmpty { cancel(with: .noFiles) }
     }
 
     isolated deinit {
@@ -302,7 +266,6 @@ final class NCShareViewModel: NSObject, ObservableObject {
         accountChangeTask?.cancel()
         capabilitiesTask?.cancel()
         capabilitiesRequest?.cancel()
-        dataSourceTask?.cancel()
         folderSelectionTask?.cancel()
         for task in folderTasks.values { task.cancel() }
         for request in folderRequests.values { request.cancel() }
@@ -316,7 +279,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
             return showNoAccountAlert()
         }
 
-        if let account = sessionStore.getTblAccoun()?.account,
+        if let account = sessionStore.account?.account,
            NCManageDatabase.shared.getTableAccount(account: account) != nil {
             return true
         }
@@ -325,7 +288,6 @@ final class NCShareViewModel: NSObject, ObservableObject {
             return showNoAccountAlert()
         }
 
-        clearAccountView()
         changeAccount(activeAccount.account)
         return true
     }
@@ -334,8 +296,8 @@ final class NCShareViewModel: NSObject, ObservableObject {
         clearAccountView()
         if !isPresentingNoAccountAlert {
             isPresentingNoAccountAlert = true
-            showAlert(description: "_no_active_account_") {
-                self.cancel(with: .noAccount)
+            showAlert(description: "_no_active_account_") { [weak self] in
+                self?.cancel(with: .noAccount)
             }
         }
         return false
@@ -347,23 +309,20 @@ final class NCShareViewModel: NSObject, ObservableObject {
         serverCapabilities = nil
         isLoadingCapabilities = false
         capabilitiesErrorMessage = ""
-        dataSourceTask?.cancel()
-        dataSourceTask = nil
-        metadataFolder = nil
         isAvailable = false
         resetFolderBrowser()
         accountName = ""
         navigationTitle = NCBrandOptions.shared.brand
     }
 
-    func showAccountView() {
-        isAvailable = true
-    }
-
     func cancel(with error: NCShareRequestError? = nil) {
+        guard !isClosing else { return }
         isClosing = true
+        alertDismissAction = nil
         connectionMonitor?.cancel()
-        cancelAccountLoading()
+        for request in thumbnailRequests.values { QLThumbnailGenerator.shared.cancel(request) }
+        thumbnailRequests.removeAll()
+        fileThumbnails.removeAll()
         uploadConfirmation = nil
         pendingUploadConfirmation = nil
         uploadChoice = nil
@@ -373,7 +332,6 @@ final class NCShareViewModel: NSObject, ObservableObject {
         accountChangeTask?.cancel()
         capabilitiesTask?.cancel()
         capabilitiesRequest?.cancel()
-        dataSourceTask?.cancel()
         folderSelectionTask?.cancel()
         for task in folderTasks.values { task.cancel() }
         for request in folderRequests.values { request.cancel() }
@@ -385,7 +343,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
         }
     }
 
-    func showAlert(title: String = "_error_", description: String, onDismiss: (() -> Void)? = nil) {
+    func showAlert(description: String, onDismiss: (() -> Void)? = nil) {
         alertMessage = NSLocalizedString(description.replacingOccurrences(of: "\t", with: "\n"), comment: "")
         alertDismissAction = onDismiss
     }
@@ -397,20 +355,10 @@ final class NCShareViewModel: NSObject, ObservableObject {
         action?()
     }
 
-    func setNavigationBar(navigationTitle: String) {
-        self.navigationTitle = navigationTitle
-        guard let account = sessionStore.getTblAccoun() else { return }
-        let name = account.displayName.isEmpty ? account.user : account.displayName
-        accountName = account.alias.isEmpty ? name : name + " - " + account.alias
-    }
-
-    func setCommandView() {
-        if filesName.isEmpty { cancel(with: .noFiles) }
-    }
-
     func createFolder() {
         let session = sessionStore.getSession()
-        guard isAccountReady, let folder = selectedFolder, !loadingFolderURLs.contains(folder.serverUrl) else { return }
+        guard canUseFolderBrowser, isUploadDestinationReady, !isPreparingInput, inputErrorMessage.isEmpty,
+              let folder = selectedFolder else { return }
         guard let capabilities = serverCapabilities else { return }
         let alert = UIAlertController.createFolderWith(serverUrl: folder.serverUrl, session: session, capabilities: capabilities) { [weak self] error in
             guard let self else { return }
@@ -419,79 +367,63 @@ final class NCShareViewModel: NSObject, ObservableObject {
                 self.expandedFolderURLs.insert(folder.serverUrl)
                 self.requestFolderChildren(folder, refresh: true)
             } else {
-                self.showAlert(title: "_error_createsubfolders_upload_", description: error.errorDescription)
+                self.showAlert(description: error.errorDescription)
             }
         }
         presenter?.present(alert, animated: true)
     }
 
-    func showRenameFileDialog(named fileName: String, account: String) {
-        guard let capabilities = serverCapabilities else { return }
-        let alert = UIAlertController.renameFile(fileName: fileName, capabilities: capabilities, account: account) { [self] newFileName in
-            renameFile(oldName: fileName, newName: newFileName, account: account)
+    func showRenameFileDialog(named fileName: String) {
+        guard !isClosing, isAuthenticated, !isPreparingUpload, fileNames.contains(fileName),
+              let capabilities = serverCapabilities else { return }
+        let account = sessionStore.getSession().account
+        let alert = UIAlertController.renameFile(fileName: fileName, capabilities: capabilities, account: account) { [weak self] newFileName in
+            self?.renameFile(oldName: fileName, newName: newFileName)
         }
 
         presenter?.present(alert, animated: true)
     }
 
-    func renameFile(oldName: String, newName: String, account: String) {
-        guard let fileIx = self.filesName.firstIndex(of: oldName),
-              !self.filesName.contains(newName),
+    private func renameFile(oldName: String, newName: String) {
+        guard !isClosing, isAuthenticated, !isPreparingUpload else { return }
+        guard newName != oldName else { return }
+        guard !newName.isEmpty, let fileIx = self.fileNames.firstIndex(of: oldName),
+              !self.fileNames.contains(newName),
               newName == (newName as NSString).lastPathComponent,
               newName != ".", newName != "..",
               utilityFileSystem.moveFile(atPath: inputFileURL(named: oldName).path, toPath: inputFileURL(named: newName).path) else {
-            return showAlert(title: "_single_file_conflict_title_", description: "'\(oldName)' -> '\(newName)'")
+            return showAlert(description: "'\(oldName)' -> '\(newName)'")
         }
 
         discardThumbnail(named: oldName)
-        filesName[fileIx] = newName
+        fileNames[fileIx] = newName
 
     }
 
     func removeFile(named fileName: String) {
-        guard let index = self.filesName.firstIndex(of: fileName) else {
-            return showAlert(title: "_file_not_found_", description: fileName)
+        guard !isClosing, isAuthenticated, !isPreparingUpload else { return }
+        guard let index = self.fileNames.firstIndex(of: fileName) else {
+            return showAlert(description: fileName)
         }
         discardThumbnail(named: fileName)
         try? FileManager.default.removeItem(at: inputFileURL(named: fileName))
-        self.filesName.remove(at: index)
-        if self.filesName.isEmpty {
+        self.fileNames.remove(at: index)
+        if self.fileNames.isEmpty {
             cancel(with: NCShareRequestError.noFiles)
-        } else {
-            self.setCommandView()
         }
     }
 
-    func rename(_ fileName: String) {
-        showRenameFileDialog(named: fileName, account: sessionStore.getSession().account)
-    }
-
-    func remove(_ fileName: String) {
-        removeFile(named: fileName)
-    }
-
-    func upload() {
-        guard isUploadDestinationReady, isAuthenticated, !isPreparingInput, inputErrorMessage.isEmpty, !isPreparingUpload,
-              !isSwitchingAccount, !isLoadingAccounts, !isLoading, !fileNames.isEmpty else { return }
-        guard let capabilities = serverCapabilities else { return }
-        isPreparingUpload = true
-        actionUpload(capabilities: capabilities)
-    }
 }
 
 extension NCShareViewModel {
     /// Require authentication once per foreground session without reopening after dismissal.
     private func requestPasscodeIfNeeded() {
-        if !NCPreferences().presentPasscode {
+        if !NCPreferences().presentPasscode || isPasscodeAuthenticated {
             isAuthenticated = true
-            showInputErrorIfNeeded()
             return
         }
         isAuthenticated = false
-        isShowingInputError = false
-        guard NCPreferences().presentPasscode,
-              !isPasscodeAuthenticated,
-              !isPresentingPasscode,
+        guard !isPresentingPasscode,
               let presenter else { return }
         isPresentingPasscode = true
         // Embed in the content controller; the helper hides the outer navigation bar.
@@ -503,7 +435,7 @@ extension NCShareViewModel {
                 self.isPasscodeAuthenticated = true
                 if self.validateAccount() {
                     self.isAuthenticated = true
-                    self.showInputErrorIfNeeded()
+                    if self.accounts.isEmpty { self.loadAccounts() }
                 }
             case .cancelled, .reset, .configured, .disabled:
                 self.cancel(with: .noAccount)

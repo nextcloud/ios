@@ -38,7 +38,13 @@ struct NCShareView: View {
                             } else {
                                 VStack(spacing: 0) {
                                     folderList()
-                                    commands()
+                                    VStack(spacing: 10) {
+                                        fileList()
+                                        uploadButton
+                                    }
+                                    .padding(.top, 10)
+                                    .padding(.bottom, 16)
+                                    .background(Color(uiColor: .systemGroupedBackground))
                                 }
                             }
                         }
@@ -97,7 +103,7 @@ struct NCShareView: View {
     private var statusView: some View {
         if !model.alertMessage.isEmpty {
             statusError(model.alertMessage) { model.acknowledgeAlert() }
-        } else if !model.inputErrorMessage.isEmpty && model.isShowingInputError {
+        } else if !model.inputErrorMessage.isEmpty && model.isAuthenticated && !model.isLoadingAccounts {
             statusError(model.inputErrorMessage) { model.acknowledgeInputError() }
         } else if model.isOffline {
             VStack(spacing: 8) {
@@ -215,8 +221,8 @@ struct NCShareView: View {
             }
             .buttonStyle(.borderless)
             .tint(.blue)
-            .disabled(model.isPreparingInput || !model.inputErrorMessage.isEmpty ||
-                      (model.selectedFolder.map { model.loadingFolderURLs.contains($0.serverUrl) } ?? true))
+            .disabled(!model.canUseFolderBrowser || !model.isUploadDestinationReady ||
+                      model.isPreparingInput || !model.inputErrorMessage.isEmpty)
         }
         .textCase(nil)
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
@@ -352,10 +358,10 @@ struct NCShareView: View {
                 set: { if !$0 { fileActions = nil } }
             ), titleVisibility: .visible) {
                 Button(NSLocalizedString("_rename_file_", comment: "")) {
-                    model.rename(fileName)
+                    model.showRenameFileDialog(named: fileName)
                 }
                 Button(NSLocalizedString("_remove_file_", comment: ""), role: .destructive) {
-                    model.remove(fileName)
+                    model.removeFile(named: fileName)
                 }
                 Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
             }
@@ -397,16 +403,6 @@ struct NCShareView: View {
         .disabled(model.fileNames.isEmpty || !model.isUploadDestinationReady || model.isLoading ||
                   model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady ||
                   model.isLoadingAccounts || !model.inputErrorMessage.isEmpty)
-    }
-
-    private func commands() -> some View {
-        VStack(spacing: 10) {
-            fileList()
-            uploadButton
-        }
-        .padding(.top, 10)
-        .padding(.bottom, 16)
-        .background(Color(uiColor: .systemGroupedBackground))
     }
 
 }

@@ -122,22 +122,13 @@ extension NCShareViewModel {
                 return
             }
             serverUrl = folder.serverUrl
-            metadataFolder = metadata
             selectedFolder = selected
             isRecentFolderSelected = fromRecents
-            setNavigationBar(navigationTitle: selected.name)
+            navigationTitle = selected.name
         }
     }
 
-    func recordRecentDestination() {
-        guard let uploaded = uploadMetadata.first, let folder = selectedFolder,
-              uploaded.serverUrl == folder.serverUrl else { return }
-        recentFoldersStore.record(.init(
-            serverUrl: folder.serverUrl, name: folder.name, ocId: folder.ocId, isEncrypted: folder.isEncrypted),
-            account: uploaded.account)
-    }
-
-    private var canUseFolderBrowser: Bool {
+    var canUseFolderBrowser: Bool {
         isAuthenticated && !isClosing && isAccountReady && !isLoading && !isPreparingUpload && !isLoadingAccounts
     }
 
@@ -146,7 +137,7 @@ extension NCShareViewModel {
         let home = utilityFileSystem.getHomeServer(session: session)
         guard folder.serverUrl == home || folder.serverUrl.hasPrefix(home + "/") else { return false }
         if folder.isEncrypted && !NCPreferences().isEndToEndEnabled(account: session.account) {
-            showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
+            showAlert(description: "_e2e_goto_settings_for_enable_")
             return false
         }
         return true
@@ -159,7 +150,6 @@ extension NCShareViewModel {
     private func loadFolderChildren(_ folder: NCShareFolderItem, browserID: UUID) async {
         let session = sessionStore.getSession()
         guard isCurrentBrowser(browserID, account: session.account) else { return }
-        loadingFolderURLs.insert(folder.serverUrl)
         folderLoadErrors[folder.serverUrl] = nil
         defer {
             if folderBrowserID == browserID {
@@ -213,7 +203,6 @@ extension NCShareViewModel {
         let updated = folderSnapshot(metadata, url: folder.serverUrl, parent: nil, session: session)
         if folders.first?.serverUrl == folder.serverUrl { folders = [updated] }
         if selectedFolder?.serverUrl == folder.serverUrl {
-            metadataFolder = metadata
             selectedFolder = updated
         }
     }
