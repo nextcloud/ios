@@ -10,7 +10,7 @@ extension NCShareViewModel {
         guard isAuthenticated, !isClosing, !isLoading, !isPreparingUpload,
               !isLoadingAccounts else { return }
         isLoadingAccounts = true
-        accountsTask = Task { @MainActor in
+        accountsTask = Task { @MainActor [self] in
             defer { isLoadingAccounts = false }
             let selected = sessionStore.getSession().account
             let storedAccounts = await NCManageDatabase.shared.getAllAccountOrderAliasAsync()
@@ -43,15 +43,19 @@ extension NCShareViewModel {
         changeAccount(account)
     }
 
+    /// Uses a request-local account without changing the main app selection.
+    /// Shows cached folders first, then resolves capabilities and refreshes the root.
     func changeAccount(_ account: String) {
         guard !isClosing, !isPreparingUpload else { return }
         accountChangeTask?.cancel()
+        // Cancellation alone cannot prevent a late callback from publishing old data.
+        // Check this generation again after awaits before updating the interface.
         let changeID = UUID()
         accountChangeID = changeID
         isSwitchingAccount = true
         clearAccountView()
         serverUrl = ""
-        accountChangeTask = Task { @MainActor in
+        accountChangeTask = Task { @MainActor [self] in
             defer { if accountChangeID == changeID { isSwitchingAccount = false } }
             let selectedSession = await sessionStore.setSessionAccount(account)
             guard !Task.isCancelled, !isClosing, accountChangeID == changeID else { return }
@@ -108,6 +112,8 @@ extension NCShareViewModel {
         }
     }
 
+    /// Resolves one capabilities snapshot for this account: database first, network
+    /// only when absent. All Share actions use the resulting serverCapabilities.
     private func loadServerCapabilities(account: String, changeID: UUID) async {
         serverCapabilities = nil
         capabilitiesErrorMessage = ""

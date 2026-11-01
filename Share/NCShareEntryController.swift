@@ -25,11 +25,14 @@ final class NCShareEntryController: UIHostingController<NCShareView> {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Prepare local state before the first appearance to avoid an empty initial screen.
         model.start(context: extensionContext, presenter: self)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        // Scene-bound banners and passcode presentation require an attached window.
+        // Returning from a presented sheet must not restart the share request.
         guard !hasAppeared, !model.isClosing else { return }
         hasAppeared = true
         NCNetworking.shared.setupScene(sceneIdentifier: model.sceneIdentifier, controller: self)

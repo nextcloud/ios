@@ -12,6 +12,8 @@ import LucidBanner
 
 // MARK: - Upload
 extension NCShareViewModel {
+    /// Upload flow: inspect the destination, resolve name conflicts if needed,
+    /// stage local copies, then transfer. Keep editing disabled throughout this flow.
     func upload() {
         guard isUploadDestinationReady, isAuthenticated, !isPreparingInput, inputErrorMessage.isEmpty, !isPreparingUpload,
               !isSwitchingAccount, !isLoadingAccounts, !isLoading, !fileNames.isEmpty else { return }
@@ -37,6 +39,8 @@ extension NCShareViewModel {
         }
     }
 
+    // Store the choice and dismiss the sheet first. Starting the transfer here
+    // would overlap sheet dismissal with the upload banner presentation.
     func resolveUploadConfirmation(_ choice: NCShareUploadChoice?) {
         guard pendingUploadConfirmation != nil else { return }
         uploadChoice = choice
@@ -64,6 +68,9 @@ extension NCShareViewModel {
         }
     }
 
+    /// Builds a plan from a fresh server listing without renaming the input files.
+    /// Multiple files receive unique copy names; a single file may also be replaced
+    /// when the existing resource is a file with a usable ETag.
     private func prepareUploadPlan(capabilities: NKCapabilities.Capabilities) async throws -> NCShareUploadConfirmation {
         let session = sessionStore.getSession()
         let destination = serverUrl
@@ -92,6 +99,8 @@ extension NCShareViewModel {
         guard !listing.metadataFolder.ocId.isEmpty else {
             throw NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_share_conflict_read_failed_", comment: ""))
         }
+        // Encrypted server names cannot be compared with the user-visible names.
+        // Decode the mapping and verify write access before allocating upload names.
         if listing.metadataFolder.e2eEncrypted {
             let networking = NCNetworkingE2EE()
             await NCNetworkingE2EE.beginNewServerKeyValidationCycle()
@@ -128,6 +137,8 @@ extension NCShareViewModel {
             requiresConfirmation: allocated != requestedNames)
     }
 
+    /// Copies inputs into the storage expected by the upload services. If staging
+    /// fails, remove those copies; retain the originals so the user can retry.
     private func stageAndUpload(plan: NCShareUploadConfirmation, replacing: Bool, capabilities: NKCapabilities.Capabilities) async throws {
         try Task.checkCancellation()
         guard !isOffline else { throw URLError(.notConnectedToInternet) }
@@ -265,6 +276,9 @@ extension NCShareViewModel {
             banner?.update(payload: LucidBannerPayload.Update(systemImage: "gearshape.arrow.triangle.2.circlepath",
                                                               imageAnimation: .rotate),
                                       for: self.token)
+            // Await directly so cancellation belongs to the main upload task.
+            // Final MOVE must not overwrite a file created after conflict checking,
+            // unless the user chose replacement and its ETag still matches.
             let results = await NCNetworking.shared.uploadChunkFile(
                 metadata: metadata,
                 overwrite: self.replacementETags[metadata.ocId] != nil,
@@ -300,6 +314,8 @@ extension NCShareViewModel {
                                                                                       userId: metadata.userId,
                                                                                       urlBase: metadata.urlBase)
 
+            // The server enforces the final decision: a free name must still be
+            // free, and a replacement must still match the ETag we inspected.
             let results = await NCNetworking.shared.uploadFile(account: metadata.account,
                                                                fileNameLocalPath: fileNameLocalPath,
                                                                serverUrlFileName: metadata.serverUrlFileName,

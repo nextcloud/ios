@@ -129,6 +129,9 @@ final class NCShareLoaderItemProvider {
             try Task.checkCancellation()
         }
 
+        // These are alternative representations of the same attachment, not
+        // separate files. Stop at the first successful import and prefer a file
+        // representation over loading the entire payload into memory.
         let types = provider.registeredTypeIdentifiers.compactMap { UTType($0) }.filter {
             $0.conforms(to: .data) && !$0.conforms(to: .url) && !$0.conforms(to: .plainText)
         }

@@ -9,6 +9,8 @@ import Network
 @preconcurrency import QuickLookThumbnailing
 import UniformTypeIdentifiers
 
+/// Owns one share request. Accounts, folder browsing and uploads are implemented
+/// in the corresponding extensions; input files remain local until upload staging.
 @MainActor
 final class NCShareViewModel: NSObject, ObservableObject {
     @Published var folders: [NCShareFolderItem] = []
@@ -23,6 +25,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
     var folderTasks: [String: Task<Void, Never>] = [:]
     var folderRequests: [String: URLSessionTask] = [:]
     var folderSelectionTask: Task<Void, Never>?
+    // Invalidates asynchronous folder results when the account/browser is reset.
     var folderBrowserID = UUID()
     lazy var recentFoldersStore = NCShareRecentFoldersStore(
         defaults: UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) ?? .standard)
@@ -33,9 +36,12 @@ final class NCShareViewModel: NSObject, ObservableObject {
     @Published var isLoading = false
     @Published private(set) var isOffline = false
     private var connectionMonitor: NWPathMonitor?
+    // Local account/browser state is ready. Authentication and upload readiness
+    // are separate: cached folders may be displayed before capabilities arrive.
     @Published var isAvailable = false
     @Published var isPreparingUpload = false
     @Published var uploadConfirmation: NCShareUploadConfirmation?
+    // Keep the plan after SwiftUI clears the sheet binding, until onDismiss runs.
     var pendingUploadConfirmation: NCShareUploadConfirmation?
     var uploadChoice: NCShareUploadChoice?
     var uploadTask: Task<Void, Never>?
@@ -94,11 +100,15 @@ final class NCShareViewModel: NSObject, ObservableObject {
     private var isPresentingPasscode = false
     private var isPasscodeAuthenticated = false
 
+    /// Starts account setup and attachment import independently, once per request.
+    /// Protected content remains hidden until passcode authentication succeeds.
     func start(context: NSExtensionContext?, presenter: UIViewController) {
         guard !hasStarted else { return }
         hasStarted = true
         let monitor = NWPathMonitor()
         connectionMonitor = monitor
+        // A usable network path does not guarantee that the server is reachable.
+        // Request failures are still reported separately by the networking calls.
         monitor.pathUpdateHandler = { [weak self] path in
             let offline = path.status != .satisfied
             Task { @MainActor [weak self] in
@@ -315,6 +325,8 @@ final class NCShareViewModel: NSObject, ObservableObject {
         navigationTitle = NCBrandOptions.shared.brand
     }
 
+    /// Completes or cancels the extension request once and stops its pending work.
+    /// An in-flight importer cleans up its directory after observing cancellation.
     func cancel(with error: NCShareRequestError? = nil) {
         guard !isClosing else { return }
         isClosing = true

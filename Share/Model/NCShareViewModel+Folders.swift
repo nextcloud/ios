@@ -6,6 +6,7 @@ import UIKit
 import NextcloudKit
 
 extension NCShareViewModel {
+    /// Flattens expanded branches into rows; collapsed children stay cached.
     var visibleFolderRows: [NCShareFolderRow] {
         var rows: [NCShareFolderRow] = []
         var visited: Set<String> = []
@@ -81,6 +82,8 @@ extension NCShareViewModel {
         requestFolderChildren(folder, refresh: true)
     }
 
+    /// Keeps at most one listing request per folder, while allowing independent
+    /// branches to load concurrently. Browser reset cancels all registered requests.
     func requestFolderChildren(_ folder: NCShareFolderItem, refresh: Bool = false) {
         guard !isOffline, !isClosing, !loadingFolderURLs.contains(folder.serverUrl),
               refresh || !loadedFolderURLs.contains(folder.serverUrl) else { return }
@@ -92,6 +95,8 @@ extension NCShareViewModel {
         }
     }
 
+    /// Validates the destination on the server before changing the selection.
+    /// fromRecents controls which of the two occurrences displays the checkmark.
     func selectFolder(_ folder: NCShareFolderItem, fromRecents: Bool = false) {
         guard canUseFolderBrowser, let capabilities = serverCapabilities, canAccessFolder(folder) else { return }
         let session = sessionStore.getSession()

@@ -99,6 +99,8 @@ struct NCShareView: View {
         }
     }
 
+    // Show one message at a time in the dedicated top area, in priority order.
+    // Folder and attachment rows remain content-only even when a request fails.
     @ViewBuilder
     private var statusView: some View {
         if !model.alertMessage.isEmpty {
