@@ -83,11 +83,17 @@ extension NCShareViewModel {
                 account: account, urlBase: session.urlBase, userId: session.userId)
             serverUrl = utilityFileSystem.getHomeServer(session: session)
             setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)
+            // Publish the local browser before capabilities can trigger a network request.
+            await initializeFolderBrowser(refreshFromServer: false)
+            guard !Task.isCancelled, !isClosing, accountChangeID == changeID else { return }
             showAccountView()
+            isSwitchingAccount = false
             loadAccounts()
             await loadServerCapabilities(account: account, changeID: changeID)
             guard !Task.isCancelled, !isClosing, accountChangeID == changeID else { return }
-            if serverCapabilities != nil { await initializeFolderBrowser() }
+            if serverCapabilities != nil, let root = folders.first {
+                requestFolderChildren(root, refresh: true)
+            }
         }
     }
 
@@ -99,7 +105,11 @@ extension NCShareViewModel {
         capabilitiesTask = Task { @MainActor in
             await loadServerCapabilities(account: account, changeID: changeID)
             guard isCurrentCapabilitiesRequest(account: account, changeID: changeID), serverCapabilities != nil else { return }
-            if folders.isEmpty { await initializeFolderBrowser() }
+            if folders.isEmpty {
+                await initializeFolderBrowser()
+            } else if let root = folders.first {
+                requestFolderChildren(root, refresh: true)
+            }
         }
     }
 

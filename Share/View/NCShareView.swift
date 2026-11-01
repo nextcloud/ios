@@ -44,11 +44,23 @@ struct NCShareView: View {
                         }
                     }
                     .background(Color(uiColor: .systemGroupedBackground))
-                } else if model.isSwitchingAccount && model.isAuthenticated {
-                    ProgressView()
-                                .accessibilityLabel(NSLocalizedString("_request_in_progress_", comment: ""))
                 } else {
-                    Color(uiColor: .systemBackground)
+                    VStack(spacing: 0) {
+                        Group {
+                            if !model.alertMessage.isEmpty {
+                                statusError(model.alertMessage) { model.acknowledgeAlert() }
+                            } else {
+                                ProgressView(NSLocalizedString("_request_in_progress_", comment: ""))
+                                    .cappedFont(.subheadline, maxDynamicType: .accessibility2)
+                                    .padding()
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+                        .padding(.horizontal, 16)
+                        Spacer(minLength: 0)
+                    }
+                    .background(Color(uiColor: .systemGroupedBackground))
                 }
             }
             .dynamicTypeSize(.xSmall ... .accessibility2)

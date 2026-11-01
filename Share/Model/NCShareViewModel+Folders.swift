@@ -39,7 +39,7 @@ extension NCShareViewModel {
         isLoading = false
     }
 
-    func initializeFolderBrowser() async {
+    func initializeFolderBrowser(refreshFromServer: Bool = true) async {
         let session = sessionStore.getSession()
         let browserID = folderBrowserID
         let home = utilityFileSystem.getHomeServer(session: session)
@@ -62,7 +62,7 @@ extension NCShareViewModel {
         guard isCurrentBrowser(browserID, account: session.account) else { return }
         folderChildren[home] = cached
         // Make cached destinations usable without waiting for the server refresh.
-        requestFolderChildren(root)
+        if refreshFromServer { requestFolderChildren(root) }
     }
 
     func toggleFolder(_ folder: NCShareFolderItem) {
