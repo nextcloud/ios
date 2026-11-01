@@ -114,7 +114,6 @@ extension NCShareViewModel {
     }
 
     private func loadServerCapabilities(account: String, changeID: UUID) async {
-        isLoadingCapabilities = true
         serverCapabilities = nil
         capabilitiesErrorMessage = ""
         defer { if accountChangeID == changeID { isLoadingCapabilities = false } }
@@ -123,6 +122,8 @@ extension NCShareViewModel {
         guard isCurrentCapabilitiesRequest(account: account, changeID: changeID) else { return }
         if capabilities == nil {
             guard !isOffline else { return }
+            // Cached capabilities should not briefly insert a loading banner.
+            isLoadingCapabilities = true
             let result = await NextcloudKit.shared.getCapabilitiesAsync(account: account) { [weak self] task in
                 Task { @MainActor [weak self] in
                     guard let self, !self.isClosing, self.accountChangeID == changeID else {

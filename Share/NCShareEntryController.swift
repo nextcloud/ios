@@ -21,8 +21,13 @@ final class NCShareEntryController: UIHostingController<NCShareView> {
         fatalError("This extension is initialized through NSExtensionPrincipalClass.")
     }
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        model.start(context: extensionContext, presenter: self)
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        model.start(context: extensionContext, presenter: self)
+        model.activate()
     }
 }

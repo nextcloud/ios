@@ -99,6 +99,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
     var token: Int?
     var banner: LucidBanner?
     var sceneIdentifier: String = UUID().uuidString
+    private var hasActivated = false
     private var isPresentingNoAccountAlert = false
     private var isPresentingPasscode = false
     private var isPasscodeAuthenticated = false
@@ -142,17 +143,21 @@ final class NCShareViewModel: NSObject, ObservableObject {
             let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion)
             if lastVersion != versionApp {
                 maintenanceMode = true
-                appear()
                 return
             }
         }
 
         if let account = sessionStore.getTblAccoun()?.account {
+            isAuthenticated = !NCPreferences().presentPasscode
             changeAccount(account)
         }
+        prepareInput()
+    }
 
+    func activate() {
+        guard !hasActivated, !isClosing, let presenter else { return }
+        hasActivated = true
         NCNetworking.shared.setupScene(sceneIdentifier: sceneIdentifier, controller: presenter)
-
         if let windowScene = presenter.view.window?.windowScene {
             banner = LucidBannerRegistry.shared.banner(for: windowScene)
         }
@@ -167,6 +172,9 @@ final class NCShareViewModel: NSObject, ObservableObject {
         }
         guard validateAccount() else { return }
         requestPasscodeIfNeeded()
+    }
+
+    private func prepareInput() {
         guard let items = requestContext?.inputItems as? [NSExtensionItem] else {
             cancel(with: .noFiles)
             return
