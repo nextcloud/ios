@@ -21,10 +21,12 @@ If you want to [contribute](https://nextcloud.com/contribute/) to Nextcloud, you
 
 [GPLv3](LICENSE.txt) with [Apple app store exception](COPYING.iOS).
 
-Nextcloud doesn't require a CLA (Contributor License Agreement). The copyright belongs to all the individual contributors. Therefore we recommend that every contributor adds following line to the header of a file, if they changed it substantially:
+Nextcloud doesn't require a CLA (Contributor License Agreement). The copyright belongs to all the individual contributors. Use SPDX headers for source files, preserving existing contributor credits and adding your own when making substantial changes:
 
 ```
-@copyright Copyright (c) <year>, <your name> (<your email address>)
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: <year> <your name>
+// SPDX-License-Identifier: GPL-3.0-or-later
 ```
 
 Please read the [Code of Conduct](https://nextcloud.com/code-of-conduct/). This document offers some guidance to ensure Nextcloud participants can cooperate effectively in a positive and inspiring atmosphere, and to explain how together we can strengthen and support each other.
@@ -38,7 +40,9 @@ branch. Maybe start working on [starter issues](https://github.com/nextcloud/ios
 
 Easy starting points are also reviewing [pull requests](https://github.com/nextcloud/ios/pulls)
 
-### Xcode 26.1 Project Setup
+### Xcode 27.2 Project Setup
+
+Open `Nextcloud.xcodeproj`; package dependencies are managed by Swift Package Manager. The CI toolchain and simulator destination are defined in [.github/workflows/xcode.yml](.github/workflows/xcode.yml) (currently Xcode 27.1 and iPhone 17 with iOS 27.0).
 
 #### Dependencies
 
@@ -83,9 +87,8 @@ Mock everything which is not needed.
 
 ### Integration Tests
 
-In `TestConstants.swift` you must specify your credentials for the server you want to test against.
-For locally running tests and in the GitHub actions we use [this shallow CI server image](https://github.com/nextcloud/docker-ci/pkgs/container/continuous-integration-shallow-server).
-Due to technical constraints the GitHub actions rely on a bare metal installation of Nextcloud on the runner in difference to local tests which can leverage much cleaner and reliable Docker containers.
+Configure the server URL and credentials in [Tests/TestConstants.swift](Tests/TestConstants.swift). The defaults are `http://localhost:8080` and `admin` / `admin`, matching CI.
+Local tests use the [shallow CI server image](https://github.com/nextcloud/docker-ci/pkgs/container/continuous-integration-shallow-server) through the Docker script below. GitHub Actions instead installs Nextcloud directly on the runner and serves it on port 8080 using PHP. Both currently use the `stable30` server branch.
 
 Currently, you still need to launch the server manually once before running any tests locally.
 This project comes with a convenience script to do so, see or run [Tests/Server.sh](Tests/Server.sh).
