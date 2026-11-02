@@ -38,33 +38,12 @@ extension NKError {
         return isAppError && !errorDescription.isEmpty ? errorDescription : nil
     }
 
-    private var isVirusDetected: Bool {
-        let global = NCGlobal.shared
-        let isRejectedUpload = errorCode == global.errorBadRequest || errorCode == global.errorUnsupportedMediaType
-
-        return isRejectedUpload && errorDescription.localizedCaseInsensitiveContains("virus")
-    }
-
     /// Unique cases that require a specific non-generic error
     private func operationMessage(for context: NCErrorContext, kind: Kind) -> String? {
         switch (context, kind) {
-        case (.upload, .unknown) where isVirusDetected:
-            return NSLocalizedString("_virus_detect_", comment: "")
-
-        case (.upload, .conflict) where errorCode == NCGlobal.shared.errorConflict:
-            return NSLocalizedString("_error_upload_no_folder_", comment: "")
-
-        case (.createFolder, .conflict):
-            return NSLocalizedString("_error_create_folder_no_parent_", comment: "")
-
-        case (.createDocument, .forbidden):
-            return NSLocalizedString("_error_create_document_", comment: "")
-
-        case (.openDocument, .forbidden):
-            return NSLocalizedString("_error_open_document_", comment: "")
-
-        case (.login, .unauthorized), (.login, .forbidden):
-            return NSLocalizedString("_error_login_credentials_", comment: "")
+        // Direct editing answers every failure with 403, so "no permission" isn't reliable there.
+        case (.createDocument, .forbidden), (.openDocument, .forbidden):
+            return NSLocalizedString("_error_occurred_", comment: "")
 
         default:
             return nil

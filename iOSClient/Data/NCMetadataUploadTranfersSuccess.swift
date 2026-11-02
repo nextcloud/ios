@@ -62,6 +62,7 @@ actor NCMetadataUploadTranfersSuccess {
 
         metadata.session = ""
         metadata.sessionError = ""
+        metadata.errorKind = ""
         metadata.sessionTaskIdentifier = 0
         metadata.status = NCGlobal.shared.metadataStatusNormal
 

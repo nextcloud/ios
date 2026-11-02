@@ -286,7 +286,7 @@ class NCViewerRichdocuments: UIViewController, WKNavigationDelegate, WKScriptMes
                                 } else {
                                     Task {
                                         let windowScene = SceneManager.shared.getWindow(sceneIdentifier: self.sceneIdentifier)?.windowScene
-                                        await showErrorBanner(windowScene: windowScene, error: error)
+                                        await showErrorBanner(windowScene: windowScene, error: error, context: .download(fileName: self.metadata.fileNameView))
                                     }
                                 }
                             })

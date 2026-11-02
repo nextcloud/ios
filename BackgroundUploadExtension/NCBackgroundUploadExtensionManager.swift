@@ -237,6 +237,7 @@ final class NCBackgroundUploadExtensionManager {
                     metadata.sessionDate = nil
                     metadata.sessionError = ""
                     metadata.errorCode = 0
+                    metadata.errorKind = ""
                     metadata.chunk = 0
                     metadata.sceneIdentifier = nil
                     metadata.backgroundUploadRetryCount = 0

@@ -437,7 +437,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
                 guard error == .success, account == self.metadata.account else {
                     Task {
                         let windowScene = SceneManager.shared.getWindow(sceneIdentifier: self.sceneIdentifier)?.windowScene
-                        await showErrorBanner(windowScene: windowScene, error: error)
+                        await showErrorBanner(windowScene: windowScene, error: error, context: .download(fileName: self.metadata.fileNameView))
                     }
                     return
                 }

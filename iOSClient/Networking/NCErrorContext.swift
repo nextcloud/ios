@@ -16,8 +16,6 @@ enum NCErrorContext: Equatable {
     case favorite(fileName: String)
     case createDocument(fileName: String)
     case openDocument(fileName: String)
-    /// A request that sends the user's credentials.
-    case login
 
     /// The context of a transfer event, from its `networkingStatus`.
     init(networkingStatus: String, fileName: String) {
@@ -81,10 +79,10 @@ enum NCErrorContext: Equatable {
         }
     }
 
-    /// A title saying what failed, e.g. "Couldn't upload “IMG_0042.jpg”"; `nil` for `generic` and `login`.
+    /// A title saying what failed, e.g. "Couldn't upload “IMG_0042.jpg”"; `nil` for `generic`.
     var failureTitle: String? {
         switch self {
-        case .generic, .login:
+        case .generic:
             return nil
 
         case .upload(let fileName):

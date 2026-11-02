@@ -146,7 +146,7 @@ class NCDragDrop: NSObject {
         } catch {
             Task {
                 let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
-                await showErrorBanner(windowScene: windowScene, text: error.localizedDescription, errorCode: NCGlobal.shared.errorInternalError)
+                await showErrorBanner(windowScene: windowScene, error: NKError(error: error), context: .upload(fileName: url.lastPathComponent))
             }
             return
         }
@@ -168,7 +168,7 @@ class NCDragDrop: NSObject {
                 }
             } else {
                 let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
-                await showErrorBanner(windowScene: windowScene, error: error)
+                await showErrorBanner(windowScene: windowScene, error: error, context: .moveOrCopy(fileName: metadata.fileNameView))
             }
         }
     }
@@ -189,7 +189,7 @@ class NCDragDrop: NSObject {
                 }
             } else {
                 let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
-                await showErrorBanner(windowScene: windowScene, error: error)
+                await showErrorBanner(windowScene: windowScene, error: error, context: .moveOrCopy(fileName: metadata.fileNameView))
             }
         }
     }

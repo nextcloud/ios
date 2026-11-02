@@ -12,7 +12,7 @@ func showErrorBanner(windowScene: UIWindowScene?,
                      context: NCErrorContext = .generic) async {
     guard let text = error.userFriendlyMessage(for: context) else { return }
 
-    nkLog(error: "Error shown for \(context): \(error.errorCode) \(error.errorDescription)")
+    nkLog(error: "Error shown for \(context): \(error.logDescription)")
 
     await showErrorBanner(windowScene: windowScene,
                           title: context.failureTitle ?? "_error_",

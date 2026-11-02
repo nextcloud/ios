@@ -368,8 +368,11 @@ class NCContextMenuMain: NSObject {
             if self.viewController is NCCollectionViewCommon {
                 Task {
                     if metadata.isDirectoryE2EE {
+                        let context = NCErrorContext.delete(fileName: metadata.fileNameView)
+
                         if NCNetworking.shared.isOffline {
                             await showErrorBanner(windowScene: self.windowScene,
+                                                  title: context.failureTitle ?? "_error_",
                                                   text: "_offline_not_allowed_",
                                                   errorCode: NCGlobal.shared.errorOfflineNotAllowed)
                         } else {
@@ -381,9 +384,9 @@ class NCContextMenuMain: NSObject {
                             if error == .success {
                                 completeHudBannerSuccess(token: results.token, banner: results.banner)
                             } else {
-                                let message = error.userFriendlyMessage(for: .delete(fileName: metadata.fileNameView)) ?? error.localizedGenericMessage
+                                let message = error.userFriendlyMessage(for: context) ?? error.localizedGenericMessage
 
-                                completeHudBannerError(description: message, token: results.token, banner: results.banner)
+                                completeHudBannerError(title: context.failureTitle, description: message, token: results.token, banner: results.banner)
                             }
 
                             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
@@ -393,7 +396,7 @@ class NCContextMenuMain: NSObject {
                     } else {
                         let error = await NCNetworking.shared.setStatusWaitDelete(metadatas: [metadata])
                         if error != .success {
-                            await showErrorBanner(windowScene: self.windowScene, error: error)
+                            await showErrorBanner(windowScene: self.windowScene, error: error, context: .delete(fileName: metadata.fileNameView))
                         }
                     }
                 }

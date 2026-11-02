@@ -33,7 +33,7 @@ struct NKErrorUserFriendlyMessageTests {
         let error = NKError(errorCode: 409, errorDescription: "Parent node does not exist")
         let generic = try #require(error.userFriendlyMessage())
 
-        #expect(error.userFriendlyMessage(for: .createFolder(folderName: "a/b")) == localized("_error_create_folder_no_parent_"))
+        #expect(error.userFriendlyMessage(for: .createFolder(folderName: "a/b")) == generic)
         #expect(generic != error.errorDescription)
         #expect(!generic.contains("409"))
     }
@@ -49,27 +49,15 @@ struct NKErrorUserFriendlyMessageTests {
         #expect(forbidden.userFriendlyMessage(for: .upload(fileName: "a.jpg")) == generic)
     }
 
-    @Test("Explains document and login failures")
-    func documentAndLoginMessages() {
+    @Test("Doesn't guess the cause of a document failure")
+    func documentMessages() {
         let forbidden = NKError(errorCode: 403, errorDescription: "403: Forbidden")
         let notFound = NKError(errorCode: 404, errorDescription: "404: Not found")
-        let unauthorized = NKError(errorCode: 401, errorDescription: "401: Unauthorized")
-        let offline = NKError(errorCode: NSURLErrorNotConnectedToInternet, errorDescription: "The Internet connection appears to be offline.")
 
-        #expect(forbidden.userFriendlyMessage(for: .createDocument(fileName: "a.md")) == localized("_error_create_document_"))
-        #expect(forbidden.userFriendlyMessage(for: .openDocument(fileName: "a.md")) == localized("_error_open_document_"))
+        #expect(forbidden.userFriendlyMessage(for: .createDocument(fileName: "a.md")) == localized("_error_occurred_"))
+        #expect(forbidden.userFriendlyMessage(for: .openDocument(fileName: "a.md")) == localized("_error_occurred_"))
         #expect(notFound.userFriendlyMessage(for: .openDocument(fileName: "a.md")) == notFound.userFriendlyMessage())
-        #expect(unauthorized.userFriendlyMessage(for: .login) == localized("_error_login_credentials_"))
-        #expect(forbidden.userFriendlyMessage(for: .login) == localized("_error_login_credentials_"))
-        #expect(offline.userFriendlyMessage(for: .login) == offline.userFriendlyMessage())
         #expect(NKError(error: CancellationError()).userFriendlyMessage() == nil)
-    }
-
-    @Test("Recognizes uploads rejected by the virus scanner")
-    func virusDetected() {
-        let error = NKError(errorCode: 415, errorDescription: "Virus Eicar-Signature is detected in the file. Upload cannot be completed.")
-
-        #expect(error.userFriendlyMessage(for: .upload(fileName: "eicar.com")) == localized("_virus_detect_"))
     }
 
     @Test("Words different kinds of failure differently")
@@ -106,7 +94,6 @@ struct NKErrorUserFriendlyMessageTests {
         let contexts: [NCErrorContext] = [.upload(fileName: "f"), .download(fileName: "f"), .delete(fileName: "f"), .rename, .moveOrCopy(fileName: "f"), .createFolder(folderName: "f"), .favorite(fileName: "f"), .createDocument(fileName: "f"), .openDocument(fileName: "f")]
 
         #expect(NCErrorContext.generic.failureTitle == nil)
-        #expect(NCErrorContext.login.failureTitle == nil)
         #expect(NCErrorContext.upload(fileName: "IMG_0042.jpg").failureTitle?.contains("IMG_0042.jpg") == true)
 
         for context in contexts {
@@ -125,6 +112,15 @@ struct NKErrorUserFriendlyMessageTests {
         metadata.sessionError = "507: Storage quota is reached"
 
         #expect(metadata.sessionErrorMessage == NKError(errorCode: 507, errorDescription: "").userFriendlyMessage())
+
+        metadata.errorCode = 412
+        metadata.errorKind = NKError.Kind.alreadyExists.rawValue
+
+        #expect(metadata.sessionErrorMessage == NKError(errorCode: 412, errorDescription: "", kind: .alreadyExists).userFriendlyMessage())
+
+        metadata.errorKind = "notAKind"
+
+        #expect(metadata.sessionErrorMessage == NKError(errorCode: 412, errorDescription: "").userFriendlyMessage())
 
         metadata.errorCode = NSURLErrorCancelled
         metadata.sessionError = "Transfer was cancelled."

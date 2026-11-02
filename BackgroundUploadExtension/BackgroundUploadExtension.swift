@@ -32,7 +32,7 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
         case uploading(jobIdentifier: String, incrementRetryCount: Bool)
         case pendingRetry
         case manualRetryRequired
-        case failed(message: String, errorCode: Int)
+        case failed(NKError)
         case completed
     }
 

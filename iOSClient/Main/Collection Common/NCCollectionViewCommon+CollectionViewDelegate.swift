@@ -125,7 +125,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
             } else {
-                await showErrorBanner(windowScene: windowScene, text: "_go_online_", errorCode: NCGlobal.shared.errorOfflineNotAllowed)
+                await showErrorBanner(windowScene: windowScene,
+                                      title: NCErrorContext.openDocument(fileName: metadata.fileNameView).failureTitle ?? "_error_",
+                                      text: "_go_online_",
+                                      errorCode: NCGlobal.shared.errorOfflineNotAllowed)
             }
         }
     }

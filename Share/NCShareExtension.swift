@@ -340,12 +340,14 @@ class NCShareExtension: UIViewController {
             return
         }
         let alertController = UIAlertController.createFolderWith(serverUrl: serverUrl, session: session, capabilities: capabilities) { error, folderName in
+            let context = NCErrorContext.createFolder(folderName: folderName)
+
             if error == .success {
                 Task {
                     await self.loadFolder()
                 }
-            } else if let message = error.userFriendlyMessage(for: .createFolder(folderName: folderName)) {
-                self.showAlert(title: "_error_createsubfolders_upload_", description: message)
+            } else if let message = error.userFriendlyMessage(for: context) {
+                self.showAlert(title: context.failureTitle ?? "_error_", description: message)
             }
         }
         self.present(alertController, animated: true)
@@ -472,7 +474,11 @@ extension NCShareExtension {
         if error == .success {
             banner?.update(payload: LucidBannerPayload.Update(stage: .success, horizontalLayout: .centered(width: 100)), for: self.token)
         } else {
-            banner?.update(payload: LucidBannerPayload.Update(subtitle: error?.userFriendlyMessage(for: errorContext) ?? "", stage: .error), for: self.token)
+            let payload = LucidBannerPayload.Update(title: errorContext.failureTitle ?? NSLocalizedString("_error_", comment: ""),
+                                                    subtitle: error?.userFriendlyMessage(for: errorContext) ?? "",
+                                                    stage: .error)
+
+            banner?.update(payload: payload, for: self.token)
         }
 
         Task { @MainActor in

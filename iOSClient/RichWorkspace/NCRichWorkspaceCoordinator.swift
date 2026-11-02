@@ -13,7 +13,10 @@ class NCRichWorkspaceCoordinator: NSObject {
         if !NextcloudKit.shared.isNetworkReachable() {
             Task {
                 let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
-                await showErrorBanner(windowScene: windowScene, text: "_go_online_", errorCode: NCGlobal.shared.errorOfflineNotAllowed)
+                await showErrorBanner(windowScene: windowScene,
+                                      title: NCErrorContext.createDocument(fileName: NCGlobal.shared.fileNameRichWorkspace).failureTitle ?? "_error_",
+                                      text: "_offline_not_allowed_",
+                                      errorCode: NCGlobal.shared.errorOfflineNotAllowed)
             }
             return
         }
@@ -50,7 +53,10 @@ class NCRichWorkspaceCoordinator: NSObject {
         if !NextcloudKit.shared.isNetworkReachable() {
             Task {
                 let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
-                await showErrorBanner(windowScene: windowScene, text: "_go_online_", errorCode: NCGlobal.shared.errorOfflineNotAllowed)
+                await showErrorBanner(windowScene: windowScene,
+                                      title: NCErrorContext.openDocument(fileName: NCGlobal.shared.fileNameRichWorkspace).failureTitle ?? "_error_",
+                                      text: "_go_online_",
+                                      errorCode: NCGlobal.shared.errorOfflineNotAllowed)
             }
             return
         }

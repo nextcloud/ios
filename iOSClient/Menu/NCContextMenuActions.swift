@@ -248,6 +248,7 @@ enum NCContextMenuActions {
                 ) != nil {
                     await showErrorBanner(
                         windowScene: windowScene,
+                        title: NCErrorContext.rename.failureTitle ?? "_error_",
                         text: "_rename_already_exists_",
                         errorCode: 0
                     )
@@ -260,7 +261,7 @@ enum NCContextMenuActions {
                     windowScene: windowScene
                 )
                 if error != .success {
-                    await showErrorBanner(windowScene: windowScene, error: error)
+                    await showErrorBanner(windowScene: windowScene, error: error, context: .rename)
                 } else if let renamedMetadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(metadata.ocId) {
                     completion?(renamedMetadata)
                 }

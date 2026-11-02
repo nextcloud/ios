@@ -173,7 +173,8 @@ class NCCreate: NSObject {
             let error: NKError = results.error == .success ? .invalidData : results.error
             await showErrorBanner(
                 windowScene: windowScene,
-                error: error
+                error: error,
+                context: .openDocument(fileName: (serverUrlFileName as NSString).lastPathComponent)
             )
             return
         }

@@ -32,6 +32,7 @@ actor NCMetadataDownloadTranfersSuccess {
     func append(metadata: tableMetadata, etag: String?) async {
         metadata.session = ""
         metadata.sessionError = ""
+        metadata.errorKind = ""
         metadata.sessionTaskIdentifier = 0
         metadata.status = NCGlobal.shared.metadataStatusNormal
         if let etag = etag {

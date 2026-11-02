@@ -371,7 +371,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     } else {
                         let loginFlowError = error == .success ? NKError.invalidData : error
 
-                        nkLog(error: "Login flow v2 failed: \(loginFlowError.errorCode) \(loginFlowError.errorDescription)")
+                        nkLog(error: "Login flow v2 failed: \(loginFlowError.logDescription)")
 
                         loginButton.hideSpinnerAndShowButton()
                         loginButton.isEnabled = true
@@ -474,7 +474,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                     let error = results.error == .success ? NKError.invalidData : results.error
 
-                    await showErrorBanner(windowScene: windowScene, error: error, context: .login)
+                    await showErrorBanner(windowScene: windowScene, error: error)
                     dismiss(animated: true, completion: nil)
                 }
             } else if value.hasPrefix(protocolLogin) {
@@ -493,7 +493,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
             let error = results.error == .success ? NKError.invalidData : results.error
 
-            await showErrorBanner(windowScene: windowScene, error: error, context: .login)
+            await showErrorBanner(windowScene: windowScene, error: error)
             dismiss(animated: true, completion: nil)
         }
     }

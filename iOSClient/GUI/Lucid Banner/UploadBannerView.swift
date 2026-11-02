@@ -120,7 +120,7 @@ struct UploadBannerView: View {
                             .foregroundStyle(.white)
 
                         VStack(alignment: .leading, spacing: 7) {
-                            Text("_error_")
+                            Text(state.payload.title ?? NSLocalizedString("_error_", comment: ""))
                                 .cappedFont(.subheadline, maxDynamicType: .accessibility1)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)

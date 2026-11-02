@@ -150,7 +150,7 @@ class NCNetworkingE2EE: NSObject {
         }
 
         guard result.error == .success else {
-            nkLog(tag: NCGlobal.shared.logTagE2EE, message: "Server-key validation request failed with error code \(result.error.errorCode).")
+            nkLog(tag: NCGlobal.shared.logTagE2EE, message: "Server-key validation request failed: \(result.error.logDescription)")
             return result.error
         }
 
