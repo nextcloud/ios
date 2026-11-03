@@ -133,8 +133,8 @@ extension NCCollectionViewCommon: UIEditMenuInteractionDelegate {
                     } else {
                         Task {
                             await showErrorBanner(windowScene: windowScene,
-                                                  text: resultsUpload.error.errorDescription,
-                                                  errorCode: resultsUpload.error.errorCode)
+                                                  error: resultsUpload.error,
+                                                  context: .upload(fileName: fileName))
                         }
                     }
                 }

@@ -170,7 +170,7 @@ extension NCNetworking {
             fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
         }
         if fileNameFolder.isEmpty {
-            return NKError(errorCode: global.errorIncorrectFileName, errorDescription: "")
+            return NKError(errorCode: global.errorIncorrectFileName, errorDescription: "", kind: .invalidName)
         }
         let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileNameFolder)
 
@@ -197,7 +197,8 @@ extension NCNetworking {
             await NCManageDatabase.shared.setMetadataSessionAsync(account: session.account,
                                                                   serverUrlFileName: serverUrlFileName,
                                                                   sessionError: resultCreateFolder.error.errorDescription,
-                                                                  errorCode: resultCreateFolder.error.errorCode)
+                                                                  errorCode: resultCreateFolder.error.errorCode,
+                                                                  errorKind: resultCreateFolder.error.kind?.rawValue ?? "")
         }
 
         return resultCreateFolder.error
@@ -229,7 +230,8 @@ extension NCNetworking {
             await NCManageDatabase.shared.setMetadataSessionAsync(account: account,
                                                                   serverUrlFileName: serverUrlFileName,
                                                                   sessionError: results.error.errorDescription,
-                                                                  errorCode: results.error.errorCode)
+                                                                  errorCode: results.error.errorCode,
+                                                                  errorKind: results.error.kind?.rawValue ?? "")
         }
 
         return results.error
@@ -333,8 +335,12 @@ extension NCNetworking {
             }
 
             let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanDeleteOrUnshare)
-            if (!metadata.permissions.isEmpty && permission == false) || (metadata.status != global.metadataStatusNormal) {
+            if !metadata.permissions.isEmpty && permission == false {
                 return NKError(errorCode: global.errorNotPermission, errorDescription: "_no_permission_delete_file_")
+            }
+
+            if metadata.status != global.metadataStatusNormal {
+                return NKError(errorCode: global.errorNotPermission, errorDescription: "_error_file_busy_")
             }
 
             ocIds.insert(metadata.ocId)
@@ -402,9 +408,12 @@ extension NCNetworking {
 
     func setStatusWaitRename(_ metadata: tableMetadata, fileNameNew: String, windowScene: UIWindowScene?) async -> NKError {
         let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
-        if (!metadata.permissions.isEmpty && permission == false) ||
-            (metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitRename) {
+        if !metadata.permissions.isEmpty && permission == false {
             return NKError(errorCode: global.errorNotPermission, errorDescription: "_no_permission_modify_file_")
+        }
+
+        if metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitRename {
+            return NKError(errorCode: global.errorNotPermission, errorDescription: "_error_file_busy_")
         }
 
         if metadata.isDirectoryE2EE {
@@ -414,7 +423,7 @@ extension NCNetworking {
 
             let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew, windowScene: windowScene)
             if error != .success {
-                return NKError(errorCode: error.errorCode, errorDescription: error.errorDescription)
+                return error
             }
         } else {
             let ocId = metadata.ocId
@@ -459,9 +468,12 @@ extension NCNetworking {
     func setStatusWaitMove(_ metadata: tableMetadata, destination: String, overwrite: Bool) async -> NKError {
         let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
 
-        if (!metadata.permissions.isEmpty && !permission) ||
-            (metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitMove) {
+        if !metadata.permissions.isEmpty && !permission {
             return NKError(errorCode: global.errorNotPermission, errorDescription: "_no_permission_modify_file_")
+        }
+
+        if metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitMove {
+            return NKError(errorCode: global.errorNotPermission, errorDescription: "_error_file_busy_")
         }
 
         let ocId = metadata.ocId
@@ -516,9 +528,12 @@ extension NCNetworking {
     func setStatusWaitCopy(_ metadata: tableMetadata, destination: String, overwrite: Bool) async -> NKError {
         let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
 
-        if (!metadata.permissions.isEmpty && !permission) ||
-            (metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitCopy) {
+        if !metadata.permissions.isEmpty && !permission {
             return NKError(errorCode: global.errorNotPermission, errorDescription: "_no_permission_modify_file_")
+        }
+
+        if metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitCopy {
+            return NKError(errorCode: global.errorNotPermission, errorDescription: "_error_file_busy_")
         }
 
         let ocId = metadata.ocId

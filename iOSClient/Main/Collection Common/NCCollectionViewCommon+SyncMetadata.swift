@@ -94,7 +94,7 @@ extension NCCollectionViewCommon {
             guard resultsReadFile.error == .success,
                   let metadata = resultsReadFile.metadata,
                   !metadata.e2eEncrypted else {
-                nkLog(tag: global.logTagSpeedUpSyncMetadata, emoji: .info, message: "Exit: result error \(resultsReadFile.error.errorDescription) or e2ee directory \(resultsReadFile.metadata?.e2eEncrypted ?? false). Skipping this one.")
+                nkLog(tag: global.logTagSpeedUpSyncMetadata, emoji: .info, message: "Exit: result \(resultsReadFile.error.logDescription) or e2ee directory \(resultsReadFile.metadata?.e2eEncrypted ?? false). Skipping this one.")
                 return
             }
         }
@@ -139,7 +139,7 @@ extension NCCollectionViewCommon {
             if resultsReadFolder.error == .success {
                 nkLog(tag: global.logTagSpeedUpSyncMetadata, emoji: .network, message: "Read correctly: \(serverUrl)", consoleOnly: true)
             } else {
-                nkLog(tag: global.logTagSpeedUpSyncMetadata, emoji: .error, message: "Read failed for \(serverUrl) with error: \(resultsReadFolder.error.errorDescription)")
+                nkLog(tag: global.logTagSpeedUpSyncMetadata, emoji: .error, message: "Read failed for \(serverUrl) with \(resultsReadFolder.error.logDescription)")
                 return
             }
         }

@@ -170,8 +170,7 @@ class AlbumDetailsViewModel: ObservableObject {
                     AlbumsManager.shared.syncAlbums(for: account)
                     self?.navigator.pop()
                 case .failure(let error):
-                    // User-initiated failures must not be hidden by the network-error cooldown.
-                    await showErrorBanner(windowScene: self?.windowScene, text: error.errorDescription)
+                    await showErrorBanner(windowScene: self?.windowScene, error: error, context: .delete(fileName: deletedAlbum.name))
                 }
             }
         }
@@ -185,7 +184,7 @@ class AlbumDetailsViewModel: ObservableObject {
 
         let error = await deletePhotoFromAlbum(photo, metadata: photo.metadata)
         guard error == .success else {
-            await showErrorBanner(windowScene: windowScene, text: error.errorDescription)
+            await showErrorBanner(windowScene: windowScene, error: error)
             return
         }
 
@@ -207,7 +206,7 @@ class AlbumDetailsViewModel: ObservableObject {
             guard let photo = photos.first(where: { $0.metadata.fileId == metadata.fileId }) else { continue }
             let error = await deletePhotoFromAlbum(photo, metadata: metadata)
             guard error == .success else {
-                await showErrorBanner(windowScene: windowScene, text: error.errorDescription)
+                await showErrorBanner(windowScene: windowScene, error: error)
                 return
             }
             photos.removeAll { $0.id == photo.id }
@@ -272,8 +271,7 @@ class AlbumDetailsViewModel: ObservableObject {
             } catch {
                 self.isLoadingPopupVisible = false
                 let error = (error as? NKError) ?? NKError(error: error)
-                // Report every failed rename, even after another offline operation.
-                await showErrorBanner(windowScene: self.windowScene, text: error.errorDescription)
+                await showErrorBanner(windowScene: self.windowScene, error: error)
             }
         }
     }
@@ -296,10 +294,7 @@ class AlbumDetailsViewModel: ObservableObject {
         for photo in selectedPhotos {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(photo) else {
                 Task {
-                    await showErrorBanner(
-                        windowScene: self.windowScene,
-                        text: NKError.invalidData.errorDescription
-                    )
+                    await showErrorBanner(windowScene: self.windowScene, text: "_media_not_available_")
                 }
                 continue
             }
@@ -317,7 +312,7 @@ class AlbumDetailsViewModel: ObservableObject {
                     case .success:
                         hadAnySuccess = true
                     case .failure(let error):
-                        await showErrorBanner(windowScene: self?.windowScene, text: error.errorDescription)
+                        await showErrorBanner(windowScene: self?.windowScene, error: error)
                     }
                 }
             }

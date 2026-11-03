@@ -171,6 +171,7 @@ final class TransfersViewModel: ObservableObject, NCMetadataDownloadTransfersSuc
         metadata.backgroundUploadNextRetryDate = nil
         metadata.sessionError = ""
         metadata.errorCode = 0
+        metadata.errorKind = ""
         metadata.sessionDate = Date()
         metadata.status = global.metadataStatusWaitUpload
 
@@ -218,8 +219,10 @@ final class TransfersViewModel: ObservableObject, NCMetadataDownloadTransfersSuc
             return ("arrowshape.up.circle", NSLocalizedString("_status_uploading_", comment: ""), sizeText)
         case global.metadataStatusDownloadError, global.metadataStatusUploadError:
             let symbol = "exclamationmark.circle"
-            var status = NSLocalizedString("_status_upload_error_", comment: "")
-            if !canRetry(item: item), let sessionDate = item.sessionDate {
+            let isUpload = item.status == global.metadataStatusUploadError
+            var status = NSLocalizedString(isUpload ? "_status_upload_error_" : "_status_download_error_", comment: "")
+
+            if isUpload, !canRetry(item: item), let sessionDate = item.sessionDate {
                 let elapsed = Date().timeIntervalSince(sessionDate)
                 let remaining = max(0, 300 - elapsed)
 
@@ -236,7 +239,7 @@ final class TransfersViewModel: ObservableObject, NCMetadataDownloadTransfersSuc
                     status += " – " + NSLocalizedString("_retry_soon_", comment: "")
                 }
             }
-            return (symbol, status, item.sessionError)
+            return (symbol, status, item.sessionErrorMessage)
         case global.metadataStatusNormal:
             return ("checkmark.circle", NSLocalizedString("_done_", comment: ""), sizeText)
         default:

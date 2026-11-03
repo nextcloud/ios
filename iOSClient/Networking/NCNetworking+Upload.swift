@@ -267,7 +267,7 @@ extension NCNetworking {
                 error: "Background upload task creation failed: " +
                        "\(metadata.fileNameView), " +
                        "task: \(String(describing: task?.taskIdentifier)), " +
-                       "error: \(error.errorCode) \(error.errorDescription)"
+                       "error: \(error.logDescription)"
             )
 
             await NCManageDatabase.shared.setMetadataSessionAsync(
@@ -275,7 +275,8 @@ extension NCNetworking {
                 sessionTaskIdentifier: 0,
                 sessionError: error.errorDescription,
                 status: global.metadataStatusUploadError,
-                errorCode: error.errorCode
+                errorCode: error.errorCode,
+                errorKind: error.kind?.rawValue ?? ""
             )
 
             return error
@@ -347,6 +348,7 @@ extension NCNetworking {
 
         metadata.session = ""
         metadata.sessionError = ""
+        metadata.errorKind = ""
         metadata.sessionTaskIdentifier = 0
         metadata.status = self.global.metadataStatusNormal
 
@@ -383,7 +385,7 @@ extension NCNetworking {
     func uploadError(withMetadata metadata: tableMetadata, error: NKError) async {
         await nkComm.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
 
-        nkLog(error: "Upload file: " + metadata.serverUrlFileName + ", result: error \(error.errorCode)")
+        nkLog(error: "Upload file: " + metadata.serverUrlFileName + ", result: \(error.logDescription)")
 
         if error.errorCode == NSURLErrorCancelled {
             if metadata.sessionSelector == self.global.selectorUploadAutoUpload {
@@ -392,16 +394,17 @@ extension NCNetworking {
                     sessionTaskIdentifier: 0,
                     sessionError: error.errorDescription,
                     status: self.global.metadataStatusUploadError,
-                    errorCode: error.errorCode
+                    errorCode: error.errorCode,
+                    errorKind: error.kind?.rawValue ?? ""
                 )
             } else {
                 await uploadCancelFile(metadata: metadata)
             }
-        } else if (error.errorCode == self.global.errorBadRequest || error.errorCode == self.global.errorUnsupportedMediaType) && error.errorDescription.localizedCaseInsensitiveContains("virus") {
+        } else if error.kind == .blockedByVirusScan {
             await uploadCancelFile(metadata: metadata)
             #if !EXTENSION
             let windowScene = await SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
-            await showErrorBanner(windowScene: windowScene, text: "_virus_detect_", errorCode: self.global.errorBadRequest)
+            await showErrorBanner(windowScene: windowScene, error: error, context: .upload(fileName: metadata.fileNameView))
             #endif
             // Client Diagnostic
             await NCManageDatabase.shared.addDiagnosticAsync(account: metadata.account, issue: self.global.diagnosticIssueVirusDetected)
@@ -410,12 +413,13 @@ extension NCNetworking {
                                                                   sessionTaskIdentifier: 0,
                                                                   sessionError: error.errorDescription,
                                                                   status: self.global.metadataStatusUploadError,
-                                                                  errorCode: error.errorCode)
+                                                                  errorCode: error.errorCode,
+                                                                  errorKind: error.kind?.rawValue ?? "")
 #if !EXTENSION
             let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
             if !isAppInBackground {
                 if capabilities.termsOfService {
-                    await termsOfService(metadata: metadata)
+                    await termsOfService(metadata: metadata, error: error)
                 } else {
                     await uploadForbidden(metadata: metadata, error: error)
                 }
@@ -426,7 +430,8 @@ extension NCNetworking {
                                                                  sessionTaskIdentifier: 0,
                                                                  sessionError: error.errorDescription,
                                                                  status: self.global.metadataStatusUploadError,
-                                                                 errorCode: error.errorCode)
+                                                                 errorCode: error.errorCode,
+                                                                 errorKind: error.kind?.rawValue ?? "")
 
             await self.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(networkingStatus: self.global.networkingStatusUploaded,
@@ -470,7 +475,8 @@ extension NCNetworking {
     @MainActor
     func uploadForbidden(metadata: tableMetadata, error: NKError) async {
         let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
-        let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
+
+        let alertController = uploadForbiddenAlert(metadata: metadata, error: error)
 
         alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
             Task {
@@ -486,7 +492,8 @@ extension NCNetworking {
                                                                       sessionTaskIdentifier: 0,
                                                                       sessionError: "",
                                                                       status: self.global.metadataStatusWaitUpload,
-                                                                      errorCode: error.errorCode)
+                                                                      errorCode: error.errorCode,
+                                                                      errorKind: error.kind?.rawValue ?? "")
             }
         }))
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
@@ -504,7 +511,7 @@ extension NCNetworking {
     }
 
     @MainActor
-    func termsOfService(metadata: tableMetadata) async {
+    func termsOfService(metadata: tableMetadata, error: NKError) async {
         let options = NKRequestOptions(checkInterceptor: false, queue: .main)
         let results = await NextcloudKit.shared.getTermsOfServiceAsync(account: metadata.account, options: options)
 
@@ -515,7 +522,7 @@ extension NCNetworking {
 
         let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
 
-        let alertController = UIAlertController(title: results.error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
+        let alertController = uploadForbiddenAlert(metadata: metadata, error: error)
 
         alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
             Task {
@@ -531,7 +538,8 @@ extension NCNetworking {
                                                                       sessionTaskIdentifier: 0,
                                                                       sessionError: "",
                                                                       status: self.global.metadataStatusWaitUpload,
-                                                                      errorCode: results.error.errorCode)
+                                                                      errorCode: results.error.errorCode,
+                                                                      errorKind: results.error.kind?.rawValue ?? "")
             }
         }))
 
@@ -547,6 +555,15 @@ extension NCNetworking {
         await NCManageDatabase.shared.addDiagnosticAsync(account: metadata.account,
                                                          issue: self.global.diagnosticIssueProblems,
                                                          error: self.global.diagnosticProblemsForbidden)
+    }
+
+    @MainActor
+    private func uploadForbiddenAlert(metadata: tableMetadata, error: NKError) -> UIAlertController {
+        let context = NCErrorContext.upload(fileName: metadata.fileNameView)
+        let reason = error.userFriendlyMessage(for: context) ?? error.localizedGenericMessage
+        let message = reason + "\n\n" + NSLocalizedString("_change_upload_filename_", comment: "")
+
+        return UIAlertController(title: context.failureTitle, message: message, preferredStyle: .alert)
     }
 
     @MainActor

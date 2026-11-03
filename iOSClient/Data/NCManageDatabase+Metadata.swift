@@ -125,6 +125,8 @@ class tableMetadata: Object {
     @objc dynamic var height: Int = 0
     @objc dynamic var width: Int = 0
     @objc dynamic var errorCode: Int = 0
+    /// Raw value of the saved error's `NKError.Kind`; empty when there's no error or it's unknown.
+    @objc dynamic var errorKind = ""
     @objc dynamic var nativeFormat: Bool = false
     @objc dynamic var autoUploadServerUrlBase: String?
     @objc dynamic var typeIdentifier: String = ""
@@ -377,6 +379,18 @@ extension tableMetadata {
         return detached
     }
 }
+
+#if !EXTENSION || EXTENSION_SHARE
+extension tableMetadata {
+    /// The saved error, worded for people from its `errorKind` (or `errorCode` for older records) and the operation the item failed at.
+    var sessionErrorMessage: String {
+        let error = NKError(errorCode: errorCode, errorDescription: sessionError, kind: NKError.Kind(rawValue: errorKind))
+        let context = NCErrorContext(metadataStatus: status, fileName: fileNameView)
+
+        return error.userFriendlyMessage(for: context) ?? error.localizedGenericMessage
+    }
+}
+#endif
 
 extension NCManageDatabase {
 #if !EXTENSION

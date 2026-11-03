@@ -38,7 +38,12 @@ class NCAccount: NSObject {
 
         guard resultsGetUserProfile.error == .success, let userProfile = resultsGetUserProfile.userProfile else {
             NextcloudKit.shared.nkCommonInstance.nksessions.remove(account: account)
-            let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: resultsGetUserProfile.error.errorDescription, preferredStyle: .alert)
+
+            let error = resultsGetUserProfile.error == .success ? NKError.invalidData : resultsGetUserProfile.error
+
+            nkLog(error: "Getting the user profile failed: \(error.logDescription)")
+
+            let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.userFriendlyMessage() ?? error.localizedGenericMessage, preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
             viewController.present(alertController, animated: true)
 
@@ -238,7 +243,7 @@ class NCAccount: NSObject {
         await NCAccount().deleteAccount(account, wipe: resultsWipe.wipe)
         if resultsWipe.wipe {
             let resultsSetWipe = await NextcloudKit.shared.setRemoteWipeCompletitionAsync(serverUrl: tblAccount.urlBase, token: token, account: tblAccount.account)
-            nkLog(debug: "Set Remote Wipe Completition error code: \(resultsSetWipe.error.errorCode)")
+            nkLog(debug: "Set Remote Wipe Completition result: \(resultsSetWipe.error.logDescription)")
         }
 
         if !account.isEmpty, controller == nil || controller?.account == account {

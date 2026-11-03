@@ -28,7 +28,7 @@ extension NCNetworking {
                     await NCManageDatabase.shared.deleteLivePhoto(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
                     continue
                 } else {
-                    nkLog(error: "Upload set LivePhoto Video with error \(resultLivePhotoVideo.error.errorCode)")
+                    nkLog(error: "Upload set LivePhoto Video failed: \(resultLivePhotoVideo.error.logDescription)")
                     await NCManageDatabase.shared.setLivePhotoError(
                         account: account,
                         serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
@@ -50,7 +50,7 @@ extension NCNetworking {
                         serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
                     continue
                 } else {
-                    nkLog(error: "Upload set LivePhoto Image with error \(resultLivePhotoImage.error.errorCode)")
+                    nkLog(error: "Upload set LivePhoto Image failed: \(resultLivePhotoImage.error.logDescription)")
                     await NCManageDatabase.shared.setLivePhotoError(
                         account: account,
                         serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)

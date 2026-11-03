@@ -59,7 +59,7 @@ class NCTermOfServiceModel: ObservableObject {
                     }
                 } else {
                     let windowScene = SceneManager.shared.getWindowScene(controller: controller)
-                    await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                    await showErrorBanner(windowScene: windowScene, error: error)
                 }
             }
             self.dismissView = true
