@@ -134,7 +134,6 @@ final class NCGlobal: Sendable {
     let errorMethodNotSupported: Int            = 405
     let errorConflict: Int                      = 409
     let errorPreconditionFailed: Int            = 412
-    let errorUnsupportedMediaType: Int          = 415
     let errorExpectationFailed: Int             = 417
     let errorInternalServerError: Int           = 500
     let errorMaintenance: Int                   = 503

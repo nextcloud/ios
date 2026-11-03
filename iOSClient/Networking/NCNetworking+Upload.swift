@@ -400,14 +400,11 @@ extension NCNetworking {
             } else {
                 await uploadCancelFile(metadata: metadata)
             }
-        } else if (error.errorCode == self.global.errorBadRequest || error.errorCode == self.global.errorUnsupportedMediaType) && error.errorDescription.localizedCaseInsensitiveContains("virus") {
+        } else if error.kind == .blockedByVirusScan {
             await uploadCancelFile(metadata: metadata)
             #if !EXTENSION
             let windowScene = await SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
-            await showErrorBanner(windowScene: windowScene,
-                                  title: NCErrorContext.upload(fileName: metadata.fileNameView).failureTitle ?? "_error_",
-                                  text: "_virus_detect_",
-                                  errorCode: self.global.errorBadRequest)
+            await showErrorBanner(windowScene: windowScene, error: error, context: .upload(fileName: metadata.fileNameView))
             #endif
             // Client Diagnostic
             await NCManageDatabase.shared.addDiagnosticAsync(account: metadata.account, issue: self.global.diagnosticIssueVirusDetected)
