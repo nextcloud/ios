@@ -73,6 +73,9 @@
 		AAFC0D062F9AA10000F0A001 /* NCFocusedAutoUploadScreenDimmer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFC0D032F9AA10000F0A001 /* NCFocusedAutoUploadScreenDimmer.swift */; };
 		AAFC0D092F9AA10000F0A001 /* NCFocusedAutoUploadCloudAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFC0D082F9AA10000F0A001 /* NCFocusedAutoUploadCloudAnimation.swift */; };
 		AAFC0D0B2F9AA10000F0A001 /* NCAutoUploadCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFC0D0A2F9AA10000F0A001 /* NCAutoUploadCounter.swift */; };
+		AB17A0012F90000100FE2801 /* NCFilenameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB17A0022F90000100FE2802 /* NCFilenameView.swift */; };
+		AB17A0312F90000100FE2803 /* NCFilenameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB17A0022F90000100FE2802 /* NCFilenameView.swift */; };
+		AB17A0112F90000100FE2801 /* NCFilenameViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB17A0122F90000100FE2802 /* NCFilenameViewTests.swift */; };
 		AB6000012F60000100FE2775 /* NCTagEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000002F60000100FE2775 /* NCTagEditorModel.swift */; };
 		AB6000032F60000200FE2775 /* NCTagEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000022F60000200FE2775 /* NCTagEditorView.swift */; };
 		AB7000022F70000100FE2776 /* NCShareDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7000012F70000100FE2776 /* NCShareDetailsView.swift */; };
@@ -1414,6 +1417,8 @@
 		AAFC0D032F9AA10000F0A001 /* NCFocusedAutoUploadScreenDimmer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFocusedAutoUploadScreenDimmer.swift; sourceTree = "<group>"; };
 		AAFC0D082F9AA10000F0A001 /* NCFocusedAutoUploadCloudAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFocusedAutoUploadCloudAnimation.swift; sourceTree = "<group>"; };
 		AAFC0D0A2F9AA10000F0A001 /* NCAutoUploadCounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAutoUploadCounter.swift; sourceTree = "<group>"; };
+		AB17A0022F90000100FE2802 /* NCFilenameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFilenameView.swift; sourceTree = "<group>"; };
+		AB17A0122F90000100FE2802 /* NCFilenameViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFilenameViewTests.swift; sourceTree = "<group>"; };
 		AB6000002F60000100FE2775 /* NCTagEditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTagEditorModel.swift; sourceTree = "<group>"; };
 		AB6000022F60000200FE2775 /* NCTagEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTagEditorView.swift; sourceTree = "<group>"; };
 		AB7000012F70000100FE2776 /* NCShareDetailsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareDetailsView.swift; sourceTree = "<group>"; };
@@ -2343,6 +2348,7 @@
 				F0A1B2C330B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift */,
 				F0A1B2C530B6000100D4E5F6 /* NCImageZoomViewTests.swift */,
 				F34BDB3B2F574A58007A222C /* BidiSafeFilenameTests.swift */,
+				AB17A0122F90000100FE2802 /* NCFilenameViewTests.swift */,
 				439616AAA50F4360A761E5EF /* NCAlbumsPersistenceTests.swift */,
 				C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */,
 				4B74B947E07444CC9CFE0A6C /* NCDocumentEditorSupportTests.swift */,
@@ -3439,6 +3445,7 @@
 				F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */,
 				F7B7504A2397D38E004E13EC /* UIImage+Extension.swift */,
 				F7EE66AC2A20B226009AE765 /* UILabel+Extension.swift */,
+				AB17A0022F90000100FE2802 /* NCFilenameView.swift */,
 				F77BB7492899857B0090FC19 /* UINavigationController+Extension.swift */,
 				F34BDB392F5744E5007A222C /* UINavigationItem+Extension.swift */,
 				F743C89D2E5B2595000173A9 /* UIScene+Extension.swift */,
@@ -4730,6 +4737,7 @@
 				F0A1B2C430B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift in Sources */,
 				F0A1B2C630B6000100D4E5F6 /* NCImageZoomViewTests.swift in Sources */,
 				F34BDB3C2F574A58007A222C /* BidiSafeFilenameTests.swift in Sources */,
+				AB17A0112F90000100FE2801 /* NCFilenameViewTests.swift in Sources */,
 				63563FE53573412998852DD3 /* NCAlbumsPersistenceTests.swift in Sources */,
 				C0DECA022F65000100C0D001 /* NCCameraRollTests.swift in Sources */,
 				22BA14432CF44BDBA2E6C291 /* NCDocumentEditorSupportTests.swift in Sources */,
@@ -4849,6 +4857,7 @@
 				F79B646126CA661600838ACA /* UIControl+Extension.swift in Sources */,
 				F77C973A2953143A00FDDD09 /* NCCameraRoll.swift in Sources */,
 				F740BEF02A35C2AD00E9B6D5 /* UILabel+Extension.swift in Sources */,
+				AB17A0312F90000100FE2803 /* NCFilenameView.swift in Sources */,
 				F7C30E01291BD2610017149B /* NCNetworkingE2EERename.swift in Sources */,
 				F75F4BC22FD008D7009E55ED /* Optional+Extension.swift in Sources */,
 				AF4BF61A27562A4B0081CEEF /* NCManageDatabase+Metadata.swift in Sources */,
@@ -5109,6 +5118,7 @@
 				F7C687E92D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */,
 				F7802B322BD5584F00D74270 /* NCMedia+DragDrop.swift in Sources */,
 				F7EE66AD2A20B226009AE765 /* UILabel+Extension.swift in Sources */,
+				AB17A0012F90000100FE2801 /* NCFilenameView.swift in Sources */,
 				F78ACD4221903CE00088454D /* NCListCell.swift in Sources */,
 				F7BD0A002C468925003A4A6D /* NCMedia+CollectionViewDataSource.swift in Sources */,
 				F76D3CF12428B40E005DFA87 /* NCViewerPDFSearch.swift in Sources */,
@@ -6430,6 +6440,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/iOSClient.entitlements";
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = 6CGN4ABH9M;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
 				OTHER_LDFLAGS = "";
@@ -6452,6 +6463,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/iOSClient.entitlements";
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = 6CGN4ABH9M;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
 				OTHER_LDFLAGS = "";

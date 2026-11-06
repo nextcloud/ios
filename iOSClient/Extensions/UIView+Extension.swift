@@ -33,13 +33,23 @@ extension UIView {
             extensionLabel?.text = "." + ext
             extensionLabel?.isHidden = false
         }
+
+        // When the labels live inside an NCFilenameView, it needs to re-measure
+        // the truncated title and reposition the extension label.
+        if let filenameView = titleLabel?.superview as? NCFilenameView {
+            filenameView.invalidateContentSize()
+        } else {
+            titleLabel?.superview?.setNeedsLayout()
+        }
     }
 }
 
 extension UIScrollView {
     func hideTopScrollEdgeEffect() {
+        #if compiler(>=6.3)
         if #available(iOS 27.0, *) {
             topEdgeEffect.isHidden = true
         }
+        #endif
     }
 }
