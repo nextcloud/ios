@@ -376,10 +376,21 @@ class NCLoginProviderWebViewFallback: UIViewController, WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         DispatchQueue.global().async {
-            if let serverTrust = challenge.protectionSpace.serverTrust {
-                completionHandler(.useCredential, URLCredential(trust: serverTrust))
-            } else {
-                completionHandler(.useCredential, nil)
+            switch challenge.protectionSpace.authenticationMethod {
+            case NSURLAuthenticationMethodClientCertificate:
+                if let credential = NCNetworking.shared.clientCertificateCredential() {
+                    completionHandler(.useCredential, credential)
+                } else {
+                    completionHandler(.performDefaultHandling, nil)
+                }
+            case NSURLAuthenticationMethodServerTrust:
+                if let serverTrust = challenge.protectionSpace.serverTrust {
+                    completionHandler(.useCredential, URLCredential(trust: serverTrust))
+                } else {
+                    completionHandler(.performDefaultHandling, nil)
+                }
+            default:
+                completionHandler(.performDefaultHandling, nil)
             }
         }
     }
