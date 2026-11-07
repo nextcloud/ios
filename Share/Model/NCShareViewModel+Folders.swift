@@ -21,19 +21,23 @@ extension NCShareViewModel {
         return rows
     }
 
-    func resetFolderBrowser() {
+    func resetFolderBrowser(preservingContent: Bool = false) {
         folderBrowserID = UUID()
         folderSelectionTask?.cancel()
         for task in folderTasks.values { task.cancel() }
         for request in folderRequests.values { request.cancel() }
         folderTasks.removeAll()
         folderRequests.removeAll()
-        folders = []
-        recentFolders = []
-        selectedFolder = nil
-        isRecentFolderSelected = false
-        folderChildren = [:]
-        expandedFolderURLs = []
+        // Keep the previous snapshot visible but disabled while the account changes.
+        if !preservingContent {
+            folders = []
+            recentFolders = []
+            selectedFolder = nil
+            isRecentFolderSelected = false
+            folderChildren = [:]
+            expandedFolderURLs = []
+        }
+        folderScrollTarget = nil
         loadingFolderURLs = []
         loadedFolderURLs = []
         folderLoadErrors = [:]
@@ -47,10 +51,7 @@ extension NCShareViewModel {
         let root = NCShareFolderItem(
             ocId: "", name: NSLocalizedString("_share_home_folder_", comment: ""), serverUrl: home,
             path: "/", image: NCImageCache.shared.getFolder(account: session.account), isEncrypted: false)
-        folders = [root]
-        selectedFolder = root
-        expandedFolderURLs = [home]
-        recentFolders = recentFoldersStore.folders(account: session.account).filter {
+        let recent = recentFoldersStore.folders(account: session.account).filter {
             $0.serverUrl == home || $0.serverUrl.hasPrefix(home + "/")
         }.map { item in
             NCShareFolderItem(
@@ -61,7 +62,13 @@ extension NCShareViewModel {
         }
         let cached = await cachedFolderChildren(at: home, parent: nil, session: session)
         guard isCurrentBrowser(browserID, account: session.account) else { return }
-        folderChildren[home] = cached
+        // Publish the replacement snapshot together, without an empty intermediate list.
+        folders = [root]
+        selectedFolder = root
+        isRecentFolderSelected = false
+        expandedFolderURLs = [home]
+        recentFolders = recent
+        folderChildren = [home: cached]
         // Make cached destinations usable without waiting for the server refresh.
         if refreshFromServer { requestFolderChildren(root) }
     }
@@ -95,7 +102,7 @@ extension NCShareViewModel {
         }
     }
 
-    /// Validates the destination on the server before changing the selection.
+    /// Validates the destination on the server, then selects and expands it.
     /// fromRecents controls which of the two occurrences displays the checkmark.
     func selectFolder(_ folder: NCShareFolderItem, fromRecents: Bool = false) {
         guard canUseFolderBrowser, let capabilities = serverCapabilities, canAccessFolder(folder) else { return }
@@ -129,7 +136,8 @@ extension NCShareViewModel {
             serverUrl = folder.serverUrl
             selectedFolder = selected
             isRecentFolderSelected = fromRecents
-            navigationTitle = selected.name
+            expandedFolderURLs.insert(selected.serverUrl)
+            requestFolderChildren(selected)
         }
     }
 

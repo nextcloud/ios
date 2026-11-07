@@ -53,7 +53,7 @@ extension NCShareViewModel {
         let changeID = UUID()
         accountChangeID = changeID
         isSwitchingAccount = true
-        clearAccountView()
+        clearAccountView(preservingContent: true)
         serverUrl = ""
         accountChangeTask = Task { @MainActor [self] in
             defer { if accountChangeID == changeID { isSwitchingAccount = false } }
@@ -79,7 +79,6 @@ extension NCShareViewModel {
             autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(
                 account: account, urlBase: session.urlBase, userId: session.userId)
             serverUrl = utilityFileSystem.getHomeServer(session: session)
-            navigationTitle = NCBrandOptions.shared.brand
             let name = tblAccount.displayName.isEmpty ? tblAccount.user : tblAccount.displayName
             accountName = tblAccount.alias.isEmpty ? name : name + " - " + tblAccount.alias
             // Publish the local browser before capabilities can trigger a network request.
@@ -115,6 +114,7 @@ extension NCShareViewModel {
     /// Resolves one capabilities snapshot for this account: database first, network
     /// only when absent. All Share actions use the resulting serverCapabilities.
     private func loadServerCapabilities(account: String, changeID: UUID) async {
+        isLoadingCapabilities = true
         serverCapabilities = nil
         capabilitiesErrorMessage = ""
         defer { if accountChangeID == changeID { isLoadingCapabilities = false } }
@@ -123,8 +123,6 @@ extension NCShareViewModel {
         guard isCurrentCapabilitiesRequest(account: account, changeID: changeID) else { return }
         if capabilities == nil {
             guard !isOffline else { return }
-            // Cached capabilities should not briefly insert a loading banner.
-            isLoadingCapabilities = true
             let result = await NextcloudKit.shared.getCapabilitiesAsync(account: account) { [weak self] task in
                 Task { @MainActor [weak self] in
                     guard let self, !self.isClosing, self.accountChangeID == changeID else {

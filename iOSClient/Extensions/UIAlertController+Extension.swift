@@ -18,13 +18,14 @@ extension UIAlertController {
                                  session: NCSession.Session,
                                  markE2ee: Bool = false,
                                  sceneIdentifier: String? = nil,
+                                 onCreated: ((_ folderName: String) -> Void)? = nil,
                                  capabilities: NKCapabilities.Capabilities,
                                  completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: nil, preferredStyle: .alert)
         let isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
 
-        let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
-            guard let fileNameFolder = alertController.textFields?.first?.text else { return }
+        let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { [weak alertController] _ in
+            guard let fileNameFolder = alertController?.textFields?.first?.text else { return }
 
             if markE2ee {
                 if NCNetworking.shared.isOffline {
@@ -51,6 +52,7 @@ extension UIAlertController {
                                 banner.dismiss()
                             }
                         }
+                        if error == .success { onCreated?(fileNameFolder) }
                         completion?(error)
                     } else {
                         if let banner {
@@ -68,12 +70,14 @@ extension UIAlertController {
 
                     let error = await NCNetworkingE2EECreateFolder().createFolder(fileName: fileNameFolder, serverUrl: serverUrl, sceneIdentifier: sceneIdentifier, session: session)
 
+                    if error == .success { onCreated?(fileNameFolder) }
                     completion?(error)
                 }
             } else {
 #if EXTENSION
                 Task {
                     let error = await NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, session: session)
+                    if error == .success { onCreated?(fileNameFolder) }
                     completion?(error)
                 }
 #else
@@ -116,11 +120,11 @@ extension UIAlertController {
             textField.autocapitalizationType = .words
         }
 
-        NotificationCenter.default.addObserver(
-            forName: UITextField.textDidChangeNotification,
-            object: alertController.textFields?.first,
-            queue: .main) { _ in
-                guard let text = alertController.textFields?.first?.text else {
+        // The field owns this handler, so validation ends with the dialog's lifetime.
+        // Weak captures avoid retaining the alert through its field and actions.
+        alertController.textFields?.first?.addAction(UIAction { [weak alertController, weak okAction] _ in
+                guard let alertController, let okAction,
+                      let text = alertController.textFields?.first?.text else {
                     return
                 }
                 let folderName = text.trimmingCharacters(in: .whitespaces)
@@ -148,7 +152,7 @@ extension UIAlertController {
                 ])
 
                 alertController.setValue(attributedString, forKey: "attributedMessage")
-            }
+            }, for: .editingChanged)
 
         alertController.addAction(cancelAction)
         alertController.addAction(okAction)

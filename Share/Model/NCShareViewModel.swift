@@ -17,6 +17,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
     @Published var recentFolders: [NCShareFolderItem] = []
     @Published var selectedFolder: NCShareFolderItem?
     @Published var isRecentFolderSelected = false
+    @Published var folderScrollTarget: String?
     @Published var folderChildren: [String: [NCShareFolderItem]] = [:]
     @Published var expandedFolderURLs: Set<String> = []
     @Published var loadingFolderURLs: Set<String> = []
@@ -51,7 +52,6 @@ final class NCShareViewModel: NSObject, ObservableObject {
     @Published var inputErrorMessage = ""
     @Published var alertMessage = ""
     private var alertDismissAction: (() -> Void)?
-    @Published var navigationTitle = NCBrandOptions.shared.brand
     @Published var accountName = ""
     @Published var accounts: [NCShareAccountItem] = []
     @Published var accountAvatars: [String: UIImage] = [:]
@@ -313,16 +313,17 @@ final class NCShareViewModel: NSObject, ObservableObject {
         return false
     }
 
-    func clearAccountView() {
+    func clearAccountView(preservingContent: Bool = false) {
         capabilitiesTask?.cancel()
         capabilitiesRequest?.cancel()
         serverCapabilities = nil
         isLoadingCapabilities = false
         capabilitiesErrorMessage = ""
-        isAvailable = false
-        resetFolderBrowser()
-        accountName = ""
-        navigationTitle = NCBrandOptions.shared.brand
+        resetFolderBrowser(preservingContent: preservingContent)
+        if !preservingContent {
+            isAvailable = false
+            accountName = ""
+        }
     }
 
     /// Completes or cancels the extension request once and stops its pending work.
@@ -371,18 +372,51 @@ final class NCShareViewModel: NSObject, ObservableObject {
         let session = sessionStore.getSession()
         guard canUseFolderBrowser, isUploadDestinationReady, !isPreparingInput, inputErrorMessage.isEmpty,
               let folder = selectedFolder else { return }
-        guard let capabilities = serverCapabilities else { return }
-        let alert = UIAlertController.createFolderWith(serverUrl: folder.serverUrl, session: session, capabilities: capabilities) { [weak self] error in
-            guard let self else { return }
-            guard !self.isClosing, self.sessionStore.getSession().account == session.account else { return }
-            if error == .success {
-                self.expandedFolderURLs.insert(folder.serverUrl)
-                self.requestFolderChildren(folder, refresh: true)
-            } else {
-                self.showAlert(description: error.errorDescription)
-            }
-        }
-        presenter?.present(alert, animated: true)
+        guard let capabilities = serverCapabilities,
+              let presenter, presenter.viewIfLoaded?.window != nil,
+              presenter.presentedViewController == nil,
+              !presenter.isBeingDismissed else { return }
+        let browserID = folderBrowserID
+        let alert = UIAlertController.createFolderWith(
+            serverUrl: folder.serverUrl, session: session,
+            onCreated: { [weak self] name in
+                guard let self, !self.isClosing, self.folderBrowserID == browserID else { return }
+                self.isLoading = true
+                self.folderSelectionTask = Task { @MainActor [weak self] in
+                    guard let self else { return }
+                    defer { if self.folderBrowserID == browserID { self.isLoading = false } }
+                    // Recents can point into a collapsed, not-yet-loaded branch.
+                    // Load and expand its ancestors before scrolling to the new row.
+                    guard var branch = self.folders.first else { return }
+                    while true {
+                        guard !Task.isCancelled, !self.isClosing, self.folderBrowserID == browserID else { return }
+                        self.expandedFolderURLs.insert(branch.serverUrl)
+                        if let task = self.folderTasks[branch.serverUrl] { await task.value }
+                        guard !Task.isCancelled, !self.isClosing, self.folderBrowserID == browserID else { return }
+                        self.requestFolderChildren(branch, refresh: branch.serverUrl == folder.serverUrl)
+                        if let task = self.folderTasks[branch.serverUrl] { await task.value }
+                        guard !Task.isCancelled, !self.isClosing, self.folderBrowserID == browserID,
+                              self.folderLoadErrors[branch.serverUrl] == nil else { return }
+                        if branch.serverUrl == folder.serverUrl { break }
+                        guard let child = self.folderChildren[branch.serverUrl]?.first(where: {
+                            folder.serverUrl == $0.serverUrl || folder.serverUrl.hasPrefix($0.serverUrl + "/")
+                        }) else { return }
+                        branch = child
+                    }
+                    guard let created = self.folderChildren[folder.serverUrl]?.first(where: { $0.name == name }),
+                          self.isAuthenticated else { return }
+                    self.selectedFolder = created
+                    self.serverUrl = created.serverUrl
+                    self.isRecentFolderSelected = false
+                    self.expandedFolderURLs.insert(created.serverUrl)
+                    self.requestFolderChildren(created)
+                    self.folderScrollTarget = created.serverUrl
+                }
+            }, capabilities: capabilities, completion: { [weak self] error in
+                guard let self, !self.isClosing, self.folderBrowserID == browserID else { return }
+                if error != .success { self.showAlert(description: error.errorDescription) }
+            })
+        presenter.present(alert, animated: true)
     }
 
     func showRenameFileDialog(named fileName: String) {

@@ -9,6 +9,11 @@ struct NCShareView: View {
     @ObservedObject var model: NCShareViewModel
     @State private var fileActions: String?
 
+    private var isRefreshing: Bool {
+        model.isLoading || model.isSwitchingAccount || model.isLoadingAccounts ||
+            model.isLoadingCapabilities || !model.loadingFolderURLs.isEmpty
+    }
+
     var body: some View {
         NavigationStack {
             Group {
@@ -74,7 +79,7 @@ struct NCShareView: View {
             .sheet(item: $model.uploadConfirmation, onDismiss: { model.uploadConfirmationDismissed() }) { confirmation in
                 NCShareUploadConflictView(confirmation: confirmation, resolve: model.resolveUploadConfirmation)
             }
-            .navigationTitle(model.navigationTitle)
+            .navigationTitle(String(format: NSLocalizedString("_share_save_to_", comment: "Share title; %@ is the cloud brand name"), NCBrandOptions.shared.brand))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.visible, for: .navigationBar)
             .toolbarBackground(.hidden, for: .navigationBar)
@@ -84,9 +89,9 @@ struct NCShareView: View {
                         HStack(spacing: 8) {
                             NCShareAccountMenu(model: model)
                                 .disabled(model.isLoading || model.isPreparingUpload || model.isSwitchingAccount || model.isLoadingAccounts)
-                            if model.isLoading || !model.loadingFolderURLs.isEmpty {
+                            if isRefreshing {
                                 ProgressView()
-                                    .accessibilityLabel(NSLocalizedString(model.isLoading ? "_share_checking_folder_" : "_share_loading_folders_", comment: ""))
+                                    .accessibilityLabel(NSLocalizedString("_request_in_progress_", comment: ""))
                                     .padding(.trailing, 8)
                             }
                         }
@@ -133,9 +138,7 @@ struct NCShareView: View {
                 Button(NSLocalizedString("_share_retry_folder_", comment: "")) { model.retryFolder(row.folder) }
             }
             .padding()
-        } else if model.isLoadingCapabilities {
-            ProgressView(NSLocalizedString("_share_capabilities_loading_", comment: ""))
-                .padding()
+
         } else if model.isPreparingInput {
             ProgressView(NSLocalizedString("_share_import_preparing_", comment: ""))
                 .padding()
@@ -158,42 +161,41 @@ struct NCShareView: View {
                 createFolderHeader
                     .padding(.horizontal, horizontalInset)
             }
-            List {
-                Section {
-                    if !model.recentFolders.isEmpty {
-                        folderListTitle("_share_recent_folders_")
-                        ForEach(model.recentFolders) { folder in
-                            folderRow(folder, depth: nil)
-                        }
-                    }
-                    folderListTitle("_share_all_folders_")
-                    ForEach(model.visibleFolderRows) { row in
-                        folderRow(row.folder, depth: row.depth)
-                        if model.expandedFolderURLs.contains(row.folder.serverUrl) {
-                            if model.folderLoadErrors[row.folder.serverUrl] == nil,
-                               model.loadedFolderURLs.contains(row.folder.serverUrl),
-                               model.folderChildren[row.folder.serverUrl]?.isEmpty == true {
-                                Text(NSLocalizedString("_files_no_folders_", comment: ""))
-                                    .cappedFont(.caption, maxDynamicType: .accessibility2)
-                                    .foregroundStyle(.secondary)
-                                    .padding(.leading, CGFloat(min(row.depth + 1, 8)) * 16)
+            ScrollViewReader { proxy in
+                List {
+                    Section {
+                        if !model.recentFolders.isEmpty {
+                            folderListTitle("_share_recent_folders_")
+                            ForEach(model.recentFolders) { folder in
+                                folderRow(folder, depth: nil)
                             }
+                        }
+                        folderListTitle("_share_all_folders_")
+                        ForEach(model.visibleFolderRows) { row in
+                            folderRow(row.folder, depth: row.depth)
+                                .id(row.folder.serverUrl)
                         }
                     }
                 }
+                .listStyle(.plain)
+                .contentMargins(.vertical, 0, for: .scrollContent)
+                .scrollContentBackground(.hidden)
+                .environment(\.defaultMinListRowHeight, 0)
+                .background(Color(uiColor: .secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal, horizontalInset)
+                .onChange(of: model.folderScrollTarget) { _, target in
+                    guard let target else { return }
+                    withAnimation { proxy.scrollTo(target, anchor: .center) }
+                    model.folderScrollTarget = nil
+                }
             }
-            .listStyle(.plain)
-            .contentMargins(.vertical, 0, for: .scrollContent)
-            .scrollContentBackground(.hidden)
-            .environment(\.defaultMinListRowHeight, 0)
-            .background(Color(uiColor: .secondarySystemGroupedBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .padding(.horizontal, horizontalInset)
         }
         .frame(maxHeight: .infinity)
         .clipped()
         .background(Color(uiColor: .systemGroupedBackground))
-        .disabled(model.isLoading || model.isPreparingUpload || !model.isAccountReady || model.isLoadingAccounts)
+        .opacity(isRefreshing ? 0.45 : 1)
+        .disabled(isRefreshing || model.isPreparingUpload || !model.isAccountReady)
     }
 
     private func folderListTitle(_ key: String) -> some View {
@@ -223,7 +225,7 @@ struct NCShareView: View {
             }
             .buttonStyle(.borderless)
             .tint(.blue)
-            .disabled(!model.canUseFolderBrowser || !model.isUploadDestinationReady ||
+            .disabled(isRefreshing || !model.canUseFolderBrowser || !model.isUploadDestinationReady ||
                       model.isPreparingInput || !model.inputErrorMessage.isEmpty)
         }
         .textCase(nil)
@@ -327,7 +329,7 @@ struct NCShareView: View {
             } label: {
                 HStack {
                     Label {
-                        Text(verbatim: fileName).lineLimit(2)
+                        NCShareFilenameView(name: fileName)
                     } icon: {
                         Group {
                             if let thumbnail = model.fileThumbnails[fileName] {
@@ -345,7 +347,8 @@ struct NCShareView: View {
                     }
                     .foregroundStyle(.primary)
                     Spacer(minLength: 0)
-                    Image(systemName: "ellipsis.circle")
+                    Image(systemName: "ellipsis")
+                        .cappedFont(.title2, maxDynamicType: .accessibility2)
                         .foregroundStyle(Color.accentColor)
                         .frame(width: 50, height: 50)
                         .accessibilityHidden(true)
@@ -355,7 +358,7 @@ struct NCShareView: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .confirmationDialog(Text(verbatim: fileName), isPresented: Binding(
+            .confirmationDialog(Text(verbatim: NCShareFilenameView.displayName(fileName)), isPresented: Binding(
                 get: { fileActions == fileName },
                 set: { if !$0 { fileActions = nil } }
             ), titleVisibility: .visible) {
@@ -380,7 +383,8 @@ struct NCShareView: View {
         .background(Color(uiColor: .secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .padding(.horizontal, horizontalInset)
-        .disabled(model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady || model.isLoadingAccounts || !model.inputErrorMessage.isEmpty)
+        .opacity(isRefreshing ? 0.45 : 1)
+        .disabled(isRefreshing || model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady || !model.inputErrorMessage.isEmpty)
     }
 
     private var uploadButton: some View {
@@ -402,7 +406,7 @@ struct NCShareView: View {
         .buttonStyle(.borderedProminent)
         .buttonBorderShape(.roundedRectangle(radius: 12))
         .padding(.horizontal, 16)
-        .disabled(model.fileNames.isEmpty || !model.isUploadDestinationReady || model.isLoading ||
+        .disabled(isRefreshing || model.fileNames.isEmpty || !model.isUploadDestinationReady || model.isLoading ||
                   model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady ||
                   model.isLoadingAccounts || !model.inputErrorMessage.isEmpty)
     }

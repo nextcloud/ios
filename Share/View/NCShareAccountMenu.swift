@@ -26,12 +26,11 @@ struct NCShareAccountMenu: View {
             }
             .pickerStyle(.inline)
         } label: {
-            HStack(spacing: 8) {
-                avatar(for: model.accounts.first(where: \.isSelected)?.id ?? "")
-                Text(verbatim: model.accountName)
-                    .lineLimit(1)
-            }
+            avatar(for: model.accounts.first(where: \.isSelected)?.id ?? "")
+                .frame(minWidth: 44, minHeight: 44)
         }
+        .accessibilityLabel(NSLocalizedString("_account_select_", comment: ""))
+        .accessibilityValue(Text(verbatim: model.accountName))
         .buttonStyle(.plain)
         .dynamicTypeSize(.xSmall ... .accessibility2)
         .disabled(model.accounts.count < 2)

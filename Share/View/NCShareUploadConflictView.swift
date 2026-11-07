@@ -15,15 +15,15 @@ struct NCShareUploadConflictView: View {
                 Section {
                     Text(confirmation.isBatch
                          ? NSLocalizedString("_share_conflict_batch_message_", comment: "")
-                         : String(format: NSLocalizedString("_share_conflict_single_message_", comment: ""), confirmation.items[0].sourceName))
+                         : String(format: NSLocalizedString("_share_conflict_single_message_", comment: ""), NCShareFilenameView.displayName(confirmation.items[0].sourceName)))
                 }
                 Section(NSLocalizedString("_share_conflict_new_names_", comment: "")) {
                     ForEach(confirmation.renamedItems, id: \.sourceName) { item in
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(verbatim: item.sourceName)
+                            NCShareFilenameView(name: item.sourceName)
                                 .cappedFont(.caption, maxDynamicType: .accessibility2)
                                 .foregroundStyle(.secondary)
-                            Text(verbatim: item.fileName)
+                            NCShareFilenameView(name: item.fileName)
                         }
                     }
                 }
