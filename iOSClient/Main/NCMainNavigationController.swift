@@ -103,6 +103,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         menuPlusButton.setPlusButtonColor(NCBrandColor.shared.getElement(account: session.account))
         menuPlusButton.showsMenuAsPrimaryAction = true
+        menuPlusButton.alpha = 0
+        menuPlusButton.isEnabled = false
         menuPlusButton.translatesAutoresizingMaskIntoConstraints = false
         menuPlusButton.accessibilityLabel = NSLocalizedString("_add_", comment: "")
 
@@ -115,7 +117,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             menuPlusButton.heightAnchor.constraint(equalToConstant: buttonSize)
         ])
 
-        menuPlus = NCContextMenuPlus(menuPlusButton: menuPlusButton, controller: controller)
+        menuPlus = NCContextMenuPlus(menuPlusButton: menuPlusButton, navigationController: self)
     }
 
     // MARK: - Notifications
@@ -173,12 +175,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             viewController.navigationItem.navigationBarMinimization.minimizationBehavior = .never
         }
 
+        menuPlus?.updatePlusButtonVisibility(for: viewController, animation: false)
         Task { @MainActor in
-            if let viewController = viewController as? NCFiles {
-                menuPlus?.hiddenPlusButton(isEditMode: viewController.isEditMode, isSearchingMode: viewController.isSearchingMode, animation: false)
-            } else {
-                menuPlus?.hiddenPlusButton(true, animation: false)
-            }
             setNavigationBarAppearance()
             await updateNavigationMenu()
             configureSidebarButton()

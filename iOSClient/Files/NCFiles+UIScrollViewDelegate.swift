@@ -15,7 +15,8 @@ extension NCFiles {
 
             accumulatedScrollDown += deltaY
             if accumulatedScrollDown > 150,
-               let menuPlusButton = self.mainNavigationController?.menuPlusButton {        // threshold before decreasing alpha
+               let menuPlusButton = self.mainNavigationController?.menuPlusButton,
+               menuPlusButton.isEnabled {
                 UIView.animate(withDuration: 0.2) {
                     menuPlusButton.alpha = max(0.4, menuPlusButton.alpha - 0.02)
                 }
@@ -25,7 +26,8 @@ extension NCFiles {
 
             accumulatedScrollDown = 0
             if abs(velocity) > 700,
-               let menuPlusButton = self.mainNavigationController?.menuPlusButton {        // speed before increasing alpha
+               let menuPlusButton = self.mainNavigationController?.menuPlusButton,
+               menuPlusButton.isEnabled {
                 UIView.animate(withDuration: 0.2) {
                     menuPlusButton.alpha = min(1.0, menuPlusButton.alpha + 0.1)
                 }
