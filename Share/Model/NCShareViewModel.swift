@@ -285,12 +285,17 @@ final class NCShareViewModel: NSObject, ObservableObject {
     }
 
     private func validateAccount() -> Bool {
+        guard !isPresentingNoAccountAlert else { return false }
         guard !NCPasscodeModel.isPasscodeReset else {
             return showNoAccountAlert()
         }
 
-        if let account = sessionStore.account?.account,
-           NCManageDatabase.shared.getTableAccount(account: account) != nil {
+        if let account = sessionStore.account?.account {
+            // Re-read the selected account after foregrounding. It may have been
+            // removed by the host app while this share request was suspended.
+            guard NCManageDatabase.shared.getTableAccount(account: account) != nil else {
+                return showNoAccountAlert()
+            }
             return true
         }
 
@@ -303,12 +308,22 @@ final class NCShareViewModel: NSObject, ObservableObject {
     }
 
     private func showNoAccountAlert() -> Bool {
+        guard !isPresentingNoAccountAlert else { return false }
+        isPresentingNoAccountAlert = true
+        isAuthenticated = false
+        accountChangeID = UUID()
+        accountChangeTask?.cancel()
+        accountsTask?.cancel()
+        uploadTask?.cancel()
+        pendingUploadConfirmation = nil
+        uploadChoice = nil
+        uploadConfirmation = nil
         clearAccountView()
-        if !isPresentingNoAccountAlert {
-            isPresentingNoAccountAlert = true
-            showAlert(description: "_no_active_account_") { [weak self] in
-                self?.cancel(with: .noAccount)
-            }
+        banner?.dismiss()
+        if isPresentingPasscode {
+            cancel(with: .noAccount)
+        } else {
+            showAlert(description: "_no_active_account_") { [weak self] in self?.cancel(with: .noAccount) }
         }
         return false
     }

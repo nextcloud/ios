@@ -34,7 +34,7 @@ extension NCShareViewModel {
             } catch is CancellationError {
                 // The extension was closed; do not present another screen.
             } catch {
-                if !isClosing { showAlert(description: error.localizedDescription) }
+                if !Task.isCancelled, !isClosing { showAlert(description: error.localizedDescription) }
             }
         }
     }
@@ -63,7 +63,7 @@ extension NCShareViewModel {
             } catch is CancellationError {
                 // No upload after cancellation or a destination change.
             } catch {
-                if !isClosing { showAlert(description: error.localizedDescription) }
+                if !Task.isCancelled, !isClosing { showAlert(description: error.localizedDescription) }
             }
         }
     }
@@ -192,7 +192,7 @@ extension NCShareViewModel {
 
         var error: NKError?
         var errorContext: NCErrorContext = .generic
-        guard let window = presenter?.view.window else {
+        guard !Task.isCancelled, !isClosing, let window = presenter?.view.window else {
             return
         }
         let payload = LucidBannerPayload(stage: .button,
@@ -216,6 +216,7 @@ extension NCShareViewModel {
             banner?.update(payload: payloadUpdate)
 
             error = await self.upload(metadata: metadata)
+            guard !Task.isCancelled, !isClosing else { return }
             if error != .success {
                 errorContext = .upload(fileName: NCShareFilenameView.displayName(metadata.fileNameView))
                 break

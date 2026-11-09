@@ -348,7 +348,6 @@ struct NCShareView: View {
                     .foregroundStyle(.primary)
                     Spacer(minLength: 0)
                     Image(systemName: "ellipsis")
-                        .cappedFont(.title2, maxDynamicType: .accessibility2)
                         .foregroundStyle(Color.accentColor)
                         .frame(width: 50, height: 50)
                         .accessibilityHidden(true)
