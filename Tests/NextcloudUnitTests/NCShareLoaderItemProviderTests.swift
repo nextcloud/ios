@@ -102,8 +102,10 @@ struct NCShareLoaderItemProviderTests {
         defer { try? FileManager.default.removeItem(at: directory) }
         let text = "A note with formatting\nCaffè ☕️"
         let attributed = NSAttributedString(string: text, attributes: [.font: UIFont.boldSystemFont(ofSize: 17)])
-        let item = NSItemProvider(object: attributed)
-        item.suggestedName = "Note"
+        let rtf = try attributed.data(from: NSRange(location: 0, length: attributed.length),
+                                      documentAttributes: [.documentType: NSAttributedString.DocumentType.rtf])
+        let item = provider(data: rtf, type: .rtf, name: "Note")
+        item.registerObject(text as NSString, visibility: .all)
 
         let output = try await load([item], directory: directory)
 
@@ -111,12 +113,8 @@ struct NCShareLoaderItemProviderTests {
         #expect(output.fileNames.count == 1)
         let name = try #require(output.fileNames.first)
         let file = directory.appendingPathComponent(name)
-        if file.pathExtension == "txt" {
-            #expect(try String(contentsOf: file, encoding: .utf8) == text)
-        } else {
-            let restored = try NSAttributedString(url: file, options: [:], documentAttributes: nil)
-            #expect(restored.string == text)
-        }
+        #expect(file.pathExtension == "rtf")
+        #expect(try Data(contentsOf: file) == rtf)
     }
 
     @Test("An empty file is valid input")

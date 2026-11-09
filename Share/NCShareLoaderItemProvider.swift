@@ -382,7 +382,8 @@ final class NCShareLoaderItemProvider {
             .replacingOccurrences(of: "\\", with: "_")
             .replacingOccurrences(of: "/", with: "_")
         if name.isEmpty || name == "." || name == ".." { name = "Shared item" }
-        if let type, let preferredExtension = type.preferredFilenameExtension {
+        // The plain-text fallback writes UTF-8 bytes even if that UTType has no filename tag.
+        if let type, let preferredExtension = type == .utf8PlainText ? "txt" : type.preferredFilenameExtension {
             let existingExtension = (name as NSString).pathExtension
             if existingExtension.isEmpty {
                 name += "." + preferredExtension
