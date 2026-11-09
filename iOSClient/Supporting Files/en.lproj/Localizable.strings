@@ -878,6 +878,8 @@
 "_passcode_incorrect_" = "Incorrect passcode. Try again.";
 "_passcode_digits_entered_" = "Passcode digits entered";
 
+"_background_upload_job_missing_" = "Upload failed. Please retry.";
+
 // MARK: Error messages
 
 "_error_title_upload_" = "Couldn't upload “%@”";

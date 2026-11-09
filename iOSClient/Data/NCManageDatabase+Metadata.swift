@@ -561,6 +561,55 @@ extension NCManageDatabase {
         }
     }
 
+    /// Applies a server-verified result only while the job and auto-upload session still match.
+    func reconcileMissingBackgroundUploadJobAsync(ocId: String,
+                                                  jobIdentifier: String,
+                                                  cutoff: Date,
+                                                  sessionIdentifier: String,
+                                                  serverMetadata: tableMetadata?,
+                                                  maximumAttempts: Int) async -> Bool {
+        let remote = serverMetadata?.detachedCopy()
+        return await core.performRealmReadAsync { realm in
+            try realm.write {
+                guard let metadata = realm.object(ofType: tableMetadata.self, forPrimaryKey: ocId),
+                      metadata.backgroundUploadJobIdentifier == jobIdentifier,
+                      metadata.status == NCGlobal.shared.metadataStatusUploading,
+                      !metadata.backgroundUploadCancellationRequested,
+                      metadata.sessionDate.map({ $0 < cutoff }) ?? true,
+                      let account = realm.objects(tableAccount.self).filter("account == %@", metadata.account).first,
+                      account.autoUploadStart,
+                      account.autoUploadSessionIdentifier == sessionIdentifier else { return false }
+
+                if let remote {
+                    remote.assetLocalIdentifier = metadata.assetLocalIdentifier
+                    remote.ocIdTransfer = metadata.ocIdTransfer
+                    remote.autoUploadServerUrlBase = metadata.autoUploadServerUrlBase
+                    remote.sessionSelector = metadata.sessionSelector
+                    remote.uploadDate = NSDate()
+                    remote.datePhotosOriginal = metadata.datePhotosOriginal
+                    remote.nativeFormat = metadata.nativeFormat
+                    remote.height = metadata.height
+                    remote.width = metadata.width
+                    realm.delete(metadata)
+                    realm.add(remote, update: .modified)
+                } else {
+                    let canRetry = metadata.backgroundUploadRetryCount < maximumAttempts - 1
+                        && !NCPreferences().isBackgroundUploadSuspended(account: metadata.account)
+                    metadata.status = canRetry ? NCGlobal.shared.metadataStatusWaitUpload : NCGlobal.shared.metadataStatusUploadError
+                    metadata.backgroundUploadJobIdentifier = "pending"
+                    metadata.backgroundUploadNextRetryDate = nil
+                    metadata.sessionTaskIdentifier = 0
+                    metadata.sessionDate = Date()
+                    metadata.sessionError = canRetry ? "" : NSLocalizedString("_background_upload_job_missing_", comment: "")
+                    metadata.errorCode = canRetry ? 0 : NSURLErrorUnknown
+                    metadata.errorKind = ""
+                    if canRetry { metadata.backgroundUploadRetryCount += 1 }
+                }
+                return true
+            }
+        } ?? false
+    }
+
     func replaceMetadataAsync(ocId: String, metadata: tableMetadata) async {
         let detached = metadata.detachedCopy()
 
