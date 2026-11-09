@@ -84,6 +84,7 @@
 		AB1028260000000000040001 /* NCShareLoaderItemProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000040000 /* NCShareLoaderItemProviderTests.swift */; };
 		AB1028260000000000040002 /* NCShareLoaderItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000020006 /* NCShareLoaderItemProvider.swift */; };
 		AB1028260000000000050101 /* NCShareUploadConflictView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000050001 /* NCShareUploadConflictView.swift */; };
+		AB1109260000000000010101 /* NCShareUploadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1109260000000000010001 /* NCShareUploadButton.swift */; };
 		A71107260000000000000101 /* NCShareFilenameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A71107260000000000000100 /* NCShareFilenameView.swift */; };
 		AB1028260000000000050200 /* NCShareUploadNamePlannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000050300 /* NCShareUploadNamePlannerTests.swift */; };
 		AB1028260000000000050201 /* NCShareViewModel+Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000020004 /* NCShareViewModel+Upload.swift */; };
@@ -96,6 +97,7 @@
 		AB1028260000000000080005 /* NCShareSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000020008 /* NCShareSessionStore.swift */; };
 		AB1028260000000000080006 /* NCShareAccountMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000060000 /* NCShareAccountMenu.swift */; };
 		AB1028260000000000080007 /* NCShareUploadConflictView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000050001 /* NCShareUploadConflictView.swift */; };
+		AB1109260000000000010102 /* NCShareUploadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1109260000000000010001 /* NCShareUploadButton.swift */; };
 		A71107260000000000000102 /* NCShareFilenameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A71107260000000000000100 /* NCShareFilenameView.swift */; };
 		AB1028260000000000080008 /* NCShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000020009 /* NCShareView.swift */; };
 		AB1028260000000000090100 /* NCShareRecentFoldersStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1028260000000000090000 /* NCShareRecentFoldersStore.swift */; };
@@ -1406,6 +1408,7 @@
 		AB102826000000000002000A /* NCShareViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareViewModel.swift; sourceTree = "<group>"; };
 		AB1028260000000000040000 /* NCShareLoaderItemProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareLoaderItemProviderTests.swift; sourceTree = "<group>"; };
 		AB1028260000000000050001 /* NCShareUploadConflictView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareUploadConflictView.swift; sourceTree = "<group>"; };
+		AB1109260000000000010001 /* NCShareUploadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareUploadButton.swift; sourceTree = "<group>"; };
 		A71107260000000000000100 /* NCShareFilenameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareFilenameView.swift; sourceTree = "<group>"; };
 		AB1028260000000000050300 /* NCShareUploadNamePlannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareUploadNamePlannerTests.swift; sourceTree = "<group>"; };
 		AB1028260000000000060000 /* NCShareAccountMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareAccountMenu.swift; sourceTree = "<group>"; };
@@ -2365,6 +2368,7 @@
 				AB1028260000000000020009 /* NCShareView.swift */,
 				AB1028260000000000060000 /* NCShareAccountMenu.swift */,
 				AB1028260000000000050001 /* NCShareUploadConflictView.swift */,
+				AB1109260000000000010001 /* NCShareUploadButton.swift */,
 				A71107260000000000000100 /* NCShareFilenameView.swift */,
 			);
 			path = View;
@@ -4909,6 +4913,7 @@
 				AB1028260000000000030008 /* NCShareSessionStore.swift in Sources */,
 				AB1028260000000000030009 /* NCShareView.swift in Sources */,
 				AB1028260000000000050101 /* NCShareUploadConflictView.swift in Sources */,
+				AB1109260000000000010101 /* NCShareUploadButton.swift in Sources */,
 				A71107260000000000000101 /* NCShareFilenameView.swift in Sources */,
 				AB1028260000000000060001 /* NCShareAccountMenu.swift in Sources */,
 				AB102826000000000003000A /* NCShareViewModel.swift in Sources */,
@@ -5051,6 +5056,7 @@
 				AB1028260000000000080005 /* NCShareSessionStore.swift in Sources */,
 				AB1028260000000000080006 /* NCShareAccountMenu.swift in Sources */,
 				AB1028260000000000080007 /* NCShareUploadConflictView.swift in Sources */,
+				AB1109260000000000010102 /* NCShareUploadButton.swift in Sources */,
 				A71107260000000000000102 /* NCShareFilenameView.swift in Sources */,
 				AB1028260000000000080008 /* NCShareView.swift in Sources */,
 				822D68B06B101563A759AD59 /* NKError+UserFriendlyMessage.swift in Sources */,
@@ -6457,6 +6463,7 @@
 					NCShareSessionStore.swift,
 					NCShareAccountMenu.swift,
 					NCShareUploadConflictView.swift,
+					NCShareUploadButton.swift,
 					NCShareFilenameView.swift,
 					NCShareView.swift,
 				);

@@ -887,10 +887,11 @@
 
 /* Share extension upload conflicts */
 "_share_conflict_title_" = "Files already exist";
-"_share_conflict_single_message_" = "An item named \"%@\" already exists in this folder. You can keep both files, or replace the existing file when available.";
+"_share_conflict_single_message_" = "An item named \"%@\" already exists in this folder.";
 "_share_conflict_batch_message_" = "Some names are already in use. These files will be uploaded with new names, keeping the existing files.";
 "_share_conflict_new_names_" = "New file names";
-"_share_conflict_replace_" = "Replace";
+"_share_conflict_replace_" = "Replace existing file";
+"_share_conflict_upload_with_new_name_" = "Upload with a new name";
 "_share_conflict_keep_both_" = "Keep both";
 "_share_conflict_checking_" = "Preparing upload…";
 "_share_conflict_read_failed_" = "The destination folder could not be checked. Please try again.";

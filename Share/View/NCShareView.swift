@@ -387,27 +387,10 @@ struct NCShareView: View {
     }
 
     private var uploadButton: some View {
-        Button(action: model.upload) {
-            HStack(spacing: 8) {
-                if model.isPreparingUpload {
-                    ProgressView()
-                        .tint(.white)
-                    Text(NSLocalizedString("_share_conflict_checking_", comment: ""))
-                } else {
-                    Text(String.localizedStringWithFormat(NSLocalizedString("_share_upload_to_", comment: ""), model.fileNames.count))
-                }
-            }
-            .lineLimit(2)
-            .truncationMode(.middle)
-            .multilineTextAlignment(.center)
-            .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(.borderedProminent)
-        .buttonBorderShape(.roundedRectangle(radius: 12))
-        .padding(.horizontal, 16)
-        .disabled(isRefreshing || model.fileNames.isEmpty || !model.isUploadDestinationReady || model.isLoading ||
-                  model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady ||
-                  model.isLoadingAccounts || !model.inputErrorMessage.isEmpty)
+        NCShareUploadButton(fileCount: model.fileNames.count, isPreparing: model.isPreparingUpload, action: model.upload)
+            .disabled(isRefreshing || model.fileNames.isEmpty || !model.isUploadDestinationReady || model.isLoading ||
+                      model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady ||
+                      model.isLoadingAccounts || !model.inputErrorMessage.isEmpty)
     }
 
 }
