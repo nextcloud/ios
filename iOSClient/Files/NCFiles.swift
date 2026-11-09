@@ -39,7 +39,7 @@ class NCFiles: NCCollectionViewCommon {
                    let account = userInfo["account"] as? String,
                    self.controller?.account == account {
                     // re-tint the + button
-                    self.mainNavigationController?.menuPlus?.updatePlusButtonEnabled(session: NCSession.shared.getSession(account: account))
+                    self.mainNavigationController?.menuPlus?.updatePlusButtonVisibility(animation: false)
                 }
             }
         }
@@ -73,6 +73,7 @@ class NCFiles: NCCollectionViewCommon {
                     let session = NCSession.shared.getSession(account: account)
                     self.mainNavigationController?.menuPlusButton.menu = nil
                     self.mainNavigationController?.menuPlusButton.isEnabled = false
+                    self.mainNavigationController?.menuPlus?.updatePlusButtonVisibility(animation: false)
 
                     self.serverUrl = self.utilityFileSystem.getHomeServer(session: session)
                     self.navigationController?.popToRootViewController(animated: false)
@@ -161,10 +162,8 @@ class NCFiles: NCCollectionViewCommon {
         }
         if let metadataFolder {
             nkLog(info: "Inside metadata folder with permissions: \(metadataFolder.permissions)")
-
-            // disable + button if no create permission or E2EE offline
-            self.mainNavigationController?.menuPlus?.updatePlusButtonEnabled(session: self.session)
         }
+        self.mainNavigationController?.menuPlus?.updatePlusButtonVisibility(animation: false)
 
         let metadatas = await self.database.getMetadatasAsyncDataSource(withServerUrl: self.serverUrl,
                                                                         withUserId: self.session.userId,
@@ -266,6 +265,7 @@ class NCFiles: NCCollectionViewCommon {
         let shouldSkipUpdate: Bool = (
             !forced &&
             tableDirectory?.etag == metadata.etag &&
+            self.metadataFolder?.permissions == metadata.permissions &&
             !metadata.e2eEncrypted &&
             !self.dataSource.isEmpty()
         )

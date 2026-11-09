@@ -560,7 +560,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         }
 
         // (+)
-        self.mainNavigationController?.menuPlus?.hiddenPlusButton(isEditMode: self.isEditMode, isSearchingMode: self.isSearchingMode)
+        self.mainNavigationController?.menuPlus?.updatePlusButtonVisibility()
     }
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
@@ -614,7 +614,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         self.searchResultStore = nil
 
         // (+)
-        self.mainNavigationController?.menuPlus?.hiddenPlusButton(isEditMode: self.isEditMode, isSearchingMode: self.isSearchingMode)
+        self.mainNavigationController?.menuPlus?.updatePlusButtonVisibility()
 
         Task {
             await searchOperationHandle.cancel()
@@ -710,6 +710,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                 return
             }
 
+            viewController.metadataFolder = metadata.detachedCopy()
             if navigationController.viewControllers.contains(where: { $0 === viewController }) {
                 navigationController.popToViewController(viewController, animated: true)
                 return
@@ -724,6 +725,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         }
 
         viewController.serverUrl = serverUrlPush
+        viewController.metadataFolder = metadata.detachedCopy()
         viewController.titlePreviusFolder = navigationItem.title
         viewController.titleCurrentFolder = metadata.fileNameView
         viewController.endToEndKeySetAccess = endToEndKeySetAccess
