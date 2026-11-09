@@ -124,7 +124,8 @@ struct NCShareView: View {
             VStack(spacing: 8) {
                 Text(verbatim: model.capabilitiesErrorMessage)
                     .cappedFont(.subheadline, maxDynamicType: .accessibility2)
-                    .multilineTextAlignment(.center)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 Button(NSLocalizedString("_share_capabilities_retry_", comment: ""), action: model.retryCapabilities)
                     .disabled(model.isSwitchingAccount)
             }
