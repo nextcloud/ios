@@ -176,7 +176,7 @@ extension NCViewerProviderContextMenu: NCTransferDelegate {
             guard let self, ocId == metadata?.ocId, metadata?.isImage == true else { return }
             if error != .success {
                 let windowScene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene
-                await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                await showErrorBanner(windowScene: windowScene, error: error, context: NCErrorContext(networkingStatus: networkingStatus, fileName: fileName))
             }
 
             switch networkingStatus {

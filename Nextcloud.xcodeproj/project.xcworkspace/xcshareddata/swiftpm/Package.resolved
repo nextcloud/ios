@@ -205,7 +205,7 @@
       "location" : "https://github.com/nextcloud/NextcloudKit",
       "state" : {
         "branch" : "main",
-        "revision" : "eb87c939dd740fe9edf33dc4ee0ca336cf222fb5"
+        "revision" : "62d52ad3ac203eebb80c4999ae304d4fc6da6f3b"
       }
     },
     {

@@ -23,17 +23,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                         if error.errorCode == NSUserCancelledError {
                             return
                         }
-                        await showErrorBanner(
-                            windowScene: windowScene,
-                            text: error.errorDescription
-                        )
+                        await showErrorBanner(windowScene: windowScene, error: error)
                         return
                     } catch {
-                        // fallback (non NKError)
-                        await showErrorBanner(
-                            windowScene: windowScene,
-                            text: error.localizedDescription
-                        )
+                        await showErrorBanner(windowScene: windowScene, error: NKError(error: error))
                         return
                     }
                 }
@@ -81,7 +74,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             if results.nkError == .success || results.nkError == .cancelled {
                 print("ok")
             } else {
-                await showErrorBanner(windowScene: windowScene, text: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
+                await showErrorBanner(windowScene: windowScene, error: results.nkError, context: .download(fileName: metadata.fileNameView))
             }
         }
 
@@ -132,7 +125,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
             } else {
-                await showErrorBanner(windowScene: windowScene, text: "_go_online_", errorCode: NCGlobal.shared.errorOfflineNotAllowed)
+                await showErrorBanner(windowScene: windowScene,
+                                      title: NCErrorContext.openDocument(fileName: metadata.fileNameView).failureTitle ?? "_error_",
+                                      text: "_go_online_",
+                                      errorCode: NCGlobal.shared.errorOfflineNotAllowed)
             }
         }
     }

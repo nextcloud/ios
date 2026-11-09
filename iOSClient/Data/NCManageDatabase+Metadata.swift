@@ -125,6 +125,8 @@ class tableMetadata: Object {
     @objc dynamic var height: Int = 0
     @objc dynamic var width: Int = 0
     @objc dynamic var errorCode: Int = 0
+    /// Raw value of the saved error's `NKError.Kind`; empty when there's no error or it's unknown.
+    @objc dynamic var errorKind = ""
     @objc dynamic var nativeFormat: Bool = false
     @objc dynamic var autoUploadServerUrlBase: String?
     @objc dynamic var typeIdentifier: String = ""
@@ -378,6 +380,18 @@ extension tableMetadata {
     }
 }
 
+#if !EXTENSION || EXTENSION_SHARE
+extension tableMetadata {
+    /// The saved error, worded for people from its `errorKind` (or `errorCode` for older records) and the operation the item failed at.
+    var sessionErrorMessage: String {
+        let error = NKError(errorCode: errorCode, errorDescription: sessionError, kind: NKError.Kind(rawValue: errorKind))
+        let context = NCErrorContext(metadataStatus: status, fileName: fileNameView)
+
+        return error.userFriendlyMessage(for: context) ?? error.localizedGenericMessage
+    }
+}
+#endif
+
 extension NCManageDatabase {
 #if !EXTENSION
     func isMetadataShareOrMounted(metadata: tableMetadata, metadataFolder: tableMetadata?) -> Bool {
@@ -545,6 +559,55 @@ extension NCManageDatabase {
             detached.backgroundUploadCancellationRequested = current.backgroundUploadCancellationRequested || detached.backgroundUploadCancellationRequested
             realm.add(detached, update: .modified)
         }
+    }
+
+    /// Applies a server-verified result only while the job and auto-upload session still match.
+    func reconcileMissingBackgroundUploadJobAsync(ocId: String,
+                                                  jobIdentifier: String,
+                                                  cutoff: Date,
+                                                  sessionIdentifier: String,
+                                                  serverMetadata: tableMetadata?,
+                                                  maximumAttempts: Int) async -> Bool {
+        let remote = serverMetadata?.detachedCopy()
+        return await core.performRealmReadAsync { realm in
+            try realm.write {
+                guard let metadata = realm.object(ofType: tableMetadata.self, forPrimaryKey: ocId),
+                      metadata.backgroundUploadJobIdentifier == jobIdentifier,
+                      metadata.status == NCGlobal.shared.metadataStatusUploading,
+                      !metadata.backgroundUploadCancellationRequested,
+                      metadata.sessionDate.map({ $0 < cutoff }) ?? true,
+                      let account = realm.objects(tableAccount.self).filter("account == %@", metadata.account).first,
+                      account.autoUploadStart,
+                      account.autoUploadSessionIdentifier == sessionIdentifier else { return false }
+
+                if let remote {
+                    remote.assetLocalIdentifier = metadata.assetLocalIdentifier
+                    remote.ocIdTransfer = metadata.ocIdTransfer
+                    remote.autoUploadServerUrlBase = metadata.autoUploadServerUrlBase
+                    remote.sessionSelector = metadata.sessionSelector
+                    remote.uploadDate = NSDate()
+                    remote.datePhotosOriginal = metadata.datePhotosOriginal
+                    remote.nativeFormat = metadata.nativeFormat
+                    remote.height = metadata.height
+                    remote.width = metadata.width
+                    realm.delete(metadata)
+                    realm.add(remote, update: .modified)
+                } else {
+                    let canRetry = metadata.backgroundUploadRetryCount < maximumAttempts - 1
+                        && !NCPreferences().isBackgroundUploadSuspended(account: metadata.account)
+                    metadata.status = canRetry ? NCGlobal.shared.metadataStatusWaitUpload : NCGlobal.shared.metadataStatusUploadError
+                    metadata.backgroundUploadJobIdentifier = "pending"
+                    metadata.backgroundUploadNextRetryDate = nil
+                    metadata.sessionTaskIdentifier = 0
+                    metadata.sessionDate = Date()
+                    metadata.sessionError = canRetry ? "" : NSLocalizedString("_background_upload_job_missing_", comment: "")
+                    metadata.errorCode = canRetry ? 0 : NSURLErrorUnknown
+                    metadata.errorKind = ""
+                    if canRetry { metadata.backgroundUploadRetryCount += 1 }
+                }
+                return true
+            }
+        } ?? false
     }
 
     func replaceMetadataAsync(ocId: String, metadata: tableMetadata) async {

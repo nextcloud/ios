@@ -18,11 +18,12 @@ extension NCManageDatabase {
     ///   - newFileName: Optional new filename.
     ///   - session: Optional session identifier.
     ///   - sessionTaskIdentifier: Optional task ID.
-    ///   - sessionError: Optional error string (clears error code if empty).
+    ///   - sessionError: Optional error string (clears error code and kind if empty).
     ///   - selector: Optional session selector.
     ///   - status: Optional metadata status (may reset sessionDate).
     ///   - etag: Optional ETag string.
     ///   - errorCode: Optional error code to persist.
+    ///   - errorKind: Optional `NKError.Kind` raw value to persist.
     /// - Returns: A detached copy of the updated `tableMetadata` object, or `nil` if not found.
     func setMetadataSessionAsync(account: String? = nil,
                                  ocId: String? = nil,
@@ -34,7 +35,8 @@ extension NCManageDatabase {
                                  selector: String? = nil,
                                  status: Int? = nil,
                                  etag: String? = nil,
-                                 errorCode: Int? = nil) async {
+                                 errorCode: Int? = nil,
+                                 errorKind: String? = nil) async {
         var query: NSPredicate = NSPredicate()
         if let ocId {
             query = NSPredicate(format: "ocId == %@", ocId)
@@ -70,6 +72,7 @@ extension NCManageDatabase {
                 metadata.sessionError = sessionError
                 if sessionError.isEmpty {
                     metadata.errorCode = 0
+                    metadata.errorKind = ""
                 }
             }
 
@@ -95,6 +98,10 @@ extension NCManageDatabase {
 
             if let errorCode {
                 metadata.errorCode = errorCode
+            }
+
+            if let errorKind {
+                metadata.errorKind = errorKind
             }
         }
     }
@@ -123,6 +130,7 @@ extension NCManageDatabase {
             metadata.session = session
             metadata.sessionTaskIdentifier = 0
             metadata.sessionError = ""
+            metadata.errorKind = ""
             metadata.sessionSelector = selector
             metadata.status = NCGlobal.shared.metadataStatusWaitDownload
         }
@@ -152,6 +160,7 @@ extension NCManageDatabase {
             metadata.session = ""
             metadata.sessionTaskIdentifier = 0
             metadata.sessionError = ""
+            metadata.errorKind = ""
             metadata.sessionSelector = ""
             metadata.status = NCGlobal.shared.metadataStatusNormal
             return metadata
@@ -171,6 +180,7 @@ extension NCManageDatabase {
 
             object.session = ""
             object.sessionError = ""
+            object.errorKind = ""
             object.sessionTaskIdentifier = 0
             object.status = NCGlobal.shared.metadataStatusNormal
         }

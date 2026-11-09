@@ -186,7 +186,7 @@ extension NCShareViewModel {
 
         guard isCurrentBrowser(browserID, account: session.account) else { return }
         guard result.error == .success else {
-            folderLoadErrors[folder.serverUrl] = result.error.errorDescription
+            folderLoadErrors[folder.serverUrl] = result.error.userFriendlyMessage()
             return
         }
         guard let files = result.files else {

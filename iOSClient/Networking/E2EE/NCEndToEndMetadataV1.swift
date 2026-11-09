@@ -117,7 +117,9 @@ extension NCEndToEndMetadata {
                     }
                     fileNameIdentifiers.append(e2eEncryption.fileNameIdentifier)
                 } catch let error {
-                    return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription))
+                    nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Unable to encode the E2EE metadata: \(error)")
+
+                    return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: NSLocalizedString("_e2ee_encode_metadata_", comment: "")))
                 }
             }
 
@@ -144,7 +146,9 @@ extension NCEndToEndMetadata {
                         filedrop.updateValue(record, forKey: e2eEncryption.fileNameIdentifier)
                     }
                 } catch let error {
-                    return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription))
+                    nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Unable to encode the E2EE metadata: \(error)")
+
+                    return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: NSLocalizedString("_e2ee_encode_metadata_", comment: "")))
                 }
             }
         }
@@ -168,7 +172,9 @@ extension NCEndToEndMetadata {
             }
             return (jsonString, nil, 0, NKError())
         } catch let error {
-            return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription))
+            nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Unable to encode the E2EE metadata: \(error)")
+
+            return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: NSLocalizedString("_e2ee_encode_metadata_", comment: "")))
         }
     }
 
@@ -270,7 +276,9 @@ extension NCEndToEndMetadata {
                             }
 
                         } catch let error {
-                            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription)
+                            nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Unable to decode the E2EE metadata: \(error)")
+
+                            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: NSLocalizedString("_e2ee_decode_metadata_", comment: ""))
                         }
                     }
                 }
@@ -329,7 +337,9 @@ extension NCEndToEndMetadata {
                             }
 
                         } catch let error {
-                            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription)
+                            nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Unable to decode the E2EE metadata: \(error)")
+
+                            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: NSLocalizedString("_e2ee_decode_metadata_", comment: ""))
                         }
                     }
                 }
@@ -344,7 +354,9 @@ extension NCEndToEndMetadata {
                                errorDescription: NSLocalizedString("_e2ee_no_match_checksum_", comment: ""))
             }
         } catch let error {
-            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription)
+            nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Unable to decode the E2EE metadata: \(error)")
+
+            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: NSLocalizedString("_e2ee_decode_metadata_", comment: ""))
         }
 
         return NKError()
@@ -400,7 +412,9 @@ extension NCEndToEndMetadata {
             //
             if let tableE2eMetadata = await self.database.getE2eMetadataAsync(account: session.account, serverUrl: serverUrl) {
                 if tableE2eMetadata.version > metadataVersion {
-                    return NKError(errorCode: NCGlobal.shared.errorE2EEVersion, errorDescription: "Version \(tableE2eMetadata.version)")
+                    nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "E2EE metadata version \(metadataVersion) is older than the stored version \(tableE2eMetadata.version).")
+
+                    return NKError(errorCode: NCGlobal.shared.errorE2EEVersion, errorDescription: NSLocalizedString("_e2ee_version_not_supported_", comment: ""))
                 }
             }
 
@@ -456,13 +470,17 @@ extension NCEndToEndMetadata {
                             }
 
                         } catch let error {
-                            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription)
+                            nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Unable to decode the E2EE metadata: \(error)")
+
+                            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: NSLocalizedString("_e2ee_decode_metadata_", comment: ""))
                         }
                     }
                 }
             }
         } catch let error {
-            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription)
+            nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Unable to decode the E2EE metadata: \(error)")
+
+            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: NSLocalizedString("_e2ee_decode_metadata_", comment: ""))
         }
 
         return NKError()

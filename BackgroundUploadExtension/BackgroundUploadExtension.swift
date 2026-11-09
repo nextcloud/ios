@@ -32,7 +32,7 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
         case uploading(jobIdentifier: String, incrementRetryCount: Bool)
         case pendingRetry
         case manualRetryRequired
-        case failed(message: String, errorCode: Int)
+        case failed(NKError)
         case completed
     }
 
@@ -43,7 +43,7 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
     let preferences = NCPreferences()
     let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "BackgroundUploadExtension", category: NCGlobal.shared.logTagBackgroundUpload)
     // One initial upload followed by at most two automatic retry attempts.
-    let maximumBackgroundUploadAttempts = 3
+    let maximumBackgroundUploadAttempts = NCBackgroundUploadExtensionManager.maximumBackgroundUploadAttempts
     // Suspend the account after this many distinct assets fail without an intervening success.
     let maximumConsecutiveBackgroundUploadFailures = 3
     private let isDatabaseAvailable: Bool
@@ -111,6 +111,8 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
             if try await acknowledgeUploadJobs() {
                 madeProgress = true
             }
+
+            await NCBackgroundUploadExtensionManager.shared.reconcileMissingUploadJobs()
 
             if let account {
                 // Link completed Live Photo pairs unless a previous failure suspended the account queue.

@@ -56,12 +56,13 @@ func completeHudBannerSuccess(token: Int?, banner: LucidBanner?) {
 }
 
 @MainActor
-func completeHudBannerError(description: String, token: Int?, banner: LucidBanner?) {
+func completeHudBannerError(title: String? = nil, description: String, token: Int?, banner: LucidBanner?) {
     guard let banner else {
         return
     }
 
     let payload = LucidBannerPayload.Update(
+        title: title.map { NSLocalizedString($0, comment: "") },
         subtitle: NSLocalizedString(description, comment: ""),
         stage: .error,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond

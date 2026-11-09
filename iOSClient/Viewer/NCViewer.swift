@@ -86,10 +86,10 @@ class NCViewer: NSObject {
                 }
             } catch {
                 // An editor failure must not fall back to downloading a protected document.
-                let editorError = (error as? NKError) ?? .invalidData
+                let editorError = (error as? NKError) ?? NKError(error: error)
                 let windowScene = SceneManager.shared.getWindowScene(controller: delegate?.tabBarController as? NCMainTabBarController)
 
-                await showErrorBanner(windowScene: windowScene, text: editorError.errorDescription, errorCode: editorError.errorCode)
+                await showErrorBanner(windowScene: windowScene, error: editorError, context: .openDocument(fileName: metadata.fileNameView))
                 return nil
             }
 

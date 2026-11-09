@@ -40,7 +40,7 @@ final class NCDocumentEditorCoordinator {
     func selectEditor() async throws -> UIViewController? {
         guard let route = resolveEditorRoute() else {
             if selectedEditor != nil {
-                throw NKError.invalidData
+                throw NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "")
             }
             return nil
         }
@@ -90,7 +90,7 @@ final class NCDocumentEditorCoordinator {
 
     private func makeDirectEditingViewController(editorId: String) async throws -> UIViewController {
         guard let editorAdapter = NCDirectEditorAdapter.resolve(from: [editorId]) else {
-            throw NKError.invalidData
+            throw NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "")
         }
 
         let editorUserAgent = editorAdapter.userAgent()
@@ -110,7 +110,7 @@ final class NCDocumentEditorCoordinator {
                 )
             }
         ) else {
-            throw NKError.invalidData
+            throw NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "")
         }
 
         viewController.navigationItem.setBidiSafeTitle(metadata.fileNameView)
@@ -157,7 +157,7 @@ final class NCDocumentEditorCoordinator {
             name: "NCViewerRichdocuments",
             bundle: nil
         ).instantiateInitialViewController() as? NCViewerRichdocuments else {
-            throw NKError.invalidData
+            throw NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "")
         }
 
         viewController.metadata = metadata
@@ -173,7 +173,7 @@ final class NCDocumentEditorCoordinator {
         }
 
         guard !metadata.fileId.isEmpty else {
-            throw NKError.invalidData
+            throw NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "")
         }
 
         NCActivityIndicator.shared.start(backgroundView: delegate?.view)

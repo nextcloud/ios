@@ -378,9 +378,15 @@ final class NCShareViewModel: NSObject, ObservableObject {
               !presenter.isBeingDismissed else { return }
         let browserID = folderBrowserID
         let alert = UIAlertController.createFolderWith(
-            serverUrl: folder.serverUrl, session: session,
-            onCreated: { [weak self] name in
+            serverUrl: folder.serverUrl, session: session, capabilities: capabilities,
+            completion: { [weak self] error, name in
                 guard let self, !self.isClosing, self.folderBrowserID == browserID else { return }
+                guard error == .success else {
+                    if let message = error.userFriendlyMessage(for: .createFolder(folderName: name)) {
+                        self.showAlert(description: message)
+                    }
+                    return
+                }
                 self.isLoading = true
                 self.folderSelectionTask = Task { @MainActor [weak self] in
                     guard let self else { return }
@@ -412,9 +418,6 @@ final class NCShareViewModel: NSObject, ObservableObject {
                     self.requestFolderChildren(created)
                     self.folderScrollTarget = created.serverUrl
                 }
-            }, capabilities: capabilities, completion: { [weak self] error in
-                guard let self, !self.isClosing, self.folderBrowserID == browserID else { return }
-                if error != .success { self.showAlert(description: error.errorDescription) }
             })
         presenter.present(alert, animated: true)
     }

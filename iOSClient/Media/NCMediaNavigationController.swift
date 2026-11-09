@@ -406,7 +406,7 @@ class NCMediaNavigationController: NCMainNavigationController {
         for photo in selectedPhotos {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(photo) else {
                 Task {
-                    await showErrorBanner(windowScene: controller.viewIfLoaded?.window?.windowScene, error: .invalidData)
+                    await showErrorBanner(windowScene: controller.viewIfLoaded?.window?.windowScene, text: "_media_not_available_")
                 }
                 finishIfDone()
                 continue

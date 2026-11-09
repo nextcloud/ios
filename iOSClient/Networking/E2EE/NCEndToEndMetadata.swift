@@ -26,7 +26,9 @@ class NCEndToEndMetadata: NSObject {
         } else if capabilities.e2EEApiVersion.hasPrefix("2.") {
             return await encodeMetadataV2(serverUrl: serverUrl, ocIdServerUrl: directory.ocId, addUserId: addUserId, addCertificate: addCertificate, removeUserId: removeUserId, session: session)
         } else {
-            return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorE2EEVersion, errorDescription: "Server E2EE version " + capabilities.e2EEApiVersion + ", not compatible"))
+            nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Server E2EE version \(capabilities.e2EEApiVersion) is not supported.")
+
+            return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorE2EEVersion, errorDescription: NSLocalizedString("_e2ee_version_not_supported_", comment: "")))
         }
     }
 
@@ -41,8 +43,10 @@ class NCEndToEndMetadata: NSObject {
         session: NCSession.Session
     ) async -> (error: NKError, access: NCEndToEndKeySetAccess) {
         guard let data = metadata.data(using: .utf8), let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
+            nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Unable to decode the metadata file: invalid data or missing directory.")
+
             return (
-                NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: "Unable to decode the metadata file"),
+                NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: NSLocalizedString("_e2ee_decode_metadata_", comment: "")),
                 .unavailable
             )
         }
@@ -53,10 +57,12 @@ class NCEndToEndMetadata: NSObject {
         let isMetadataV2 = metadataV2 != nil
 
         guard isMetadataV1 || isMetadataV12 || isMetadataV2 else {
+            nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Unable to decode the metadata file: unknown metadata format.")
+
             return (
                 NKError(
                     errorCode: NCGlobal.shared.errorE2EEVersion,
-                    errorDescription: "Unable to decode the metadata file"
+                    errorDescription: NSLocalizedString("_e2ee_decode_metadata_", comment: "")
                 ),
                 .unavailable
             )
@@ -68,10 +74,12 @@ class NCEndToEndMetadata: NSObject {
         } catch {
             nkLog(
                 tag: NCGlobal.shared.logTagE2EE,
-                message: "Unable to resolve E2EE key-set access."
+                emoji: .error,
+                message: "Unable to resolve E2EE key-set access: \(error)"
             )
+
             return (
-                NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription),
+                NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: "")),
                 .unavailable
             )
         }

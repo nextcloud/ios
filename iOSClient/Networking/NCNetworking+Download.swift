@@ -174,7 +174,7 @@ extension NCNetworking {
     func downloadError(withMetadata metadata: tableMetadata, error: NKError) async {
         await nkComm.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
 
-        nkLog(error: "Downloaded file: " + metadata.serverUrlFileName + ", result: error \(error.errorCode)")
+        nkLog(error: "Downloaded file: " + metadata.serverUrlFileName + ", result: \(error.logDescription)")
 
         if error.errorCode == NCGlobal.shared.errorResourceNotFound {
             self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
@@ -237,7 +237,7 @@ extension NCNetworking {
         guard results.error == .success, let files = results.files else {
             nkLog(tag: self.global.logTagSync,
                   emoji: .error,
-                  message: "Read infinite folder: \(serverUrl), error: \(results.error.errorCode)")
+                  message: "Read infinite folder: \(serverUrl), error: \(results.error.logDescription)")
             return
         }
 
@@ -270,6 +270,7 @@ extension NCNetworking {
             metadata.sessionSelector = NCGlobal.shared.selectorSynchronizationOffline
             metadata.sessionTaskIdentifier = 0
             metadata.sessionError = ""
+            metadata.errorKind = ""
             metadata.status = NCGlobal.shared.metadataStatusWaitDownload
             metadata.sessionDate = Date()
 

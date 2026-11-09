@@ -191,6 +191,7 @@ extension NCShareViewModel {
         await NCNetworkingE2EE.beginNewServerKeyValidationCycle()
 
         var error: NKError?
+        var errorContext: NCErrorContext = .generic
         guard let window = presenter?.view.window else {
             return
         }
@@ -216,6 +217,7 @@ extension NCShareViewModel {
 
             error = await self.upload(metadata: metadata)
             if error != .success {
+                errorContext = .upload(fileName: NCShareFilenameView.displayName(metadata.fileNameView))
                 break
             }
         }
@@ -229,7 +231,10 @@ extension NCShareViewModel {
             }
             banner?.update(payload: LucidBannerPayload.Update(stage: .success, horizontalLayout: .centered(width: 100)), for: self.token)
         } else {
-            banner?.update(payload: LucidBannerPayload.Update(subtitle: error?.errorDescription, stage: .error), for: self.token)
+            let payload = LucidBannerPayload.Update(
+                title: errorContext.failureTitle ?? NSLocalizedString("_error_", comment: ""),
+                subtitle: error?.userFriendlyMessage(for: errorContext) ?? "", stage: .error)
+            banner?.update(payload: payload, for: self.token)
         }
 
         guard !Task.isCancelled, !isClosing else { return }

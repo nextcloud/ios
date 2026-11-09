@@ -10,6 +10,8 @@ import NextcloudKit
 final class NCBackgroundUploadExtensionManager {
     static let shared = NCBackgroundUploadExtensionManager()
 
+    static let maximumBackgroundUploadAttempts = 3
+
     private let database = NCManageDatabase.shared
     private let global = NCGlobal.shared
 
@@ -68,6 +70,7 @@ final class NCBackgroundUploadExtensionManager {
 
             nkLog(tag: global.logTagBackgroundUpload, message: "Background upload extension enabled: \(library.uploadJobExtensionEnabled)")
             logUploadJobSnapshot()
+            await reconcileMissingUploadJobs()
             return library.uploadJobExtensionEnabled
         } catch {
             nkLog(tag: global.logTagBackgroundUpload, message: "Background upload extension enable failed: \(error)")
@@ -120,6 +123,110 @@ final class NCBackgroundUploadExtensionManager {
         }
 
         nkLog(tag: global.logTagBackgroundUpload, message: "PhotoKit queue snapshot, unique jobs: \(jobIdentifiers.count)")
+    }
+
+    /// Makes stale transfers recoverable when PhotoKit no longer exposes their job.
+    /// Verify the destination before completing the transfer or scheduling a bounded retry.
+    func reconcileMissingUploadJobs() async {
+        guard PHPhotoLibrary.authorizationStatus(for: .readWrite) == .authorized else { return }
+
+        // Ignore recently registered jobs while PhotoKit publishes its queue changes.
+        let cutoff = Date().addingTimeInterval(-300)
+        let predicate = NSPredicate(
+            format: """
+            status == %d AND sessionSelector == %@ AND \
+            backgroundUploadJobIdentifier != '' AND backgroundUploadJobIdentifier != %@ AND \
+            backgroundUploadCancellationRequested == false AND (sessionDate == nil OR sessionDate < %@)
+            """,
+            global.metadataStatusUploading,
+            global.selectorUploadAutoUpload,
+            "pending",
+            cutoff as NSDate
+        )
+        let metadatas: [tableMetadata] = await database.getMetadatasAsync(predicate: predicate)
+        guard !metadatas.isEmpty else { return }
+
+        let actions: [PHAssetResourceUploadJob.Action] = [.process, .retry, .acknowledge]
+        func visibleIdentifiers() -> Set<String> {
+            var identifiers = Set<String>()
+            for action in actions {
+                let jobs = PHAssetResourceUploadJob.fetchJobs(action: action, options: nil)
+                for index in 0..<jobs.count {
+                    identifiers.insert(jobs.object(at: index).localIdentifier)
+                }
+            }
+            return identifiers
+        }
+
+        let identifiers = visibleIdentifiers()
+        for metadata in metadatas where !identifiers.contains(metadata.backgroundUploadJobIdentifier) {
+            // Recheck after the database await and any previous writes; queues can change.
+            guard !visibleIdentifiers().contains(metadata.backgroundUploadJobIdentifier) else { continue }
+            guard let account = await database.getTableAccountAsync(
+                predicate: NSPredicate(format: "account == %@ AND autoUploadStart == true", metadata.account)
+            ), NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: metadata.account) != nil else { continue }
+
+            let result = await NextcloudKit.shared.readFileOrFolderAsync(
+                serverUrlFileName: metadata.serverUrlFileName,
+                depth: "0",
+                account: metadata.account
+            )
+            guard !visibleIdentifiers().contains(metadata.backgroundUploadJobIdentifier),
+                  let current = await database.getMetadataAsync(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)),
+                  current.backgroundUploadJobIdentifier == metadata.backgroundUploadJobIdentifier,
+                  current.status == global.metadataStatusUploading,
+                  !current.backgroundUploadCancellationRequested else { continue }
+
+            var serverMetadata: tableMetadata?
+            if result.error == .success, result.files?.count == 1, let file = result.files?.first {
+                let remote = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
+                guard !remote.directory, !remote.ocId.isEmpty else { continue }
+                do {
+                    guard try await NCLocalDatabase.shared.recordAutoUploadTransfer(
+                        current, sessionIdentifier: account.autoUploadSessionIdentifier, uploaded: true
+                    ) else { continue }
+                    try await NCLocalDatabase.shared.recordPhotoLibraryAssetUpload(
+                        account: current.account,
+                        assetLocalIdentifier: current.assetLocalIdentifier,
+                        classFile: current.classFile,
+                        isLivePhoto: current.isLivePhoto,
+                        creationDate: current.creationDate as Date
+                    )
+                } catch {
+                    logUploadMessage("Unable to persist recovered upload for \(current.fileName): \(error)")
+                    continue
+                }
+                if current.isLivePhoto,
+                   let capabilities = await database.getCapabilities(account: current.account),
+                   capabilities.isLivePhotoServerAvailable {
+                    await database.setLivePhotoVideo(
+                        account: current.account,
+                        serverUrlFileName: current.serverUrlFileName,
+                        fileId: remote.fileId,
+                        classFile: current.classFile
+                    )
+                }
+                serverMetadata = remote
+            } else if result.error.errorCode != 404 {
+                logUploadMessage("Missing job verification deferred for \(current.fileName), error: \(result.error.errorCode)")
+                continue
+            }
+
+            let changed = await database.reconcileMissingBackgroundUploadJobAsync(
+                ocId: current.ocId,
+                jobIdentifier: current.backgroundUploadJobIdentifier,
+                cutoff: cutoff,
+                sessionIdentifier: account.autoUploadSessionIdentifier,
+                serverMetadata: serverMetadata,
+                maximumAttempts: Self.maximumBackgroundUploadAttempts
+            )
+            if changed {
+                if serverMetadata != nil {
+                    NCPreferences().resetBackgroundUploadConsecutiveFailures(account: current.account)
+                }
+                logUploadMessage("Reconciled missing background upload job for \(current.fileName), server file found: \(serverMetadata != nil), job: \(current.backgroundUploadJobIdentifier)")
+            }
+        }
     }
 
     func recordUploadSuccess(metadata: tableMetadata, job: PHAssetResourceUploadJob) async -> Bool {
@@ -237,6 +344,7 @@ final class NCBackgroundUploadExtensionManager {
                     metadata.sessionDate = nil
                     metadata.sessionError = ""
                     metadata.errorCode = 0
+                    metadata.errorKind = ""
                     metadata.chunk = 0
                     metadata.sceneIdentifier = nil
                     metadata.backgroundUploadRetryCount = 0
