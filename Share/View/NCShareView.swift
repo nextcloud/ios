@@ -11,13 +11,13 @@ struct NCShareView: View {
 
     private var isRefreshing: Bool {
         model.isLoading || model.isSwitchingAccount || model.isLoadingAccounts ||
-            model.isLoadingCapabilities || !model.loadingFolderURLs.isEmpty
+            model.isLoadingCapabilities || !model.folderTasks.isEmpty
     }
 
     var body: some View {
         NavigationStack {
             Group {
-                if model.isAvailable && model.isAuthenticated {
+                if model.rootFolder != nil && model.isAuthenticated {
                     VStack(spacing: 0) {
                         statusView
                             .frame(maxWidth: .infinity)
@@ -85,7 +85,7 @@ struct NCShareView: View {
             .toolbarBackground(.hidden, for: .navigationBar)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarLeading) {
-                    if model.isAvailable && model.isAuthenticated {
+                    if model.rootFolder != nil && model.isAuthenticated {
                         HStack(spacing: 8) {
                             NCShareAccountMenu(model: model)
                                 .disabled(model.isLoading || model.isPreparingUpload || model.isSwitchingAccount || model.isLoadingAccounts)
@@ -423,7 +423,9 @@ struct NCShareView: View {
     let model = NCShareViewModel.preview()
     model.folderChildren = [:]
     model.recentFolders = []
-    model.loadedFolderURLs = Set(model.folders.map(\.serverUrl))
+    if let rootFolder = model.rootFolder {
+        model.loadedFolderURLs = [rootFolder.serverUrl]
+    }
     return NCShareView(model: model)
         .environment(\.locale, Locale(identifier: "en_US"))
         .allowsHitTesting(false)

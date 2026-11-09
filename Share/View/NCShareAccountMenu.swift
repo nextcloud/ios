@@ -9,6 +9,7 @@ struct NCShareAccountMenu: View {
     @ObservedObject var model: NCShareViewModel
 
     var body: some View {
+        let selected = model.accounts.first(where: \.isSelected)
         Menu {
             Picker(NSLocalizedString("_account_select_", comment: ""), selection: Binding(
                 get: { model.accounts.first(where: \.isSelected)?.id ?? "" },
@@ -19,18 +20,18 @@ struct NCShareAccountMenu: View {
                         Text(verbatim: account.name)
                         Text(verbatim: account.user + " · " + account.serverUrl)
                     } icon: {
-                        avatar(for: account.id)
+                        avatar(account.avatar)
                     }
                     .tag(account.id)
                 }
             }
             .pickerStyle(.inline)
         } label: {
-            avatar(for: model.accounts.first(where: \.isSelected)?.id ?? "")
+            avatar(selected?.avatar)
                 .frame(minWidth: 44, minHeight: 44)
         }
         .accessibilityLabel(NSLocalizedString("_account_select_", comment: ""))
-        .accessibilityValue(Text(verbatim: model.accountName))
+        .accessibilityValue(Text(verbatim: selected?.name ?? ""))
         .buttonStyle(.plain)
         .dynamicTypeSize(.xSmall ... .accessibility2)
         .disabled(model.accounts.count < 2)
@@ -38,8 +39,8 @@ struct NCShareAccountMenu: View {
     }
 
     @ViewBuilder
-    private func avatar(for account: String) -> some View {
-        if let image = model.accountAvatars[account] {
+    private func avatar(_ image: UIImage?) -> some View {
+        if let image {
             Image(uiImage: image)
                 .renderingMode(.original)
                 .resizable()

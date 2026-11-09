@@ -17,7 +17,7 @@ extension NCShareViewModel {
                 for child in folderChildren[folder.serverUrl] ?? [] { append(child, depth: depth + 1) }
             }
         }
-        for folder in folders { append(folder, depth: 0) }
+        if let rootFolder { append(rootFolder, depth: 0) }
         return rows
     }
 
@@ -30,7 +30,7 @@ extension NCShareViewModel {
         folderRequests.removeAll()
         // Keep the previous snapshot visible but disabled while the account changes.
         if !preservingContent {
-            folders = []
+            rootFolder = nil
             recentFolders = []
             selectedFolder = nil
             isRecentFolderSelected = false
@@ -38,7 +38,6 @@ extension NCShareViewModel {
             expandedFolderURLs = []
         }
         folderScrollTarget = nil
-        loadingFolderURLs = []
         loadedFolderURLs = []
         folderLoadErrors = [:]
         isLoading = false
@@ -63,7 +62,7 @@ extension NCShareViewModel {
         let cached = await cachedFolderChildren(at: home, parent: nil, session: session)
         guard isCurrentBrowser(browserID, account: session.account) else { return }
         // Publish the replacement snapshot together, without an empty intermediate list.
-        folders = [root]
+        rootFolder = root
         selectedFolder = root
         isRecentFolderSelected = false
         expandedFolderURLs = [home]
@@ -92,11 +91,10 @@ extension NCShareViewModel {
     /// Keeps at most one listing request per folder, while allowing independent
     /// branches to load concurrently. Browser reset cancels all registered requests.
     func requestFolderChildren(_ folder: NCShareFolderItem, refresh: Bool = false) {
-        guard !isOffline, !isClosing, !loadingFolderURLs.contains(folder.serverUrl),
+        guard !isOffline, !isClosing, folderTasks[folder.serverUrl] == nil,
               refresh || !loadedFolderURLs.contains(folder.serverUrl) else { return }
         let browserID = folderBrowserID
         // Mark synchronously, before scheduling, to prevent duplicate requests.
-        loadingFolderURLs.insert(folder.serverUrl)
         folderTasks[folder.serverUrl] = Task { @MainActor in
             await loadFolderChildren(folder, browserID: browserID)
         }
@@ -120,6 +118,7 @@ extension NCShareViewModel {
                 if result.error.errorCode == NCGlobal.shared.errorResourceNotFound || result.error == .success {
                     recentFoldersStore.remove(serverUrl: folder.serverUrl, account: session.account)
                     recentFolders.removeAll { $0.serverUrl == folder.serverUrl }
+                    if fromRecents { return }
                 }
                 showAlert(description: result.error == .success ? "_share_folder_unavailable_" : result.error.errorDescription)
                 return
@@ -133,7 +132,6 @@ extension NCShareViewModel {
                 showAlert(description: error.errorDescription)
                 return
             }
-            serverUrl = folder.serverUrl
             selectedFolder = selected
             isRecentFolderSelected = fromRecents
             expandedFolderURLs.insert(selected.serverUrl)
@@ -166,7 +164,6 @@ extension NCShareViewModel {
         folderLoadErrors[folder.serverUrl] = nil
         defer {
             if folderBrowserID == browserID {
-                loadingFolderURLs.remove(folder.serverUrl)
                 folderRequests[folder.serverUrl] = nil
                 folderTasks[folder.serverUrl] = nil
             }
@@ -203,7 +200,7 @@ extension NCShareViewModel {
             folderLoadErrors[folder.serverUrl] = NSLocalizedString("_share_folder_unavailable_", comment: "")
             return
         }
-        let layout = NCManageDatabase.shared.getLayoutForView(account: session.account, key: keyLayout, serverUrl: folder.serverUrl)
+        let layout = NCManageDatabase.shared.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewShareExtension, serverUrl: folder.serverUrl)
         let sorted = await NCManageDatabase.shared.sortedMetadata(layoutForView: layout, account: session.account, metadatas: listing.metadatas)
         guard isCurrentBrowser(browserID, account: session.account) else { return }
         let ordered = sorted.filter(\.favorite) + sorted.filter { !$0.favorite }
@@ -214,14 +211,14 @@ extension NCShareViewModel {
         loadedFolderURLs.insert(folder.serverUrl)
         let metadata = listing.metadataFolder
         let updated = folderSnapshot(metadata, url: folder.serverUrl, parent: nil, session: session)
-        if folders.first?.serverUrl == folder.serverUrl { folders = [updated] }
+        if rootFolder?.serverUrl == folder.serverUrl { rootFolder = updated }
         if selectedFolder?.serverUrl == folder.serverUrl {
             selectedFolder = updated
         }
     }
 
     private func cachedFolderChildren(at url: String, parent: tableMetadata?, session: NCSession.Session) async -> [NCShareFolderItem] {
-        let layout = NCManageDatabase.shared.getLayoutForView(account: session.account, key: keyLayout, serverUrl: url)
+        let layout = NCManageDatabase.shared.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewShareExtension, serverUrl: url)
         let hidden = NCPreferences().getShowHiddenFiles(account: session.account)
         let predicate = hidden
             ? NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true AND fileName != %@", session.account, url, NextcloudKit.shared.nkCommonInstance.rootFileName)

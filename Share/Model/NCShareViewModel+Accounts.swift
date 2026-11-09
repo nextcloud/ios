@@ -9,9 +9,8 @@ extension NCShareViewModel {
     func loadAccounts() {
         guard isAuthenticated, !isClosing, !isLoading, !isPreparingUpload,
               !isLoadingAccounts else { return }
-        isLoadingAccounts = true
         accountsTask = Task { @MainActor [self] in
-            defer { isLoadingAccounts = false }
+            defer { accountsTask = nil }
             let selected = sessionStore.getSession().account
             let storedAccounts = await NCManageDatabase.shared.getAllAccountOrderAliasAsync()
             guard !Task.isCancelled, !isClosing, isAuthenticated,
@@ -21,9 +20,6 @@ extension NCShareViewModel {
                 showAlert(description: "_no_active_account_") { [weak self] in self?.cancel(with: .noAccount) }
                 return
             }
-            accountAvatars = Dictionary(uniqueKeysWithValues: storedAccounts.map { account in
-                (account.account, utility.loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase))
-            })
             accounts = storedAccounts.map { account in
                 let name = account.displayName.isEmpty ? account.user : account.displayName
                 return NCShareAccountItem(
@@ -31,7 +27,8 @@ extension NCShareViewModel {
                     name: account.alias.isEmpty ? name : name + " - " + account.alias,
                     user: account.user,
                     serverUrl: account.urlBase,
-                    isSelected: account.account == selected)
+                    isSelected: account.account == selected,
+                    avatar: utility.loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase))
             }.sorted { $0.isSelected && !$1.isSelected }
         }
     }
@@ -54,7 +51,6 @@ extension NCShareViewModel {
         accountChangeID = changeID
         isSwitchingAccount = true
         clearAccountView(preservingContent: true)
-        serverUrl = ""
         accountChangeTask = Task { @MainActor [self] in
             defer { if accountChangeID == changeID { isSwitchingAccount = false } }
             let selectedSession = await sessionStore.setSessionAccount(account)
@@ -78,18 +74,14 @@ extension NCShareViewModel {
             autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName(account: account)
             autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(
                 account: account, urlBase: session.urlBase, userId: session.userId)
-            serverUrl = utilityFileSystem.getHomeServer(session: session)
-            let name = tblAccount.displayName.isEmpty ? tblAccount.user : tblAccount.displayName
-            accountName = tblAccount.alias.isEmpty ? name : name + " - " + tblAccount.alias
             // Publish the local browser before capabilities can trigger a network request.
             await initializeFolderBrowser(refreshFromServer: false)
             guard !Task.isCancelled, !isClosing, accountChangeID == changeID else { return }
-            isAvailable = true
             isSwitchingAccount = false
             loadAccounts()
             await loadServerCapabilities(account: account, changeID: changeID)
             guard !Task.isCancelled, !isClosing, accountChangeID == changeID else { return }
-            if serverCapabilities != nil, let root = folders.first {
+            if serverCapabilities != nil, let root = rootFolder {
                 requestFolderChildren(root, refresh: true)
             }
         }
@@ -103,10 +95,10 @@ extension NCShareViewModel {
         capabilitiesTask = Task { @MainActor in
             await loadServerCapabilities(account: account, changeID: changeID)
             guard isCurrentCapabilitiesRequest(account: account, changeID: changeID), serverCapabilities != nil else { return }
-            if folders.isEmpty {
+            if let rootFolder {
+                requestFolderChildren(rootFolder, refresh: true)
+            } else {
                 await initializeFolderBrowser()
-            } else if let root = folders.first {
-                requestFolderChildren(root, refresh: true)
             }
         }
     }

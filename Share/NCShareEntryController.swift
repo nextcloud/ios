@@ -35,7 +35,6 @@ final class NCShareEntryController: UIHostingController<NCShareView> {
         // Returning from a presented sheet must not restart the share request.
         guard !hasAppeared, !model.isClosing else { return }
         hasAppeared = true
-        NCNetworking.shared.setupScene(sceneIdentifier: model.sceneIdentifier, controller: self)
         if let windowScene = view.window?.windowScene {
             model.banner = LucidBannerRegistry.shared.banner(for: windowScene)
         }

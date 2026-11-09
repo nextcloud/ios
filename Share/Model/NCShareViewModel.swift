@@ -13,23 +13,21 @@ import UniformTypeIdentifiers
 /// in the corresponding extensions; input files remain local until upload staging.
 @MainActor
 final class NCShareViewModel: NSObject, ObservableObject {
-    @Published var folders: [NCShareFolderItem] = []
+    @Published var rootFolder: NCShareFolderItem?
     @Published var recentFolders: [NCShareFolderItem] = []
     @Published var selectedFolder: NCShareFolderItem?
     @Published var isRecentFolderSelected = false
     @Published var folderScrollTarget: String?
     @Published var folderChildren: [String: [NCShareFolderItem]] = [:]
     @Published var expandedFolderURLs: Set<String> = []
-    @Published var loadingFolderURLs: Set<String> = []
     @Published var loadedFolderURLs: Set<String> = []
     @Published var folderLoadErrors: [String: String] = [:]
-    var folderTasks: [String: Task<Void, Never>] = [:]
+    @Published var folderTasks: [String: Task<Void, Never>] = [:]
     var folderRequests: [String: URLSessionTask] = [:]
     var folderSelectionTask: Task<Void, Never>?
     // Invalidates asynchronous folder results when the account/browser is reset.
     var folderBrowserID = UUID()
-    lazy var recentFoldersStore = NCShareRecentFoldersStore(
-        defaults: UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) ?? .standard)
+    lazy var recentFoldersStore = NCShareRecentFoldersStore(defaults: UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) ?? .standard)
     @Published var fileNames: [String] = []
     @Published var fileThumbnails: [String: UIImage] = [:]
     private var thumbnailRequests: [String: QLThumbnailGenerator.Request] = [:]
@@ -37,25 +35,18 @@ final class NCShareViewModel: NSObject, ObservableObject {
     @Published var isLoading = false
     @Published private(set) var isOffline = false
     private var connectionMonitor: NWPathMonitor?
-    // Local account/browser state is ready. Authentication and upload readiness
-    // are separate: cached folders may be displayed before capabilities arrive.
-    @Published var isAvailable = false
     @Published var isPreparingUpload = false
     @Published var uploadConfirmation: NCShareUploadConfirmation?
     // Keep the plan after SwiftUI clears the sheet binding, until onDismiss runs.
     var pendingUploadConfirmation: NCShareUploadConfirmation?
     var uploadChoice: NCShareUploadChoice?
     var uploadTask: Task<Void, Never>?
-    var replacementETags: [String: String] = [:]
-    var isClosing = false
+    private(set) var isClosing = false
     @Published var isPreparingInput = false
     @Published var inputErrorMessage = ""
     @Published var alertMessage = ""
     private var alertDismissAction: (() -> Void)?
-    @Published var accountName = ""
     @Published var accounts: [NCShareAccountItem] = []
-    @Published var accountAvatars: [String: UIImage] = [:]
-    @Published var isLoadingAccounts = false
     @Published var isSwitchingAccount = false
     @Published var serverCapabilities: NKCapabilities.Capabilities?
     @Published var isLoadingCapabilities = false
@@ -64,38 +55,32 @@ final class NCShareViewModel: NSObject, ObservableObject {
 
     var isUploadDestinationReady: Bool {
         guard let selectedFolder else { return false }
-        return isAccountReady && alertMessage.isEmpty && !loadingFolderURLs.contains(selectedFolder.serverUrl) &&
+        return isAccountReady && alertMessage.isEmpty && folderTasks[selectedFolder.serverUrl] == nil &&
             folderLoadErrors[selectedFolder.serverUrl] == nil
     }
 
     var capabilitiesTask: Task<Void, Never>?
     var capabilitiesRequest: URLSessionTask?
-    var accountsTask: Task<Void, Never>?
+    @Published var accountsTask: Task<Void, Never>?
+    var isLoadingAccounts: Bool { accountsTask != nil }
     var accountChangeTask: Task<Void, Never>?
     var accountChangeID = UUID()
     @Published private(set) var isAuthenticated = false
 
     weak var presenter: UIViewController?
-    var requestContext: NSExtensionContext?
+    private var requestContext: NSExtensionContext?
     lazy var sessionStore = NCShareSessionStore()
-    var serverUrl = ""
     let inputDirectory = FileManager.default.temporaryDirectory.appendingPathComponent("NextcloudShare-" + UUID().uuidString, isDirectory: true)
     private var inputTask: Task<Void, Never>?
-    private var hasStarted = false
     private var foregroundObserver: NSObjectProtocol?
     private var backgroundObserver: NSObjectProtocol?
 
-    let keyLayout = NCGlobal.shared.layoutViewShareExtension
     var autoUploadFileName = ""
     var autoUploadDirectory = ""
-    var uploadMetadata: [tableMetadata] = []
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
-    let global = NCGlobal.shared
-    var maintenanceMode: Bool = false
-    var token: Int?
+    private var maintenanceMode = false
     var banner: LucidBanner?
-    var sceneIdentifier: String = UUID().uuidString
     private var isPresentingNoAccountAlert = false
     private var isPresentingPasscode = false
     private var isPasscodeAuthenticated = false
@@ -103,8 +88,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
     /// Starts account setup and attachment import independently, once per request.
     /// Protected content remains hidden until passcode authentication succeeds.
     func start(context: NSExtensionContext?, presenter: UIViewController) {
-        guard !hasStarted else { return }
-        hasStarted = true
+        guard connectionMonitor == nil else { return }
         let monitor = NWPathMonitor()
         connectionMonitor = monitor
         // A usable network path does not guarantee that the server is reachable.
@@ -336,8 +320,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
         capabilitiesErrorMessage = ""
         resetFolderBrowser(preservingContent: preservingContent)
         if !preservingContent {
-            isAvailable = false
-            accountName = ""
+            accounts = []
         }
     }
 
@@ -408,7 +391,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
                     defer { if self.folderBrowserID == browserID { self.isLoading = false } }
                     // Recents can point into a collapsed, not-yet-loaded branch.
                     // Load and expand its ancestors before scrolling to the new row.
-                    guard var branch = self.folders.first else { return }
+                    guard var branch = self.rootFolder else { return }
                     while true {
                         guard !Task.isCancelled, !self.isClosing, self.folderBrowserID == browserID else { return }
                         self.expandedFolderURLs.insert(branch.serverUrl)
@@ -427,7 +410,6 @@ final class NCShareViewModel: NSObject, ObservableObject {
                     guard let created = self.folderChildren[folder.serverUrl]?.first(where: { $0.name == name }),
                           self.isAuthenticated else { return }
                     self.selectedFolder = created
-                    self.serverUrl = created.serverUrl
                     self.isRecentFolderSelected = false
                     self.expandedFolderURLs.insert(created.serverUrl)
                     self.requestFolderChildren(created)
@@ -553,12 +535,13 @@ enum NCShareUploadChoice: Equatable, Sendable {
 }
 
 /// Account picker data contains no live Realm objects or mutable account flags.
-struct NCShareAccountItem: Identifiable, Sendable {
+struct NCShareAccountItem: Identifiable {
     let id: String
     let name: String
     let user: String
     let serverUrl: String
     let isSelected: Bool
+    var avatar: UIImage?
 }
 
 #if DEBUG && SHARE_PREVIEWS
@@ -567,18 +550,15 @@ extension NCShareViewModel {
     /// Session storage stays lazy so constructing this model does not read accounts.
     static func preview() -> NCShareViewModel {
         let model = NCShareViewModel()
-        model.isAvailable = true
         model.serverCapabilities = NKCapabilities.Capabilities()
         model.isAuthenticated = true
-        model.accountName = "Personal"
         let home = "https://cloud.example.com/remote.php/dav/files/marino"
         let root = NCShareFolderItem(ocId: "root", name: "My files", serverUrl: home, path: "/", image: UIImage(systemName: "folder.fill"), isEncrypted: false)
         let documents = NCShareFolderItem(ocId: "documents", name: "Documents", serverUrl: home + "/Documents", path: "/Documents", image: UIImage(systemName: "folder.fill"), isEncrypted: false, isFavorite: true)
         let photos = NCShareFolderItem(ocId: "photos", name: "Photos", serverUrl: home + "/Photos", path: "/Photos", image: UIImage(systemName: "folder.fill"), isEncrypted: false)
         let work = NCShareFolderItem(ocId: "work", name: "Work", serverUrl: home + "/Documents/Work", path: "/Documents/Work", image: UIImage(systemName: "folder.fill"), isEncrypted: false)
-        model.serverUrl = documents.serverUrl
         model.selectedFolder = documents
-        model.folders = [root]
+        model.rootFolder = root
         model.folderChildren = [home: [documents, photos], documents.serverUrl: [work]]
         model.expandedFolderURLs = [home, documents.serverUrl]
         model.loadedFolderURLs = [home, documents.serverUrl]

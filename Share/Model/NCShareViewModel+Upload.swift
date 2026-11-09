@@ -73,7 +73,7 @@ extension NCShareViewModel {
     /// when the existing resource is a file with a usable ETag.
     private func prepareUploadPlan(capabilities: NKCapabilities.Capabilities) async throws -> NCShareUploadConfirmation {
         let session = sessionStore.getSession()
-        let destination = serverUrl
+        guard let destination = selectedFolder?.serverUrl else { throw CancellationError() }
         let sourceNames = fileNames
         guard !sourceNames.isEmpty else { throw NCShareRequestError.noFiles }
         let renamer = FileAutoRenamer(capabilities: capabilities)
@@ -93,7 +93,7 @@ extension NCShareViewModel {
         guard let files = result.files else {
             throw NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_share_conflict_read_failed_", comment: ""))
         }
-        guard !isClosing, sessionStore.getSession().account == session.account, serverUrl == destination else { throw CancellationError() }
+        guard !isClosing, sessionStore.getSession().account == session.account, selectedFolder?.serverUrl == destination else { throw CancellationError() }
         let converter = NCManageDatabaseCreateMetadata()
         var listing = await converter.convertFilesToMetadatasAsync(files, serverUrlMetadataFolder: destination)
         guard !listing.metadataFolder.ocId.isEmpty else {
@@ -143,16 +143,19 @@ extension NCShareViewModel {
         try Task.checkCancellation()
         guard !isOffline else { throw URLError(.notConnectedToInternet) }
         let session = sessionStore.getSession()
-        guard !isClosing, isAuthenticated, plan.account == session.account, plan.serverUrl == serverUrl else { throw CancellationError() }
-        uploadMetadata.removeAll()
-        replacementETags.removeAll()
+        guard !isClosing, isAuthenticated, plan.account == session.account, plan.serverUrl == selectedFolder?.serverUrl else { throw CancellationError() }
+        var uploadMetadata: [tableMetadata] = []
+        let replacementETag: String?
+        if replacing, let etag = plan.replacementETag {
+            replacementETag = etag.hasPrefix("\"") || etag.hasPrefix("W/") ? etag : "\"" + etag + "\""
+        } else {
+            replacementETag = nil
+        }
         var stagedDirectories: [String] = []
         var staged = false
         defer {
             if !staged {
                 for directory in stagedDirectories { try? FileManager.default.removeItem(atPath: directory) }
-                uploadMetadata.removeAll()
-                replacementETags.removeAll()
             }
         }
         for item in plan.items {
@@ -167,7 +170,7 @@ extension NCShareViewModel {
             let path = URL(fileURLWithPath: directory).appendingPathComponent(fileName).path
             try FileManager.default.copyItem(at: inputFileURL(named: item.sourceName), to: URL(fileURLWithPath: path))
             let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
-                fileName: fileName, ocId: ocId, serverUrl: plan.serverUrl, session: session, sceneIdentifier: sceneIdentifier)
+                fileName: fileName, ocId: ocId, serverUrl: plan.serverUrl, session: session, sceneIdentifier: nil)
             metadata.nativeFormat = true
             metadata.session = NCNetworking.shared.sessionUpload
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
@@ -175,17 +178,14 @@ extension NCShareViewModel {
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
             metadata.sessionDate = Date()
             uploadMetadata.append(metadata)
-            if replacing, let etag = plan.replacementETag {
-                replacementETags[ocId] = etag.hasPrefix("\"") || etag.hasPrefix("W/") ? etag : "\"" + etag + "\""
-            }
         }
         try Task.checkCancellation()
-        guard !isClosing, isAuthenticated, sessionStore.getSession().account == plan.account, serverUrl == plan.serverUrl else { throw CancellationError() }
+        guard !isClosing, isAuthenticated, sessionStore.getSession().account == plan.account, selectedFolder?.serverUrl == plan.serverUrl else { throw CancellationError() }
         staged = true
-        await uploadAndExit()
+        await uploadAndExit(uploadMetadata, replacementETag: replacementETag)
     }
 
-    private func uploadAndExit() async {
+    private func uploadAndExit(_ uploadMetadata: [tableMetadata], replacementETag: String?) async {
         // A Share extension process can be reused by the system. Treat each
         // explicit share operation as a new server-key validation cycle.
         await NCNetworkingE2EE.beginNewServerKeyValidationCycle()
@@ -198,24 +198,23 @@ extension NCShareViewModel {
         let payload = LucidBannerPayload(stage: .button,
                                          vPosition: .center,
                                          blocksTouches: true)
-        (banner, token) = showUploadBanner(windowScene: window.windowScene,
-                                           payload: payload,
-                                           allowMinimizeOnTap: false,
-                                           onButtonTap: {
-            self.cancel()
-        })
+        let (uploadBanner, token) = showUploadBanner(windowScene: window.windowScene,
+                                                    payload: payload,
+                                                    allowMinimizeOnTap: false,
+                                                    onButtonTap: { self.cancel() })
+        banner = uploadBanner
 
         for (index, metadata) in uploadMetadata.enumerated() {
             guard !Task.isCancelled, !isClosing else { return }
             // BANNER
             let payloadUpdate = LucidBannerPayload.Update(
-                title: NSLocalizedString("_upload_file_", comment: "") + " \(index + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.fileNames.count)",
+                title: NSLocalizedString("_upload_file_", comment: "") + " \(index + 1) " + NSLocalizedString("_of_", comment: "") + " \(uploadMetadata.count)",
                 systemImage: "arrowshape.up.circle",
                 imageAnimation: .breathe,
                 progress: 0)
             banner?.update(payload: payloadUpdate)
 
-            error = await self.upload(metadata: metadata)
+            error = await self.upload(metadata: metadata, replacementETag: replacementETag, token: token)
             guard !Task.isCancelled, !isClosing else { return }
             if error != .success {
                 errorContext = .upload(fileName: NCShareFilenameView.displayName(metadata.fileNameView))
@@ -230,12 +229,12 @@ extension NCShareViewModel {
                     serverUrl: folder.serverUrl, name: folder.name, ocId: folder.ocId, isEncrypted: folder.isEncrypted),
                     account: uploaded.account)
             }
-            banner?.update(payload: LucidBannerPayload.Update(stage: .success, horizontalLayout: .centered(width: 100)), for: self.token)
+            banner?.update(payload: LucidBannerPayload.Update(stage: .success, horizontalLayout: .centered(width: 100)), for: token)
         } else {
             let payload = LucidBannerPayload.Update(
                 title: errorContext.failureTitle ?? NSLocalizedString("_error_", comment: ""),
                 subtitle: error?.userFriendlyMessage(for: errorContext) ?? "", stage: .error)
-            banner?.update(payload: payload, for: self.token)
+            banner?.update(payload: payload, for: token)
         }
 
         guard !Task.isCancelled, !isClosing else { return }
@@ -249,7 +248,7 @@ extension NCShareViewModel {
         cancel()
     }
 
-    private func upload(metadata: tableMetadata) async -> NKError {
+    private func upload(metadata: tableMetadata, replacementETag: String?, token: Int?) async -> NKError {
         let session = sessionStore.getSession()
 
         let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: session.account)
@@ -262,12 +261,8 @@ extension NCShareViewModel {
         metadata.typeIdentifier = results.typeIdentifier
         metadata.serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
 
-        // CHUNK
-        if metadata.size > self.global.chunkSize {
-            metadata.chunk = self.global.chunkSize
-        } else {
-            metadata.chunk = 0
-        }
+        let chunkSize = NCGlobal.shared.chunkSize
+        metadata.chunk = metadata.size > chunkSize ? chunkSize : 0
         // E2EE
         metadata.e2eEncrypted = metadata.isDirectoryE2EE
 
@@ -277,20 +272,20 @@ extension NCShareViewModel {
                                                           controller: presenter,
                                                           banner: banner,
                                                           stageBanner: nil,
-                                                          tokenBanner: self.token)
+                                                          tokenBanner: token)
         } else if metadata.chunk > 0 {
             banner?.update(payload: LucidBannerPayload.Update(systemImage: "gearshape.arrow.triangle.2.circlepath",
                                                               imageAnimation: .rotate),
-                                      for: self.token)
+                                      for: token)
             // Await directly so cancellation belongs to the main upload task.
             // Final MOVE must not overwrite a file created after conflict checking,
             // unless the user chose replacement and its ETag still matches.
             let results = await NCNetworking.shared.uploadChunkFile(
                 metadata: metadata,
-                overwrite: self.replacementETags[metadata.ocId] != nil,
-                ifMatch: self.replacementETags[metadata.ocId]) { total, counter in
+                overwrite: replacementETag != nil,
+                ifMatch: replacementETag) { total, counter in
                 Task {@MainActor in
-                    self.banner?.update(payload: LucidBannerPayload.Update(progress: Double(counter) / Double(total)), for: self.token)
+                    self.banner?.update(payload: LucidBannerPayload.Update(progress: Double(counter) / Double(total)), for: token)
                 }
             } uploadStart: { _ in
                 Task {@MainActor in
@@ -298,11 +293,11 @@ extension NCShareViewModel {
                         systemImage: "arrowshape.up.circle",
                         imageAnimation: .breathe
                     )
-                    self.banner?.update(payload: payload, for: self.token)
+                    self.banner?.update(payload: payload, for: token)
                 }
             } uploadProgressHandler: { _, _, progress in
                 Task {@MainActor in
-                    self.banner?.update(payload: LucidBannerPayload.Update(progress: progress), for: self.token)
+                    self.banner?.update(payload: LucidBannerPayload.Update(progress: progress), for: token)
                 }
             } assembling: {
                 Task {@MainActor in
@@ -310,7 +305,7 @@ extension NCShareViewModel {
                         systemImage: "gearshape.arrow.triangle.2.circlepath",
                         imageAnimation: .rotate
                     )
-                    self.banner?.update(payload: payload, for: self.token)
+                    self.banner?.update(payload: payload, for: token)
                 }
             }
             return results.error
@@ -327,11 +322,11 @@ extension NCShareViewModel {
                                                                serverUrlFileName: metadata.serverUrlFileName,
                                                                creationDate: metadata.creationDate as Date,
                                                                dateModificationFile: metadata.date as Date,
-                                                               customHeaders: replacementETags[metadata.ocId].map { ["If-Match": $0] } ?? ["If-None-Match": "*"],
+                                                               customHeaders: replacementETag.map { ["If-Match": $0] } ?? ["If-None-Match": "*"],
                                                                progressHandler: { _, _, fractionCompleted in
                 Task {@MainActor in
                     self.banner?.update(payload: LucidBannerPayload.Update(progress: fractionCompleted),
-                                        for: self.token)
+                                        for: token)
                 }
             })
             return results.error
