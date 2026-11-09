@@ -200,7 +200,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         searchController(enabled: !editMode)
 
         // (+)
-        mainNavigationController?.menuPlus?.hiddenPlusButton(isEditMode: self.isEditMode, isSearchingMode: self.isSearchingMode)
+        mainNavigationController?.menuPlus?.updatePlusButtonVisibility()
 
         if editMode {
             navigationItem.leftBarButtonItems = nil
