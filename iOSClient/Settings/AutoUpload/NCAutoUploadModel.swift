@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
+import CoreLocation
 import UIKit
 import Photos
 import NextcloudKit
@@ -40,8 +41,12 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     var autoUploadTimespan: AutoUploadTimespan { autoUploadAllPhotos ? .allPhotos : .fromDate }
     /// Whether Photos permissions have been granted or not.
     @Published var photosPermissionsGranted = true
-    /// Whether `Always` location authorization has been granted, enabling background location-based auto upload.
-    @Published var locationAutoUploadPermissionGranted: Bool = false
+    /// Whether background location auto upload is enabled and has `Always` authorization.
+    @Published private(set) var locationAutoUploadPermissionGranted = false
+    @Published private(set) var isRequestingLocationAuthorization = false
+    @Published var showLocationExplanation = false
+    @Published var showLocationSettings = false
+    private let locationExplanationShownKey = "locationExplanationShown"
     /// Whether the experimental PhotoKit background upload extension is enabled.
     @Published var backgroundUploadExtensionEnabled: Bool = false
 
@@ -388,25 +393,48 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         }
     }
 
-    /// Requests or revokes `Always` location authorization for background location-based auto upload.
+    /// Handles user changes to the background location preference.
     func handleLocationChange(newValue: Bool) {
-        if let controller = self.controller {
-            if newValue {
-                Task { @MainActor in
-                    let result = await NCBackgroundLocationUploadManager.shared.requestAuthorizationAlwaysAsync(from: controller)
-                    self.locationAutoUploadPermissionGranted = result
-                    NCPreferences().location = result
-                }
+        guard !isRequestingLocationAuthorization else { return }
+        guard newValue else {
+            NCPreferences().location = false
+            locationAutoUploadPermissionGranted = false
+            return
+        }
+
+        switch NCBackgroundLocationUploadManager.shared.authorizationStatus {
+        case .authorizedAlways:
+            NCPreferences().location = true
+            locationAutoUploadPermissionGranted = true
+        case .notDetermined:
+            if UserDefaults.standard.bool(forKey: locationExplanationShownKey) {
+                requestLocationAuthorization()
             } else {
-                self.locationAutoUploadPermissionGranted = false
-                NCPreferences().location = false
+                showLocationExplanation = true
             }
+        default:
+            // An upgrade from While Using can leave the status unchanged and produce no delegate callback.
+            showLocationSettings = true
+        }
+    }
+
+    func requestLocationAuthorization() {
+        guard !isRequestingLocationAuthorization else { return }
+
+        UserDefaults.standard.set(true, forKey: locationExplanationShownKey)
+        isRequestingLocationAuthorization = true
+        Task {
+            if await NCBackgroundLocationUploadManager.shared.requestAuthorizationAlwaysAsync() {
+                NCPreferences().location = true
+            }
+            checkPermission()
+            isRequestingLocationAuthorization = false
         }
     }
 
     /// Refreshes `locationAutoUploadPermissionGranted` from the current location authorization status and stored preference.
     func checkPermission() {
-        let status = CLLocationManager().authorizationStatus
+        let status = NCBackgroundLocationUploadManager.shared.authorizationStatus
         locationAutoUploadPermissionGranted = (status == .authorizedAlways && NCPreferences().location)
     }
 }
