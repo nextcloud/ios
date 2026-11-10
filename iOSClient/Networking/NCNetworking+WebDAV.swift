@@ -281,41 +281,67 @@ extension NCNetworking {
 
     // MARK: - Delete
 
-    func deleteCache(_ metadata: tableMetadata,
-                     progress: @escaping (_ progress: Double) -> Void = { _ in }) async {
-        var num: Float = 0
-        func numIncrement() -> Float {
-            num += 1
-            return num
-        }
+    func deleteCache(_ metadatas: [tableMetadata],
+                     progress: (@MainActor @Sendable (Double) -> Void)? = nil) async {
+        guard !metadatas.isEmpty else { return }
 
-        func deleteLocalFile(metadata: tableMetadata) async {
-            if let metadataLive = await NCManageDatabase.shared.getMetadataLivePhotoAsync(metadata: metadata) {
-                await NCManageDatabase.shared.deleteLocalFileAsync(id: metadataLive.ocId)
-                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-            }
-            await NCManageDatabase.shared.deleteVideoAsync(metadata.ocId)
-            await NCManageDatabase.shared.deleteLocalFileAsync(id: metadata.ocId)
-            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-        }
+        let database = NCManageDatabase.shared
+        let selectionsByAccount = Dictionary(grouping: metadatas, by: \.account)
+        let accountCount = selectionsByAccount.count
+        for (index, selection) in selectionsByAccount.values.enumerated() {
+            guard let first = selection.first else { continue }
 
-        await NCManageDatabase.shared.cleanTablesOcIds(account: metadata.account, userId: metadata.userId, urlBase: metadata.urlBase)
+            await database.cleanTablesOcIds(account: first.account, userId: first.userId, urlBase: first.urlBase)
 
-        if metadata.directory {
-            if let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, metadata.serverUrlFileName)) {
-                let total = Float(metadatas.count)
-                for metadata in metadatas {
-                    await deleteLocalFile(metadata: metadata)
-                    let num = numIncrement()
-                    progress(Double(num) / Double(total))
+            var filesByOcId: [String: tableMetadata] = [:]
+            for metadata in selection {
+                if metadata.directory {
+                    let folder = metadata.serverUrlFileName
+                    guard !folder.isEmpty else { continue }
+                    let prefix = folder.hasSuffix("/") ? folder : folder + "/"
+                    let predicate = NSPredicate(format: "account == %@ AND directory == false AND (serverUrl == %@ OR serverUrl BEGINSWITH %@)",
+                                                metadata.account, folder, prefix)
+                    for file in await database.getMetadatasAsync(predicate: predicate) ?? [] where !file.ocId.isEmpty {
+                        filesByOcId[file.ocId] = file
+                    }
+                } else if !metadata.ocId.isEmpty {
+                    filesByOcId[metadata.ocId] = metadata
                 }
             }
-        } else {
-            await deleteLocalFile(metadata: metadata)
+            guard !filesByOcId.isEmpty else { continue }
 
-            await self.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: nil)
+            let videoOcIds = Set(filesByOcId.keys)
+            var cachedFilesByOcId = filesByOcId
+            for file in filesByOcId.values where file.isLivePhoto {
+                if let companion = await database.getMetadataLivePhotoAsync(metadata: file), !companion.ocId.isEmpty {
+                    cachedFilesByOcId[companion.ocId] = companion
+                }
             }
+
+            let localFileOcIds = Set(cachedFilesByOcId.keys)
+            guard await database.deleteCacheRecordsAsync(localFileOcIds: localFileOcIds, videoOcIds: videoOcIds) else { continue }
+
+            let fileNamesByOcId = cachedFilesByOcId.mapValues { metadata in
+                Set([metadata.fileName, metadata.fileNameView].filter { !$0.isEmpty })
+            }
+            let accountProgress: (@MainActor @Sendable (Double) -> Void)?
+            if let progress {
+                accountProgress = { fraction in
+                    progress((Double(index) + fraction) / Double(accountCount))
+                }
+            } else {
+                accountProgress = nil
+            }
+            await utilityFileSystem.removeCachedFilesAsync(fileNamesByOcId: fileNamesByOcId,
+                                                           userId: first.userId,
+                                                           urlBase: first.urlBase,
+                                                           progress: accountProgress)
+        }
+
+        let serverUrls = Set(metadatas.map(\.serverUrl))
+        let serverUrl = serverUrls.count == 1 && !metadatas.contains(where: \.directory) ? serverUrls.first : nil
+        await transferDispatcher.notifyAllDelegates { delegate in
+            delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: nil)
         }
     }
 

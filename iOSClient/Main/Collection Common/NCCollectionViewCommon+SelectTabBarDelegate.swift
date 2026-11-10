@@ -117,32 +117,22 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         }
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
-            Task {
-                var token: Int?
-                var banner: LucidBanner?
-                let containsDirectory = metadatas.contains { $0.isDirectory }
-                if containsDirectory {
-                    (banner, token) = showHudBanner(windowScene: self.windowScene, title: "_delete_in_progress_")
-                }
+            Task { @MainActor in
+                await self.setEditMode(false)
 
-                for metadata in metadatas {
-                    await self.networking.deleteCache(metadata, progress: { progress in
-                        Task {
-                            if let token {
-                                banner?.update(
-                                    payload: LucidBannerPayload.Update(progress: progress),
-                                    for: token
-                                )
-                            }
-                        }
-
-                    })
-
-                    if let banner {
+                if metadatas.contains(where: \.directory) {
+                    let (banner, token) = showHudBanner(windowScene: self.windowScene,
+                                                        title: "_delete_in_progress_",
+                                                        blocksTouches: false)
+                    await self.networking.deleteCache(metadatas) { progress in
+                        banner?.update(payload: LucidBannerPayload.Update(progress: progress), for: token)
+                    }
+                    if let banner, banner.isAlive(token) {
                         banner.dismiss()
                     }
+                } else {
+                    await self.networking.deleteCache(metadatas)
                 }
-                await self.setEditMode(false)
             }
         })
 

@@ -10,6 +10,7 @@ func showHudBanner(windowScene: UIWindowScene?,
                    title: String? = nil,
                    subtitle: String? = nil,
                    stage: LucidBanner.Stage? = nil,
+                   blocksTouches: Bool = true,
                    onButtonTap: (() -> Void)? = nil) -> (banner: LucidBanner?, token: Int?) {
     guard let windowScene,
           let window = windowScene.resolvedWindow else {
@@ -18,6 +19,9 @@ func showHudBanner(windowScene: UIWindowScene?,
     let localizedTitle = title.map { NSLocalizedString($0, comment: "") }
     let localizedSubTitle = subtitle.map { NSLocalizedString($0, comment: "") }
     let banner = LucidBannerRegistry.shared.banner(for: windowScene)
+    guard blocksTouches || banner.currentHostView() == nil else {
+        return (nil, nil)
+    }
     let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
                                                   safeAreaInsets: window.safeAreaInsets,
                                                   idiom: window.traitCollection.userInterfaceIdiom)
@@ -28,12 +32,12 @@ func showHudBanner(windowScene: UIWindowScene?,
         stage: stage,
         vPosition: .center,
         horizontalLayout: horizontalLayout,
-        blocksTouches: true,
+        blocksTouches: blocksTouches,
     )
 
     let token = banner.show(
         payload: payload,
-        policy: .enqueue
+        policy: blocksTouches ? .enqueue : .drop
     ) { state in
         HudBannerView(state: state, onButtonTap: onButtonTap)
     }
