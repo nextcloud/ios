@@ -108,6 +108,16 @@ extension NCManageDatabase {
         }
     }
 
+    func deleteCacheRecordsAsync(localFileOcIds: Set<String>, videoOcIds: Set<String>) async -> Bool {
+        await core.performRealmWriteWithResultAsync { realm in
+            realm.delete(realm.objects(tableLocalFile.self).filter("ocId IN %@", Array(localFileOcIds)))
+#if !EXTENSION
+            realm.delete(realm.objects(tableVideo.self).filter("ocId IN %@", Array(videoOcIds)))
+#endif
+            return true
+        } == true
+    }
+
     func setLocalFile(ocId: String, exifDate: NSDate?, exifLatitude: String, exifLongitude: String, exifLensModel: String?) {
         core.performRealmWrite { realm in
             if let result = realm.objects(tableLocalFile.self)

@@ -7,7 +7,6 @@ import UIKit
 import NextcloudKit
 import WidgetKit
 import SwiftUI
-import CoreLocation
 import LucidBanner
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -287,10 +286,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     nkLog(info: "Auto upload in background: \(tblAccount.autoUploadStart)")
                     nkLog(info: "Update in background: \(isBackgroundRefreshStatus)")
                     // LOCATION MANAGER
-                    if CLLocationManager().authorizationStatus == .authorizedAlways && NCPreferences().location && tblAccount.autoUploadStart {
-                        NCBackgroundLocationUploadManager.shared.start()
-                    } else {
-                        NCBackgroundLocationUploadManager.shared.stop()
+                    await MainActor.run {
+                        let locationUploadManager = NCBackgroundLocationUploadManager.shared
+                        if locationUploadManager.authorizationStatus == .authorizedAlways && NCPreferences().location && tblAccount.autoUploadStart {
+                            locationUploadManager.start()
+                        } else {
+                            locationUploadManager.stop()
+                        }
                     }
                     // UPDATE SHARE GROUP ACCOUNTS
                     if let error = await NCAccount().updateAppsShareAccounts() {

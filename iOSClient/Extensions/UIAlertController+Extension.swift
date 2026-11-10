@@ -192,9 +192,7 @@ extension UIAlertController {
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
             Task {
-                for metadata in metadatas {
-                    await NCNetworking.shared.deleteCache(metadata)
-                }
+                await NCNetworking.shared.deleteCache(metadatas)
             }
             completion(false)
         })
