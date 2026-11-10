@@ -414,26 +414,18 @@ class NCContextMenuMain: NSObject {
             image: utility.loadImage(named: "document.on.trash")
         ) { _ in
             Task { @MainActor in
-                var token: Int?
-                var banner: LucidBanner?
                 if metadata.isDirectory {
-                    (banner, token) = showHudBanner(windowScene: self.windowScene, title: "_delete_in_progress_")
-                }
-
-                await NCNetworking.shared.deleteCache(metadata, progress: { progress in
-                    Task {
-                        if let token {
-                            banner?.update(
-                                payload: LucidBannerPayload.Update(progress: progress),
-                                for: token
-                            )
-                        }
+                    let (banner, token) = showHudBanner(windowScene: self.windowScene,
+                                                        title: "_delete_in_progress_",
+                                                        blocksTouches: false)
+                    await NCNetworking.shared.deleteCache([metadata]) { progress in
+                        banner?.update(payload: LucidBannerPayload.Update(progress: progress), for: token)
                     }
-
-                })
-
-                if let banner {
-                    banner.dismiss()
+                    if let banner, banner.isAlive(token) {
+                        banner.dismiss()
+                    }
+                } else {
+                    await NCNetworking.shared.deleteCache([metadata])
                 }
             }
         }
