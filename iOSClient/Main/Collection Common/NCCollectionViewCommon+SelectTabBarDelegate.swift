@@ -19,10 +19,29 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     }
 
     func delete() {
+        let ocIds = fileSelect
+        let account = session.account
+        guard !ocIds.isEmpty else { return }
+
+        Task { @MainActor in
+            let metadatas = await database.getMetadatasFromOcIdsAsync(ocIds)
+            guard !metadatas.isEmpty,
+                  isEditMode,
+                  fileSelect == ocIds,
+                  session.account == account,
+                  viewIfLoaded?.window != nil,
+                  presentedViewController == nil else { return }
+
+            let metadatasById = Dictionary(uniqueKeysWithValues: metadatas.map { ($0.ocId, $0) })
+            confirmDelete(metadatas: ocIds.compactMap { metadatasById[$0] })
+        }
+    }
+
+    @MainActor
+    private func confirmDelete(metadatas: [tableMetadata]) {
         var alertStyle = UIAlertController.Style.actionSheet
         if UIDevice.current.userInterfaceIdiom == .pad { alertStyle = .alert }
         let alertController = UIAlertController(title: NSLocalizedString("_confirm_delete_selected_", comment: ""), message: nil, preferredStyle: alertStyle)
-        let metadatas = getSelectedMetadatas()
         let canDeleteServer = metadatas.allSatisfy { !$0.lock }
 
         if canDeleteServer {
@@ -31,9 +50,21 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                     await self.setEditMode(false)
                     var metadatasPlain: [tableMetadata] = []
                     var metadatasE2EE: [tableMetadata] = []
+                    var encryptedFolders: [String: [String: Bool]] = [:]
 
                     for metadata in metadatas {
-                        if metadata.isDirectoryE2EE {
+                        let isEncrypted: Bool
+                        if let cached = encryptedFolders[metadata.account]?[metadata.serverUrl] {
+                            isEncrypted = cached
+                        } else {
+                            isEncrypted = await self.utilityFileSystem.isDirectoryE2EEAsync(serverUrl: metadata.serverUrl,
+                                                                                          urlBase: metadata.urlBase,
+                                                                                          userId: metadata.userId,
+                                                                                          account: metadata.account)
+                            encryptedFolders[metadata.account, default: [:]][metadata.serverUrl] = isEncrypted
+                        }
+
+                        if isEncrypted {
                             metadatasE2EE.append(metadata)
                         } else {
                             metadatasPlain.append(metadata)

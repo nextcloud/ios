@@ -197,23 +197,28 @@ final class NCManageDatabaseCore {
     }
 
     func performRealmWriteAsync(_ block: @escaping (Realm) throws -> Void) async {
+        _ = await performRealmWriteWithResultAsync(block)
+    }
+
+    func performRealmWriteWithResultAsync<T: Sendable>(_ block: @escaping (Realm) throws -> T) async -> T? {
         // Skip execution if app is suspending
         guard !isSuspendingDatabaseOperation else {
-            return
+            return nil
         }
 
-        await withCheckedContinuation { continuation in
+        return await withCheckedContinuation { continuation in
             realmQueue.async(qos: .userInitiated, flags: .enforceQoS) {
                 autoreleasepool {
                     do {
                         let realm = try Realm()
-                        try realm.write {
+                        let result = try realm.write {
                             try block(realm)
                         }
+                        continuation.resume(returning: result)
                     } catch {
                         nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm write async error: \(error)")
+                        continuation.resume(returning: nil)
                     }
-                    continuation.resume()
                 }
             }
         }

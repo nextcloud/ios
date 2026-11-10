@@ -106,6 +106,24 @@ extension NCManageDatabase {
         }
     }
 
+    /// Returns false if a file is busy, or nil if the transaction could not be committed.
+    func setMetadataStatusWaitDeleteAsync(ocIds: Set<String>) async -> Bool? {
+        let normalStatus = NCGlobal.shared.metadataStatusNormal
+        let waitDeleteStatus = NCGlobal.shared.metadataStatusWaitDelete
+
+        return await core.performRealmWriteWithResultAsync { realm in
+            let metadatas = ocIds.compactMap { realm.object(ofType: tableMetadata.self, forPrimaryKey: $0) }
+            guard metadatas.allSatisfy({ $0.status == normalStatus }) else { return false }
+
+            let sessionDate = Date()
+            for metadata in metadatas {
+                metadata.status = waitDeleteStatus
+                metadata.sessionDate = sessionDate
+            }
+            return true
+        }
+    }
+
     /// Asynchronously sets a metadata record into "wait download" state.
     /// - Parameters:
     ///   - ocId: The object ID of the metadata.

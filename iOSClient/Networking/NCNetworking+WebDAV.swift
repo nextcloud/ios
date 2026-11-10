@@ -347,17 +347,19 @@ extension NCNetworking {
             serverUrls.insert(metadata.serverUrl)
         }
 
-        let ocIdss = ocIds
-        let serverUrlss = serverUrls
-        await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
-            for ocId in ocIdss {
-                await NCManageDatabase.shared.setMetadataSessionAsync(
-                    ocId: ocId,
-                    status: self.global.metadataStatusWaitDelete
-                )
-            }
-            serverUrlss.forEach { serverUrl in
-                delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitDelete)
+        guard !ocIds.isEmpty else { return .success }
+        guard let queued = await NCManageDatabase.shared.setMetadataStatusWaitDeleteAsync(ocIds: ocIds) else {
+            return NKError(errorCode: global.errorUnexpectedResponseFromDB, errorDescription: "_error_")
+        }
+        guard queued else {
+            return NKError(errorCode: global.errorNotPermission, errorDescription: "_error_file_busy_")
+        }
+
+        let affectedServerUrls = serverUrls
+        let status = global.metadataStatusWaitDelete
+        await transferDispatcher.notifyAllDelegates { delegate in
+            for serverUrl in affectedServerUrls {
+                delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: status)
             }
         }
         return .success
