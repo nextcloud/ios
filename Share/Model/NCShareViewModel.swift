@@ -469,11 +469,11 @@ extension NCShareViewModel {
             return
         }
         isAuthenticated = false
-        guard !isPresentingPasscode,
+        // The sheet's onDismiss resumes the passcode flow after its transition.
+        guard !isPresentingPasscode, pendingUploadConfirmation == nil,
               let presenter else { return }
         isPresentingPasscode = true
-        // Embed in the content controller; the helper hides the outer navigation bar.
-        NCPasscodeView.embed(in: presenter) { [weak self] result in
+        NCPasscodeView.present(from: presenter, allowCancel: true) { [weak self] result in
             guard let self else { return }
             self.isPresentingPasscode = false
             switch result {

@@ -54,6 +54,9 @@ extension NCShareViewModel {
         uploadChoice = nil
         guard let choice, let capabilities = serverCapabilities, isAuthenticated, !isClosing else {
             isPreparingUpload = false
+            if !isAuthenticated && !isClosing {
+                validateAccountAndRequestPasscode()
+            }
             return
         }
         uploadTask = Task { @MainActor in
