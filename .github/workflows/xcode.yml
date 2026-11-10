@@ -62,7 +62,7 @@ jobs:
   test:
     name: Run Tests
     runs-on: xcode-27
-    timeout-minutes: 50
+    timeout-minutes: 60
     needs: [build]
 
     if: github.event.pull_request.draft == false
@@ -156,6 +156,22 @@ jobs:
     - name: Assert Nextcloud Server Status
       run: curl --fail --show-error --silent --max-time 5 --retry 5 --retry-delay 2 --retry-max-time 30 --retry-all-errors http://localhost:8080/status.php
 
+    - name: Assert Nextcloud AppConfig Login
+      if: steps.passcode_changes.outputs.run == 'true'
+      shell: bash
+      run: |
+        curl --fail --show-error --silent --max-time 15 --user admin:admin \
+          --header 'OCS-APIRequest: true' \
+          'http://localhost:8080/ocs/v2.php/core/getapppassword' | \
+          php -r '
+            libxml_use_internal_errors(true);
+            $response = simplexml_load_string(stream_get_contents(STDIN), SimpleXMLElement::class, LIBXML_NONET);
+            if ($response === false || trim((string) ($response->data->apppassword ?? "")) === "") {
+                fwrite(STDERR, "Nextcloud did not return an app password.\n");
+                exit(1);
+            }
+          '
+
     - name: Boot iOS Simulator
       run: |
         xcrun simctl boot "iPhone 17"
@@ -176,7 +192,7 @@ jobs:
         fi
 
     - name: Run Xcode Test
-      timeout-minutes: 35
+      timeout-minutes: 45
       shell: bash
       env:
         RUN_PASSCODE_TESTS: ${{ steps.passcode_changes.outputs.run }}
