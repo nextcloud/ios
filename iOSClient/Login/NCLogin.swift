@@ -214,6 +214,18 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 
     private func handleLoginWithAppConfig() {
+#if DEBUG
+        // Passcode UI tests provision an account through the same API as AppConfig.
+        let process = ProcessInfo.processInfo
+        let environment = process.environment
+        if process.arguments.contains("UI_TESTING"), process.arguments.contains("UI_TESTING_PASSCODE"),
+           let server = environment["UI_TESTING_PASSCODE_SERVER"],
+           let username = environment["UI_TESTING_PASSCODE_USERNAME"],
+           let password = environment["UI_TESTING_PASSCODE_PASSWORD"] {
+            Task { await getAppPassword(urlBase: server, user: username, password: password) }
+            return
+        }
+#endif
         let accountCount = NCManageDatabase.shared.getAccounts()?.count ?? 0
 
         // load AppConfig

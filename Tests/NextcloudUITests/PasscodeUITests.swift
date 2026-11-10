@@ -27,11 +27,14 @@ final class PasscodeUITests: BaseUIXCTestCase {
         addUIInterruptionMonitor(withDescription: "Allow Notifications", for: "Allow")
         app = XCUIApplication()
         app.launchArguments = ["UI_TESTING", "UI_TESTING_PASSCODE", "UI_TESTING_NO_EXIT"] + languageArguments
+        app.launchEnvironment["UI_TESTING_PASSCODE_SERVER"] = TestConstants.server
+        app.launchEnvironment["UI_TESTING_PASSCODE_USERNAME"] = TestConstants.username
+        app.launchEnvironment["UI_TESTING_PASSCODE_PASSWORD"] = TestConstants.password
         if name.contains("testAppResetAfterTenFailuresAcrossLockouts") {
             app.launchEnvironment["UI_TESTING_PASSCODE_LOCKOUT_SECONDS"] = String(resetTestLockoutSeconds)
         }
         app.launch()
-        try await logIn()
+        try await logIn(usingAppConfig: true)
         openSettings()
         XCTAssertFalse(changeSetting.exists, "Each test must start with app lock disabled.")
     }
