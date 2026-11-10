@@ -70,6 +70,24 @@ struct NCAutoUploadView: View {
         .alert(model.error, isPresented: $model.showErrorAlert) {
             Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) {}
         }
+        .alert(NSLocalizedString("_background_location_access_title_", comment: ""), isPresented: $model.showLocationExplanation) {
+            Button(NSLocalizedString("_continue_", comment: "")) {
+                model.requestLocationAuthorization()
+            }
+            Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) {}
+        } message: {
+            Text(NSLocalizedString("_background_location_access_message_", comment: ""))
+        }
+        .alert(NSLocalizedString("_enable_background_location_title_", comment: ""), isPresented: $model.showLocationSettings) {
+            Button(NSLocalizedString("_open_settings_", comment: "")) {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }
+            Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) {}
+        } message: {
+            Text(NSLocalizedString("_enable_background_location_message_", comment: ""))
+        }
         .sheet(isPresented: $showUploadFolder) {
             SelectView(
                 serverUrl: $model.serverUrl,
@@ -400,7 +418,10 @@ struct NCAutoUploadView: View {
                                 "_enable_background_location_title_",
                                 comment: ""
                             ),
-                            isOn: $model.locationAutoUploadPermissionGranted
+                            isOn: Binding(
+                                get: { model.locationAutoUploadPermissionGranted },
+                                set: { model.handleLocationChange(newValue: $0) }
+                            )
                         )
                         .font(.body)
                         .tint(
@@ -410,11 +431,7 @@ struct NCAutoUploadView: View {
                                 )
                             )
                         )
-                        .onChange(
-                            of: model.locationAutoUploadPermissionGranted
-                        ) { _, newValue in
-                            model.handleLocationChange(newValue: newValue)
-                        }
+                        .disabled(model.isRequestingLocationAuthorization)
                     }, footer: {
                         Text(
                             NSLocalizedString(
