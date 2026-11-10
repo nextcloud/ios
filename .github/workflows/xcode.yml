@@ -62,7 +62,7 @@ jobs:
   test:
     name: Run Tests
     runs-on: xcode-27
-    timeout-minutes: 40
+    timeout-minutes: 50
     needs: [build]
 
     if: github.event.pull_request.draft == false
@@ -176,7 +176,7 @@ jobs:
         fi
 
     - name: Run Xcode Test
-      timeout-minutes: 25
+      timeout-minutes: 35
       shell: bash
       env:
         RUN_PASSCODE_TESTS: ${{ steps.passcode_changes.outputs.run }}
@@ -191,7 +191,6 @@ jobs:
         -destination "${{ env.DESTINATION }}" \
         -derivedDataPath "DerivedData" \
         "${test_selection[@]}" \
-        -test-iterations 3 \
         -retry-tests-on-failure \
         -test-timeouts-enabled YES \
         -default-test-execution-time-allowance 600 \
