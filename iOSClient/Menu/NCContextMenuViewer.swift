@@ -103,7 +103,7 @@ class NCContextMenuViewer: NSObject {
         if !webView,
            metadata.isImage,
            metadata.isModifiableWithQuickLook,
-           (NCNetworking.shared.isOnline || utilityFileSystem.fileProviderStorageExists(metadata)) {
+           NCNetworking.shared.isOnline || utilityFileSystem.fileProviderStorageExists(metadata) {
             editingActions.append(makeModifyPhoto())
         }
 
@@ -294,9 +294,17 @@ class NCContextMenuViewer: NSObject {
         return UIAction(
             title: NSLocalizedString("_edit_", comment: ""),
             image: utility.loadImage(named: "pencil.tip.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
-        ) { _ in
-            Task {
-                if self.utilityFileSystem.fileProviderStorageExists(metadata) {
+        ) { [weak viewController = self.viewController, weak controller = self.controller] _ in
+            Task { @MainActor in
+                if let source = viewController as? NCViewerPhotoEditSource {
+                    await NCViewerPhotoEdit.edit(metadata: metadata, source: source) { metadata in
+                        guard let controller else {
+                            return
+                        }
+                        let current = await NCManageDatabase.shared.getMetadataFromOcIdAsync(metadata.ocId) ?? metadata
+                        NCViewerQuickLook.presentEditor(metadata: current, from: controller)
+                    }
+                } else if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                     await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferChange(
                             networkingStatus: NCGlobal.shared.networkingStatusDownloaded,
@@ -314,11 +322,47 @@ class NCContextMenuViewer: NSObject {
                             ocId: metadata.ocId,
                             session: NCNetworking.shared.sessionDownload,
                             selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                            sceneIdentifier: self.controller?.sceneIdentifier
+                            sceneIdentifier: controller?.sceneIdentifier
                           ) {
                     await NCNetworking.shared.downloadFile(metadata: metadata)
                 }
             }
         }
+    }
+}
+
+/// A viewer that can provide the original of the photo it shows for editing.
+@MainActor
+protocol NCViewerPhotoEditSource: AnyObject {
+    /// Returns once the original is stored on the device. Joins a download
+    /// already running for the same photo instead of starting another one.
+    func downloadOriginalForEditing(_ metadata: tableMetadata) async throws
+
+    /// Whether the viewer is still on screen and showing this photo.
+    func isShowingMedia(ocId: String) -> Bool
+}
+
+/// Ties an Edit request to the viewer it came from.
+@MainActor
+enum NCViewerPhotoEdit {
+    /// Downloads the original if needed, then opens the editor only if the
+    /// originating viewer still shows the same photo.
+    /// - Returns: `true` when the editor was opened.
+    @discardableResult
+    static func edit(metadata: tableMetadata,
+                     source: NCViewerPhotoEditSource,
+                     present: @MainActor (tableMetadata) async -> Void) async -> Bool {
+        let ocId = metadata.ocId
+        do {
+            try await source.downloadOriginalForEditing(metadata)
+        } catch {
+            return false
+        }
+        guard !Task.isCancelled,
+              source.isShowingMedia(ocId: ocId) else {
+            return false
+        }
+        await present(metadata)
+        return true
     }
 }

@@ -37,12 +37,41 @@ private actor NCMediaViewerDownloadTaskRegistry {
     }
 }
 
+/// Runs at most one operation per key at a time. A caller that asks for a key
+/// while its operation is still running awaits that same operation instead of
+/// starting a second one.
+actor NCInFlightTaskRegistry<Key: Hashable & Sendable, Value: Sendable> {
+    private var tasks: [Key: (id: UUID, task: Task<Value, Error>)] = [:]
+    /// How many callers joined an operation that was already running.
+    private(set) var joinedCount = 0
+
+    func value(for key: Key, operation: @escaping @Sendable () async throws -> Value) async throws -> Value {
+        if let running = tasks[key] {
+            joinedCount += 1
+            return try await running.task.value
+        }
+
+        let id = UUID()
+        let task = Task { try await operation() }
+        tasks[key] = (id, task)
+
+        defer {
+            if tasks[key]?.id == id {
+                tasks[key] = nil
+            }
+        }
+
+        return try await task.value
+    }
+}
+
 // MARK: - Media Viewer Loader
 final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
     private let database = NCManageDatabase.shared
     private let utilityFileSystem = NCUtilityFileSystem()
     private let fileManager = FileManager.default
     private let downloadTaskRegistry = NCMediaViewerDownloadTaskRegistry()
+    private let inFlightDownloads = NCInFlightTaskRegistry<String, URL>()
 
     // MARK: - NCMediaViewerLoading
     func metadata(for ocId: String, account: String) async -> tableMetadata? {
@@ -118,6 +147,15 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
 
         await onDownloadStarted?()
 
+        // Info and Edit can ask for the same original while it is downloading.
+        // Share the running download so its transfer state is not reset and
+        // a second download to the same path is never started.
+        return try await inFlightDownloads.value(for: metadata.ocId) { [self] in
+            try await self.performMediaDownload(for: metadata)
+        }
+    }
+
+    private func performMediaDownload(for metadata: tableMetadata) async throws -> URL {
         guard let downloadMetadata = await database.setMetadataSessionInWaitDownloadAsync(
             ocId: metadata.ocId,
             session: NCNetworking.shared.sessionDownload,
