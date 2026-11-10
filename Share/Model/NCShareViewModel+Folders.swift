@@ -59,7 +59,7 @@ extension NCShareViewModel {
                 image: item.isEncrypted ? NCImageCache.shared.getFolderEncrypted(account: session.account) : NCImageCache.shared.getFolder(account: session.account),
                 isEncrypted: item.isEncrypted)
         }
-        let cached = await cachedFolderChildren(at: home, parent: nil, session: session)
+        let cached = await cachedFolderChildren(at: home, session: session)
         guard isCurrentBrowser(browserID, account: session.account) else { return }
         // Publish the replacement snapshot together, without an empty intermediate list.
         rootFolder = root
@@ -154,7 +154,7 @@ extension NCShareViewModel {
         return true
     }
 
-    private func isCurrentBrowser(_ browserID: UUID, account: String) -> Bool {
+    func isCurrentBrowser(_ browserID: UUID, account: String) -> Bool {
         !Task.isCancelled && !isClosing && folderBrowserID == browserID && sessionStore.getSession().account == account
     }
 
@@ -203,11 +203,7 @@ extension NCShareViewModel {
         let layout = NCManageDatabase.shared.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewShareExtension, serverUrl: folder.serverUrl)
         let sorted = await NCManageDatabase.shared.sortedMetadata(layoutForView: layout, account: session.account, metadatas: listing.metadatas)
         guard isCurrentBrowser(browserID, account: session.account) else { return }
-        let ordered = sorted.filter(\.favorite) + sorted.filter { !$0.favorite }
-        folderChildren[folder.serverUrl] = ordered.map { metadata in
-            let url = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-            return folderSnapshot(metadata, url: url, parent: listing.metadataFolder, session: session)
-        }
+        folderChildren[folder.serverUrl] = folderSnapshots(sorted, parent: listing.metadataFolder, session: session)
         loadedFolderURLs.insert(folder.serverUrl)
         let metadata = listing.metadataFolder
         let updated = folderSnapshot(metadata, url: folder.serverUrl, parent: nil, session: session)
@@ -217,13 +213,17 @@ extension NCShareViewModel {
         }
     }
 
-    private func cachedFolderChildren(at url: String, parent: tableMetadata?, session: NCSession.Session) async -> [NCShareFolderItem] {
+    private func cachedFolderChildren(at url: String, session: NCSession.Session) async -> [NCShareFolderItem] {
         let layout = NCManageDatabase.shared.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewShareExtension, serverUrl: url)
         let hidden = NCPreferences().getShowHiddenFiles(account: session.account)
         let predicate = hidden
             ? NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true AND fileName != %@", session.account, url, NextcloudKit.shared.nkCommonInstance.rootFileName)
             : NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true AND fileName != %@ AND NOT fileName BEGINSWITH[c] %@", session.account, url, NextcloudKit.shared.nkCommonInstance.rootFileName, ".")
         let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicate, withLayout: layout, withAccount: session.account)
+        return folderSnapshots(metadatas, parent: nil, session: session)
+    }
+
+    private func folderSnapshots(_ metadatas: [tableMetadata], parent: tableMetadata?, session: NCSession.Session) -> [NCShareFolderItem] {
         let ordered = metadatas.filter(\.favorite) + metadatas.filter { !$0.favorite }
         return ordered.map { metadata in
             let childUrl = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)

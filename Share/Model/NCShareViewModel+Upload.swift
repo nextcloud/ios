@@ -12,29 +12,21 @@ import LucidBanner
 
 // MARK: - Upload
 extension NCShareViewModel {
+    var canUpload: Bool { canUseUploadDestination && !fileNames.isEmpty }
+
     /// Upload flow: inspect the destination, resolve name conflicts if needed,
     /// stage local copies, then transfer. Keep editing disabled throughout this flow.
     func upload() {
-        guard isUploadDestinationReady, isAuthenticated, !isPreparingInput, inputErrorMessage.isEmpty, !isPreparingUpload,
-              !isSwitchingAccount, !isLoadingAccounts, !isLoading, !fileNames.isEmpty else { return }
-        guard let capabilities = serverCapabilities else { return }
-        isPreparingUpload = true
-        uploadTask = Task { @MainActor in
-            defer { if pendingUploadConfirmation == nil { isPreparingUpload = false } }
-            do {
-                let plan = try await prepareUploadPlan(capabilities: capabilities)
-                try Task.checkCancellation()
-                guard !isClosing, isAuthenticated else { return }
-                if plan.requiresConfirmation {
-                    pendingUploadConfirmation = plan
-                    uploadConfirmation = plan
-                } else {
-                    try await stageAndUpload(plan: plan, replacing: false, capabilities: capabilities)
-                }
-            } catch is CancellationError {
-                // The extension was closed; do not present another screen.
-            } catch {
-                if !Task.isCancelled, !isClosing { showAlert(description: error.localizedDescription) }
+        guard canUpload, let capabilities = serverCapabilities else { return }
+        runUpload { [self] in
+            let plan = try await prepareUploadPlan(capabilities: capabilities)
+            try Task.checkCancellation()
+            guard !isClosing, isAuthenticated else { return }
+            if plan.requiresConfirmation {
+                pendingUploadConfirmation = (plan, nil)
+                isShowingUploadConfirmation = true
+            } else {
+                try await stageAndUpload(plan: plan, replacing: false, capabilities: capabilities)
             }
         }
     }
@@ -42,16 +34,13 @@ extension NCShareViewModel {
     // Store the choice and dismiss the sheet first. Starting the transfer here
     // would overlap sheet dismissal with the upload banner presentation.
     func resolveUploadConfirmation(_ choice: NCShareUploadChoice?) {
-        guard pendingUploadConfirmation != nil else { return }
-        uploadChoice = choice
-        uploadConfirmation = nil
+        pendingUploadConfirmation?.choice = choice
+        isShowingUploadConfirmation = false
     }
 
     func uploadConfirmationDismissed() {
-        guard let plan = pendingUploadConfirmation else { return }
-        let choice = uploadChoice
+        guard let (plan, choice) = pendingUploadConfirmation else { return }
         pendingUploadConfirmation = nil
-        uploadChoice = nil
         guard let choice, let capabilities = serverCapabilities, isAuthenticated, !isClosing else {
             isPreparingUpload = false
             if !isAuthenticated && !isClosing {
@@ -59,10 +48,17 @@ extension NCShareViewModel {
             }
             return
         }
+        runUpload { [self] in
+            try await stageAndUpload(plan: plan, replacing: choice == .replace, capabilities: capabilities)
+        }
+    }
+
+    private func runUpload(_ operation: @escaping @MainActor () async throws -> Void) {
+        isPreparingUpload = true
         uploadTask = Task { @MainActor in
-            defer { isPreparingUpload = false }
+            defer { if pendingUploadConfirmation == nil { isPreparingUpload = false } }
             do {
-                try await stageAndUpload(plan: plan, replacing: choice == .replace, capabilities: capabilities)
+                try await operation()
             } catch is CancellationError {
                 // No upload after cancellation or a destination change.
             } catch {

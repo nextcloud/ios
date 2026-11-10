@@ -9,6 +9,8 @@ struct NCShareView: View {
     @ObservedObject var model: NCShareViewModel
     @State private var fileActions: String?
 
+    private var canShowContent: Bool { model.rootFolder != nil && model.isAuthenticated }
+
     private var isRefreshing: Bool {
         model.isLoading || model.isSwitchingAccount || model.isLoadingAccounts ||
             model.isLoadingCapabilities || !model.folderTasks.isEmpty
@@ -16,68 +18,50 @@ struct NCShareView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
-                if model.rootFolder != nil && model.isAuthenticated {
-                    VStack(spacing: 0) {
-                        statusView
-                            .frame(maxWidth: .infinity)
-                            .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
-                            .padding(.horizontal, 16)
-                        GeometryReader { geometry in
-                            if UIDevice.current.userInterfaceIdiom == .phone && geometry.size.width > geometry.size.height {
-                                VStack(spacing: 0) {
-                                    createFolderHeader
-                                        .padding(.horizontal, 16)
-                                    HStack(spacing: 10) {
-                                        folderList(showHeader: false, horizontalInset: 0)
-                                            .frame(maxWidth: .infinity)
-                                        fileList(fillsHeight: true, horizontalInset: 0)
-                                            .frame(width: min(320, geometry.size.width * 0.38))
-                                    }
+            VStack(spacing: 0) {
+                statusView
+                    .frame(maxWidth: .infinity)
+                    .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+                    .padding(.horizontal, 16)
+                if canShowContent {
+                    GeometryReader { geometry in
+                        let sideBySide = UIDevice.current.userInterfaceIdiom == .phone && geometry.size.width > geometry.size.height
+                        VStack(spacing: 0) {
+                            if sideBySide {
+                                createFolderHeader
                                     .padding(.horizontal, 16)
-                                    uploadButton
-                                        .padding(.top, 10)
-                                        .padding(.bottom, 16)
+                                HStack(spacing: 10) {
+                                    folderList(showHeader: false, horizontalInset: 0)
+                                        .frame(maxWidth: .infinity)
+                                    fileList(fillsHeight: true, horizontalInset: 0)
+                                        .frame(width: min(320, geometry.size.width * 0.38))
                                 }
-                                .background(Color(uiColor: .systemGroupedBackground))
+                                .padding(.horizontal, 16)
                             } else {
-                                VStack(spacing: 0) {
-                                    folderList()
-                                    VStack(spacing: 10) {
-                                        fileList()
-                                        uploadButton
-                                    }
-                                    .padding(.top, 10)
-                                    .padding(.bottom, 16)
-                                    .background(Color(uiColor: .systemGroupedBackground))
-                                }
+                                folderList()
                             }
+                            VStack(spacing: 10) {
+                                if !sideBySide {
+                                    fileList()
+                                }
+                                uploadButton
+                            }
+                            .padding(.top, 10)
+                            .padding(.bottom, 16)
+                            .background(Color(uiColor: .systemGroupedBackground))
                         }
                     }
-                    .background(Color(uiColor: .systemGroupedBackground))
                 } else {
-                    VStack(spacing: 0) {
-                        Group {
-                            if !model.alertMessage.isEmpty {
-                                statusError(model.alertMessage) { model.acknowledgeAlert() }
-                            } else {
-                                ProgressView(NSLocalizedString("_request_in_progress_", comment: ""))
-                                    .cappedFont(.subheadline, maxDynamicType: .accessibility2)
-                                    .padding()
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
-                        .padding(.horizontal, 16)
-                        Spacer(minLength: 0)
-                    }
-                    .background(Color(uiColor: .systemGroupedBackground))
+                    Spacer(minLength: 0)
                 }
             }
+            .background(Color(uiColor: .systemGroupedBackground))
             .dynamicTypeSize(.xSmall ... .accessibility2)
             .background(Color(uiColor: .systemBackground))
-            .sheet(item: $model.uploadConfirmation, onDismiss: { model.uploadConfirmationDismissed() }) { confirmation in
-                NCShareUploadConflictView(confirmation: confirmation, resolve: model.resolveUploadConfirmation)
+            .sheet(isPresented: $model.isShowingUploadConfirmation, onDismiss: model.uploadConfirmationDismissed) {
+                if let confirmation = model.pendingUploadConfirmation?.plan {
+                    NCShareUploadConflictView(confirmation: confirmation, resolve: model.resolveUploadConfirmation)
+                }
             }
             .navigationTitle(String(format: NSLocalizedString("_share_save_to_", comment: "Share title; %@ is the cloud brand name"), NCBrandOptions.shared.brand))
             .navigationBarTitleDisplayMode(.inline)
@@ -85,7 +69,7 @@ struct NCShareView: View {
             .toolbarBackground(.hidden, for: .navigationBar)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarLeading) {
-                    if model.rootFolder != nil && model.isAuthenticated {
+                    if canShowContent {
                         HStack(spacing: 8) {
                             NCShareAccountMenu(model: model)
                                 .disabled(model.isLoading || model.isPreparingUpload || model.isSwitchingAccount || model.isLoadingAccounts)
@@ -110,7 +94,11 @@ struct NCShareView: View {
     private var statusView: some View {
         if !model.alertMessage.isEmpty {
             statusError(model.alertMessage) { model.acknowledgeAlert() }
-        } else if !model.inputErrorMessage.isEmpty && model.isAuthenticated && !model.isLoadingAccounts {
+        } else if !canShowContent {
+            ProgressView(NSLocalizedString("_request_in_progress_", comment: ""))
+                .cappedFont(.subheadline, maxDynamicType: .accessibility2)
+                .padding()
+        } else if !model.inputErrorMessage.isEmpty && !model.isLoadingAccounts {
             statusError(model.inputErrorMessage) { model.acknowledgeInputError() }
         } else if model.isOffline {
             VStack(spacing: 8) {
@@ -226,8 +214,7 @@ struct NCShareView: View {
             }
             .buttonStyle(.borderless)
             .tint(.blue)
-            .disabled(isRefreshing || !model.canUseFolderBrowser || !model.isUploadDestinationReady ||
-                      model.isPreparingInput || !model.inputErrorMessage.isEmpty)
+            .disabled(!model.canUseUploadDestination)
         }
         .textCase(nil)
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
@@ -389,9 +376,7 @@ struct NCShareView: View {
 
     private var uploadButton: some View {
         NCShareUploadButton(fileCount: model.fileNames.count, isPreparing: model.isPreparingUpload, action: model.upload)
-            .disabled(isRefreshing || model.fileNames.isEmpty || !model.isUploadDestinationReady || model.isLoading ||
-                      model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady ||
-                      model.isLoadingAccounts || !model.inputErrorMessage.isEmpty)
+            .disabled(!model.canUpload)
     }
 
 }

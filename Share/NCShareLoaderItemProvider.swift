@@ -28,7 +28,7 @@ final class NCShareLoaderItemProvider {
         private var finished = false
         private var cancelled = false
 
-        var isCancelled: Bool {
+        private var isCancelled: Bool {
             lock.lock()
             defer { lock.unlock() }
             return cancelled
@@ -51,7 +51,9 @@ final class NCShareLoaderItemProvider {
             if cancelled { cancellation() }
         }
 
-        func finish(_ result: Result<Value, Error>) {
+        func finish(_ operation: () throws -> Value) {
+            guard !isCancelled else { return }
+            let result = Result(catching: operation)
             lock.lock()
             guard !finished else { lock.unlock(); return }
             finished = true
@@ -190,14 +192,10 @@ final class NCShareLoaderItemProvider {
     private static func loadFile(provider: NSItemProvider, type: UTType, name: String?, fallbackName: String, directory: URL) async throws -> String {
         try await request { pending in
             let progress = provider.loadFileRepresentation(forTypeIdentifier: type.identifier) { url, error in
-                guard !pending.isCancelled else { return }
-                do {
+                pending.finish {
                     if let error { throw error }
                     guard let url else { throw CocoaError(.fileReadUnknown) }
-                    let result = try copy(source: url, name: name, fallbackName: fallbackName, type: type, directory: directory)
-                    pending.finish(.success(result))
-                } catch {
-                    pending.finish(.failure(error))
+                    return try copy(source: url, name: name, fallbackName: fallbackName, type: type, directory: directory)
                 }
             }
             return { progress.cancel() }
@@ -207,15 +205,10 @@ final class NCShareLoaderItemProvider {
     private static func loadData(provider: NSItemProvider, type: UTType, name: String?, fallbackName: String, directory: URL) async throws -> String {
         try await request { pending in
             let progress = provider.loadDataRepresentation(forTypeIdentifier: type.identifier) { data, error in
-                guard !pending.isCancelled else { return }
-                do {
+                pending.finish {
                     if let error { throw error }
                     guard let data else { throw CocoaError(.fileReadUnknown) }
-                    let destination = destination(name: name ?? fallbackName, type: type, directory: directory)
-                    try data.write(to: destination, options: .atomic)
-                    pending.finish(.success(destination.lastPathComponent))
-                } catch {
-                    pending.finish(.failure(error))
+                    return try write(data, name: name ?? fallbackName, type: type, directory: directory)
                 }
             }
             return { progress.cancel() }
@@ -225,16 +218,11 @@ final class NCShareLoaderItemProvider {
     private static func loadImage(provider: NSItemProvider, name: String?, fallbackName: String, directory: URL) async throws -> String {
         try await request { pending in
             let progress = provider.loadObject(ofClass: UIImage.self) { object, error in
-                guard !pending.isCancelled else { return }
-                do {
+                pending.finish {
                     if let error { throw error }
                     guard let image = object as? UIImage,
                           let data = autoreleasepool(invoking: { image.pngData() }) else { throw CocoaError(.fileReadCorruptFile) }
-                    let destination = destination(name: name ?? fallbackName, type: .png, directory: directory)
-                    try data.write(to: destination, options: .atomic)
-                    pending.finish(.success(destination.lastPathComponent))
-                } catch {
-                    pending.finish(.failure(error))
+                    return try write(data, name: name ?? fallbackName, type: .png, directory: directory)
                 }
             }
             return { progress.cancel() }
@@ -244,15 +232,10 @@ final class NCShareLoaderItemProvider {
     private static func loadText(provider: NSItemProvider, name: String?, fallbackName: String, directory: URL) async throws -> String {
         try await request { pending in
             let progress = provider.loadObject(ofClass: NSString.self) { object, error in
-                guard !pending.isCancelled else { return }
-                do {
+                pending.finish {
                     if let error { throw error }
                     guard let text = object as? String else { throw CocoaError(.fileReadCorruptFile) }
-                    let destination = destination(name: name ?? fallbackName, type: .utf8PlainText, directory: directory)
-                    try Data(text.utf8).write(to: destination, options: .atomic)
-                    pending.finish(.success(destination.lastPathComponent))
-                } catch {
-                    pending.finish(.failure(error))
+                    return try write(Data(text.utf8), name: name ?? fallbackName, type: .utf8PlainText, directory: directory)
                 }
             }
             return { progress.cancel() }
@@ -264,15 +247,10 @@ final class NCShareLoaderItemProvider {
     private static func loadAttributedText(provider: NSItemProvider, name: String?, fallbackName: String, directory: URL) async throws -> String {
         try await request { pending in
             let progress = provider.loadObject(ofClass: NSAttributedString.self) { object, error in
-                guard !pending.isCancelled else { return }
-                do {
+                pending.finish {
                     if let error { throw error }
                     guard let text = object as? NSAttributedString else { throw CocoaError(.fileReadCorruptFile) }
-                    let destination = destination(name: name ?? fallbackName, type: .utf8PlainText, directory: directory)
-                    try Data(text.string.utf8).write(to: destination, options: .atomic)
-                    pending.finish(.success(destination.lastPathComponent))
-                } catch {
-                    pending.finish(.failure(error))
+                    return try write(Data(text.string.utf8), name: name ?? fallbackName, type: .utf8PlainText, directory: directory)
                 }
             }
             return { progress.cancel() }
@@ -282,20 +260,16 @@ final class NCShareLoaderItemProvider {
     private static func loadLink(provider: NSItemProvider, name: String?, fallbackName: String, directory: URL) async throws -> String {
         let content: LoadedURL = try await request { pending in
             let progress = provider.loadObject(ofClass: NSURL.self) { object, error in
-                guard !pending.isCancelled else { return }
-                do {
+                pending.finish {
                     if let error { throw error }
                     guard let url = object as? URL else { throw URLError(.badURL) }
                     if url.isFileURL {
                         // Even a provider advertising only public.url may return
                         // a file reference. Copy it before this callback returns.
                         let name = try copyReferencedFile(source: url, name: name, fallbackName: fallbackName, directory: directory)
-                        pending.finish(.success(.file(name)))
-                    } else {
-                        pending.finish(.success(.remote(url)))
+                        return .file(name)
                     }
-                } catch {
-                    pending.finish(.failure(error))
+                    return .remote(url)
                 }
             }
             return { progress.cancel() }
@@ -317,8 +291,7 @@ final class NCShareLoaderItemProvider {
     private static func download(url: URL, name: String?, fallbackName: String, directory: URL) async throws -> String {
         try await request { pending in
             let task = URLSession.shared.downloadTask(with: url) { temporaryURL, response, error in
-                guard !pending.isCancelled else { return }
-                do {
+                pending.finish {
                     if let error { throw error }
                     guard let response = response as? HTTPURLResponse,
                           (200..<300).contains(response.statusCode),
@@ -326,14 +299,18 @@ final class NCShareLoaderItemProvider {
                     let type = response.mimeType.flatMap { UTType(mimeType: $0) }
                     let destination = destination(name: name ?? response.suggestedFilename ?? fallbackName, type: type, directory: directory)
                     try FileManager.default.copyItem(at: temporaryURL, to: destination)
-                    pending.finish(.success(destination.lastPathComponent))
-                } catch {
-                    pending.finish(.failure(error))
+                    return destination.lastPathComponent
                 }
             }
             task.resume()
             return { task.cancel() }
         }
+    }
+
+    nonisolated private static func write(_ data: Data, name: String, type: UTType, directory: URL) throws -> String {
+        let url = destination(name: name, type: type, directory: directory)
+        try data.write(to: url, options: .atomic)
+        return url.lastPathComponent
     }
 
     nonisolated private static func copyReferencedFile(source: URL, name: String?, fallbackName: String, directory: URL) throws -> String {

@@ -13,6 +13,10 @@ import UniformTypeIdentifiers
 /// in the corresponding extensions; input files remain local until upload staging.
 @MainActor
 final class NCShareViewModel: NSObject, ObservableObject {
+    private enum Access {
+        case locked, presentingPasscode, unprotected, unlocked, accountUnavailable
+    }
+
     @Published var rootFolder: NCShareFolderItem?
     @Published var recentFolders: [NCShareFolderItem] = []
     @Published var selectedFolder: NCShareFolderItem?
@@ -36,10 +40,9 @@ final class NCShareViewModel: NSObject, ObservableObject {
     @Published private(set) var isOffline = false
     private var connectionMonitor: NWPathMonitor?
     @Published var isPreparingUpload = false
-    @Published var uploadConfirmation: NCShareUploadConfirmation?
-    // Keep the plan after SwiftUI clears the sheet binding, until onDismiss runs.
-    var pendingUploadConfirmation: NCShareUploadConfirmation?
-    var uploadChoice: NCShareUploadChoice?
+    @Published var isShowingUploadConfirmation = false
+    // Keep the plan and choice until SwiftUI finishes dismissing the sheet.
+    var pendingUploadConfirmation: (plan: NCShareUploadConfirmation, choice: NCShareUploadChoice?)?
     var uploadTask: Task<Void, Never>?
     private(set) var isClosing = false
     @Published var isPreparingInput = false
@@ -53,10 +56,11 @@ final class NCShareViewModel: NSObject, ObservableObject {
     @Published var capabilitiesErrorMessage = ""
     var isAccountReady: Bool { serverCapabilities != nil && !isSwitchingAccount && !isOffline }
 
-    var isUploadDestinationReady: Bool {
+    var canUseUploadDestination: Bool {
         guard let selectedFolder else { return false }
-        return isAccountReady && alertMessage.isEmpty && folderTasks[selectedFolder.serverUrl] == nil &&
-            folderLoadErrors[selectedFolder.serverUrl] == nil
+        return canUseFolderBrowser && !isLoadingCapabilities && folderTasks.isEmpty &&
+            folderLoadErrors[selectedFolder.serverUrl] == nil && alertMessage.isEmpty &&
+            !isPreparingInput && inputErrorMessage.isEmpty
     }
 
     var capabilitiesTask: Task<Void, Never>?
@@ -65,7 +69,8 @@ final class NCShareViewModel: NSObject, ObservableObject {
     var isLoadingAccounts: Bool { accountsTask != nil }
     var accountChangeTask: Task<Void, Never>?
     var accountChangeID = UUID()
-    @Published private(set) var isAuthenticated = false
+    @Published private var access = Access.locked
+    var isAuthenticated: Bool { access == .unprotected || access == .unlocked }
 
     weak var presenter: UIViewController?
     private var requestContext: NSExtensionContext?
@@ -81,9 +86,6 @@ final class NCShareViewModel: NSObject, ObservableObject {
     let utility = NCUtility()
     private var maintenanceMode = false
     var banner: LucidBanner?
-    private var isPresentingNoAccountAlert = false
-    private var isPresentingPasscode = false
-    private var isPasscodeAuthenticated = false
 
     /// Starts account setup and attachment import independently, once per request.
     /// Protected content remains hidden until passcode authentication succeeds.
@@ -128,12 +130,12 @@ final class NCShareViewModel: NSObject, ObservableObject {
                 self.accountsTask?.cancel()
                 guard !self.maintenanceMode, self.validateAccount() else { return }
                 self.resolveUploadConfirmation(nil)
-                self.isPasscodeAuthenticated = false
+                if self.access == .unlocked { self.access = .locked }
                 self.requestPasscodeIfNeeded()
             }
         }
         // Verify version
-        let versionApp = NCUtility().getVersionMaintenance()
+        let versionApp = utility.getVersionMaintenance()
         if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
             let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion)
             if lastVersion != versionApp {
@@ -143,7 +145,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
         }
 
         if let account = sessionStore.account?.account {
-            isAuthenticated = !NCPreferences().presentPasscode
+            access = NCPreferences().presentPasscode ? .locked : .unprotected
             changeAccount(account)
         }
         guard let items = requestContext?.inputItems as? [NSExtensionItem] else {
@@ -252,6 +254,12 @@ final class NCShareViewModel: NSObject, ObservableObject {
     }
 
     isolated deinit {
+        stopRequestWork()
+        if let foregroundObserver { NotificationCenter.default.removeObserver(foregroundObserver) }
+        if let backgroundObserver { NotificationCenter.default.removeObserver(backgroundObserver) }
+    }
+
+    private func stopRequestWork() {
         connectionMonitor?.cancel()
         for request in thumbnailRequests.values { QLThumbnailGenerator.shared.cancel(request) }
         inputTask?.cancel()
@@ -264,12 +272,10 @@ final class NCShareViewModel: NSObject, ObservableObject {
         for task in folderTasks.values { task.cancel() }
         for request in folderRequests.values { request.cancel() }
         if !isPreparingInput { try? FileManager.default.removeItem(at: inputDirectory) }
-        if let foregroundObserver { NotificationCenter.default.removeObserver(foregroundObserver) }
-        if let backgroundObserver { NotificationCenter.default.removeObserver(backgroundObserver) }
     }
 
     private func validateAccount() -> Bool {
-        guard !isPresentingNoAccountAlert else { return false }
+        guard access != .accountUnavailable else { return false }
         guard !NCPasscodeModel.isPasscodeReset else {
             return showNoAccountAlert()
         }
@@ -292,19 +298,17 @@ final class NCShareViewModel: NSObject, ObservableObject {
     }
 
     private func showNoAccountAlert() -> Bool {
-        guard !isPresentingNoAccountAlert else { return false }
-        isPresentingNoAccountAlert = true
-        isAuthenticated = false
+        let wasPresentingPasscode = access == .presentingPasscode
+        access = .accountUnavailable
         accountChangeID = UUID()
         accountChangeTask?.cancel()
         accountsTask?.cancel()
         uploadTask?.cancel()
         pendingUploadConfirmation = nil
-        uploadChoice = nil
-        uploadConfirmation = nil
+        isShowingUploadConfirmation = false
         clearAccountView()
         banner?.dismiss()
-        if isPresentingPasscode {
+        if wasPresentingPasscode {
             cancel(with: .noAccount)
         } else {
             showAlert(description: "_no_active_account_") { [weak self] in self?.cancel(with: .noAccount) }
@@ -330,23 +334,11 @@ final class NCShareViewModel: NSObject, ObservableObject {
         guard !isClosing else { return }
         isClosing = true
         alertDismissAction = nil
-        connectionMonitor?.cancel()
-        for request in thumbnailRequests.values { QLThumbnailGenerator.shared.cancel(request) }
+        stopRequestWork()
         thumbnailRequests.removeAll()
         fileThumbnails.removeAll()
-        uploadConfirmation = nil
+        isShowingUploadConfirmation = false
         pendingUploadConfirmation = nil
-        uploadChoice = nil
-        inputTask?.cancel()
-        uploadTask?.cancel()
-        accountsTask?.cancel()
-        accountChangeTask?.cancel()
-        capabilitiesTask?.cancel()
-        capabilitiesRequest?.cancel()
-        folderSelectionTask?.cancel()
-        for task in folderTasks.values { task.cancel() }
-        for request in folderRequests.values { request.cancel() }
-        if !isPreparingInput { try? FileManager.default.removeItem(at: inputDirectory) }
         if let error {
             requestContext?.cancelRequest(withError: error)
         } else {
@@ -367,18 +359,16 @@ final class NCShareViewModel: NSObject, ObservableObject {
     }
 
     func createFolder() {
-        let session = sessionStore.getSession()
-        guard canUseFolderBrowser, isUploadDestinationReady, !isPreparingInput, inputErrorMessage.isEmpty,
-              let folder = selectedFolder else { return }
-        guard let capabilities = serverCapabilities,
+        guard canUseUploadDestination, let folder = selectedFolder, let capabilities = serverCapabilities,
               let presenter, presenter.viewIfLoaded?.window != nil,
               presenter.presentedViewController == nil,
               !presenter.isBeingDismissed else { return }
+        let session = sessionStore.getSession()
         let browserID = folderBrowserID
         let alert = UIAlertController.createFolderWith(
             serverUrl: folder.serverUrl, session: session, capabilities: capabilities,
             completion: { [weak self] error, name in
-                guard let self, !self.isClosing, self.folderBrowserID == browserID else { return }
+                guard let self, self.isCurrentBrowser(browserID, account: session.account) else { return }
                 guard error == .success else {
                     if let message = error.userFriendlyMessage(for: .createFolder(folderName: name)) {
                         self.showAlert(description: message)
@@ -393,13 +383,13 @@ final class NCShareViewModel: NSObject, ObservableObject {
                     // Load and expand its ancestors before scrolling to the new row.
                     guard var branch = self.rootFolder else { return }
                     while true {
-                        guard !Task.isCancelled, !self.isClosing, self.folderBrowserID == browserID else { return }
+                        guard self.isCurrentBrowser(browserID, account: session.account) else { return }
                         self.expandedFolderURLs.insert(branch.serverUrl)
                         if let task = self.folderTasks[branch.serverUrl] { await task.value }
-                        guard !Task.isCancelled, !self.isClosing, self.folderBrowserID == browserID else { return }
+                        guard self.isCurrentBrowser(browserID, account: session.account) else { return }
                         self.requestFolderChildren(branch, refresh: branch.serverUrl == folder.serverUrl)
                         if let task = self.folderTasks[branch.serverUrl] { await task.value }
-                        guard !Task.isCancelled, !self.isClosing, self.folderBrowserID == browserID,
+                        guard self.isCurrentBrowser(browserID, account: session.account),
                               self.folderLoadErrors[branch.serverUrl] == nil else { return }
                         if branch.serverUrl == folder.serverUrl { break }
                         guard let child = self.folderChildren[branch.serverUrl]?.first(where: {
@@ -455,37 +445,28 @@ final class NCShareViewModel: NSObject, ObservableObject {
         try? FileManager.default.removeItem(at: inputFileURL(named: fileName))
         self.fileNames.remove(at: index)
         if self.fileNames.isEmpty {
-            cancel(with: NCShareRequestError.noFiles)
+            cancel(with: .noFiles)
         }
     }
 
-}
-
-extension NCShareViewModel {
     /// Require authentication once per foreground session without reopening after dismissal.
     private func requestPasscodeIfNeeded() {
-        if !NCPreferences().presentPasscode || isPasscodeAuthenticated {
-            isAuthenticated = true
+        guard access != .presentingPasscode, access != .unlocked else { return }
+        if !NCPreferences().presentPasscode {
+            access = .unprotected
             return
         }
-        isAuthenticated = false
+        access = .locked
         // The sheet's onDismiss resumes the passcode flow after its transition.
-        guard !isPresentingPasscode, pendingUploadConfirmation == nil,
-              let presenter else { return }
-        isPresentingPasscode = true
+        guard pendingUploadConfirmation == nil, let presenter else { return }
+        access = .presentingPasscode
         NCPasscodeView.present(from: presenter, allowCancel: true) { [weak self] result in
-            guard let self else { return }
-            self.isPresentingPasscode = false
-            switch result {
-            case .authenticated:
-                self.isPasscodeAuthenticated = true
-                if self.validateAccount() {
-                    self.isAuthenticated = true
-                    if self.accounts.isEmpty { self.loadAccounts() }
-                }
-            case .cancelled, .reset, .configured, .disabled:
-                self.cancel(with: .noAccount)
-            }
+            guard let self, !self.isClosing else { return }
+            self.access = .locked
+            guard result == .authenticated else { return self.cancel(with: .noAccount) }
+            guard self.validateAccount() else { return }
+            self.access = .unlocked
+            if self.accounts.isEmpty { self.loadAccounts() }
         }
     }
 }
@@ -517,8 +498,7 @@ struct NCShareUploadItem: Sendable {
     let fileName: String
 }
 
-struct NCShareUploadConfirmation: Identifiable, Sendable {
-    let id = UUID()
+struct NCShareUploadConfirmation: Sendable {
     let account: String
     let serverUrl: String
     let items: [NCShareUploadItem]
@@ -551,7 +531,7 @@ extension NCShareViewModel {
     static func preview() -> NCShareViewModel {
         let model = NCShareViewModel()
         model.serverCapabilities = NKCapabilities.Capabilities()
-        model.isAuthenticated = true
+        model.access = .unprotected
         let home = "https://cloud.example.com/remote.php/dav/files/marino"
         let root = NCShareFolderItem(ocId: "root", name: "My files", serverUrl: home, path: "/", image: UIImage(systemName: "folder.fill"), isEncrypted: false)
         let documents = NCShareFolderItem(ocId: "documents", name: "Documents", serverUrl: home + "/Documents", path: "/Documents", image: UIImage(systemName: "folder.fill"), isEncrypted: false, isFavorite: true)
