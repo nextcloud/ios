@@ -112,7 +112,7 @@ extension UIAlertController {
         let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel)
 
         alertController.addTextField { textField in
-            textField.autocapitalizationType = .words
+            textField.autocapitalizationType = .sentences
         }
 
         NotificationCenter.default.addObserver(
@@ -222,7 +222,7 @@ extension UIAlertController {
 
         alertController.addTextField { textField in
             textField.text = fileName
-            textField.autocapitalizationType = .words
+            textField.autocapitalizationType = .sentences
         }
 
         let oldExtension = fileName.fileExtension
