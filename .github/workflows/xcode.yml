@@ -62,7 +62,7 @@ jobs:
   test:
     name: Run Tests
     runs-on: xcode-27
-    timeout-minutes: 60
+    timeout-minutes: 40
     needs: [build]
 
     if: github.event.pull_request.draft == false
@@ -192,7 +192,7 @@ jobs:
         fi
 
     - name: Run Xcode Test
-      timeout-minutes: 45
+      timeout-minutes: 25
       shell: bash
       env:
         RUN_PASSCODE_TESTS: ${{ steps.passcode_changes.outputs.run }}
