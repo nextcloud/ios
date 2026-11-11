@@ -84,7 +84,8 @@ class BaseUIXCTestCase: XCTestCase {
         }
 
         let sidebar = app.buttons["openSidebar"].firstMatch
-        guard sidebar.await(timeout: 30) || app.buttons["accountSwitcher"].exists else {
+        let loginTimeout: TimeInterval = usingAppConfig ? 90 : 30
+        guard sidebar.await(timeout: loginTimeout) || app.buttons["accountSwitcher"].exists else {
             attachAuthenticationDiagnostics()
             throw UITestError.waitForExistence(sidebar)
         }

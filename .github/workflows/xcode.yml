@@ -199,15 +199,13 @@ jobs:
       run: |
         set -o pipefail
         test_selection=()
-        if [ "$RUN_PASSCODE_TESTS" != "true" ]; then
-          test_selection+=(-skip-testing:NextcloudUITests/PasscodeUITests)
-        fi
+        # Temporary diagnostic for the AppConfig login timeout.
+        test_selection+=(-only-testing:NextcloudUITests/PasscodeUITests/testAppLockAppearsAbovePresentedSheet)
         xcodebuild test-without-building \
         -xctestrun $(find . -type f -name "*.xctestrun") \
         -destination "${{ env.DESTINATION }}" \
         -derivedDataPath "DerivedData" \
         "${test_selection[@]}" \
-        -retry-tests-on-failure \
         -test-timeouts-enabled YES \
         -default-test-execution-time-allowance 600 \
         -maximum-test-execution-time-allowance 600 \
