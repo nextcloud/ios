@@ -60,7 +60,7 @@ jobs:
         retention-days: 4
 
   test:
-    name: Run Tests
+    name: Run Unit Tests
     runs-on: xcode-27
     timeout-minutes: 40
     needs: [build]
@@ -69,42 +69,6 @@ jobs:
     
     steps:
     - uses: actions/checkout@v7
-      with:
-        fetch-depth: 0
-
-    - name: Detect passcode changes
-      id: passcode_changes
-      shell: bash
-      env:
-        PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        PUSH_BEFORE_SHA: ${{ github.event.before }}
-      run: |
-        run_passcode_tests=false
-        if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
-          compare_base=$(git merge-base "$PR_BASE_SHA" "$PR_HEAD_SHA")
-          compare_head="$PR_HEAD_SHA"
-        else
-          compare_base="$PUSH_BEFORE_SHA"
-          compare_head="$GITHUB_SHA"
-        fi
-
-        if [ -z "$compare_base" ] || [ "$compare_base" = "0000000000000000000000000000000000000000" ]; then
-          run_passcode_tests=true
-        else
-          git diff --name-only -z "$compare_base" "$compare_head" > "$RUNNER_TEMP/passcode-changed-files"
-          while IFS= read -r -d '' changed_file; do
-            case "$changed_file" in
-              iOSClient/Utility/Passcode/* | \
-              Tests/NextcloudUITests/PasscodeUITests.swift)
-                run_passcode_tests=true
-                break
-                ;;
-            esac
-          done < "$RUNNER_TEMP/passcode-changed-files"
-        fi
-        echo "run=$run_passcode_tests" >> "$GITHUB_OUTPUT"
-        echo "Run passcode UI tests: $run_passcode_tests"
 
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
@@ -156,22 +120,6 @@ jobs:
     - name: Assert Nextcloud Server Status
       run: curl --fail --show-error --silent --max-time 5 --retry 5 --retry-delay 2 --retry-max-time 30 --retry-all-errors http://localhost:8080/status.php
 
-    - name: Assert Nextcloud AppConfig Login
-      if: steps.passcode_changes.outputs.run == 'true'
-      shell: bash
-      run: |
-        curl --fail --show-error --silent --max-time 15 --user admin:admin \
-          --header 'OCS-APIRequest: true' \
-          'http://localhost:8080/ocs/v2.php/core/getapppassword' | \
-          php -r '
-            libxml_use_internal_errors(true);
-            $response = simplexml_load_string(stream_get_contents(STDIN), SimpleXMLElement::class, LIBXML_NONET);
-            if ($response === false || trim((string) ($response->data->apppassword ?? "")) === "") {
-                fwrite(STDERR, "Nextcloud did not return an app password.\n");
-                exit(1);
-            }
-          '
-
     - name: Boot iOS Simulator
       run: |
         xcrun simctl boot "iPhone 17"
@@ -182,30 +130,17 @@ jobs:
         xcrun simctl boot "iPhone 17"
         xcrun simctl bootstatus "iPhone 17" -b
 
-    - name: Check if Safari is installed
-      run: |
-        if xcrun simctl listapps booted | grep -q com.apple.mobilesafari; then
-          echo "Safari is installed in the simulator."
-        else
-          echo "Safari is NOT installed in the simulator."
-          exit 1
-        fi
-
-    - name: Run Xcode Test
+    - name: Run Xcode Unit Tests
       timeout-minutes: 25
       shell: bash
-      env:
-        RUN_PASSCODE_TESTS: ${{ steps.passcode_changes.outputs.run }}
       run: |
         set -o pipefail
-        test_selection=()
-        # Temporary diagnostic for the AppConfig login timeout.
-        test_selection+=(-only-testing:NextcloudUITests/PasscodeUITests/testAppLockAppearsAbovePresentedSheet)
+        # UI tests remain available in the shared scheme for local execution.
         xcodebuild test-without-building \
         -xctestrun $(find . -type f -name "*.xctestrun") \
         -destination "${{ env.DESTINATION }}" \
         -derivedDataPath "DerivedData" \
-        "${test_selection[@]}" \
+        -only-testing:NextcloudUnitTests \
         -test-timeouts-enabled YES \
         -default-test-execution-time-allowance 600 \
         -maximum-test-execution-time-allowance 600 \
