@@ -85,6 +85,57 @@ struct NCViewerPhotoEditTests {
         #expect(await counter.value == 2)
     }
 
+    @Test("Cancelling the only caller cancels the shared operation")
+    func cancellingLastCallerCancelsOperation() async {
+        let registry = NCInFlightTaskRegistry<String, Int>()
+        let counter = Counter()
+
+        let caller = Task {
+            try await registry.value(for: "photo") {
+                await counter.increment()
+                try await Task.sleep(nanoseconds: 60_000_000_000)
+                return 1
+            }
+        }
+        await counter.waitUntil(1)
+        caller.cancel()
+
+        let result = await caller.result
+        #expect(throws: CancellationError.self) { try result.get() }
+    }
+
+    @Test("Cancelling one caller keeps the shared operation for the others")
+    func cancellingOneCallerKeepsOperation() async throws {
+        let registry = NCInFlightTaskRegistry<String, Int>()
+        let counter = Counter()
+        let gate = Gate()
+
+        let first = Task {
+            try await registry.value(for: "photo") {
+                await counter.increment()
+                await gate.wait()
+                try Task.checkCancellation()
+                return 1
+            }
+        }
+        await counter.waitUntil(1)
+        let second = Task {
+            try await registry.value(for: "photo") {
+                await counter.increment()
+                return 2
+            }
+        }
+        while await registry.joinedCount < 1 {
+            await Task.yield()
+        }
+        first.cancel()
+        try await Task.sleep(nanoseconds: 100_000_000)
+        await gate.open()
+
+        #expect(try await second.value == 1)
+        #expect(await counter.value == 1)
+    }
+
     // MARK: - Edit tied to the originating viewer
 
     @Test("Edit opens Quick Look when the viewer still shows the photo")
