@@ -101,8 +101,8 @@ class NCCollectionViewDataSource: NSObject {
             // like inserted
         } else {
             // normal
-            let favorite = NSLocalizedString("favorite", comment: "").lowercased().firstUppercased
-            let directory = NSLocalizedString("directory", comment: "").lowercased().firstUppercased
+            let favorite = NSLocalizedString("_favorite_short_", comment: "").lowercased().firstUppercased
+            let directory = NSLocalizedString("_directory_", comment: "").lowercased().firstUppercased
 
             self.sections = self.sections.sorted { lhs, rhs in
                 // 1. favorite on top

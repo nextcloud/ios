@@ -77,9 +77,9 @@ final class NCPasscodeModel: ObservableObject {
 
     var title: String {
         switch step {
-        case .authenticate: return "Enter Passcode"
-        case .enterNew: return "Enter a new passcode"
-        case .confirmNew: return "Confirm new passcode"
+        case .authenticate: return "_enter_passcode_"
+        case .enterNew: return "_enter_new_passcode_"
+        case .confirmNew: return "_confirm_new_passcode_"
         }
     }
 
@@ -216,7 +216,7 @@ final class NCPasscodeModel: ObservableObject {
             guard code == newPasscode else {
                 newPasscode = ""
                 step = .enterNew
-                message = "Passcodes didn't match. Try again."
+                message = "_passcodes_did_not_match_"
                 errorFeedback += 1
                 return
             }

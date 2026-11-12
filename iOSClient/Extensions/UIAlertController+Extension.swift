@@ -136,7 +136,7 @@ extension UIAlertController {
                     message = errorMessage
                     messageColor = .red
                 } else if isFileHidden {
-                    message = NSLocalizedString("hidden_file_name_warning", comment: "")
+                    message = NSLocalizedString("_hidden_file_name_warning_", comment: "")
                 } else if alreadyExists {
                     message = NSLocalizedString("_item_with_same_name_already_exists_", comment: "")
                 }
@@ -270,7 +270,7 @@ extension UIAlertController {
                     message = errorMessage
                     messageColor = .red
                 } else if isFileHidden {
-                    message = NSLocalizedString("hidden_file_name_warning", comment: "")
+                    message = NSLocalizedString("_hidden_file_name_warning_", comment: "")
                 } else if newExtension != oldExtension {
                     message = NSLocalizedString("_file_name_new_extension_", comment: "")
                 }

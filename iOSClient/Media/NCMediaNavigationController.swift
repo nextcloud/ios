@@ -236,7 +236,7 @@ class NCMediaNavigationController: NCMainNavigationController {
 
         let actionsInEditMode: [UIAction] = [
             UIAction(
-                title: NSLocalizedString("_add_to_album", comment: ""),
+                title: NSLocalizedString("_add_to_album_", comment: ""),
                 image: utility.loadImage(named: "photo.badge.plus.fill"),
                 handler: { _ in
                     guard let controller = self.controller else { return }
@@ -292,11 +292,11 @@ class NCMediaNavigationController: NCMainNavigationController {
             textField.placeholder = NSLocalizedString("_albums_list_new_album_popup_hint_", comment: "")
         }
 
-        alert.addAction(UIAlertAction(title: NSLocalizedString("_albums_list_new_album_popup_negative_btn_", comment: ""), style: .default) { _ in
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { _ in
             onCancel()
         })
 
-        alert.addAction(UIAlertAction(title: NSLocalizedString("_albums_list_new_album_popup_positive_btn_", comment: ""), style: .default) { _ in
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_create_", comment: ""), style: .default) { _ in
             let text = alert.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             if text.isEmpty {
                 let emptyAlert = UIAlertController(

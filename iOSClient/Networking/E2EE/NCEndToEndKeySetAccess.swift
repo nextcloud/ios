@@ -59,7 +59,7 @@ enum NCEndToEndKeySetAccess: Equatable, Sendable {
         case .unavailable:
             return NKError(
                 errorCode: NCGlobal.shared.errorE2EENoUserFound,
-                errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: "")
+                errorDescription: NSLocalizedString("_e2ee_no_metadata_key_found_", comment: "")
             )
         }
     }
