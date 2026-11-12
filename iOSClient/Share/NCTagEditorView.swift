@@ -84,7 +84,7 @@ struct NCTagEditorView: View {
             .searchable(
                 text: $model.searchText,
                 isPresented: $isSearchPresented,
-                prompt: Text(NSLocalizedString("_search_or_create_tags", comment: ""))
+                prompt: Text(NSLocalizedString("_search_or_create_tags_", comment: ""))
             )
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

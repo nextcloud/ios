@@ -390,7 +390,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 Task {
                     if await getMatchedAccount(user: userScheme, url: urlScheme) == nil {
                         let message = String(
-                            format: NSLocalizedString("account_does_not_exist", comment: ""),
+                            format: NSLocalizedString("_account_does_not_exist_", comment: ""),
                             userScheme,
                         )
 

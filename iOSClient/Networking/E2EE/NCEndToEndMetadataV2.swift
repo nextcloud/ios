@@ -291,7 +291,7 @@ extension NCEndToEndMetadata {
                   let metadataKey = tableUser.metadataKey?.base64EncodedString(),
                   let decryptedMetadataKey = tableUser.metadataKey else {
                 return NKError(errorCode: NCGlobal.shared.errorE2EENoUserFound,
-                               errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: ""))
+                               errorDescription: NSLocalizedString("_e2ee_no_metadata_key_found_", comment: ""))
             }
 
             // FILEDROP

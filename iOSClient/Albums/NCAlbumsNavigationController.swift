@@ -16,7 +16,7 @@ class NCAlbumsNavigationController: NCMainNavigationController {
         let item = screen.navigationItem
         item.largeTitleDisplayMode = .never
         if let viewModel = screen.listViewModel {
-            screen.title = NSLocalizedString("_albums_list_nav_title_", comment: "")
+            screen.title = NSLocalizedString("_albums_", comment: "")
             item.rightBarButtonItem = UIBarButtonItem(
                 title: NSLocalizedString("_albums_list_new_album_btn_", comment: ""),
                 image: UIImage(systemName: "plus"),
@@ -34,7 +34,7 @@ class NCAlbumsNavigationController: NCMainNavigationController {
                 primaryAction: UIAction { [weak viewModel] _ in viewModel?.onAddPhotosIntent() }
             )
             let rename = UIAction(
-                title: NSLocalizedString("_albums_photos_rename_album_btn_", comment: ""),
+                title: NSLocalizedString("_albums_list_rename_album_popup_title_", comment: ""),
                 image: UIImage(systemName: "pencil")
             ) { [weak viewModel] _ in viewModel?.onRenameAlbumIntent() }
             let delete = UIAction(

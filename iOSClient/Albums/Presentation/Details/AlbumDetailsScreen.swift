@@ -45,12 +45,12 @@ struct AlbumDetailsScreen: View {
             isPresented: $viewModel.isDeleteAlbumPopupVisible,
             actions: {
                 Button(
-                    NSLocalizedString("_albums_delete_album_popup_positive_btn_", comment: ""),
+                    NSLocalizedString("_delete_", comment: ""),
                     role: .destructive,
                     action: viewModel.onDeleteAlbumPopupConfirm
                 )
                 Button(
-                    NSLocalizedString("_albums_delete_album_popup_negative_btn_", comment: ""),
+                    NSLocalizedString("_cancel_", comment: ""),
                     role: .cancel,
                     action: viewModel.onDeleteAlbumPopupCancel
                 )

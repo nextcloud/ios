@@ -113,7 +113,7 @@ class NCNetworkingE2EE: NSObject {
               let serverPublicKey = preferences.getEndToEndPublicKey(account: account),
               !serverPublicKey.isEmpty else {
             nkLog(tag: NCGlobal.shared.logTagE2EE, message: "Server-key validation skipped because the active key set is incomplete.")
-            return NKError(errorCode: NCGlobal.shared.errorE2EENotEnabled, errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: ""))
+            return NKError(errorCode: NCGlobal.shared.errorE2EENotEnabled, errorDescription: NSLocalizedString("_e2ee_no_metadata_key_found_", comment: ""))
         }
 
         if preferences.isEndToEndServerKeyStale(account: account) {
@@ -366,7 +366,7 @@ class NCNetworkingE2EE: NSObject {
                     nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Unable to resolve the stored E2EE key set: \(error)")
 
                     await unlock(account: session.account, serverUrl: serverUrl)
-                    return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: ""))
+                    return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2ee_no_metadata_key_found_", comment: ""))
                 }
 
                 guard storedAccess.writeAccessError == .success else {
@@ -454,7 +454,7 @@ class NCNetworkingE2EE: NSObject {
         } catch {
             nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Unable to resolve E2EE key-set access: \(error)")
 
-            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: ""))
+            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2ee_no_metadata_key_found_", comment: ""))
         }
 
         let writeAccessError = access.writeAccessError
@@ -514,7 +514,7 @@ class NCNetworkingE2EE: NSObject {
                 } catch {
                     nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Unable to resolve the stored E2EE key set: \(error)")
 
-                    return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: ""))
+                    return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2ee_no_metadata_key_found_", comment: ""))
                 }
             }
             return resultsGetE2EEMetadata.error

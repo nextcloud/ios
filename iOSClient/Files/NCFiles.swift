@@ -367,7 +367,7 @@ class NCFiles: NCCollectionViewCommon {
 
                     return NKError(
                         errorCode: global.errorInternalError,
-                        errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: "")
+                        errorDescription: NSLocalizedString("_e2ee_no_metadata_key_found_", comment: "")
                     )
                 }
 

@@ -80,7 +80,7 @@ struct AddToAlbumsListView: View {
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
-                .navigationTitle(NSLocalizedString("_add_to_album", comment: ""))
+                .navigationTitle(NSLocalizedString("_add_to_album_", comment: ""))
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {

@@ -301,7 +301,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     @objc func goToPage() {
         guard let pdfDocument = pdfView.document else { return }
-        let alertMessage = NSString(format: NSLocalizedString("_this_document_has_%@_pages_", comment: "") as NSString, "\(pdfDocument.pageCount)") as String
+        let alertMessage = NSString(format: NSLocalizedString("_this_document_has_pages_", comment: "") as NSString, "\(pdfDocument.pageCount)") as String
         let alertController = UIAlertController(title: NSLocalizedString("_go_to_page_", comment: ""), message: alertMessage, preferredStyle: .alert)
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))

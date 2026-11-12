@@ -118,7 +118,7 @@ import NextcloudKit
 
             if hour > 0 {
                 if hour == 1 { return NSLocalizedString("_an_hour_", comment: "") }
-                if hour == 4 { return NSLocalizedString("_4_hour_", comment: "") }
+                if hour == 4 { return NSLocalizedString("_4_hours_", comment: "") }
                 return "\(hour) " + NSLocalizedString("_hours_", comment: "")
             }
 

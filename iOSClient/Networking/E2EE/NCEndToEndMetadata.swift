@@ -79,7 +79,7 @@ class NCEndToEndMetadata: NSObject {
             )
 
             return (
-                NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: "")),
+                NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2ee_no_metadata_key_found_", comment: "")),
                 .unavailable
             )
         }
@@ -93,7 +93,7 @@ class NCEndToEndMetadata: NSObject {
             return (
                 NKError(
                     errorCode: NCGlobal.shared.errorE2EENoUserFound,
-                    errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: "")
+                    errorDescription: NSLocalizedString("_e2ee_no_metadata_key_found_", comment: "")
                 ),
                 .unavailable
             )
