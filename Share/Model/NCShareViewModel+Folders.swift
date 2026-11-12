@@ -77,8 +77,7 @@ extension NCShareViewModel {
         if expandedFolderURLs.contains(folder.serverUrl) {
             expandedFolderURLs.remove(folder.serverUrl)
         } else {
-            expandedFolderURLs.insert(folder.serverUrl)
-            if !loadedFolderURLs.contains(folder.serverUrl) { requestFolderChildren(folder) }
+            selectFolder(folder)
         }
     }
 
