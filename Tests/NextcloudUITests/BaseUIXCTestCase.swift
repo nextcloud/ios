@@ -59,8 +59,8 @@ class BaseUIXCTestCase: XCTestCase {
         try await Task.sleep(for: .seconds(TestConstants.controlExistenceTimeout))
     }
 
-    /// Sign in through the app's authentication flow, supporting system authentication and the embedded fallback.
-    func logIn() async throws {
+    /// Sign in through the browser by default, or let the app provision a test account on the login screen.
+    func logIn(usingAppConfig: Bool = false) async throws {
         let login = app.buttons["login"]
         let deadline = Date().addingTimeInterval(30)
         // Startup can restore the main interface after the first accessibility snapshot.
@@ -79,7 +79,19 @@ class BaseUIXCTestCase: XCTestCase {
             throw UITestError.waitForExistence(login)
         }
         login.tap()
+        if !usingAppConfig {
+            try await authenticateInBrowser()
+        }
 
+        let sidebar = app.buttons["openSidebar"].firstMatch
+        let loginTimeout: TimeInterval = usingAppConfig ? 90 : 30
+        guard sidebar.await(timeout: loginTimeout) || app.buttons["accountSwitcher"].exists else {
+            attachAuthenticationDiagnostics()
+            throw UITestError.waitForExistence(sidebar)
+        }
+    }
+
+    private func authenticateInBrowser() async throws {
         let serverAddress = app.textFields["serverAddress"].firstMatch
         guard serverAddress.await() else { throw UITestError.waitForExistence(serverAddress) }
         serverAddress.tap()
@@ -107,12 +119,6 @@ class BaseUIXCTestCase: XCTestCase {
         guard try await waitForAuthenticationConsent() else {
             attachAuthenticationDiagnostics()
             throw UITestError.waitForExistence(grant)
-        }
-
-        let sidebar = app.buttons["openSidebar"].firstMatch
-        guard sidebar.await(timeout: 30) || app.buttons["accountSwitcher"].exists else {
-            attachAuthenticationDiagnostics()
-            throw UITestError.waitForExistence(sidebar)
         }
     }
 

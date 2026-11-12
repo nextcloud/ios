@@ -85,10 +85,14 @@ final class NCPasscodeModel: ObservableObject {
 
     var biometricSymbol: String? {
         if isPreview { return step == .authenticate ? "faceid" : nil }
-        guard step == .authenticate, mode != .change, preferences.touchFaceID, preferences.passcode != nil else { return nil }
+        guard isBiometricAuthenticationEnabled else { return nil }
         let context = LAContext()
         guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil) else { return nil }
         return context.biometryType == .faceID ? "faceid" : "touchid"
+    }
+
+    private var isBiometricAuthenticationEnabled: Bool {
+        step == .authenticate && mode != .change && preferences.touchFaceID && preferences.passcode != nil
     }
 
     var canEnterCode: Bool {
@@ -160,8 +164,9 @@ final class NCPasscodeModel: ObservableObject {
     func authenticateWithBiometrics() async {
         guard !isPreview else { return }
         refreshProtection()
-        guard canEnterCode, biometricSymbol != nil else { return }
+        guard canEnterCode, isBiometricAuthenticationEnabled else { return }
         let context = LAContext()
+        guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil) else { return }
         let request = UUID()
         biometricRequest = request
         biometricContext = context

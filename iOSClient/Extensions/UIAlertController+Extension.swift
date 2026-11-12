@@ -22,8 +22,8 @@ extension UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: nil, preferredStyle: .alert)
         let isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
 
-        let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
-            guard let fileNameFolder = alertController.textFields?.first?.text else { return }
+        let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { [weak alertController] _ in
+            guard let fileNameFolder = alertController?.textFields?.first?.text else { return }
 
             if markE2ee {
                 if NCNetworking.shared.isOffline {
@@ -115,11 +115,11 @@ extension UIAlertController {
             textField.autocapitalizationType = .sentences
         }
 
-        NotificationCenter.default.addObserver(
-            forName: UITextField.textDidChangeNotification,
-            object: alertController.textFields?.first,
-            queue: .main) { _ in
-                guard let text = alertController.textFields?.first?.text else {
+        // The field owns this handler, so validation ends with the dialog's lifetime.
+        // Weak captures avoid retaining the alert through its field and actions.
+        alertController.textFields?.first?.addAction(UIAction { [weak alertController, weak okAction] _ in
+                guard let alertController, let okAction,
+                      let text = alertController.textFields?.first?.text else {
                     return
                 }
                 let folderName = text.trimmingCharacters(in: .whitespaces)
@@ -147,7 +147,7 @@ extension UIAlertController {
                 ])
 
                 alertController.setValue(attributedString, forKey: "attributedMessage")
-            }
+            }, for: .editingChanged)
 
         alertController.addAction(cancelAction)
         alertController.addAction(okAction)
