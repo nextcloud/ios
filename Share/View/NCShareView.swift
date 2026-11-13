@@ -67,6 +67,13 @@ struct NCShareView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.visible, for: .navigationBar)
             .toolbarBackground(.hidden, for: .navigationBar)
+            .complexModifier { content in
+                if #available(iOS 27.0.1, *) {
+                    content.toolbarMinimizationBehavior(.never, for: .navigationBar)
+                } else {
+                    content
+                }
+            }
             .toolbar {
                 if canShowContent {
                     let account = ToolbarItem(placement: .topBarLeading) {
