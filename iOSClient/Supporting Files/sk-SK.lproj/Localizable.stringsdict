@@ -13,9 +13,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>Upload %ld file</string>
+			<string>Nahrať %ld súbor</string>
+			<key>few</key>
+			<string>Nahrať %ld súbory</string>
+			<key>many</key>
+			<string>Nahrať %ld súboru</string>
 			<key>other</key>
-			<string>Upload %ld files</string>
+			<string>Nahrať %ld súborov</string>
 		</dict>
 	</dict>
 	<key>_remaining_share_downloads_</key>

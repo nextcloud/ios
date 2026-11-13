@@ -13,9 +13,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>Upload %ld file</string>
+			<string>Téléverser %ld fichier</string>
+			<key>many</key>
+			<string>Téléverser %ld fichiers</string>
 			<key>other</key>
-			<string>Upload %ld files</string>
+			<string>Téléverser %ld fichiers</string>
 		</dict>
 	</dict>
 	<key>_remaining_share_downloads_</key>
