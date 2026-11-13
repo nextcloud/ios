@@ -38,7 +38,6 @@ struct NCAutoUploadView: View {
                 noPermissionsView
             }
         }
-        .hideTopScrollEdgeEffect()
         .navigationBarTitle(NSLocalizedString("_auto_upload_folder_", comment: ""))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

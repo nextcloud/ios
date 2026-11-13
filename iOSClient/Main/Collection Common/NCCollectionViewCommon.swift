@@ -198,7 +198,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         self.navigationController?.presentationController?.delegate = self
         collectionView.alwaysBounceVertical = true
         collectionView.accessibilityIdentifier = "NCCollectionViewCommon"
-        collectionView.hideTopScrollEdgeEffect()
 
         view.backgroundColor = .systemBackground
         collectionView.backgroundColor = .systemBackground

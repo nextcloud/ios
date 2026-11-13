@@ -132,7 +132,7 @@ class AlbumsViewController: UIViewController {
                 }
             }
             .store(in: &cancellables)
-        let content = AnyView(rootView.id(account).environment(\.localAccount, account).hideTopScrollEdgeEffect())
+        let content = AnyView(rootView.id(account).environment(\.localAccount, account))
 
         if let hostingController {
             hostingController.rootView = content

@@ -64,7 +64,6 @@ class NCActivity: UIViewController, NCSharePagingContent {
         tableView.separatorColor = UIColor.clear
         tableView.contentInset = insets
         tableView.backgroundColor = usesGroupedBackground ? .systemGroupedBackground : .systemBackground
-        tableView.hideTopScrollEdgeEffect()
 
         if showComments {
             setupComments()
