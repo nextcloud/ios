@@ -13,9 +13,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>Upload %ld file</string>
+			<string>Carica %ld file</string>
+			<key>many</key>
+			<string>Carica %ld file</string>
 			<key>other</key>
-			<string>Upload %ld files</string>
+			<string>Carica %ld file</string>
 		</dict>
 	</dict>
 	<key>_remaining_share_downloads_</key>
@@ -47,9 +49,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d file in queue</string>
+			<string>%d file in coda</string>
+			<key>many</key>
+			<string>%d file in coda</string>
 			<key>other</key>
-			<string>%d files in queue</string>
+			<string>%d file in coda</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_photos_to_back_up_</key>
