@@ -68,17 +68,28 @@ struct NCShareView: View {
             .toolbar(.visible, for: .navigationBar)
             .toolbarBackground(.hidden, for: .navigationBar)
             .toolbar {
-                ToolbarItemGroup(placement: .topBarLeading) {
-                    if canShowContent {
-                        HStack(spacing: 8) {
-                            NCShareAccountMenu(model: model)
-                                .disabled(model.isLoading || model.isPreparingUpload || model.isSwitchingAccount || model.isLoadingAccounts)
-                            if isRefreshing {
-                                ProgressView()
-                                    .accessibilityLabel(NSLocalizedString("_request_in_progress_", comment: ""))
-                                    .padding(.trailing, 8)
-                            }
-                        }
+                if canShowContent {
+                    let account = ToolbarItem(placement: .topBarLeading) {
+                        NCShareAccountMenu(model: model)
+                            .disabled(model.isLoading || model.isPreparingUpload || model.isSwitchingAccount || model.isLoadingAccounts)
+                    }
+                    if #available(iOS 27.1, *) {
+                        account.axisBehavior(.horizontalOnly)
+                            .visibilityPriority(.high)
+                    } else {
+                        account
+                    }
+                }
+                if canShowContent && isRefreshing {
+                    let spinner = ToolbarItem(placement: .topBarLeading) {
+                        ProgressView()
+                            .controlSize(.regular)
+                            .accessibilityLabel(NSLocalizedString("_request_in_progress_", comment: ""))
+                    }
+                    if #available(iOS 27.1, *) {
+                        spinner.axisBehavior(.horizontalOnly)
+                    } else {
+                        spinner
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
