@@ -53,7 +53,6 @@ struct NCAcknowledgementsView: View {
                 }
             }
         }
-        .hideTopScrollEdgeEffect()
         .navigationBarTitle(Text(NSLocalizedString("_autoupload_description_", comment: "")), displayMode: .inline)
         .onAppear {
             loadRTF()
