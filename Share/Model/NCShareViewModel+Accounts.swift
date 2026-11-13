@@ -75,15 +75,13 @@ extension NCShareViewModel {
             autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(
                 account: account, urlBase: session.urlBase, userId: session.userId)
             // Publish the local browser before capabilities can trigger a network request.
-            await initializeFolderBrowser(refreshFromServer: false)
+            await initializeFolderBrowser()
             guard !Task.isCancelled, !isClosing, accountChangeID == changeID else { return }
             isSwitchingAccount = false
             loadAccounts()
             await loadServerCapabilities(account: account, changeID: changeID)
             guard !Task.isCancelled, !isClosing, accountChangeID == changeID else { return }
-            if serverCapabilities != nil, let root = rootFolder {
-                requestFolderChildren(root, refresh: true)
-            }
+            if serverCapabilities != nil { refreshInitialFolderBrowser() }
         }
     }
 
@@ -95,11 +93,9 @@ extension NCShareViewModel {
         capabilitiesTask = Task { @MainActor in
             await loadServerCapabilities(account: account, changeID: changeID)
             guard isCurrentCapabilitiesRequest(account: account, changeID: changeID), serverCapabilities != nil else { return }
-            if let rootFolder {
-                requestFolderChildren(rootFolder, refresh: true)
-            } else {
-                await initializeFolderBrowser()
-            }
+            if rootFolder == nil { await initializeFolderBrowser() }
+            guard isCurrentCapabilitiesRequest(account: account, changeID: changeID) else { return }
+            refreshInitialFolderBrowser()
         }
     }
 

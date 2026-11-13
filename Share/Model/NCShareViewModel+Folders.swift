@@ -43,7 +43,7 @@ extension NCShareViewModel {
         isLoading = false
     }
 
-    func initializeFolderBrowser(refreshFromServer: Bool = true) async {
+    func initializeFolderBrowser() async {
         let session = sessionStore.getSession()
         let browserID = folderBrowserID
         let home = utilityFileSystem.getHomeServer(session: session)
@@ -68,8 +68,14 @@ extension NCShareViewModel {
         expandedFolderURLs = [home]
         recentFolders = recent
         folderChildren = [home: cached]
-        // Make cached destinations usable without waiting for the server refresh.
-        if refreshFromServer { requestFolderChildren(root) }
+    }
+
+    func refreshInitialFolderBrowser() {
+        guard let rootFolder else { return }
+        if let latest = recentFolders.first {
+            selectFolder(latest, fromRecents: true, automatically: true)
+        }
+        requestFolderChildren(rootFolder, refresh: true)
     }
 
     func toggleFolder(_ folder: NCShareFolderItem) {
@@ -77,8 +83,7 @@ extension NCShareViewModel {
         if expandedFolderURLs.contains(folder.serverUrl) {
             expandedFolderURLs.remove(folder.serverUrl)
         } else {
-            expandedFolderURLs.insert(folder.serverUrl)
-            if !loadedFolderURLs.contains(folder.serverUrl) { requestFolderChildren(folder) }
+            selectFolder(folder)
         }
     }
 
@@ -100,10 +105,11 @@ extension NCShareViewModel {
         }
     }
 
-    /// Validates the destination on the server, then selects and expands it.
+    /// Validates the destination on the server before selecting it.
     /// fromRecents controls which of the two occurrences displays the checkmark.
-    func selectFolder(_ folder: NCShareFolderItem, fromRecents: Bool = false) {
-        guard canUseFolderBrowser, let capabilities = serverCapabilities, canAccessFolder(folder) else { return }
+    func selectFolder(_ folder: NCShareFolderItem, fromRecents: Bool = false, automatically: Bool = false) {
+        guard canSelectFolder, automatically || !isLoadingAccounts, let capabilities = serverCapabilities else { return }
+        guard canAccessFolder(folder, showError: !automatically) else { return }
         let session = sessionStore.getSession()
         let browserID = folderBrowserID
         isLoading = true
@@ -120,35 +126,43 @@ extension NCShareViewModel {
                     recentFolders.removeAll { $0.serverUrl == folder.serverUrl }
                     if fromRecents { return }
                 }
-                showAlert(description: result.error == .success ? "_share_folder_unavailable_" : result.error.errorDescription)
+                if !automatically {
+                    showAlert(description: result.error == .success ? "_share_folder_unavailable_" : result.error.errorDescription)
+                }
                 return
             }
             let selected = folderSnapshot(metadata, url: folder.serverUrl, parent: nil, session: session)
-            guard canAccessFolder(selected) else { return }
+            guard canAccessFolder(selected, showError: !automatically) else { return }
             guard isCurrentBrowser(browserID, account: session.account), isAuthenticated else { return }
             let home = utilityFileSystem.getHomeServer(session: session)
             if folder.serverUrl != home,
                let error = FileNameValidator.checkFileName(metadata.fileNameView, account: session.account, capabilities: capabilities) {
-                showAlert(description: error.errorDescription)
+                if !automatically { showAlert(description: error.errorDescription) }
                 return
             }
             selectedFolder = selected
             isRecentFolderSelected = fromRecents
-            expandedFolderURLs.insert(selected.serverUrl)
-            requestFolderChildren(selected)
+            if !automatically {
+                expandedFolderURLs.insert(selected.serverUrl)
+                requestFolderChildren(selected)
+            }
         }
     }
 
     var canUseFolderBrowser: Bool {
-        isAuthenticated && !isClosing && isAccountReady && !isLoading && !isPreparingUpload && !isLoadingAccounts
+        canSelectFolder && !isLoadingAccounts
     }
 
-    private func canAccessFolder(_ folder: NCShareFolderItem) -> Bool {
+    private var canSelectFolder: Bool {
+        isAuthenticated && !isClosing && isAccountReady && !isLoading && !isPreparingUpload
+    }
+
+    private func canAccessFolder(_ folder: NCShareFolderItem, showError: Bool = true) -> Bool {
         let session = sessionStore.getSession()
         let home = utilityFileSystem.getHomeServer(session: session)
         guard folder.serverUrl == home || folder.serverUrl.hasPrefix(home + "/") else { return false }
         if folder.isEncrypted && !NCPreferences().isEndToEndEnabled(account: session.account) {
-            showAlert(description: "_e2e_goto_settings_for_enable_")
+            if showError { showAlert(description: "_e2e_goto_settings_for_enable_") }
             return false
         }
         return true
