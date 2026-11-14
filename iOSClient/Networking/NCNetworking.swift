@@ -120,16 +120,16 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         }
 #else
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
-            if let p12Data = self.p12Data,
-               let cert = (p12Data, self.p12Password) as? UserCertificate,
-               let pkcs12 = try? PKCS12(pkcs12Data: cert.data, password: cert.password, onIncorrectPassword: {
-                   self.certificateDelegate?.onIncorrectPassword()
-               }) {
-                let creds = PKCS12.urlCredential(for: pkcs12)
-                completionHandler(URLSession.AuthChallengeDisposition.useCredential, creds)
+            if let credential = clientCertificateCredential() {
+                completionHandler(.useCredential, credential)
+            } else if let certificateDelegate = self.certificateDelegate {
+                // Login flow: ask the user to pick a .p12 file
+                certificateDelegate.didAskForClientCertificate()
+                completionHandler(.cancelAuthenticationChallenge, nil)
             } else {
-                self.certificateDelegate?.didAskForClientCertificate()
-                completionHandler(URLSession.AuthChallengeDisposition.cancelAuthenticationChallenge, nil)
+                // No certificate and no UI to ask: continue without one, so servers with
+                // optional mTLS keep working instead of failing with NSURLErrorCancelled (-999)
+                completionHandler(.performDefaultHandling, nil)
             }
         } else {
             self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
@@ -293,6 +293,17 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         }
 
         BIO_free(mem)
+    }
+
+    /// Client certificate credential for the current p12 data, or nil if none is configured.
+    func clientCertificateCredential() -> URLCredential? {
+        guard let p12Data = self.p12Data,
+              let pkcs12 = try? PKCS12(pkcs12Data: p12Data, password: self.p12Password ?? "", onIncorrectPassword: {
+                  self.certificateDelegate?.onIncorrectPassword()
+              }) else {
+            return nil
+        }
+        return PKCS12.urlCredential(for: pkcs12)
     }
 
     func activeAccountCertificate(account: String) {
