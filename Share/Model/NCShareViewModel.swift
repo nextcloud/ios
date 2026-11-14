@@ -192,6 +192,8 @@ final class NCShareViewModel: NSObject, ObservableObject {
         guard !isOffline, isAuthenticated, !isClosing, !isSwitchingAccount, !isPreparingUpload else { return }
         if serverCapabilities == nil {
             retryCapabilities()
+        } else if selectedFolder == nil {
+            refreshInitialFolderBrowser()
         } else {
             for row in visibleFolderRows where expandedFolderURLs.contains(row.folder.serverUrl) {
                 requestFolderChildren(row.folder, refresh: true)
@@ -467,6 +469,9 @@ final class NCShareViewModel: NSObject, ObservableObject {
             guard self.validateAccount() else { return }
             self.access = .unlocked
             if self.accounts.isEmpty { self.loadAccounts() }
+            if self.selectedFolder == nil, self.serverCapabilities != nil {
+                self.refreshInitialFolderBrowser()
+            }
         }
     }
 }

@@ -201,8 +201,8 @@ struct NCShareView: View {
         .frame(maxHeight: .infinity)
         .clipped()
         .background(Color(uiColor: .systemGroupedBackground))
-        .opacity(isRefreshing ? 0.45 : 1)
-        .disabled(isRefreshing || model.isPreparingUpload || !model.isAccountReady)
+        .opacity(model.isSwitchingAccount ? 0.45 : 1)
+        .disabled(model.isSwitchingAccount)
     }
 
     private func folderListTitle(_ key: String) -> some View {
@@ -250,6 +250,7 @@ struct NCShareView: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.borderless)
+                .disabled(!model.canUseFolderBrowser)
                 .accessibilityLabel(String(format: NSLocalizedString(
                     model.expandedFolderURLs.contains(folder.serverUrl) ? "_share_collapse_folder_" : "_share_expand_folder_", comment: ""), folder.name))
                 .padding(.leading, CGFloat(min(depth, 8)) * 16)
@@ -314,6 +315,7 @@ struct NCShareView: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.borderless)
+            .disabled(!model.canUseFolderBrowser)
             .accessibilityAddTraits(isSelected ? .isSelected : [])
         }
         .background {
@@ -388,8 +390,8 @@ struct NCShareView: View {
         .background(Color(uiColor: .secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .padding(.horizontal, horizontalInset)
-        .opacity(isRefreshing ? 0.45 : 1)
-        .disabled(isRefreshing || model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady || !model.inputErrorMessage.isEmpty)
+        .opacity(model.isSwitchingAccount ? 0.45 : 1)
+        .disabled(model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady || !model.inputErrorMessage.isEmpty)
     }
 
     private var uploadButton: some View {

@@ -8,6 +8,7 @@ import SwiftUI
 struct NCShareUploadConflictView: View {
     let confirmation: NCShareUploadConfirmation
     let resolve: @MainActor (NCShareUploadChoice?) -> Void
+    private let actionLabelHeight: CGFloat = 44
 
     var body: some View {
         let renamedItems = confirmation.renamedItems
@@ -47,14 +48,14 @@ struct NCShareUploadConflictView: View {
                 .padding(.vertical, 12)
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
-                VStack(spacing: 16) {
+                VStack(spacing: 24) {
                     if !confirmation.isBatch, confirmation.replacementFileName != nil {
                         Button(role: .destructive) {
                             resolve(.replace)
                         } label: {
                             Text(NSLocalizedString("_share_conflict_replace_", comment: ""))
                                 .multilineTextAlignment(.center)
-                                .frame(maxWidth: .infinity)
+                                .frame(maxWidth: .infinity, minHeight: actionLabelHeight)
                         }
                         .buttonStyle(.bordered)
                         .buttonBorderShape(.roundedRectangle(radius: 12))
@@ -64,7 +65,8 @@ struct NCShareUploadConflictView: View {
 
                     NCShareUploadButton(
                         fileCount: confirmation.items.count,
-                        title: confirmation.isBatch ? nil : NSLocalizedString("_share_conflict_upload_with_new_name_", comment: "")
+                        title: confirmation.isBatch ? nil : NSLocalizedString("_share_conflict_upload_with_new_name_", comment: ""),
+                        minimumLabelHeight: actionLabelHeight
                     ) {
                         resolve(.keepBoth)
                     }
