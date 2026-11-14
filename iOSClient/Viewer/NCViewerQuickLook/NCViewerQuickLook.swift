@@ -19,11 +19,10 @@ public extension NCViewerQuickLookDelegate {
     func dismissQuickLook(fileNameSource: String, hasChangesQuickLook: Bool) {}
 }
 
-/// Flag indicating If the document has any changes
-private var hasChangesQuickLook: Bool = false
-
 @objc class NCViewerQuickLook: QLPreviewController {
     private let url: URL
+    /// Whether this editor's document has unsaved changes. Each editor owns its flag.
+    private(set) var hasChangesQuickLook: Bool = false
     private let fileNameSource: String
     private var previewItems: [PreviewItem] = []
     private var isEditingEnabled: Bool
@@ -58,7 +57,6 @@ private var hasChangesQuickLook: Bool = false
         self.dataSource = self
         self.delegate = self
         self.currentPreviewItemIndex = 0
-        hasChangesQuickLook = false
     }
 
     override func viewDidLoad() {
@@ -130,7 +128,7 @@ private var hasChangesQuickLook: Bool = false
         } else {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_overwrite_original_", comment: ""), style: .default) { _ in
                 self.saveModifiedFile(override: true)
-                self.delegateQuickLook?.dismissQuickLook(fileNameSource: self.fileNameSource, hasChangesQuickLook: hasChangesQuickLook)
+                self.delegateQuickLook?.dismissQuickLook(fileNameSource: self.fileNameSource, hasChangesQuickLook: self.hasChangesQuickLook)
             })
         }
 
@@ -139,7 +137,7 @@ private var hasChangesQuickLook: Bool = false
         if saveAsCopyAlert {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_save_as_copy_", comment: ""), style: .default) { _ in
                 self.saveModifiedFile(override: false)
-                self.delegateQuickLook?.dismissQuickLook(fileNameSource: self.fileNameSource, hasChangesQuickLook: hasChangesQuickLook)
+                self.delegateQuickLook?.dismissQuickLook(fileNameSource: self.fileNameSource, hasChangesQuickLook: self.hasChangesQuickLook)
             })
         }
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in
@@ -153,7 +151,7 @@ private var hasChangesQuickLook: Bool = false
 
     @objc private func dismissView(_ sender: Any?) {
         dismiss(animated: true) {
-            if hasChangesQuickLook {
+            if self.hasChangesQuickLook {
                 self.showSaveAlert()
             }
         }
@@ -291,7 +289,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
 
     func previewController(_ controller: QLPreviewController, didSaveEditedCopyOf previewItem: QLPreviewItem, at modifiedContentsURL: URL) {
         guard utilityFileSystem.copyFile(atPath: modifiedContentsURL.path, toPath: url.path) else { return }
-        hasChangesQuickLook = true
+        self.hasChangesQuickLook = true
     }
 }
 
@@ -301,7 +299,7 @@ extension NCViewerQuickLook: CropViewControllerDelegate {
         guard let data = cropped.jpegData(compressionQuality: 0.9) else { return }
         do {
             try data.write(to: self.url)
-            hasChangesQuickLook = true
+            self.hasChangesQuickLook = true
             reloadData()
         } catch {
             print(error)
@@ -310,6 +308,53 @@ extension NCViewerQuickLook: CropViewControllerDelegate {
 
     func cropViewControllerDidCancel(_ cropViewController: Mantis.CropViewController, original: UIImage) {
         cropViewController.dismiss(animated: true)
+    }
+}
+
+extension NCViewerQuickLook {
+    /// Returns a temporary file URL that belongs to one editing session only.
+    /// The file keeps its original name inside a directory created for the session,
+    /// so two editors of files with the same name never share the copy they upload.
+    static func makeEditingFileURL(fileName: String, temporaryDirectory: URL = FileManager.default.temporaryDirectory) -> URL? {
+        let directory = temporaryDirectory.appendingPathComponent("QuickLookEdit-" + UUID().uuidString, isDirectory: true)
+        do {
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        } catch {
+            return nil
+        }
+        return directory.appendingPathComponent(fileName, isDirectory: false)
+    }
+
+    /// Opens an editing session for a file already stored on the device.
+    @MainActor
+    @discardableResult
+    static func presentEditor(metadata: tableMetadata, from controller: UIViewController) -> NCViewerQuickLook? {
+        let fileNamePath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                fileName: metadata.fileNameView,
+                                                                                userId: metadata.userId,
+                                                                                urlBase: metadata.urlBase)
+        guard let fileURL = makeEditingFileURL(fileName: metadata.fileNameView) else {
+            return nil
+        }
+        let viewerQuickLook = NCViewerQuickLook(with: fileURL, isEditingEnabled: true, metadata: metadata)
+
+        if let image = UIImage(contentsOfFile: fileNamePath) {
+            if let data = image.jpegData(compressionQuality: 1) {
+                do {
+                    try data.write(to: fileURL)
+                } catch {
+                    return nil
+                }
+            }
+            let navigationController = UINavigationController(rootViewController: viewerQuickLook)
+            navigationController.modalPresentationStyle = .fullScreen
+            controller.present(navigationController, animated: true)
+        } else {
+            NCUtilityFileSystem().copyFile(atPath: fileNamePath, toPath: fileURL.path)
+            controller.present(viewerQuickLook, animated: true)
+        }
+
+        return viewerQuickLook
     }
 }
 

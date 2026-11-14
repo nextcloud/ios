@@ -37,12 +37,90 @@ private actor NCMediaViewerDownloadTaskRegistry {
     }
 }
 
+/// Runs at most one operation per key at a time. A caller that asks for a key
+/// while its operation is still running awaits that same operation instead of
+/// starting a second one. The shared operation is cancelled only when every
+/// caller waiting on it has been cancelled, or when it is cancelled by key.
+actor NCInFlightTaskRegistry<Key: Hashable & Sendable, Value: Sendable> {
+    private struct Entry {
+        let id: UUID
+        let task: Task<Value, Error>
+        var consumers: Int
+    }
+
+    private var entries: [Key: Entry] = [:]
+    /// How many callers joined an operation that was already running.
+    private(set) var joinedCount = 0
+
+    func value(for key: Key, operation: @escaping @Sendable () async throws -> Value) async throws -> Value {
+        let id: UUID
+        let task: Task<Value, Error>
+
+        if var running = entries[key] {
+            joinedCount += 1
+            running.consumers += 1
+            entries[key] = running
+            id = running.id
+            task = running.task
+        } else {
+            id = UUID()
+            task = Task { try await operation() }
+            entries[key] = Entry(id: id, task: task, consumers: 1)
+        }
+
+        defer {
+            if entries[key]?.id == id {
+                entries[key] = nil
+            }
+        }
+
+        return try await withTaskCancellationHandler {
+            try await task.value
+        } onCancel: {
+            Task {
+                await self.consumerCancelled(for: key, id: id)
+            }
+        }
+    }
+
+    /// Cancels the operation running for the key, whoever is waiting on it.
+    func cancel(for key: Key) {
+        entries.removeValue(forKey: key)?.task.cancel()
+    }
+
+    /// Cancels every running operation.
+    func cancelAll() {
+        let running = entries.values
+        entries.removeAll()
+
+        running.forEach { $0.task.cancel() }
+    }
+
+    /// A waiting caller was cancelled: drop it, and cancel the shared
+    /// operation once no other caller is waiting on it.
+    private func consumerCancelled(for key: Key, id: UUID) {
+        guard var entry = entries[key], entry.id == id else {
+            return
+        }
+
+        entry.consumers -= 1
+
+        if entry.consumers <= 0 {
+            entries[key] = nil
+            entry.task.cancel()
+        } else {
+            entries[key] = entry
+        }
+    }
+}
+
 // MARK: - Media Viewer Loader
 final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
     private let database = NCManageDatabase.shared
     private let utilityFileSystem = NCUtilityFileSystem()
     private let fileManager = FileManager.default
     private let downloadTaskRegistry = NCMediaViewerDownloadTaskRegistry()
+    private let inFlightDownloads = NCInFlightTaskRegistry<String, URL>()
 
     // MARK: - NCMediaViewerLoading
     func metadata(for ocId: String, account: String) async -> tableMetadata? {
@@ -118,6 +196,15 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
 
         await onDownloadStarted?()
 
+        // Info and Edit can ask for the same original while it is downloading.
+        // Share the running download so its transfer state is not reset and
+        // a second download to the same path is never started.
+        return try await inFlightDownloads.value(for: metadata.ocId) { [self] in
+            try await self.performMediaDownload(for: metadata)
+        }
+    }
+
+    private func performMediaDownload(for metadata: tableMetadata) async throws -> URL {
         guard let downloadMetadata = await database.setMetadataSessionInWaitDownloadAsync(
             ocId: metadata.ocId,
             session: NCNetworking.shared.sessionDownload,
@@ -224,6 +311,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
     }
 
     func cancelDownload(for ocId: String) async {
+        await inFlightDownloads.cancel(for: ocId)
         await downloadTaskRegistry.cancelTask(for: ocId)
     }
 
@@ -236,6 +324,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
     }
 
     func cancelAllDownloads() async {
+        await inFlightDownloads.cancelAll()
         await downloadTaskRegistry.cancelAllTasks()
     }
 
