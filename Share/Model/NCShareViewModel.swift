@@ -58,7 +58,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
 
     var canUseUploadDestination: Bool {
         guard let selectedFolder else { return false }
-        return canUseFolderBrowser && !isLoadingCapabilities && folderTasks.isEmpty &&
+        return canUseFolderBrowser && !isLoadingCapabilities &&
             folderLoadErrors[selectedFolder.serverUrl] == nil && alertMessage.isEmpty &&
             !isPreparingInput && inputErrorMessage.isEmpty
     }
@@ -361,7 +361,8 @@ final class NCShareViewModel: NSObject, ObservableObject {
     }
 
     func createFolder() {
-        guard canUseUploadDestination, let folder = selectedFolder, let capabilities = serverCapabilities,
+        guard canUseUploadDestination, !isLoading, folderTasks.isEmpty,
+              let folder = selectedFolder, let capabilities = serverCapabilities,
               let presenter, presenter.viewIfLoaded?.window != nil,
               presenter.presentedViewController == nil,
               !presenter.isBeingDismissed else { return }

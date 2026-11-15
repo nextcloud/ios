@@ -80,7 +80,7 @@ extension NCShareViewModel {
     }
 
     func toggleFolder(_ folder: NCShareFolderItem) {
-        guard canUseFolderBrowser, canAccessFolder(folder) else { return }
+        guard canUseFolderBrowser, !isLoading, canAccessFolder(folder) else { return }
         if expandedFolderURLs.contains(folder.serverUrl) {
             expandedFolderURLs.remove(folder.serverUrl)
         } else {
@@ -89,7 +89,7 @@ extension NCShareViewModel {
     }
 
     func retryFolder(_ folder: NCShareFolderItem) {
-        guard canUseFolderBrowser, canAccessFolder(folder) else { return }
+        guard canUseFolderBrowser, !isLoading, canAccessFolder(folder) else { return }
         expandedFolderURLs.insert(folder.serverUrl)
         requestFolderChildren(folder, refresh: true)
     }
@@ -109,7 +109,7 @@ extension NCShareViewModel {
     /// Validates the destination on the server before selecting it.
     /// fromRecents controls which of the two occurrences displays the checkmark.
     func selectFolder(_ folder: NCShareFolderItem, fromRecents: Bool = false, automatically: Bool = false) {
-        guard canSelectFolder, automatically || !isLoadingAccounts, let capabilities = serverCapabilities else { return }
+        guard canSelectFolder, !isLoading, automatically || !isLoadingAccounts, let capabilities = serverCapabilities else { return }
         guard canAccessFolder(folder, showError: !automatically) else {
             if automatically { selectedFolder = rootFolder }
             return
@@ -163,7 +163,7 @@ extension NCShareViewModel {
     }
 
     private var canSelectFolder: Bool {
-        isAuthenticated && !isClosing && isAccountReady && !isLoading && !isPreparingUpload
+        isAuthenticated && !isClosing && isAccountReady && !isPreparingUpload
     }
 
     private func canAccessFolder(_ folder: NCShareFolderItem, showError: Bool = true) -> Bool {
