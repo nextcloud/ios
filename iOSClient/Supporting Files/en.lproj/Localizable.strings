@@ -449,7 +449,7 @@
 "_empty_trash_"                     = "Empty trash";
 "_trash_no_trash_"                  = "No files deleted";
 "_trash_no_trash_description_"      = "You can restore deleted files from here";
-"_confirm_delete_selected_"         = "Are you sure you want to delete the selected items?";
+"_confirm_delete_selected_"         = "Are you sure you want to delete the selected files?";
 "_set_available_offline_"           = "Set as available offline";
 "_remove_available_offline_"        = "Remove as available offline";
 "_create_new_document_"             = "Document";
@@ -570,7 +570,7 @@
 "_additional_options_"      = "Additional options";
 "_unauthorized_files_passcode_" = "Files app cannot be used with an activated passcode";
 "_files_app_disabled_"         = "Files app cannot be used because it is disabled";
-"_no_items_"                = "No items";
+"_no_items_"                = "Nothing to show";
 "_check_back_later_"        = "Check back later";
 "_no_data_available_"       = "No data available";
 "_recent_activity_"         = "Recent activity";
@@ -603,14 +603,14 @@
 "_finalizing_wait_"         = "Waiting for finalization …";
 "_in_this_folder_"          = "In this folder";
 "_media_no_longer_available_" = "Media no longer available";
-"_this_item_has_been_deleted_" = "This item has been deleted.";
+"_this_item_has_been_deleted_" = "This file has been deleted.";
 "_video_not_available_" = "Video not available";
 "_disable_" = "Disable";
 "_no_subtitles_available_" = "No subtitles available";
 "_no_audio_tracks_available_" = "No audio tracks available";
 "_add_external_subtitle_" = "Add external subtitle";
-"_repeat_current_media_" = "Repeat current item";
-"_play_next_media_automatically_" = "Play next item automatically";
+"_repeat_current_media_" = "Repeat current file";
+"_play_next_media_automatically_" = "Play next file automatically";
 "_previous_media_" = "Previous";
 "_next_media_" = "Next";
 "_play_" = "Play";
@@ -694,7 +694,7 @@
 "_multiple_albums_" = "Multiple albums";
 "_smart_albums_" = "Smart albums";
 "_albums_" = "Albums";
-"_auto_upload_no_new_items_to_upload_" = "No new items to upload";
+"_auto_upload_no_new_items_to_upload_" = "No new files to upload";
 "_background_upload_extension_" = "PhotoKit background upload extension";
 "_experimental_" = "Experimental";
 "_background_upload_extension_footer_" = "Experimental: delegate automatic photo uploads to PhotoKit in the background. The compatibility setting (HEIC to JPG) is ignored, so HEIC images are uploaded in their original format.";
@@ -715,12 +715,12 @@
 "_focused_auto_upload_countdown_" = "Do not lock the screen or exit the app. The screen will turn dark in %d seconds.";
 "_stop_focused_auto_upload_" = "Stop Focused Auto Upload";
 "_finish_" = "Finish";
-"_item_with_same_name_already_exists_" = "An item with the same name already exists.";
+"_item_with_same_name_already_exists_" = "This name is already in use.";
 
 // MARK: Migration Multi Domains
 "_preparing_migration_" = "Preparing migration …";
 "_scanning_files_" = "Scanning files …";
-"_moving_items_to_domain_" = "Moving items to correct domain …";
+"_moving_items_to_domain_" = "Moving files to the correct domain…";
 "_finishing_up_" = "Finishing up …";
 
 // MARK: E2EE
@@ -839,13 +839,13 @@
 
 /* Share extension input preparation */
 "_share_import_preparing_" = "Preparing shared files…";
-"_share_import_failed_" = "Some shared items could not be prepared. Review the files before uploading.";
-"_share_import_no_files_" = "The shared items could not be prepared.";
-"_share_import_item_error_" = "Item %d: %@";
+"_share_import_failed_" = "Some shared files could not be prepared. Review the files before uploading.";
+"_share_import_no_files_" = "The shared files could not be prepared.";
+"_share_import_item_error_" = "File %d: %@";
 
 /* Share extension upload conflicts */
 "_share_conflict_title_" = "Files already exist";
-"_share_conflict_single_message_" = "An item named \"%@\" already exists in this folder.";
+"_share_conflict_single_message_" = "A file named \"%@\" already exists in this folder.";
 "_share_conflict_batch_message_" = "Some names are already in use. These files will be uploaded with new names, keeping the existing files.";
 "_share_conflict_new_names_" = "New file names";
 "_share_conflict_replace_" = "Replace existing file";

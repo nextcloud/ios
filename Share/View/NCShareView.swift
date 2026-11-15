@@ -11,11 +11,6 @@ struct NCShareView: View {
 
     private var canShowContent: Bool { model.rootFolder != nil && model.isAuthenticated }
 
-    private var isRefreshing: Bool {
-        model.isLoading || model.isSwitchingAccount || model.isLoadingAccounts ||
-            model.isLoadingCapabilities || !model.folderTasks.isEmpty
-    }
-
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -78,25 +73,13 @@ struct NCShareView: View {
                 if canShowContent {
                     let account = ToolbarItem(placement: .topBarLeading) {
                         NCShareAccountMenu(model: model)
-                            .disabled(model.isLoading || model.isPreparingUpload || model.isSwitchingAccount || model.isLoadingAccounts)
+                            .disabled(model.isPreparingUpload || model.isSwitchingAccount || model.isLoadingAccounts)
                     }
                     if #available(iOS 27.1, *) {
                         account.axisBehavior(.horizontalOnly)
                             .visibilityPriority(.high)
                     } else {
                         account
-                    }
-                }
-                if canShowContent && isRefreshing {
-                    let spinner = ToolbarItem(placement: .topBarLeading) {
-                        ProgressView()
-                            .controlSize(.regular)
-                            .accessibilityLabel(NSLocalizedString("_request_in_progress_", comment: ""))
-                    }
-                    if #available(iOS 27.1, *) {
-                        spinner.axisBehavior(.horizontalOnly)
-                    } else {
-                        spinner
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -201,8 +184,8 @@ struct NCShareView: View {
         .frame(maxHeight: .infinity)
         .clipped()
         .background(Color(uiColor: .systemGroupedBackground))
-        .opacity(isRefreshing ? 0.45 : 1)
-        .disabled(isRefreshing || model.isPreparingUpload || !model.isAccountReady)
+        .opacity(model.isSwitchingAccount ? 0.45 : 1)
+        .disabled(model.isSwitchingAccount)
     }
 
     private func folderListTitle(_ key: String) -> some View {
@@ -246,10 +229,10 @@ struct NCShareView: View {
                     model.toggleFolder(folder)
                 } label: {
                     Image(systemName: model.expandedFolderURLs.contains(folder.serverUrl) ? "chevron.down" : "chevron.right")
+                        .foregroundStyle(Color.accentColor)
                         .frame(width: 50, height: 50)
                         .contentShape(Rectangle())
                 }
-                .buttonStyle(.borderless)
                 .accessibilityLabel(String(format: NSLocalizedString(
                     model.expandedFolderURLs.contains(folder.serverUrl) ? "_share_collapse_folder_" : "_share_expand_folder_", comment: ""), folder.name))
                 .padding(.leading, CGFloat(min(depth, 8)) * 16)
@@ -304,28 +287,36 @@ struct NCShareView: View {
                         }
                     }
                     Spacer(minLength: 4)
-                    if isSelected {
-                        Image(systemName: "checkmark")
-                            .frame(width: 50, height: 50)
-                            .accessibilityHidden(true)
-                    }
+                    Image(systemName: "checkmark")
+                        .foregroundStyle(Color.accentColor)
+                        .frame(width: 50, height: 50)
+                        .opacity(isSelected ? 1 : 0)
+                        .accessibilityHidden(true)
                 }
                 .frame(minHeight: 50)
                 .contentShape(Rectangle())
             }
-            .buttonStyle(.borderless)
             .accessibilityAddTraits(isSelected ? .isSelected : [])
         }
+        .buttonStyle(FolderRowButtonStyle())
+        .disabled(!model.canUseFolderBrowser)
         .background {
-            if isSelected {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.accentColor.opacity(0.1))
-                    .padding(.horizontal, 5)
-            }
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.accentColor.opacity(isSelected ? 0.1 : 0))
+                .padding(.horizontal, 5)
         }
         .listRowSeparator(.hidden)
         .listRowInsets(EdgeInsets(top: 0, leading: 2, bottom: 0, trailing: 2))
         .listRowBackground(Color(uiColor: .secondarySystemGroupedBackground))
+    }
+
+    private struct FolderRowButtonStyle: ButtonStyle {
+        @Environment(\.isEnabled) private var isEnabled
+
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .opacity(isEnabled ? 1 : 0.55)
+        }
     }
 
     private func fileList(fillsHeight: Bool = false, horizontalInset: CGFloat = 16) -> some View {
@@ -388,8 +379,8 @@ struct NCShareView: View {
         .background(Color(uiColor: .secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .padding(.horizontal, horizontalInset)
-        .opacity(isRefreshing ? 0.45 : 1)
-        .disabled(isRefreshing || model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady || !model.inputErrorMessage.isEmpty)
+        .opacity(model.isSwitchingAccount ? 0.45 : 1)
+        .disabled(model.isPreparingUpload || model.isPreparingInput || !model.isAccountReady || !model.inputErrorMessage.isEmpty)
     }
 
     private var uploadButton: some View {

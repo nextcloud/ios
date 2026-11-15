@@ -34,7 +34,7 @@ extension NCShareViewModel {
     }
 
     func selectAccount(_ account: String) {
-        guard isAuthenticated, !isClosing, !isPreparingUpload, !isSwitchingAccount,
+        guard isAuthenticated, !isClosing, !isLoading, !isPreparingUpload, !isSwitchingAccount, !isLoadingAccounts,
               accounts.contains(where: { $0.id == account }) else { return }
         guard account != sessionStore.getSession().account else { return }
         changeAccount(account)

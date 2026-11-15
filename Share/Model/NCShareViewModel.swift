@@ -58,7 +58,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
 
     var canUseUploadDestination: Bool {
         guard let selectedFolder else { return false }
-        return canUseFolderBrowser && !isLoadingCapabilities && folderTasks.isEmpty &&
+        return canUseFolderBrowser && !isLoadingCapabilities &&
             folderLoadErrors[selectedFolder.serverUrl] == nil && alertMessage.isEmpty &&
             !isPreparingInput && inputErrorMessage.isEmpty
     }
@@ -192,6 +192,8 @@ final class NCShareViewModel: NSObject, ObservableObject {
         guard !isOffline, isAuthenticated, !isClosing, !isSwitchingAccount, !isPreparingUpload else { return }
         if serverCapabilities == nil {
             retryCapabilities()
+        } else if selectedFolder == nil {
+            refreshInitialFolderBrowser()
         } else {
             for row in visibleFolderRows where expandedFolderURLs.contains(row.folder.serverUrl) {
                 requestFolderChildren(row.folder, refresh: true)
@@ -359,7 +361,8 @@ final class NCShareViewModel: NSObject, ObservableObject {
     }
 
     func createFolder() {
-        guard canUseUploadDestination, let folder = selectedFolder, let capabilities = serverCapabilities,
+        guard canUseUploadDestination, !isLoading, folderTasks.isEmpty,
+              let folder = selectedFolder, let capabilities = serverCapabilities,
               let presenter, presenter.viewIfLoaded?.window != nil,
               presenter.presentedViewController == nil,
               !presenter.isBeingDismissed else { return }
@@ -467,6 +470,9 @@ final class NCShareViewModel: NSObject, ObservableObject {
             guard self.validateAccount() else { return }
             self.access = .unlocked
             if self.accounts.isEmpty { self.loadAccounts() }
+            if self.selectedFolder == nil, self.serverCapabilities != nil {
+                self.refreshInitialFolderBrowser()
+            }
         }
     }
 }

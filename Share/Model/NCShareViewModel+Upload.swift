@@ -17,7 +17,7 @@ extension NCShareViewModel {
     /// Upload flow: inspect the destination, resolve name conflicts if needed,
     /// stage local copies, then transfer. Keep editing disabled throughout this flow.
     func upload() {
-        guard canUpload, let capabilities = serverCapabilities else { return }
+        guard canUpload, !isLoading, folderTasks.isEmpty, let capabilities = serverCapabilities else { return }
         runUpload { [self] in
             let plan = try await prepareUploadPlan(capabilities: capabilities)
             try Task.checkCancellation()

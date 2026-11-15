@@ -9,6 +9,7 @@ struct NCShareUploadButton: View {
     let fileCount: Int
     var isPreparing = false
     var title: String?
+    var minimumLabelHeight: CGFloat?
     let action: @MainActor () -> Void
 
     var body: some View {
@@ -25,7 +26,7 @@ struct NCShareUploadButton: View {
             .lineLimit(2)
             .truncationMode(.middle)
             .multilineTextAlignment(.center)
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, minHeight: minimumLabelHeight)
         }
         .buttonStyle(.borderedProminent)
         .buttonBorderShape(.roundedRectangle(radius: 12))

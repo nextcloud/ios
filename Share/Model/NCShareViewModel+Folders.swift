@@ -63,7 +63,8 @@ extension NCShareViewModel {
         guard isCurrentBrowser(browserID, account: session.account) else { return }
         // Publish the replacement snapshot together, without an empty intermediate list.
         rootFolder = root
-        selectedFolder = root
+        // Leave the destination unset while the most recent folder is awaiting validation.
+        selectedFolder = recent.isEmpty ? root : nil
         isRecentFolderSelected = false
         expandedFolderURLs = [home]
         recentFolders = recent
@@ -72,14 +73,14 @@ extension NCShareViewModel {
 
     func refreshInitialFolderBrowser() {
         guard let rootFolder else { return }
-        if let latest = recentFolders.first {
+        if selectedFolder == nil, let latest = recentFolders.first {
             selectFolder(latest, fromRecents: true, automatically: true)
         }
         requestFolderChildren(rootFolder, refresh: true)
     }
 
     func toggleFolder(_ folder: NCShareFolderItem) {
-        guard canUseFolderBrowser, canAccessFolder(folder) else { return }
+        guard canUseFolderBrowser, !isLoading, canAccessFolder(folder) else { return }
         if expandedFolderURLs.contains(folder.serverUrl) {
             expandedFolderURLs.remove(folder.serverUrl)
         } else {
@@ -88,7 +89,7 @@ extension NCShareViewModel {
     }
 
     func retryFolder(_ folder: NCShareFolderItem) {
-        guard canUseFolderBrowser, canAccessFolder(folder) else { return }
+        guard canUseFolderBrowser, !isLoading, canAccessFolder(folder) else { return }
         expandedFolderURLs.insert(folder.serverUrl)
         requestFolderChildren(folder, refresh: true)
     }
@@ -108,14 +109,22 @@ extension NCShareViewModel {
     /// Validates the destination on the server before selecting it.
     /// fromRecents controls which of the two occurrences displays the checkmark.
     func selectFolder(_ folder: NCShareFolderItem, fromRecents: Bool = false, automatically: Bool = false) {
-        guard canSelectFolder, automatically || !isLoadingAccounts, let capabilities = serverCapabilities else { return }
-        guard canAccessFolder(folder, showError: !automatically) else { return }
+        guard canSelectFolder, !isLoading, automatically || !isLoadingAccounts, let capabilities = serverCapabilities else { return }
+        guard canAccessFolder(folder, showError: !automatically) else {
+            if automatically { selectedFolder = rootFolder }
+            return
+        }
         let session = sessionStore.getSession()
         let browserID = folderBrowserID
         isLoading = true
         folderSelectionTask = Task { @MainActor in
             defer {
-                if folderBrowserID == browserID { isLoading = false }
+                if isCurrentBrowser(browserID, account: session.account) {
+                    if automatically, isAuthenticated, selectedFolder == nil {
+                        selectedFolder = rootFolder
+                    }
+                    isLoading = false
+                }
             }
             // Recent destinations may have been deleted or moved since last use.
             let result = await NCNetworking.shared.readFileAsync(serverUrlFileName: folder.serverUrl, account: session.account)
@@ -154,7 +163,7 @@ extension NCShareViewModel {
     }
 
     private var canSelectFolder: Bool {
-        isAuthenticated && !isClosing && isAccountReady && !isLoading && !isPreparingUpload
+        isAuthenticated && !isClosing && isAccountReady && !isPreparingUpload
     }
 
     private func canAccessFolder(_ folder: NCShareFolderItem, showError: Bool = true) -> Bool {
