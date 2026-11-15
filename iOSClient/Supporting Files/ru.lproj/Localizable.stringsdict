@@ -73,13 +73,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>У вас %d элемент для резервного копирования</string>
-			<key>few</key>
-			<string>У вас %d элемента для резервного копирования</string>
-			<key>many</key>
-			<string>У вас %d элементов для резервного копирования</string>
+			<string>You have %d file to back up</string>
 			<key>other</key>
-			<string>У вас %d элемента для резервного копирования</string>
+			<string>You have %d files to back up</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>

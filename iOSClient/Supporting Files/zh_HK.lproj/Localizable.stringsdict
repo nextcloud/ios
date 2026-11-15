@@ -56,8 +56,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>You have %d file to back up</string>
 			<key>other</key>
-			<string>您有 %d 個項目需要備份</string>
+			<string>You have %d files to back up</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>

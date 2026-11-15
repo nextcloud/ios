@@ -67,11 +67,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Vous avez %d élément à sauvegarder</string>
-			<key>many</key>
-			<string>Vous avez %d éléments à sauvegarder</string>
+			<string>You have %d file to back up</string>
 			<key>other</key>
-			<string>Vous avez %d éléments à sauvegarder</string>
+			<string>You have %d files to back up</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>

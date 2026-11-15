@@ -73,15 +73,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá %d mír le cúltaca agat</string>
-			<key>two</key>
-			<string>Tá %d míreanna le cúltaca agat</string>
-			<key>few</key>
-			<string>Tá %d míreanna le cúltaca agat</string>
-			<key>many</key>
-			<string>Tá %d míreanna le cúltaca agat</string>
+			<string>You have %d file to back up</string>
 			<key>other</key>
-			<string>Tá %d míreanna le cúltaca agat</string>
+			<string>You have %d files to back up</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>

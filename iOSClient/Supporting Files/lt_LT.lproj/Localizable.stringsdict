@@ -65,13 +65,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Turite %d elementą, kuriam reikia sukurti atsarginę kopiją</string>
-			<key>few</key>
-			<string>Turite %d elementus, kuriems reikia sukurti atsargines kopijas</string>
-			<key>many</key>
-			<string>Turite %d elementų, kuriems reikia sukurti atsargines kopijas</string>
+			<string>You have %d file to back up</string>
 			<key>other</key>
-			<string>Turite %d elementų, kuriems reikia sukurti atsargines kopijas</string>
+			<string>You have %d files to back up</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>

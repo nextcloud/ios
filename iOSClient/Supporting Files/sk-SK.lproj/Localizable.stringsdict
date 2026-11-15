@@ -73,13 +73,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Máte %d položku na zálohovanie</string>
-			<key>few</key>
-			<string>Máte %d položky na zálohovanie</string>
-			<key>many</key>
-			<string>Máte %d položiek na zálohovanie</string>
+			<string>You have %d file to back up</string>
 			<key>other</key>
-			<string>Máte %d položiek na zálohovanie</string>
+			<string>You have %d files to back up</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>
