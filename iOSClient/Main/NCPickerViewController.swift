@@ -137,8 +137,32 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
             doneButton.image = UIImage(systemName: "checkmark", withConfiguration: navigationSymbolConfiguration)
             doneButton.accessibilityLabel = configure.doneTitle
             configureAlbumTitleBackground()
+            configureAlbumPopupBackground()
             configureNavigationScrollEdge()
         }
+    }
+
+    @available(iOS 26.0, *)
+    private func configureAlbumPopupBackground() {
+        guard let popup = albumPopView.popupView else { return }
+        let corners = UICornerConfiguration.uniformCorners(radius: .fixed(24))
+        popup.backgroundColor = .clear
+        popup.cornerConfiguration = corners
+        albumPopView.tableView.backgroundColor = .clear
+        popArrowImageView.isHidden = true
+
+        let background = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
+        background.cornerConfiguration = corners
+        background.isUserInteractionEnabled = false
+        background.translatesAutoresizingMaskIntoConstraints = false
+        popup.insertSubview(background, at: 0)
+
+        NSLayoutConstraint.activate([
+            background.leadingAnchor.constraint(equalTo: popup.leadingAnchor),
+            background.trailingAnchor.constraint(equalTo: popup.trailingAnchor),
+            background.topAnchor.constraint(equalTo: popup.topAnchor),
+            background.bottomAnchor.constraint(equalTo: popup.bottomAnchor)
+        ])
     }
 
     @available(iOS 26.0, *)
@@ -181,6 +205,19 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         applyCustomButtons()
+    }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+        if #available(iOS 26.0, *), let albumCell = cell as? TLCollectionTableViewCell {
+            albumCell.backgroundColor = .clear
+            albumCell.contentView.backgroundColor = .clear
+            albumCell.subTitleLabel.textColor = .secondaryLabel
+            albumCell.thumbImageView.layer.cornerRadius = 10
+            albumCell.thumbImageView.layer.cornerCurve = .continuous
+            albumCell.thumbImageView.clipsToBounds = true
+        }
+        return cell
     }
 
     override func viewDidLayoutSubviews() {
