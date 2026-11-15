@@ -57,6 +57,14 @@ class NCPhotosPickerViewController: NSObject {
         configure.selectedColor = NCBrandColor.shared.getElement(account: controller.account)
         configure.singleSelectedMode = singleSelectedMode
         configure.allowedAlbumCloudShared = true
+        var dateScrubber = TLDateScrubberConfigure()
+        dateScrubber.minimumContentScreens = 2
+        if #available(iOS 26.0, *) {
+            dateScrubber.thumbColor = UIColor.secondarySystemBackground.withAlphaComponent(0.78)
+            dateScrubber.labelBackgroundColor = UIColor.secondarySystemBackground.withAlphaComponent(0.88)
+            dateScrubber.labelTextColor = .label
+        }
+        configure.dateScrubber = dateScrubber
 
         pickerVC = customPhotoPickerViewController(withTLPHAssets: { assets in
             pickerVC?.dismiss(animated: true) {
@@ -112,6 +120,8 @@ class NCPhotosPickerViewController: NSObject {
 class customPhotoPickerViewController: TLPhotosPickerViewController {
 
     var ncController: NCMainTabBarController?
+    private let navigationSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
+    private let navigationVerticalPadding: CGFloat = 10
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -124,10 +134,48 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
         self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.shared.iconImageColor
         self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.shared.iconImageColor
         if #available(iOS 26.0, *) {
-            doneButton.image = UIImage(systemName: "checkmark")
-            cancelButton.image = UIImage(systemName: "xmark")
-            navigationBarTopConstraint.constant = self.navigationBarTopConstraint.constant + 10
+            doneButton.image = UIImage(systemName: "checkmark", withConfiguration: navigationSymbolConfiguration)
+            doneButton.accessibilityLabel = configure.doneTitle
+            configureAlbumTitleBackground()
+            configureNavigationScrollEdge()
         }
+    }
+
+    @available(iOS 26.0, *)
+    private func configureAlbumTitleBackground() {
+        let background = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
+        background.cornerConfiguration = .capsule()
+        background.isUserInteractionEnabled = false
+        background.translatesAutoresizingMaskIntoConstraints = false
+        titleView.insertSubview(background, at: 0)
+
+        NSLayoutConstraint.activate([
+            background.leadingAnchor.constraint(equalTo: titleView.leadingAnchor, constant: -10),
+            background.trailingAnchor.constraint(equalTo: titleView.trailingAnchor, constant: 10),
+            background.topAnchor.constraint(equalTo: titleView.topAnchor),
+            background.bottomAnchor.constraint(equalTo: titleView.bottomAnchor)
+        ])
+    }
+
+    @available(iOS 26.0, *)
+    private func configureNavigationScrollEdge() {
+        guard let collectionTopConstraint = view.constraints.first(where: {
+            $0.firstItem === collectionView && $0.firstAttribute == .top &&
+            $0.secondItem === navigationBar && $0.secondAttribute == .bottom
+        }) else { return }
+
+        // The picker XIB starts the grid below the navigation bar.
+        collectionTopConstraint.isActive = false
+        collectionView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        navigationBarTopConstraint.constant = navigationVerticalPadding
+        navigationBar.isTranslucent = true
+        view.bringSubviewToFront(navigationBar)
+
+        collectionView.topEdgeEffect.style = .soft
+        let interaction = UIScrollEdgeElementContainerInteraction()
+        interaction.scrollView = collectionView
+        interaction.edge = .top
+        navigationBar.addInteraction(interaction)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -137,6 +185,16 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        if #available(iOS 26.0, *), navigationBar.isTranslucent {
+            let topInset = navigationBar.frame.maxY - view.safeAreaInsets.top + navigationVerticalPadding
+            if collectionView.contentInset.top != topInset {
+                let isAtTop = collectionView.contentOffset.y <= -collectionView.adjustedContentInset.top + 1
+                collectionView.contentInset.top = topInset
+                if isAtTop && !collectionView.isDragging {
+                    collectionView.contentOffset.y = -collectionView.adjustedContentInset.top
+                }
+            }
+        }
         applyCustomButtons()
     }
 
@@ -154,6 +212,10 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
             action: #selector(customAction)
         )
         closeBtn.tintColor = NCBrandColor.shared.iconImageColor
+        closeBtn.accessibilityLabel = configure.cancelTitle
+        if #available(iOS 26.0, *) {
+            closeBtn.image = UIImage(systemName: "xmark", withConfiguration: navigationSymbolConfiguration)
+        }
 
         var leftItems: [UIBarButtonItem] = [closeBtn]
 
@@ -195,7 +257,6 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
     // MARK: - Document Picker
 
     class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
-
         let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
         let utilityFileSystem = NCUtilityFileSystem()
         let database = NCManageDatabase.shared
