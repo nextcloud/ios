@@ -11,12 +11,12 @@ struct DashboardWidgetProvider: IntentTimelineProvider {
     typealias Entry = DashboardDataEntry
 
     func placeholder(in context: Context) -> Entry {
-        dashboardPlaceholder(height: context.displaySize.height)
+        dashboardSampleEntry(height: context.displaySize.height)
     }
 
     func getSnapshot(for configuration: DashboardIntent, in context: Context, completion: @escaping (Entry) -> Void) {
         guard !context.isPreview else {
-            completion(placeholder(in: context))
+            completion(dashboardSampleEntry(height: context.displaySize.height, isPlaceholder: false))
             return
         }
 
@@ -27,7 +27,8 @@ struct DashboardWidgetProvider: IntentTimelineProvider {
 
     func getTimeline(for configuration: DashboardIntent, in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         guard !context.isPreview else {
-            completion(Timeline(entries: [placeholder(in: context)], policy: .never))
+            let entry = dashboardSampleEntry(height: context.displaySize.height, isPlaceholder: false)
+            completion(Timeline(entries: [entry], policy: .never))
             return
         }
 

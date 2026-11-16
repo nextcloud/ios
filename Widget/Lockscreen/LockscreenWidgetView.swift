@@ -74,7 +74,7 @@ struct LockscreenWidgetView: View {
 
 struct LockscreenWidgetView_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = LockscreenData(date: Date(), isPlaceholder: false, activity: "Alex updated Documents / Meeting notes.pdf", link: nil, quotaRelative: 0.5, quotaUsed: "5 GB", quotaTotal: "10 GB", error: false)
+        let entry = LockscreenWidgetProvider.previewEntry()
         LockscreenWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .accessoryRectangular)).previewDisplayName("Rectangular")
         LockscreenWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .accessoryCircular)).previewDisplayName("Circular")
     }

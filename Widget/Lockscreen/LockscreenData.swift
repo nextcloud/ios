@@ -18,7 +18,7 @@ struct LockscreenData: TimelineEntry {
     var quotaTotalAccessibilityLabel: String?
 }
 
-func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, family: WidgetFamily, completion: @escaping (_ entry: LockscreenData) -> Void) {
+func getLockscreenDataEntry(configuration: AccountIntent?, family: WidgetFamily, completion: @escaping (_ entry: LockscreenData) -> Void) {
     let utilityFileSystem = NCUtilityFileSystem()
     var activeTableAccount: tableAccount?
     let versionApp = NCUtility().getVersionMaintenance()
@@ -26,10 +26,6 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
     if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
           let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion),
           lastVersion != versionApp {
-        return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: nil, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
-    }
-
-    if isPreview {
         return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: nil, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
     }
 

@@ -16,15 +16,28 @@ struct LockscreenWidgetProvider: IntentTimelineProvider {
     }
 
     func getSnapshot(for configuration: AccountIntent, in context: Context, completion: @escaping (Entry) -> Void) {
-        getLockscreenDataEntry(configuration: configuration, isPreview: context.isPreview, family: context.family) { entry in
+        if context.isPreview {
+            completion(Self.previewEntry())
+            return
+        }
+        getLockscreenDataEntry(configuration: configuration, family: context.family) { entry in
             completion(entry)
         }
     }
 
     func getTimeline(for configuration: AccountIntent, in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-        getLockscreenDataEntry(configuration: configuration, isPreview: context.isPreview, family: context.family) { entry in
+        if context.isPreview {
+            completion(Timeline(entries: [Self.previewEntry()], policy: .never))
+            return
+        }
+        getLockscreenDataEntry(configuration: configuration, family: context.family) { entry in
             let timeLine = Timeline(entries: [entry], policy: .atEnd)
             completion(timeLine)
         }
+    }
+
+    static func previewEntry() -> Entry {
+        Entry(date: Date(), isPlaceholder: false, activity: "Alex updated Documents / Meeting notes.pdf",
+              link: nil, quotaRelative: 0.5, quotaUsed: "5 GB", quotaTotal: "10 GB", error: false)
     }
 }

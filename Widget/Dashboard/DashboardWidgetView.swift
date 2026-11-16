@@ -233,7 +233,7 @@ struct DashboardWidgetView: View {
 
 struct DashboardWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let sample = dashboardPlaceholder(height: 360)
+        let sample = dashboardSampleEntry(height: 360)
         let entry = DashboardDataEntry(date: Date(),
                                        rows: sample.rows,
                                        totalRows: sample.totalRows,

@@ -80,15 +80,17 @@ private struct DashboardItemsResponse: Decodable {
     let ocs: OCS
 }
 
-func dashboardPlaceholder(height: CGFloat,
+func dashboardSampleEntry(height: CGFloat,
                           title: String = "Dashboard",
                           titleImage: UIImage? = UIImage(systemName: "rectangle.grid.2x2"),
                           footerText: String = NCBrandOptions.shared.brand,
-                          isError: Bool = false) -> DashboardDataEntry {
+                          isError: Bool = false,
+                          isPlaceholder: Bool = true) -> DashboardDataEntry {
     let count = DashboardWidgetLayout.rowCount(for: height, hasActions: false)
+    let examples = ["Project plan", "Meeting notes", "Design review", "Team agenda", "Travel itinerary"]
     let rows = (0..<count).map { index in
         DashboardData(id: index,
-                      title: "Nextcloud Dashboard",
+                      title: examples[index % examples.count],
                       subtitle: "Recent activity",
                       link: nil,
                       icon: nil,
@@ -100,7 +102,7 @@ func dashboardPlaceholder(height: CGFloat,
                               totalRows: count,
                               buttons: [],
                               webURL: nil,
-                              isPlaceholder: true,
+                              isPlaceholder: isPlaceholder,
                               allowsRefresh: isError,
                               titleImage: titleImage ?? UIImage(),
                               title: title,
@@ -114,7 +116,7 @@ func getDashboardDataEntry(configuration: DashboardIntent, displaySize: CGSize) 
 
     guard let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
           groupDefaults.string(forKey: NCGlobal.shared.udLastVersion) == utility.getVersionMaintenance() else {
-        return dashboardPlaceholder(height: height,
+        return dashboardSampleEntry(height: height,
                                     footerText: NSLocalizedString("_version_mismatch_error_", comment: ""),
                                     isError: true)
     }
@@ -126,7 +128,7 @@ func getDashboardDataEntry(configuration: DashboardIntent, displaySize: CGSize) 
         : database.getTableAccount(account: accountIdentifier)
 
     guard let account = selectedAccount else {
-        return dashboardPlaceholder(height: height,
+        return dashboardSampleEntry(height: height,
                                     footerText: NSLocalizedString("_no_active_account_", comment: ""),
                                     isError: true)
     }
@@ -207,7 +209,7 @@ func getDashboardDataEntry(configuration: DashboardIntent, displaySize: CGSize) 
                                                account: account.account,
                                                options: options)
     guard result.error == .success else {
-        return dashboardPlaceholder(height: height,
+        return dashboardSampleEntry(height: height,
                                     title: title,
                                     titleImage: moduleImage,
                                     footerText: result.error.localizedGenericMessage,

@@ -11,9 +11,13 @@ struct FilesWidgetProvider: IntentTimelineProvider {
     typealias Intent = AccountIntent
 
     func placeholder(in context: Context) -> Entry {
+        sampleEntry(in: context, isPlaceholder: true)
+    }
+
+    private func sampleEntry(in context: Context, isPlaceholder: Bool) -> Entry {
         Entry(date: Date(),
               datas: filesWidgetSampleRows(count: FilesWidgetLayout.rowCount(for: context.displaySize.height)),
-              isPlaceholder: true,
+              isPlaceholder: isPlaceholder,
               isEmpty: false,
               allowsRefresh: false,
               footerImage: "checkmark.icloud",
@@ -22,7 +26,7 @@ struct FilesWidgetProvider: IntentTimelineProvider {
 
     func getSnapshot(for configuration: AccountIntent, in context: Context, completion: @escaping (Entry) -> Void) {
         guard !context.isPreview else {
-            completion(placeholder(in: context))
+            completion(sampleEntry(in: context, isPlaceholder: false))
             return
         }
 
@@ -34,7 +38,7 @@ struct FilesWidgetProvider: IntentTimelineProvider {
 
     func getTimeline(for configuration: AccountIntent, in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         guard !context.isPreview else {
-            completion(Timeline(entries: [placeholder(in: context)], policy: .never))
+            completion(Timeline(entries: [sampleEntry(in: context, isPlaceholder: false)], policy: .never))
             return
         }
 
