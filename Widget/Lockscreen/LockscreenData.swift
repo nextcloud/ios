@@ -15,7 +15,7 @@ struct LockscreenData: TimelineEntry {
     let quotaUsed: String
     let quotaTotal: String
     let error: Bool
-    var quotaTotalAccessibilityLabel: String? = nil
+    var quotaTotalAccessibilityLabel: String?
 }
 
 func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, family: WidgetFamily, completion: @escaping (_ entry: LockscreenData) -> Void) {
