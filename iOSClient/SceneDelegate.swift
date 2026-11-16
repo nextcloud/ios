@@ -16,8 +16,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
     private var privacyProtectionWindow: UIWindow?
     private var passcodeWindow: NCPasscodeWindow?
-    private var pendingWidgetFileURL: URL?
-    private var widgetFileOpenTask: Task<Void, Never>?
+    private var pendingWidgetURL: URL?
+    private var widgetOpenTask: Task<Void, Never>?
     private let global = NCGlobal.shared
     private let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: NCGlobal.shared.udMigrationMultiDomains)
 
@@ -25,7 +25,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else {
             return
         }
-        pendingWidgetFileURL = connectionOptions.urlContexts.map(\.url).first(where: isWidgetFileURL)
+        pendingWidgetURL = connectionOptions.urlContexts.map(\.url).first(where: isWidgetURL)
         NotificationCenter.default.removeObserver(self, name: NCPasscodeModel.lockoutNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(passcodeLockoutStarted),
                                                name: NCPasscodeModel.lockoutNotification, object: nil)
@@ -198,7 +198,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             if activateSceneForAccount {
                 self.activateSceneForAccount(scene, account: activeTblAccount.account, controller: controller)
             }
-            openPendingWidgetFile(in: scene)
+            openPendingWidgetURL(in: scene)
         }
 
         // Clean orphaned FP Domains
@@ -210,8 +210,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidDisconnect(_ scene: UIScene) {
         guard let windowScene = scene as? UIWindowScene else { return }
 
-        widgetFileOpenTask?.cancel()
-        pendingWidgetFileURL = nil
+        widgetOpenTask?.cancel()
+        pendingWidgetURL = nil
 
         passcodeWindow?.hide()
         passcodeWindow = nil
@@ -234,7 +234,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidBecomeActive(_ scene: UIScene) {
         hidePrivacyProtectionWindow()
-        openPendingWidgetFile(in: scene)
+        openPendingWidgetURL(in: scene)
 
         if !NextcloudKit.shared.isNetworkReachable(),
            let windowScenee = SceneManager.shared.getWindow(scene: scene)?.windowScene {
@@ -324,10 +324,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let url = URLContexts.first?.url else { return }
 
-        if isWidgetFileURL(url) {
-            widgetFileOpenTask?.cancel()
-            pendingWidgetFileURL = url
-            openPendingWidgetFile(in: scene)
+        if isWidgetURL(url) {
+            widgetOpenTask?.cancel()
+            pendingWidgetURL = url
+            openPendingWidgetURL(in: scene)
             return
         }
 
@@ -480,20 +480,73 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 
-    private func isWidgetFileURL(_ url: URL) -> Bool {
-        url.scheme == global.appScheme && url.host == "open-file"
+    private func isWidgetURL(_ url: URL) -> Bool {
+        guard url.scheme == global.appScheme else { return false }
+
+        switch url.host {
+        case "open-file", DeepLink.openFavorites.rawValue, DeepLink.openUrl.rawValue:
+            return true
+        default:
+            return false
+        }
     }
 
-    private func openPendingWidgetFile(in scene: UIScene) {
-        guard let url = pendingWidgetFileURL,
+    private func openPendingWidgetURL(in scene: UIScene) {
+        guard let url = pendingWidgetURL,
               passcodeWindow == nil,
               scene.activationState == .foregroundActive,
               let controller = window?.rootViewController as? NCMainTabBarController else { return }
 
-        pendingWidgetFileURL = nil
-        widgetFileOpenTask = Task { @MainActor in
-            await openWidgetFile(url, scene: scene, controller: controller)
+        pendingWidgetURL = nil
+        widgetOpenTask = Task { @MainActor in
+            guard !Task.isCancelled else { return }
+
+            switch url.host {
+            case DeepLink.openFavorites.rawValue:
+                await openWidgetFavorites(url, scene: scene, controller: controller)
+            case DeepLink.openUrl.rawValue:
+                NCDeepLinkHandler().parseDeepLink(url, controller: controller)
+            case "open-file":
+                await openWidgetFile(url, scene: scene, controller: controller)
+            default:
+                break
+            }
         }
+    }
+
+    private func openWidgetFavorites(_ url: URL, scene: UIScene, controller: NCMainTabBarController) async {
+        let account = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+            .queryItems?.first(where: { $0.name == "account" })?.value
+
+        if let account, account != controller.account {
+            let target = await NCManageDatabase.shared.getTableAccountAsync(account: account)
+            guard !Task.isCancelled, window?.rootViewController === controller else { return }
+            if passcodeWindow != nil || scene.activationState != .foregroundActive {
+                pendingWidgetURL = url
+                return
+            }
+
+            guard target != nil else {
+                let message = String(format: NSLocalizedString("_account_does_not_exist_", comment: ""), account)
+                let alert = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default))
+                controller.present(alert, animated: true)
+                return
+            }
+
+            await NCAccount().changeAccount(account, userProfile: nil, controller: controller)
+        }
+
+        guard !Task.isCancelled, window?.rootViewController === controller,
+              account == nil || controller.account == account else { return }
+
+        if passcodeWindow != nil || scene.activationState != .foregroundActive {
+            pendingWidgetURL = url
+            return
+        }
+
+        NCDeepLinkHandler().handleDeepLink(.openFavorites, controller: controller)
+        (controller.selectedViewController as? UINavigationController)?.popToRootViewController(animated: false)
     }
 
     private func openWidgetFile(_ url: URL, scene: UIScene, controller: NCMainTabBarController) async {
@@ -509,7 +562,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let accounts = await NCManageDatabase.shared.getAllTableAccountAsync()
         guard !Task.isCancelled, window?.rootViewController === controller else { return }
         if passcodeWindow != nil || scene.activationState != .foregroundActive {
-            pendingWidgetFileURL = url
+            pendingWidgetURL = url
             return
         }
 
@@ -534,7 +587,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard !Task.isCancelled, window?.rootViewController === controller,
               controller.account == target.account else { return }
         if passcodeWindow != nil || scene.activationState != .foregroundActive {
-            pendingWidgetFileURL = url
+            pendingWidgetURL = url
             return
         }
 
@@ -554,7 +607,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
               controller.account == target.account else { return }
 
         if passcodeWindow != nil || scene.activationState != .foregroundActive {
-            pendingWidgetFileURL = url
+            pendingWidgetURL = url
             return
         }
 
@@ -607,8 +660,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 self.passcodeWindow = nil
                 switch result {
                 case .authenticated:
-                    if self.pendingWidgetFileURL != nil, let scene = self.window?.windowScene {
-                        self.openPendingWidgetFile(in: scene)
+                    if self.pendingWidgetURL != nil, let scene = self.window?.windowScene {
+                        self.openPendingWidgetURL(in: scene)
                     } else if NCPreferences().accountRequest,
                        let controller,
                        self.window?.rootViewController === controller,
@@ -616,8 +669,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         self.requestedAccount(controller: controller)
                     }
                 case .reset:
-                    self.widgetFileOpenTask?.cancel()
-                    self.pendingWidgetFileURL = nil
+                    self.widgetOpenTask?.cancel()
+                    self.pendingWidgetURL = nil
                     self.appDelegate?.resetApplication()
                 case .cancelled, .configured, .disabled:
                     break
@@ -643,7 +696,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         if !requestPasscodeIfNeeded(controller: controller),
-           pendingWidgetFileURL == nil,
+           pendingWidgetURL == nil,
            NCPreferences().accountRequest {
             requestedAccount(controller: controller)
         }

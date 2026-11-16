@@ -92,7 +92,7 @@ struct FilesWidgetView: View {
                 if !entry.isPlaceholder {
                     let updated = entry.date.formatted(.dateTime.day().month(.abbreviated).hour().minute())
                     Text(String.localizedStringWithFormat(
-                        NSLocalizedString("_widget_files_updated_at_", value: "Updated %@", comment: ""),
+                        NSLocalizedString("_widget_updated_at_", value: "Updated %@", comment: ""),
                         updated
                     ))
                     .invalidatableContent()

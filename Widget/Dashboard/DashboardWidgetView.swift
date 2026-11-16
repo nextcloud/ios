@@ -2,161 +2,251 @@
 // SPDX-FileCopyrightText: 2022 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import AppIntents
 import SwiftUI
 import WidgetKit
 
+nonisolated enum DashboardWidgetLayout {
+    static let padding: CGFloat = 12
+    static let sectionSpacing: CGFloat = 4
+    static let headerHeight: CGFloat = 22
+    static let footerHeight: CGFloat = 44
+    static let actionHeight: CGFloat = 36
+    static let rowHeight: CGFloat = 44
+    static let iconSize: CGFloat = 32
+    static let rowSpacing: CGFloat = 10
+
+    static func rowCount(for height: CGFloat, hasActions: Bool) -> Int {
+        guard height.isFinite else { return 0 }
+        let reservedHeight = 2 * padding + 2 * sectionSpacing + headerHeight + footerHeight
+        let actionSpace = hasActions ? actionHeight + sectionSpacing : 0
+        let rows = (height - reservedHeight - actionSpace) / rowHeight
+        return Int(min(50, max(0, rows)))
+    }
+
+    static func visibleActions(_ actions: [DashboardAction],
+                               totalRows: Int,
+                               height: CGFloat,
+                               loadedRows: Int = .max) -> [DashboardAction] {
+        let otherActions = actions.filter { !$0.isMore }
+        let rowsWithoutMore = rowCount(for: height, hasActions: !otherActions.isEmpty)
+        return totalRows > min(rowsWithoutMore, loadedRows) ? actions : otherActions
+    }
+}
+
 struct DashboardWidgetView: View {
-    var entry: DashboardDataEntry
+    let entry: DashboardDataEntry
+
     var body: some View {
-        GeometryReader { geo in
-            if entry.isEmpty {
-                VStack(alignment: .center) {
-                    Image(systemName: "checkmark")
-                        .resizable()
-                        .scaledToFit()
-                        .font(Font.system(.body).weight(.light))
-                        .frame(width: 50, height: 50)
-                    Text(NSLocalizedString("_no_items_", comment: ""))
-                        .font(.system(size: 25))
-                        .padding()
-                    Text(NSLocalizedString("_check_back_later_", comment: ""))
-                        .font(.system(size: 15))
-                }
-                .frame(width: geo.size.width, height: geo.size.height)
-            }
+        GeometryReader { geometry in
+            let height = geometry.size.height
+            let actions = DashboardWidgetLayout.visibleActions(entry.buttons,
+                                                               totalRows: entry.totalRows,
+                                                               height: height,
+                                                               loadedRows: entry.rows.count)
+            let rows = entry.rows.prefix(DashboardWidgetLayout.rowCount(for: height, hasActions: !actions.isEmpty))
 
-            ZStack(alignment: .topLeading) {
-                HStack {
-                    Image(uiImage: entry.titleImage)
-                        .renderingMode(.template)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 20, height: 20)
+            VStack(alignment: .leading, spacing: DashboardWidgetLayout.sectionSpacing) {
+                header
 
-                    Text(entry.title)
-                        .font(.system(size: 15))
-                        .fontWeight(.bold)
-                        .multilineTextAlignment(.center)
-                        .textCase(.uppercase)
-                        .lineLimit(1)
-                }
-                .frame(width: geo.size.width - 20)
-                .padding([.top, .leading, .trailing], 10)
-                if !entry.isEmpty {
-                    VStack(alignment: .leading) {
-                        VStack(spacing: 0) {
-                            ForEach(entry.datas, id: \.id) { element in
-                                Link(destination: element.link) {
-                                    HStack {
-                                        let subTitleColor = Color(white: 0.5)
-                                        if entry.isPlaceholder {
-                                            Circle()
-                                                .fill(Color(.systemGray4))
-                                                .frame(width: 35, height: 35)
-                                        } else if let color = element.imageColor {
-                                            Image(uiImage: element.icon)
-                                                .renderingMode(.template)
-                                                .resizable()
-                                                .frame(width: 35, height: 35)
-                                                .foregroundColor(Color(color))
-                                                .scaleEffect(0.8)
-                                        } else if element.imageSystem {
-                                            Image(uiImage: element.icon)
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(width: 35, height: 35)
-                                                .scaleEffect(0.8)
-                                        } else {
-                                            if entry.dashboard?.itemIconsRound ?? false || element.circle {
-                                                Image(uiImage: element.icon)
-                                                    .resizable()
-                                                    .scaledToFill()
-                                                    .frame(width: 35, height: 35)
-                                                    .clipShape(Circle())
-                                            } else {
-                                                Image(uiImage: element.icon)
-                                                    .resizable()
-                                                    .scaledToFill()
-                                                    .frame(width: 35, height: 35)
-                                                    .clipped()
-                                                    .cornerRadius(5)
-                                            }
-                                        }
+                if let webURL = entry.webURL, let browserURL = browserDeepLink(for: webURL) {
+                    VStack(spacing: 10) {
+                        Text(NSLocalizedString("_widget_dashboard_available_on_web_", value: "Available on the web", comment: ""))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
 
-                                        VStack(alignment: .leading, spacing: 2) {
-
-                                            Text(element.title)
-                                                .font(.system(size: 12))
-                                                .fontWeight(.regular)
-
-                                            Text(element.subTitle)
-                                                .font(.system(size: CGFloat(10)))
-                                                .foregroundColor(subTitleColor)
-                                        }
-                                        Spacer()
+                        Link(destination: browserURL) {
+                            Label(NSLocalizedString("_widget_dashboard_open_in_browser_", value: "Open in browser", comment: ""), systemImage: "safari")
+                                .font(.system(size: 13, weight: .semibold))
+                                .padding(.horizontal, 12)
+                                .frame(minHeight: 36)
+                                .background(Color.accentColor.opacity(0.12), in: Capsule())
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if entry.totalRows == 0, !entry.isPlaceholder {
+                    Text(NSLocalizedString("_no_data_available_", comment: ""))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    VStack(spacing: 0) {
+                        ForEach(rows) { row in
+                            dashboardRow(row)
+                                .overlay(alignment: .bottomLeading) {
+                                    if row.id != rows.last?.id {
+                                        Divider()
+                                            .padding(.leading, DashboardWidgetLayout.iconSize + DashboardWidgetLayout.rowSpacing)
                                     }
-                                    .padding(.leading, 10)
-                                    .frame(height: 50)
                                 }
-                                if element != entry.datas.last {
-                                    Divider()
-                                        .padding(.leading, 54)
-                                }
-                            }
                         }
                     }
-                    .padding(.top, 35)
                     .redacted(reason: entry.isPlaceholder ? .placeholder : [])
+                    .frame(maxHeight: .infinity, alignment: .top)
                 }
 
-                if let buttons = entry.buttons, !buttons.isEmpty, !entry.isPlaceholder {
-                    HStack(spacing: 10) {
-                        let brandColor = Color(NCBrandColor.shared.getElement(account: entry.account))
-                        let brandTextColor = Color(NCBrandColor.shared.getText(account: entry.account))
-
-                        ForEach(buttons, id: \.index) { element in
-                            Link(destination: URL(string: element.link)!, label: {
-
-                                Text(element.text)
-                                    .font(.system(size: 15))
-                                    .padding(7)
-                                    .background(brandColor)
-                                    .foregroundColor(brandTextColor)
-                                    .border(brandColor, width: 1)
-                                    .cornerRadius(.infinity)
-                            })
-                        }
-                    }
-                    .frame(width: geo.size.width - 10, height: geo.size.height - 25, alignment: .bottomTrailing)
+                if !actions.isEmpty {
+                    actionRow(actions)
                 }
 
-                HStack {
-                    Image(systemName: entry.footerImage)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 15, height: 15)
-                        .font(Font.system(.body).weight(.light))
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
-
-                    Text(entry.footerText)
-                        .font(.caption2)
-                        .lineLimit(1)
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
-                }
-                .padding(.horizontal, 15.0)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                footer
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .padding(DashboardWidgetLayout.padding)
         }
         .containerBackground(.background, for: .widget)
+    }
+
+    private func browserDeepLink(for webURL: URL) -> URL? {
+        var components = URLComponents()
+        components.scheme = NCGlobal.shared.appScheme
+        components.host = "openUrl"
+        components.queryItems = [URLQueryItem(name: "url", value: webURL.absoluteString)]
+        return components.url
+    }
+
+    private var header: some View {
+        HStack(spacing: 8) {
+            Image(uiImage: entry.titleImage)
+                .renderingMode(.template)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 18, height: 18)
+                .accessibilityHidden(true)
+
+            Text(entry.title)
+                .font(.system(size: 16, weight: .semibold))
+                .lineLimit(1)
+                .accessibilityAddTraits(.isHeader)
+        }
+        .frame(height: DashboardWidgetLayout.headerHeight)
+    }
+
+    private func actionRow(_ actions: [DashboardAction]) -> some View {
+        HStack(spacing: 8) {
+            ForEach(actions) { action in
+                Link(destination: action.url) {
+                    Text(action.title)
+                        .font(.system(size: 12, weight: .semibold))
+                        .lineLimit(1)
+                        .padding(.horizontal, 10)
+                        .frame(minHeight: 30)
+                        .background(Color.accentColor.opacity(0.12), in: Capsule())
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .trailing)
+        .frame(height: DashboardWidgetLayout.actionHeight)
+    }
+
+    private var footer: some View {
+        HStack(spacing: 8) {
+            if entry.allowsRefresh {
+                Button(intent: RefreshDashboardWidgetIntent()) {
+                    Image(systemName: "arrow.clockwise")
+                        .font(.system(size: 19, weight: .semibold))
+                        .foregroundStyle(.tint)
+                        .frame(width: DashboardWidgetLayout.footerHeight, height: DashboardWidgetLayout.footerHeight)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(Text(NSLocalizedString("_widget_refresh_dashboard_", value: "Refresh Dashboard", comment: "")))
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Label(entry.footerText, systemImage: entry.footerImage)
+                    .truncationMode(.middle)
+
+                if !entry.isPlaceholder, entry.webURL == nil {
+                    let updated = entry.date.formatted(.dateTime.day().month(.abbreviated).hour().minute())
+                    Text(String.localizedStringWithFormat(
+                        NSLocalizedString("_widget_updated_at_", value: "Updated %@", comment: ""),
+                        updated
+                    ))
+                    .invalidatableContent()
+                }
+            }
+            .font(.system(size: 11))
+            .foregroundStyle(.secondary)
+            .lineLimit(1)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(height: DashboardWidgetLayout.footerHeight)
+    }
+
+    @ViewBuilder
+    private func dashboardRow(_ row: DashboardData) -> some View {
+        if let link = row.link {
+            Link(destination: link) {
+                rowContent(row)
+            }
+        } else {
+            rowContent(row)
+        }
+    }
+
+    private func rowContent(_ row: DashboardData) -> some View {
+        HStack(spacing: DashboardWidgetLayout.rowSpacing) {
+            rowIcon(row)
+                .frame(width: DashboardWidgetLayout.iconSize, height: DashboardWidgetLayout.iconSize)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(row.title)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+
+                if !row.subtitle.isEmpty {
+                    Text(row.subtitle)
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(height: DashboardWidgetLayout.rowHeight)
+        .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder
+    private func rowIcon(_ row: DashboardData) -> some View {
+        if let color = row.calendarColor {
+            Circle()
+                .fill(Color(color))
+                .frame(width: 12, height: 12)
+        } else if let icon = row.icon {
+            Image(uiImage: icon)
+                .resizable()
+                .scaledToFill()
+                .frame(width: DashboardWidgetLayout.iconSize, height: DashboardWidgetLayout.iconSize)
+                .clipShape(RoundedRectangle(cornerRadius: row.isRound ? DashboardWidgetLayout.iconSize / 2 : 6))
+        } else {
+            Image(systemName: "doc")
+                .font(.system(size: 19))
+                .foregroundStyle(.secondary)
+        }
     }
 }
 
 struct DashboardWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let datas = Array(dashboardDatasTest[0...4])
-        let title = "Dashboard"
-        let titleImage = UIImage(systemName: "circle.fill")!
-        let entry = DashboardDataEntry(date: Date(), datas: datas, dashboard: nil, buttons: nil, isPlaceholder: false, isEmpty: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget", account: "")
-        DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
+        let sample = dashboardPlaceholder(height: 360)
+        let entry = DashboardDataEntry(date: Date(),
+                                       rows: sample.rows,
+                                       totalRows: sample.totalRows,
+                                       buttons: [],
+                                       webURL: nil,
+                                       isPlaceholder: false,
+                                       allowsRefresh: true,
+                                       titleImage: sample.titleImage,
+                                       title: sample.title,
+                                       footerImage: sample.footerImage,
+                                       footerText: sample.footerText)
+
+        DashboardWidgetView(entry: entry)
+            .previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

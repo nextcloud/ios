@@ -12,7 +12,6 @@ struct NextcloudWidgetBundle: WidgetBundle {
     var body: some Widget {
         DashboardWidget()
         FilesWidget()
-        ToolbarWidget()
         LockscreenWidget()
     }
 }
@@ -27,9 +26,7 @@ struct DashboardWidget: Widget {
         .supportedFamilies([.systemLarge])
         .configurationDisplayName("Dashboard")
         .description(NSLocalizedString("_description_dashboardwidget_", comment: ""))
-#if !targetEnvironment(simulator)
         .contentMarginsDisabled()
-#endif
     }
 }
 
@@ -44,22 +41,6 @@ struct FilesWidget: Widget {
         .configurationDisplayName("Files")
         .description(NSLocalizedString("_widget_recent_files_description_", value: "View and open your recent files.", comment: ""))
         .contentMarginsDisabled()
-    }
-}
-
-struct ToolbarWidget: Widget {
-    let kind: String = "ToolbarWidget"
-
-    var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: ToolbarWidgetProvider()) { entry in
-            ToolbarWidgetView(entry: entry)
-        }
-        .supportedFamilies([.systemMedium])
-        .configurationDisplayName("Toolbar")
-        .description(NSLocalizedString("_description_toolbarwidget_", comment: ""))
-#if !targetEnvironment(simulator)
-        .contentMarginsDisabled()
-#endif
     }
 }
 

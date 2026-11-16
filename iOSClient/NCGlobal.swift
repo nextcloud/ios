@@ -305,14 +305,6 @@ final class NCGlobal: Sendable {
     let actionTextDocument                                      = "create-text-document"
     let actionVoiceMemo                                         = "create-voice-memo"
 
-    // WIDGET ACTION
-    //
-    let widgetActionNoAction                                    = "nextcloud://open-action?action=no-action"
-    let widgetActionUploadAsset                                 = "nextcloud://open-action?action=upload-asset"
-    let widgetActionScanDocument                                = "nextcloud://open-action?action=add-scan-document"
-    let widgetActionTextDocument                                = "nextcloud://open-action?action=create-text-document"
-    let widgetActionVoiceMemo                                   = "nextcloud://open-action?action=create-voice-memo"
-
     // APPCONFIG
     //
     let configuration_brand                                     = "brand"

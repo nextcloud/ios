@@ -116,7 +116,12 @@ class NCService: NSObject {
         let resultsDashboardWidget = await NextcloudKit.shared.getDashboardWidgetAsync(account: account)
         if resultsDashboardWidget.error == .success,
            let dashboardWidgets = resultsDashboardWidget.dashboardWidgets {
-            await NCManageDatabase.shared.addDashboardWidgetAsync(account: account, dashboardWidgets: dashboardWidgets)
+            let catalog = resultsDashboardWidget.responseData?.data.flatMap {
+                try? JSONDecoder().decode(DashboardCatalogResponse.self, from: $0)
+            }
+            await NCManageDatabase.shared.addDashboardWidgetAsync(account: account,
+                                                                dashboardWidgets: dashboardWidgets,
+                                                                preferredItemAPIVersions: catalog?.preferredItemAPIVersions ?? [:])
             for widget in dashboardWidgets {
                 if let url = URL(string: widget.iconUrl),
                    let fileName = widget.iconClass {
@@ -390,6 +395,39 @@ class NCService: NSObject {
                 }
             } catch {
                 print("Error: \(error.localizedDescription)")
+            }
+        }
+    }
+}
+
+private struct DashboardCatalogResponse: Decodable {
+    struct OCS: Decodable {
+        struct Module: Decodable {
+            let id: String?
+            let itemAPIVersions: [Int]?
+
+            private enum CodingKeys: String, CodingKey {
+                case id
+                case itemAPIVersions = "item_api_versions"
+            }
+
+            var preferredItemAPIVersion: DashboardItemAPIVersion? {
+                guard let itemAPIVersions else { return nil }
+                if itemAPIVersions.contains(DashboardItemAPIVersion.v2.rawValue) { return .v2 }
+                if itemAPIVersions.contains(DashboardItemAPIVersion.v1.rawValue) { return .v1 }
+                return .unsupported
+            }
+        }
+
+        let data: [String: Module]
+    }
+
+    let ocs: OCS
+
+    var preferredItemAPIVersions: [String: DashboardItemAPIVersion] {
+        ocs.data.values.reduce(into: [:]) { versions, module in
+            if let id = module.id {
+                versions[id] = module.preferredItemAPIVersion
             }
         }
     }
