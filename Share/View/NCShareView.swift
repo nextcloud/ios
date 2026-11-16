@@ -231,7 +231,11 @@ struct NCShareView: View {
     }
 
     private func folderRow(_ folder: NCShareFolderItem, depth: Int?) -> some View {
-        let isSelected = model.selectedFolder?.serverUrl == folder.serverUrl && model.isRecentFolderSelected == (depth == nil)
+        let fromRecents = depth == nil
+        let isSelected = model.selectedFolder?.serverUrl == folder.serverUrl && model.isRecentFolderSelected == fromRecents
+        let isPending = model.pendingFolderSelection?.serverUrl == folder.serverUrl &&
+            model.pendingFolderSelection?.fromRecents == fromRecents
+        let highlightOpacity: Double = isSelected ? 0.1 : (isPending ? 0.05 : 0)
         return HStack(spacing: 4) {
             if let depth {
                 Button {
@@ -253,7 +257,7 @@ struct NCShareView: View {
                     .accessibilityHidden(true)
             }
             Button {
-                model.selectFolder(folder, fromRecents: depth == nil)
+                model.selectFolder(folder, fromRecents: fromRecents)
             } label: {
                 HStack(spacing: 8) {
                     if let image = folder.image {
@@ -310,7 +314,7 @@ struct NCShareView: View {
         .disabled(!model.canUseFolderBrowser)
         .background {
             RoundedRectangle(cornerRadius: 8)
-                .fill(Color.accentColor.opacity(isSelected ? 0.1 : 0))
+                .fill(Color.accentColor.opacity(highlightOpacity))
                 .padding(.horizontal, 5)
         }
         .listRowSeparator(.hidden)

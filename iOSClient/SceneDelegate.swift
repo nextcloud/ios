@@ -16,6 +16,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
     private var privacyProtectionWindow: UIWindow?
     private var passcodeWindow: NCPasscodeWindow?
+    private var pendingWidgetURL: URL?
+    private var widgetOpenTask: Task<Void, Never>?
     private let global = NCGlobal.shared
     private let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: NCGlobal.shared.udMigrationMultiDomains)
 
@@ -23,6 +25,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else {
             return
         }
+        pendingWidgetURL = connectionOptions.urlContexts.map(\.url).first(where: isWidgetURL)
         NotificationCenter.default.removeObserver(self, name: NCPasscodeModel.lockoutNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(passcodeLockoutStarted),
                                                name: NCPasscodeModel.lockoutNotification, object: nil)
@@ -195,6 +198,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             if activateSceneForAccount {
                 self.activateSceneForAccount(scene, account: activeTblAccount.account, controller: controller)
             }
+            openPendingWidgetURL(in: scene)
         }
 
         // Clean orphaned FP Domains
@@ -205,6 +209,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidDisconnect(_ scene: UIScene) {
         guard let windowScene = scene as? UIWindowScene else { return }
+
+        widgetOpenTask?.cancel()
+        pendingWidgetURL = nil
 
         passcodeWindow?.hide()
         passcodeWindow = nil
@@ -227,6 +234,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidBecomeActive(_ scene: UIScene) {
         hidePrivacyProtectionWindow()
+        openPendingWidgetURL(in: scene)
 
         if !NextcloudKit.shared.isNetworkReachable(),
            let windowScenee = SceneManager.shared.getWindow(scene: scene)?.windowScene {
@@ -314,8 +322,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        guard let controller = SceneManager.shared.getController(scene: scene),
-              let url = URLContexts.first?.url else { return }
+        guard let url = URLContexts.first?.url else { return }
+
+        if isWidgetURL(url) {
+            widgetOpenTask?.cancel()
+            pendingWidgetURL = url
+            openPendingWidgetURL(in: scene)
+            return
+        }
+
+        guard let controller = SceneManager.shared.getController(scene: scene) else { return }
         let scheme = url.scheme
         let action = url.host
         let versionApp = NCUtility().getVersionMaintenance()
@@ -327,13 +343,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
 
-        func getMatchedAccount(user: String, url: String, account: String? = nil) async -> tableAccount? {
+        func getMatchedAccount(user: String, url: String) async -> tableAccount? {
             let tblAccounts = await NCManageDatabase.shared.getAllTableAccountAsync()
 
             for tblAccount in tblAccounts {
                 let host = URL(string: tblAccount.urlBase)?.host() ?? ""
 
-                if (account == tblAccount.account) || (url.contains(host) && user == tblAccount.userId) {
+                if url.contains(host), user == tblAccount.userId {
                     await NCAccount().changeAccount(tblAccount.account, userProfile: nil, controller: controller)
                     // wait switch account
                     try? await Task.sleep(for: .seconds(1))
@@ -442,57 +458,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     }
                 }
             }
-        }
-
-        /*
-         Example: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
-         */
-
-        else if scheme == self.global.appScheme && action == "open-file" {
-            if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
-                let queryItems = urlComponents.queryItems
-                guard let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
-                      // let pathScheme = queryItems?.filter({ $0.name == "path" }).first?.value,
-                      let linkScheme = queryItems?.filter({ $0.name == "link" }).first?.value else {
-                    return
-                }
-                let domain = URL(string: linkScheme)?.host ?? ""
-                let accountScheme = queryItems?.filter({ $0.name == "account" }).first?.value
-
-                Task {
-                    guard let tblAccount = await getMatchedAccount(user: userScheme, url: linkScheme, account: accountScheme) else {
-
-                        let message = String(format: NSLocalizedString("_account_not_available_", comment: ""), userScheme, domain)
-                        let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-
-                        controller.present(alertController, animated: true)
-                        return
-                    }
-
-                    let results = await NextcloudKit.shared.getFileFromFileIdAsync(link: linkScheme,
-                                                                                   account: tblAccount.account)
-                    if results.error == .success, let file = results.file {
-                        let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
-                        await NCManageDatabase.shared.addMetadataAsync(metadata)
-                        if metadata.hasPreview {
-                            let results = await NextcloudKit.shared.downloadPreviewAsync(fileId: metadata.fileId, etag: metadata.etag, account: metadata.account)
-                            if results.error == .success,
-                               let data = results.responseData?.data {
-                                NCUtility().createImageFileFrom(data: data, metadata: metadata)
-                            }
-                        }
-                        await NCNetworking.shared.openFileView(serverUrl: metadata.serverUrl,
-                                                               metadata: metadata,
-                                                               sceneIdentifier: controller.sceneIdentifier)
-                    }
-                }
-            }
-
-        /*
-         Example: nextcloud://open-and-switch-account?user=marinofaggiana&url=https://cloud.nextcloud.com
-         */
-
         } else if scheme == self.global.appScheme && action == "open-and-switch-account" {
             guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
                 return
@@ -513,6 +478,142 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         } else {
             scene.open(url, options: nil)
         }
+    }
+
+    private func isWidgetURL(_ url: URL) -> Bool {
+        guard url.scheme == global.appScheme else { return false }
+
+        switch url.host {
+        case "open-file", DeepLink.openFavorites.rawValue, DeepLink.openUrl.rawValue:
+            return true
+        default:
+            return false
+        }
+    }
+
+    private func openPendingWidgetURL(in scene: UIScene) {
+        guard let url = pendingWidgetURL,
+              passcodeWindow == nil,
+              scene.activationState == .foregroundActive,
+              let controller = window?.rootViewController as? NCMainTabBarController else { return }
+
+        pendingWidgetURL = nil
+        widgetOpenTask = Task { @MainActor in
+            guard !Task.isCancelled else { return }
+
+            switch url.host {
+            case DeepLink.openFavorites.rawValue:
+                await openWidgetFavorites(url, scene: scene, controller: controller)
+            case DeepLink.openUrl.rawValue:
+                NCDeepLinkHandler().parseDeepLink(url, controller: controller)
+            case "open-file":
+                await openWidgetFile(url, scene: scene, controller: controller)
+            default:
+                break
+            }
+        }
+    }
+
+    private func openWidgetFavorites(_ url: URL, scene: UIScene, controller: NCMainTabBarController) async {
+        let account = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+            .queryItems?.first(where: { $0.name == "account" })?.value
+
+        if let account, account != controller.account {
+            let target = await NCManageDatabase.shared.getTableAccountAsync(account: account)
+            guard !Task.isCancelled, window?.rootViewController === controller else { return }
+            if passcodeWindow != nil || scene.activationState != .foregroundActive {
+                pendingWidgetURL = url
+                return
+            }
+
+            guard target != nil else {
+                let message = String(format: NSLocalizedString("_account_does_not_exist_", comment: ""), account)
+                let alert = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default))
+                controller.present(alert, animated: true)
+                return
+            }
+
+            await NCAccount().changeAccount(account, userProfile: nil, controller: controller)
+        }
+
+        guard !Task.isCancelled, window?.rootViewController === controller,
+              account == nil || controller.account == account else { return }
+
+        if passcodeWindow != nil || scene.activationState != .foregroundActive {
+            pendingWidgetURL = url
+            return
+        }
+
+        NCDeepLinkHandler().handleDeepLink(.openFavorites, controller: controller)
+        (controller.selectedViewController as? UINavigationController)?.popToRootViewController(animated: false)
+    }
+
+    private func openWidgetFile(_ url: URL, scene: UIScene, controller: NCMainTabBarController) async {
+        guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems,
+              let user = queryItems.first(where: { $0.name == "user" })?.value,
+              let link = queryItems.first(where: { $0.name == "link" })?.value,
+              let fileURL = URL(string: link) else { return }
+
+        let account = queryItems.first(where: { $0.name == "account" })?.value
+        let fileId = fileURL.lastPathComponent
+        guard !fileId.isEmpty, fileId.allSatisfy({ $0.isASCII && $0.isNumber }) else { return }
+
+        let accounts = await NCManageDatabase.shared.getAllTableAccountAsync()
+        guard !Task.isCancelled, window?.rootViewController === controller else { return }
+        if passcodeWindow != nil || scene.activationState != .foregroundActive {
+            pendingWidgetURL = url
+            return
+        }
+
+        guard let target = accounts.first(where: { candidate in
+            (account == nil || candidate.account == account)
+                && candidate.userId == user
+                && URL(string: candidate.urlBase + "/f/" + fileId) == fileURL
+        }) else {
+            let message = String(format: NSLocalizedString("_account_not_available_", comment: ""), user, fileURL.host ?? "")
+            let alert = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default))
+            controller.present(alert, animated: true)
+            return
+        }
+
+        if controller.account != target.account {
+            await NCAccount().changeAccount(target.account, userProfile: nil, controller: controller)
+        }
+        guard !Task.isCancelled, controller.account == target.account else { return }
+
+        let result = await NextcloudKit.shared.getFileFromFileIdAsync(fileId: fileId, account: target.account)
+        guard !Task.isCancelled, window?.rootViewController === controller,
+              controller.account == target.account else { return }
+        if passcodeWindow != nil || scene.activationState != .foregroundActive {
+            pendingWidgetURL = url
+            return
+        }
+
+        if result.error != .success {
+            await showErrorBanner(windowScene: scene as? UIWindowScene, error: result.error)
+            return
+        }
+        guard let file = result.file else {
+            await showErrorBanner(windowScene: scene as? UIWindowScene, text: "_error_not_found_")
+            return
+        }
+
+        let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
+        await NCManageDatabase.shared.addMetadataAsync(metadata)
+
+        guard !Task.isCancelled, window?.rootViewController === controller,
+              controller.account == target.account else { return }
+
+        if passcodeWindow != nil || scene.activationState != .foregroundActive {
+            pendingWidgetURL = url
+            return
+        }
+
+        await NCNetworking.shared.openFileView(serverUrl: metadata.serverUrl,
+                                               metadata: metadata,
+                                               sceneIdentifier: controller.sceneIdentifier)
     }
 
     private func showPrivacyProtectionWindow() {
@@ -559,13 +660,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 self.passcodeWindow = nil
                 switch result {
                 case .authenticated:
-                    if NCPreferences().accountRequest,
+                    if self.pendingWidgetURL != nil, let scene = self.window?.windowScene {
+                        self.openPendingWidgetURL(in: scene)
+                    } else if NCPreferences().accountRequest,
                        let controller,
                        self.window?.rootViewController === controller,
                        NCManageDatabase.shared.getTableAccount(account: controller.account) != nil {
                         self.requestedAccount(controller: controller)
                     }
                 case .reset:
+                    self.widgetOpenTask?.cancel()
+                    self.pendingWidgetURL = nil
                     self.appDelegate?.resetApplication()
                 case .cancelled, .configured, .disabled:
                     break
@@ -590,7 +695,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
 
-        if !requestPasscodeIfNeeded(controller: controller), NCPreferences().accountRequest {
+        if !requestPasscodeIfNeeded(controller: controller),
+           pendingWidgetURL == nil,
+           NCPreferences().accountRequest {
             requestedAccount(controller: controller)
         }
 

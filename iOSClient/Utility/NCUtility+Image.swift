@@ -5,12 +5,44 @@
 import Foundation
 import UIKit
 import NextcloudKit
+import Alamofire
 import PDFKit
 import Accelerate
 import CoreMedia
 import Photos
 
 extension NCUtility {
+    func downloadDashboardIcon(from url: URL, account: String) async -> Data? {
+        let networking = NextcloudKit.shared.nkCommonInstance
+        guard let session = networking.nksessions.session(forAccount: account),
+              let serverURL = URL(string: session.urlBase),
+              Self.isDashboardIconOnServer(url, serverURL: serverURL),
+              let headers = networking.getStandardHeaders(account: account) else { return nil }
+
+        let redirector = Redirector(behavior: .modify { _, request, _ in
+            guard let destination = request.url,
+                  Self.isDashboardIconOnServer(destination, serverURL: serverURL) else { return nil }
+            return request
+        })
+
+        return try? await session.sessionData.request(url, headers: headers)
+            .redirect(using: redirector)
+            .validate(statusCode: 200..<300)
+            .serializingData()
+            .value
+    }
+
+    private nonisolated static func isDashboardIconOnServer(_ url: URL, serverURL: URL) -> Bool {
+        guard let scheme = url.scheme?.lowercased(), scheme == "http" || scheme == "https",
+              scheme == serverURL.scheme?.lowercased(),
+              let host = url.host?.lowercased(), !host.isEmpty,
+              host == serverURL.host?.lowercased(),
+              url.user == nil, url.password == nil else { return false }
+
+        let defaultPort = scheme == "https" ? 443 : 80
+        return (url.port ?? defaultPort) == (serverURL.port ?? defaultPort)
+    }
+
     func loadImage(named imageName: String,
                    colors: [UIColor]? = nil,
                    size: CGFloat? = nil,

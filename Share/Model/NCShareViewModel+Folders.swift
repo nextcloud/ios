@@ -24,6 +24,7 @@ extension NCShareViewModel {
     func resetFolderBrowser(preservingContent: Bool = false) {
         folderBrowserID = UUID()
         folderSelectionTask?.cancel()
+        pendingFolderSelection = nil
         for task in folderTasks.values { task.cancel() }
         for request in folderRequests.values { request.cancel() }
         folderTasks.removeAll()
@@ -117,12 +118,16 @@ extension NCShareViewModel {
         let session = sessionStore.getSession()
         let browserID = folderBrowserID
         isLoading = true
+        if !automatically {
+            pendingFolderSelection = (folder.serverUrl, fromRecents)
+        }
         folderSelectionTask = Task { @MainActor in
             defer {
                 if isCurrentBrowser(browserID, account: session.account) {
                     if automatically, isAuthenticated, selectedFolder == nil {
                         selectedFolder = rootFolder
                     }
+                    pendingFolderSelection = nil
                     isLoading = false
                 }
             }

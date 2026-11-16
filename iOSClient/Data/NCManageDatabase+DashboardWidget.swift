@@ -7,6 +7,12 @@ import UIKit
 import RealmSwift
 import NextcloudKit
 
+enum DashboardItemAPIVersion: Int, PersistableEnum {
+    case unsupported = 0
+    case v1 = 1
+    case v2 = 2
+}
+
 class tableDashboardWidget: Object {
     @Persisted(primaryKey: true) var index = ""
     @Persisted var account = ""
@@ -17,6 +23,7 @@ class tableDashboardWidget: Object {
     @Persisted var iconUrl: String?
     @Persisted var widgetUrl: String?
     @Persisted var itemIconsRound: Bool = false
+    @Persisted var preferredItemAPIVersion: DashboardItemAPIVersion?
 }
 
 class tableDashboardWidgetButton: Object {
@@ -32,7 +39,9 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
-    func addDashboardWidgetAsync(account: String, dashboardWidgets: [NCCDashboardWidget]) async {
+    func addDashboardWidgetAsync(account: String,
+                                 dashboardWidgets: [NCCDashboardWidget],
+                                 preferredItemAPIVersions: [String: DashboardItemAPIVersion]) async {
         await core.performRealmWriteAsync { realm in
             // Remove existing widgets for the account
             realm.delete(realm.objects(tableDashboardWidget.self).filter("account == %@", account))
@@ -50,6 +59,7 @@ extension NCManageDatabase {
                 widgetObject.iconUrl = widget.iconUrl
                 widgetObject.widgetUrl = widget.widgetUrl
                 widgetObject.itemIconsRound = widget.itemIconsRound
+                widgetObject.preferredItemAPIVersion = preferredItemAPIVersions[widget.id]
 
                 realm.add(widgetObject, update: .all)
 
