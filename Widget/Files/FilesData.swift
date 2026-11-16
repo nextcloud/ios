@@ -207,7 +207,7 @@ private func loadFilesWidgetPreview(for file: NKFile,
                                                                         userId: account.userId,
                                                                         urlBase: account.urlBase)
     let thumbnailURL = URL(fileURLWithPath: thumbnailPath)
-    if let image = UIImage.downsample(imageAt: thumbnailURL, to: thumbnailSize, scale: 1) {
+    if let image = UIImage.thumbnail(imageAt: thumbnailURL, to: thumbnailSize, scale: 1) {
         return image
     }
 
@@ -216,7 +216,7 @@ private func loadFilesWidgetPreview(for file: NKFile,
                                                                      ext: NCGlobal.shared.previewExt512,
                                                                      userId: account.userId,
                                                                      urlBase: account.urlBase)
-    if let image = UIImage.downsample(imageAt: URL(fileURLWithPath: largerPath), to: thumbnailSize, scale: 1) {
+    if let image = UIImage.thumbnail(imageAt: URL(fileURLWithPath: largerPath), to: thumbnailSize, scale: 1) {
         return image
     }
 
@@ -238,9 +238,6 @@ private func loadFilesWidgetPreview(for file: NKFile,
         kCGImageSourceThumbnailMaxPixelSize: Int(thumbnailSize.width)
     ] as CFDictionary
     guard let thumbnail = CGImageSourceCreateThumbnailAtIndex(source, 0, thumbnailOptions) else { return nil }
-    let image = UIImage(cgImage: thumbnail)
-    if let jpeg = image.jpegData(compressionQuality: 0.7) {
-        try? jpeg.write(to: thumbnailURL, options: .atomic)
-    }
-    return image
+    // The shared preview cache expects all three sizes. Use this thumbnail only for the widget entry.
+    return UIImage(cgImage: thumbnail)
 }

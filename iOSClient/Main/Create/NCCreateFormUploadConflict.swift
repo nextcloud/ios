@@ -445,7 +445,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 do {
                     if metadataNewFile.classFile == NKTypeClassFile.image.rawValue {
                         // preserver memory especially for very large files in Share extension
-                        if let image = UIImage.downsample(
+                        if let image = UIImage.thumbnail(
                             imageAt: URL(fileURLWithPath: filePathNewFile),
                             to: cell.imageNewFile.frame.size,
                             scale: cell.imageNewFile.traitCollection.displayScale

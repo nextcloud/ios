@@ -187,7 +187,7 @@ func getDashboardDataEntry(configuration: DashboardIntent, displaySize: CGSize) 
     if let iconClass = module?.iconClass {
         let fileSystem = NCUtilityFileSystem()
         let path = fileSystem.createServerUrl(serverUrl: fileSystem.directoryUserData, fileName: iconClass + ".png")
-        titleImage = UIImage.downsample(imageAt: URL(fileURLWithPath: path), to: iconSize, scale: 3)
+        titleImage = UIImage.thumbnail(imageAt: URL(fileURLWithPath: path), to: iconSize, scale: 3)
     } else {
         titleImage = nil
     }
@@ -238,10 +238,9 @@ func getDashboardDataEntry(configuration: DashboardIntent, displaySize: CGSize) 
             } else if iconURL.pathComponents.contains("getCalendarDotSvg") {
                 calendarColor = UIColor(hex: (iconURL.lastPathComponent as NSString).deletingPathExtension)
             } else {
-                let destination = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-                defer { try? FileManager.default.removeItem(at: destination) }
-                if let iconFile = await DashboardIconDownloader.download(from: iconURL, account: account.account, to: destination) {
-                    icon = UIImage.downsample(imageAt: iconFile, to: iconSize, scale: 3)
+                let result = await NextcloudKit.shared.downloadPreviewAsync(url: iconURL, account: account.account)
+                if result.error == .success, let data = result.responseData?.data {
+                    icon = UIImage.thumbnail(from: data, to: iconSize, scale: 3)
                 }
             }
         }
