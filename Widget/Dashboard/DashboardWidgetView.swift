@@ -28,7 +28,7 @@ nonisolated enum DashboardWidgetLayout {
                                totalRows: Int,
                                height: CGFloat,
                                loadedRows: Int = .max) -> [DashboardAction] {
-        let otherActions = actions.filter { !$0.isMore }
+        let otherActions = actions.filter { !$0.hidesWhenAllRowsFit }
         let rowsWithoutMore = rowCount(for: height, hasActions: !otherActions.isEmpty)
         return totalRows > min(rowsWithoutMore, loadedRows) ? actions : otherActions
     }

@@ -35,7 +35,7 @@ struct DashboardAction: Identifiable, Sendable {
     let id: String
     let title: String
     let url: URL
-    let isMore: Bool
+    let hidesWhenAllRowsFit: Bool
 }
 
 private struct DashboardModuleItem: Decodable {
@@ -176,7 +176,8 @@ func getDashboardDataEntry(configuration: DashboardIntent, displaySize: CGSize) 
             url = dashboardWebURL(button.link, relativeTo: baseURL)
         }
         guard let url else { return nil }
-        return DashboardAction(id: button.index, title: button.text, url: url, isMore: isMore)
+        let hidesWhenAllRowsFit = isMore && moduleId != "files-favorites" && moduleId != "circles"
+        return DashboardAction(id: button.index, title: button.text, url: url, hidesWhenAllRowsFit: hidesWhenAllRowsFit)
     }
 
     let titleImage: UIImage?
@@ -233,11 +234,8 @@ func getDashboardDataEntry(configuration: DashboardIntent, displaySize: CGSize) 
                 isRound = false
             } else if iconURL.pathComponents.contains("getCalendarDotSvg") {
                 calendarColor = UIColor(hex: (iconURL.lastPathComponent as NSString).deletingPathExtension)
-            } else {
-                let preview = await NextcloudKit.shared.downloadPreviewAsync(url: iconURL, account: account.account, options: options)
-                if preview.error == .success, let data = preview.responseData?.data {
-                    icon = UIImage(data: data)
-                }
+            } else if let data = await utility.downloadDashboardIcon(from: iconURL, account: account.account) {
+                icon = UIImage(data: data)
             }
         }
 

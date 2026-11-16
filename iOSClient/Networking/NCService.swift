@@ -123,28 +123,24 @@ class NCService: NSObject {
                                                                 dashboardWidgets: dashboardWidgets,
                                                                 preferredItemAPIVersions: catalog?.preferredItemAPIVersions ?? [:])
             for widget in dashboardWidgets {
-                if let url = URL(string: widget.iconUrl),
-                   let fileName = widget.iconClass {
-                    let resultsDownloadPreview = await NextcloudKit.shared.downloadPreviewAsync(url: url, account: account)
-                    if resultsDownloadPreview.error == .success,
-                       let data = resultsDownloadPreview.responseData?.data {
-                        var image: UIImage?
-                        let size = CGSize(width: 256, height: 256)
+                guard let url = URL(string: widget.iconUrl),
+                      let fileName = widget.iconClass,
+                      let data = await utility.downloadDashboardIcon(from: url, account: account) else { continue }
 
-                        if let uiImage = UIImage(data: data)?.resizeImage(size: size) {
-                            image = uiImage
-                        } else if let svgImage = try? await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: size) {
-                            image = svgImage
-                        }
+                let size = CGSize(width: 256, height: 256)
+                let image: UIImage?
+                if let raster = UIImage(data: data)?.resizeImage(size: size) {
+                    image = raster
+                } else {
+                    image = try? await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: size)
+                }
 
-                        if let image {
-                            let filePath = (self.utilityFileSystem.directoryUserData as NSString).appendingPathComponent(fileName + ".png")
-                            do {
-                                try image.pngData()?.write(to: URL(fileURLWithPath: filePath), options: .atomic)
-                            } catch {
-                                print("Failed to write image to disk: \(error.localizedDescription)")
-                            }
-                        }
+                if let image {
+                    let filePath = (utilityFileSystem.directoryUserData as NSString).appendingPathComponent(fileName + ".png")
+                    do {
+                        try image.pngData()?.write(to: URL(fileURLWithPath: filePath), options: .atomic)
+                    } catch {
+                        print("Failed to write image to disk: \(error.localizedDescription)")
                     }
                 }
             }
