@@ -173,11 +173,6 @@
 		F3391B082B4C52C5001C0C4B /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B072B4C52C5001C0C4B /* FirebaseDatabase */; };
 		F3391B162B4C52F6001C0C4B /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B152B4C52F6001C0C4B /* FirebaseDatabase */; };
 		F33D303E2D8B129600531D64 /* AutoUploadUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33D303D2D8B129600531D64 /* AutoUploadUITests.swift */; };
-		F33EE6E12BF4BDA500CA1A51 /* NIOSSL in Frameworks */ = {isa = PBXBuildFile; productRef = F33EE6E02BF4BDA500CA1A51 /* NIOSSL */; };
-		F33EE6E32BF4C00700CA1A51 /* NIOSSL in Frameworks */ = {isa = PBXBuildFile; productRef = F33EE6E22BF4C00700CA1A51 /* NIOSSL */; };
-		F33EE6E52BF4C02000CA1A51 /* NIOSSL in Frameworks */ = {isa = PBXBuildFile; productRef = F33EE6E42BF4C02000CA1A51 /* NIOSSL */; };
-		F33EE6ED2BF4C03800CA1A51 /* NIOSSL in Frameworks */ = {isa = PBXBuildFile; productRef = F33EE6EC2BF4C03800CA1A51 /* NIOSSL */; };
-		F33EE6F02BF4C0FF00CA1A51 /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = F33EE6EF2BF4C0FF00CA1A51 /* NIO */; };
 		F33EE6F22BF4C9B200CA1A51 /* PKCS12.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33EE6F12BF4C9B200CA1A51 /* PKCS12.swift */; };
 		F343A4B32A1E01FF00DDA874 /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */; };
 		F343A4BB2A1E734600DDA874 /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
@@ -2109,7 +2104,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F33EE6ED2BF4C03800CA1A51 /* NIOSSL in Frameworks */,
 				F72AD71128C24BBB006CB92D /* NextcloudKit in Frameworks */,
 				F710FC88277B7D3F00AA9FBF /* RealmSwift in Frameworks */,
 				F760DE0F2AE66EE60027D78A /* KeychainAccess in Frameworks */,
@@ -2184,7 +2178,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F783034428B5142B00B84583 /* NextcloudKit in Frameworks */,
-				F33EE6E32BF4C00700CA1A51 /* NIOSSL in Frameworks */,
 				F7160A7D2BE931DE0034DCB3 /* RealmSwift in Frameworks */,
 				F760DE052AE66EBE0027D78A /* KeychainAccess in Frameworks */,
 			);
@@ -2211,12 +2204,10 @@
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
 				F3374AF02D78B01B002A38F9 /* BitCollections in Frameworks */,
 				F77BC3EB293E5268005F2B08 /* Swifter in Frameworks */,
-				F33EE6E12BF4BDA500CA1A51 /* NIOSSL in Frameworks */,
 				F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */,
 				F760DE032AE66EA80027D78A /* KeychainAccess in Frameworks */,
 				F76BED74306CE862002E1442 /* GRDB in Frameworks */,
 				F3374AF62D78B01B002A38F9 /* HashTreeCollections in Frameworks */,
-				F33EE6F02BF4C0FF00CA1A51 /* NIO in Frameworks */,
 				F3A0479E2BD268B500658E7B /* PopupView in Frameworks */,
 				F3374AF82D78B01B002A38F9 /* HeapModule in Frameworks */,
 				F77333882927A72100466E35 /* OpenSSL in Frameworks */,
@@ -2251,7 +2242,6 @@
 			files = (
 				F7A8D72828F17728008BBE1C /* RealmSwift in Frameworks */,
 				F7A8D72428F1771B008BBE1C /* NextcloudKit in Frameworks */,
-				F33EE6E52BF4C02000CA1A51 /* NIOSSL in Frameworks */,
 				F760DE072AE66EC70027D78A /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3947,7 +3937,6 @@
 				F710FC87277B7D3F00AA9FBF /* RealmSwift */,
 				F72AD71028C24BBB006CB92D /* NextcloudKit */,
 				F760DE0E2AE66EE60027D78A /* KeychainAccess */,
-				F33EE6EC2BF4C03800CA1A51 /* NIOSSL */,
 			);
 			productName = "Notification Service Extension";
 			productReference = 2C33C47F23E2C475005F963B /* Notification Service Extension.appex */;
@@ -4102,7 +4091,6 @@
 				F783034328B5142B00B84583 /* NextcloudKit */,
 				F760DE042AE66EBE0027D78A /* KeychainAccess */,
 				F7160A7C2BE931DE0034DCB3 /* RealmSwift */,
-				F33EE6E22BF4C00700CA1A51 /* NIOSSL */,
 			);
 			productName = DashboardWidgetExtension;
 			productReference = F7346E1028B0EF5B006CE2D2 /* Widget.appex */;
@@ -4174,8 +4162,6 @@
 				F760DE022AE66EA80027D78A /* KeychainAccess */,
 				F3A0479D2BD268B500658E7B /* PopupView */,
 				F7160A812BE933390034DCB3 /* RealmSwift */,
-				F33EE6E02BF4BDA500CA1A51 /* NIOSSL */,
-				F33EE6EF2BF4C0FF00CA1A51 /* NIO */,
 				F7D4BF532CA2ED9D00A5E746 /* VLCKitSPM */,
 				F3374AEF2D78B01B002A38F9 /* BitCollections */,
 				F3374AF12D78B01B002A38F9 /* Collections */,
@@ -4229,7 +4215,6 @@
 				F7A8D72328F1771B008BBE1C /* NextcloudKit */,
 				F7A8D72728F17728008BBE1C /* RealmSwift */,
 				F760DE062AE66EC70027D78A /* KeychainAccess */,
-				F33EE6E42BF4C02000CA1A51 /* NIOSSL */,
 			);
 			productName = WidgetDashboardIntentHandler;
 			productReference = F7C9739028F17131002C43E2 /* WidgetDashboardIntentHandler.appex */;
@@ -4405,8 +4390,6 @@
 				F7F623B32A5EF4D30022D3D4 /* XCRemoteSwiftPackageReference "GzipSwift" */,
 				F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 				F3A0479C2BD268B500658E7B /* XCRemoteSwiftPackageReference "PopupView" */,
-				F33EE6DF2BF4BDA500CA1A51 /* XCRemoteSwiftPackageReference "swift-nio-ssl" */,
-				F33EE6EE2BF4C0FF00CA1A51 /* XCRemoteSwiftPackageReference "swift-nio" */,
 				F7D4BF4E2CA2ECCB00A5E746 /* XCRemoteSwiftPackageReference "vlckit-spm" */,
 				F3374AEE2D78B01B002A38F9 /* XCRemoteSwiftPackageReference "swift-collections" */,
 				F70557B52ED44E2700135623 /* XCRemoteSwiftPackageReference "LucidBanner" */,
@@ -7018,22 +7001,6 @@
 				minimumVersion = 1.1.4;
 			};
 		};
-		F33EE6DF2BF4BDA500CA1A51 /* XCRemoteSwiftPackageReference "swift-nio-ssl" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-nio-ssl";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.37.5;
-			};
-		};
-		F33EE6EE2BF4C0FF00CA1A51 /* XCRemoteSwiftPackageReference "swift-nio" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-nio.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.65.0;
-			};
-		};
 		F3A0479C2BD268B500658E7B /* XCRemoteSwiftPackageReference "PopupView" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/exyte/PopupView.git";
@@ -7223,31 +7190,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseDatabase;
-		};
-		F33EE6E02BF4BDA500CA1A51 /* NIOSSL */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F33EE6DF2BF4BDA500CA1A51 /* XCRemoteSwiftPackageReference "swift-nio-ssl" */;
-			productName = NIOSSL;
-		};
-		F33EE6E22BF4C00700CA1A51 /* NIOSSL */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F33EE6DF2BF4BDA500CA1A51 /* XCRemoteSwiftPackageReference "swift-nio-ssl" */;
-			productName = NIOSSL;
-		};
-		F33EE6E42BF4C02000CA1A51 /* NIOSSL */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F33EE6DF2BF4BDA500CA1A51 /* XCRemoteSwiftPackageReference "swift-nio-ssl" */;
-			productName = NIOSSL;
-		};
-		F33EE6EC2BF4C03800CA1A51 /* NIOSSL */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F33EE6DF2BF4BDA500CA1A51 /* XCRemoteSwiftPackageReference "swift-nio-ssl" */;
-			productName = NIOSSL;
-		};
-		F33EE6EF2BF4C0FF00CA1A51 /* NIO */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F33EE6EE2BF4C0FF00CA1A51 /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIO;
 		};
 		F37208A32BAB63EE006B5430 /* QRCodeReader */ = {
 			isa = XCSwiftPackageProductDependency;
