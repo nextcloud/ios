@@ -183,10 +183,11 @@ func getDashboardDataEntry(configuration: DashboardIntent, displaySize: CGSize) 
     }
 
     let titleImage: UIImage?
+    let iconSize = CGSize(width: DashboardWidgetLayout.iconSize, height: DashboardWidgetLayout.iconSize)
     if let iconClass = module?.iconClass {
         let fileSystem = NCUtilityFileSystem()
         let path = fileSystem.createServerUrl(serverUrl: fileSystem.directoryUserData, fileName: iconClass + ".png")
-        titleImage = UIImage(contentsOfFile: path)
+        titleImage = UIImage.downsample(imageAt: URL(fileURLWithPath: path), to: iconSize, scale: 3)
     } else {
         titleImage = nil
     }
@@ -236,8 +237,12 @@ func getDashboardDataEntry(configuration: DashboardIntent, displaySize: CGSize) 
                 isRound = false
             } else if iconURL.pathComponents.contains("getCalendarDotSvg") {
                 calendarColor = UIColor(hex: (iconURL.lastPathComponent as NSString).deletingPathExtension)
-            } else if let data = await utility.downloadDashboardIcon(from: iconURL, account: account.account) {
-                icon = UIImage(data: data)
+            } else {
+                let destination = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+                defer { try? FileManager.default.removeItem(at: destination) }
+                if let iconFile = await DashboardIconDownloader.download(from: iconURL, account: account.account, to: destination) {
+                    icon = UIImage.downsample(imageAt: iconFile, to: iconSize, scale: 3)
+                }
             }
         }
 

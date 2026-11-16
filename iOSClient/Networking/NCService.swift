@@ -125,7 +125,7 @@ class NCService: NSObject {
             for widget in dashboardWidgets {
                 guard let url = URL(string: widget.iconUrl),
                       let fileName = widget.iconClass,
-                      let data = await utility.downloadDashboardIcon(from: url, account: account) else { continue }
+                      let data = await DashboardIconDownloader.download(from: url, account: account) else { continue }
 
                 let size = CGSize(width: 256, height: 256)
                 let image: UIImage?
