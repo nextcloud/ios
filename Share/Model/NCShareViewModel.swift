@@ -21,6 +21,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
     @Published var recentFolders: [NCShareFolderItem] = []
     @Published var selectedFolder: NCShareFolderItem?
     @Published var isRecentFolderSelected = false
+    @Published var pendingFolderSelection: (serverUrl: String, fromRecents: Bool)?
     @Published var folderScrollTarget: String?
     @Published var folderChildren: [String: [NCShareFolderItem]] = [:]
     @Published var expandedFolderURLs: Set<String> = []
@@ -335,6 +336,7 @@ final class NCShareViewModel: NSObject, ObservableObject {
     func cancel(with error: NCShareRequestError? = nil) {
         guard !isClosing else { return }
         isClosing = true
+        pendingFolderSelection = nil
         alertDismissAction = nil
         stopRequestWork()
         thumbnailRequests.removeAll()
