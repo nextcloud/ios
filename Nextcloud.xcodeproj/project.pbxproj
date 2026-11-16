@@ -4383,7 +4383,7 @@
 				F753BA91281FD8010015BFB6 /* XCRemoteSwiftPackageReference "EasyTipView" */,
 				F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */,
 				F734B06428E75C0100E180D5 /* XCRemoteSwiftPackageReference "TLPhotoPicker" */,
-				F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL" */,
+				F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL-Package" */,
 				F77BC3E9293E5268005F2B08 /* XCRemoteSwiftPackageReference "swifter" */,
 				F7D56B182972405400FA46C4 /* XCRemoteSwiftPackageReference "Mantis" */,
 				F7A1050C29E587AF00FFD92B /* XCRemoteSwiftPackageReference "TagListView" */,
@@ -7075,9 +7075,9 @@
 				kind = branch;
 			};
 		};
-		F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL" */ = {
+		F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL-Package" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/krzyzanowskim/OpenSSL";
+			repositoryURL = "https://github.com/krzyzanowskim/OpenSSL-Package";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 3.6.0;
@@ -7222,7 +7222,7 @@
 		};
 		F37208BB2BAB63EF006B5430 /* OpenSSL */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL" */;
+			package = F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL-Package" */;
 			productName = OpenSSL;
 		};
 		F37208BD2BAB63F0006B5430 /* Swifter */ = {
@@ -7437,7 +7437,7 @@
 		};
 		F77333872927A72100466E35 /* OpenSSL */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL" */;
+			package = F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL-Package" */;
 			productName = OpenSSL;
 		};
 		F77BC3EA293E5268005F2B08 /* Swifter */ = {
@@ -7447,7 +7447,7 @@
 		};
 		F77CB6A82AA08053000C3CA4 /* OpenSSL */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL" */;
+			package = F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL-Package" */;
 			productName = OpenSSL;
 		};
 		F783034328B5142B00B84583 /* NextcloudKit */ = {
