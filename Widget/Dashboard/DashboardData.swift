@@ -157,7 +157,12 @@ func getDashboardDataEntry(configuration: DashboardIntent, displaySize: CGSize) 
     let title = module?.title ?? moduleId
     let baseURL = URL(string: account.urlBase)
     let actions = (moduleButtons ?? []).compactMap { button -> DashboardAction? in
-        guard moduleId != "notes" || button.type != "new" else { return nil }
+        switch (moduleId, button.type) {
+        case ("notes", "new"), ("notes", "more"), ("circles", "setup"):
+            return nil
+        default:
+            break
+        }
 
         let isMore = button.type == "more"
         let url: URL?
