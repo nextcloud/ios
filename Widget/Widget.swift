@@ -42,10 +42,8 @@ struct FilesWidget: Widget {
         }
         .supportedFamilies([.systemLarge])
         .configurationDisplayName("Files")
-        .description(NSLocalizedString("_description_fileswidget_", comment: ""))
-#if !targetEnvironment(simulator)
+        .description(NSLocalizedString("_widget_recent_files_description_", value: "View and open your recent files.", comment: ""))
         .contentMarginsDisabled()
-#endif
     }
 }
 

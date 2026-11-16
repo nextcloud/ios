@@ -520,7 +520,11 @@
 "_select_color_"            = "Select the color";
 "_change_color_"            = "Change color";
 "_description_dashboardwidget_" = "Having the Dashboard always at your fingertips has never been easier.";
-"_description_fileswidget_" = "View your recent files and use the toolbar to speed up your operations.";
+"_widget_recent_files_"             = "Recent files";
+"_widget_no_recent_files_"          = "No recent files";
+"_widget_recent_files_description_" = "View and open your recent files.";
+"_widget_refresh_files_"            = "Refresh recent files";
+"_widget_files_updated_at_"         = "Updated %@";
 "_description_toolbarwidget_"   = "A toolbar to speed up your operations.";
 "_title_lockscreenwidget_"  = "Status";
 "_description_lockscreenwidget_"    = "Keep an eye on available space and recent activity";
