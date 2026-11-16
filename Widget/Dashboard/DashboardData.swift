@@ -159,12 +159,7 @@ func getDashboardDataEntry(configuration: DashboardIntent, displaySize: CGSize) 
     let title = module?.title ?? moduleId
     let baseURL = URL(string: account.urlBase)
     let actions = (moduleButtons ?? []).compactMap { button -> DashboardAction? in
-        switch (moduleId, button.type) {
-        case ("notes", "new"), ("notes", "more"), ("circles", "setup"):
-            return nil
-        default:
-            break
-        }
+        if moduleId == "circles", button.type == "setup" { return nil }
 
         let isMore = button.type == "more"
         let url: URL?
@@ -174,11 +169,13 @@ func getDashboardDataEntry(configuration: DashboardIntent, displaySize: CGSize) 
             components.host = "openFavorites"
             components.queryItems = [URLQueryItem(name: "account", value: account.account)]
             url = components.url
+        } else if moduleId == "notes", button.type == "new" || isMore {
+            url = dashboardWebURL(button.link, relativeTo: baseURL).flatMap(dashboardBrowserDeepLink(for:))
         } else {
             url = dashboardWebURL(button.link, relativeTo: baseURL)
         }
         guard let url else { return nil }
-        let hidesWhenAllRowsFit = isMore && moduleId != "files-favorites" && moduleId != "circles"
+        let hidesWhenAllRowsFit = isMore && !["files-favorites", "circles", "notes"].contains(moduleId)
         return DashboardAction(id: button.index, title: button.text, url: url, hidesWhenAllRowsFit: hidesWhenAllRowsFit)
     }
 
@@ -313,6 +310,14 @@ private func getDashboardModuleItems(_ moduleId: String,
     }
 
     return (payload.ocs.data[moduleId]?.items ?? [], .success)
+}
+
+func dashboardBrowserDeepLink(for webURL: URL) -> URL? {
+    var components = URLComponents()
+    components.scheme = NCGlobal.shared.appScheme
+    components.host = "openUrl"
+    components.queryItems = [URLQueryItem(name: "url", value: webURL.absoluteString)]
+    return components.url
 }
 
 private func dashboardWebURL(_ value: String?, relativeTo baseURL: URL?) -> URL? {

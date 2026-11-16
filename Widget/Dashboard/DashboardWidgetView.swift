@@ -49,7 +49,7 @@ struct DashboardWidgetView: View {
             VStack(alignment: .leading, spacing: DashboardWidgetLayout.sectionSpacing) {
                 header
 
-                if let webURL = entry.webURL, let browserURL = browserDeepLink(for: webURL) {
+                if let webURL = entry.webURL, let browserURL = dashboardBrowserDeepLink(for: webURL) {
                     VStack(spacing: 10) {
                         Text(NSLocalizedString("_widget_dashboard_available_on_web_", value: "Available on the web", comment: ""))
                             .font(.subheadline)
@@ -95,14 +95,6 @@ struct DashboardWidgetView: View {
             .padding(DashboardWidgetLayout.padding)
         }
         .containerBackground(.background, for: .widget)
-    }
-
-    private func browserDeepLink(for webURL: URL) -> URL? {
-        var components = URLComponents()
-        components.scheme = NCGlobal.shared.appScheme
-        components.host = "openUrl"
-        components.queryItems = [URLQueryItem(name: "url", value: webURL.absoluteString)]
-        return components.url
     }
 
     private var header: some View {
