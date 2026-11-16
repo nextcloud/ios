@@ -12,6 +12,7 @@ struct NCShareView: View {
     private var canShowContent: Bool { model.rootFolder != nil && model.isAuthenticated }
 
     var body: some View {
+        let title = String(format: NSLocalizedString("_share_save_to_", comment: "Share title; %@ is the cloud brand name"), NCBrandOptions.shared.brand)
         NavigationStack {
             VStack(spacing: 0) {
                 statusView
@@ -58,7 +59,7 @@ struct NCShareView: View {
                     NCShareUploadConflictView(confirmation: confirmation, resolve: model.resolveUploadConfirmation)
                 }
             }
-            .navigationTitle(String(format: NSLocalizedString("_share_save_to_", comment: "Share title; %@ is the cloud brand name"), NCBrandOptions.shared.brand))
+            .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.visible, for: .navigationBar)
             .toolbarBackground(.hidden, for: .navigationBar)
@@ -70,6 +71,13 @@ struct NCShareView: View {
                 }
             }
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text(verbatim: title)
+                        .cappedFont(.headline, maxDynamicType: .accessibility2)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                        .accessibilityAddTraits(.isHeader)
+                }
                 if canShowContent {
                     let account = ToolbarItem(placement: .topBarLeading) {
                         NCShareAccountMenu(model: model)
@@ -87,6 +95,7 @@ struct NCShareView: View {
                 }
             }
         }
+        .truncationMode(.middle)
     }
 
     // Show one message at a time in the dedicated top area, in priority order.
@@ -283,7 +292,6 @@ struct NCShareView: View {
                                 .cappedFont(.caption2, maxDynamicType: .accessibility2)
                                 .foregroundStyle(.secondary)
                                 .lineLimit(1)
-                                .truncationMode(.middle)
                         }
                     }
                     Spacer(minLength: 4)

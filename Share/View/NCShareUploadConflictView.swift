@@ -12,6 +12,7 @@ struct NCShareUploadConflictView: View {
 
     var body: some View {
         let renamedItems = confirmation.renamedItems
+        let title = NSLocalizedString("_share_conflict_title_", comment: "")
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 8) {
@@ -76,14 +77,22 @@ struct NCShareUploadConflictView: View {
                 .background(Color(uiColor: .systemGroupedBackground))
             }
             .background(Color(uiColor: .systemGroupedBackground))
-            .navigationTitle(NSLocalizedString("_share_conflict_title_", comment: ""))
+            .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text(verbatim: title)
+                        .cappedFont(.headline, maxDynamicType: .accessibility2)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                        .accessibilityAddTraits(.isHeader)
+                }
                 ToolbarItem(placement: .cancellationAction) {
                     Button(NSLocalizedString("_cancel_", comment: "")) { resolve(nil) }
                 }
             }
         }
+        .truncationMode(.middle)
     }
 }
 
