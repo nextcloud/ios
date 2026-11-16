@@ -17,16 +17,15 @@ struct NCShareFilenameView: View {
             if ext.isEmpty || base.isEmpty {
                 Text(verbatim: Self.displayName(name))
                     .lineLimit(1)
-                    .truncationMode(.middle)
             } else {
                 Text(verbatim: Self.displayName(base))
                     .lineLimit(1)
-                    .truncationMode(.middle)
                 Text(verbatim: "." + Self.displayName(ext))
                     .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
+                    .layoutPriority(1)
             }
         }
+        .truncationMode(.middle)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: Self.displayName(name)))
     }
