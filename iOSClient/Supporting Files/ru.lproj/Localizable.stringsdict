@@ -73,9 +73,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You have %d file to back up</string>
+			<string>Резервное копирование: %d файл</string>
+			<key>few</key>
+			<string>Резервное копирование: %d файла</string>
+			<key>many</key>
+			<string>Резервное копирование: %d файлов</string>
 			<key>other</key>
-			<string>You have %d files to back up</string>
+			<string>Резервное копирование: %d файла</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>
