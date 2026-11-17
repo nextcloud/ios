@@ -367,38 +367,7 @@ class NCContextMenuMain: NSObject {
         ) { _ in
             if self.viewController is NCCollectionViewCommon {
                 Task {
-                    if metadata.isDirectoryE2EE {
-                        let context = NCErrorContext.delete(fileName: metadata.fileNameView)
-
-                        if NCNetworking.shared.isOffline {
-                            await showErrorBanner(windowScene: self.windowScene,
-                                                  title: context.failureTitle ?? "_error_",
-                                                  text: "_offline_not_allowed_",
-                                                  errorCode: NCGlobal.shared.errorOfflineNotAllowed)
-                        } else {
-                            let results = showHudBanner(windowScene: self.windowScene,
-                                                        title: "_delete_in_progress_")
-
-                            let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
-
-                            if error == .success {
-                                completeHudBannerSuccess(token: results.token, banner: results.banner)
-                            } else {
-                                let message = error.userFriendlyMessage(for: context) ?? error.localizedGenericMessage
-
-                                completeHudBannerError(title: context.failureTitle, description: message, token: results.token, banner: results.banner)
-                            }
-
-                            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                                delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: nil)
-                            }
-                        }
-                    } else {
-                        let error = await NCNetworking.shared.setStatusWaitDelete(metadatas: [metadata])
-                        if error != .success {
-                            await showErrorBanner(windowScene: self.windowScene, error: error, context: .delete(fileName: metadata.fileNameView))
-                        }
-                    }
+                    await NCContextMenuActions.deleteFromServer(ocId: metadata.ocId, windowScene: self.windowScene)
                 }
             } else if let viewController = self.viewController as? NCMedia {
                 Task {

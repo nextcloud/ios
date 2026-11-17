@@ -126,7 +126,7 @@ class NCContextMenuViewer: NSObject {
 
         if !webView,
            metadata.isDeletable {
-            deleteActions.append(NCContextMenuActions.delete(metadatas: [metadata], controller: controller, presentViewController: viewController))
+            deleteActions.append(NCContextMenuActions.delete(metadata: metadata, controller: controller, presentViewController: viewController))
         }
 
         var finalMenuElements: [UIMenuElement] = []
