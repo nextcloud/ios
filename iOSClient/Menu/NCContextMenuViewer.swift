@@ -102,6 +102,7 @@ class NCContextMenuViewer: NSObject {
 
         if !webView,
            metadata.isImage,
+           metadata.isModifiableWithQuickLook,
            utilityFileSystem.fileSizeIfExists(metadata) {
             editingActions.append(makeModifyPhoto())
         }

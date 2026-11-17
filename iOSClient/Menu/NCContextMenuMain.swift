@@ -106,7 +106,7 @@ class NCContextMenuMain: NSObject {
             openingActions.append(NCContextMenuActions.viewInFolder(metadata: metadata, controller: controller, viewController: viewController))
         }
 
-        if !metadata.isDirectoryE2EE,
+        if !metadata.isEndToEndEncrypted,
            metadata.classFile == NKTypeClassFile.document.rawValue,
            NextcloudKit.shared.isNetworkReachable() {
             var availableEditors = Set(

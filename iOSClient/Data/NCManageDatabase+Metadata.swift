@@ -198,8 +198,12 @@ extension tableMetadata {
         !isDirectoryE2EE && !e2eEncrypted && NCMetadataPermissions.canMoveAndDelete(self)
     }
 
+    var isEndToEndEncrypted: Bool {
+        e2eEncrypted || isDirectoryE2EE
+    }
+
     var isModifiableWithQuickLook: Bool {
-        if directory || isDirectoryE2EE {
+        if directory || isEndToEndEncrypted {
             return false
         }
         return isPDF || isImage
