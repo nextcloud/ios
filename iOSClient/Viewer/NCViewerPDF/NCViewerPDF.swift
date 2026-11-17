@@ -534,23 +534,41 @@ extension NCViewerPDF: NCTransferDelegate {
                         error: NKError) {
         Task {@MainActor in
             guard self.metadata?.serverUrl == serverUrl,
-                  let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId),
-                  self.metadata?.fileNameView == metadata.fileNameView
+                  let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId)
             else {
                 return
             }
+            let matchesCurrentFileName = self.metadata?.fileNameView == metadata.fileNameView
 
             switch networkingStatus {
+            // RENAME
+            case NCGlobal.shared.networkingStatusRename:
+                // Networking has already finalized or rolled back the rename in the database.
+                guard self.metadata?.account == account,
+                      self.metadata?.ocId == ocId,
+                      metadata.account == account,
+                      metadata.status != NCGlobal.shared.metadataStatusWaitRename,
+                      self.metadata?.fileNameView != metadata.fileNameView
+                else {
+                    return
+                }
+
+                self.metadata = metadata
+                self.filePath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                     fileName: metadata.fileNameView,
+                                                                                     userId: metadata.userId,
+                                                                                     urlBase: metadata.urlBase)
+                self.navigationItem.setBidiSafeTitle(metadata.fileNameView)
             // DELETE
-            case NCGlobal.shared.networkingStatusDelete:
+            case NCGlobal.shared.networkingStatusDelete where matchesCurrentFileName:
                 if error == .success,
                    ocId == self.metadata?.ocId {
                     self.navigationController?.popViewController(animated: true)
                 }
             // UPLOAD
-            case NCGlobal.shared.networkingStatusUploading:
+            case NCGlobal.shared.networkingStatusUploading where matchesCurrentFileName:
                 NCActivityIndicator.shared.start()
-            case NCGlobal.shared.networkingStatusUploaded:
+            case NCGlobal.shared.networkingStatusUploaded where matchesCurrentFileName:
                 NCActivityIndicator.shared.stop()
                 if error == .success {
                     self.pdfDocument = PDFDocument(url: URL(fileURLWithPath: self.filePath))
@@ -558,7 +576,7 @@ extension NCViewerPDF: NCTransferDelegate {
                     self.pdfView.layoutDocumentView()
                 }
             // FAVORITE
-            case NCGlobal.shared.networkingStatusFavorite:
+            case NCGlobal.shared.networkingStatusFavorite where matchesCurrentFileName:
                 if self.metadata?.ocId == ocId {
                     self.metadata = metadata
                 }
