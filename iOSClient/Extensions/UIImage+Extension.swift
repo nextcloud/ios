@@ -163,25 +163,29 @@ extension UIImage {
         return newImage
     }
 
-    /// Downsamles a image using ImageIO. Has better memory perfomance than redrawing using UIKit
+    /// Creates a thumbnail from an image file using Image I/O.
     ///
     /// - [Source](https://swiftsenpai.com/development/reduce-uiimage-memory-footprint/)
     /// - [Original Source, WWDC18](https://developer.apple.com/videos/play/wwdc2018/416/?time=1352)
     /// - Parameters:
     ///   - imageURL: The URL path of the image
     ///   - pointSize: The target point size
-    ///   - scale: The point to pixel scale (Pixeld per point)
-    /// - Returns: The downsampled image, if successful
-    static func downsample(imageAt imageURL: URL, to pointSize: CGSize, scale: CGFloat) -> UIImage? {
-
-        // Create an CGImageSource that represent an image
+    ///   - scale: The number of pixels per point
+    /// - Returns: The thumbnail, if successful
+    static func thumbnail(imageAt imageURL: URL, to pointSize: CGSize, scale: CGFloat) -> UIImage? {
         let imageSourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
         guard let imageSource = CGImageSourceCreateWithURL(imageURL as CFURL, imageSourceOptions) else { return nil }
+        return thumbnail(from: imageSource, to: pointSize, scale: scale)
+    }
 
-        // Calculate the desired dimension
+    static func thumbnail(from data: Data, to pointSize: CGSize, scale: CGFloat) -> UIImage? {
+        let imageSourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
+        guard let imageSource = CGImageSourceCreateWithData(data as CFData, imageSourceOptions) else { return nil }
+        return thumbnail(from: imageSource, to: pointSize, scale: scale)
+    }
+
+    private static func thumbnail(from imageSource: CGImageSource, to pointSize: CGSize, scale: CGFloat) -> UIImage? {
         let maxDimensionInPixels = max(pointSize.width, pointSize.height) * scale
-
-        // Perform downsampling
         let downsampleOptions = [
             kCGImageSourceCreateThumbnailFromImageAlways: true,
             kCGImageSourceShouldCacheImmediately: true,
@@ -190,7 +194,6 @@ extension UIImage {
         ] as CFDictionary
         guard let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) else { return nil }
 
-        // Return the downsampled image as UIImage
         return UIImage(cgImage: downsampledImage)
     }
 

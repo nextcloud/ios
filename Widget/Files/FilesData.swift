@@ -5,6 +5,7 @@
 import UIKit
 import WidgetKit
 import Intents
+import ImageIO
 import NextcloudKit
 
 struct FilesDataEntry: TimelineEntry {
@@ -172,30 +173,7 @@ func getFilesDataEntry(configuration: AccountIntent, displaySize: CGSize) async 
         ]
         guard let url = components.url else { continue }
 
-        // IMAGE
-        image = utility.getImage(ocId: file.ocId,
-                                 etag: file.etag,
-                                 ext: NCGlobal.shared.previewExt512,
-                                 userId: activeTableAccount.userId,
-                                 urlBase: activeTableAccount.urlBase)
-        if image == nil, file.hasPreview {
-            let result = await NextcloudKit.shared.downloadPreviewAsync(fileId: file.fileId,
-                                                                        etag: file.etag,
-                                                                        account: activeTableAccount.account,
-                                                                        options: options)
-            if result.error == .success, let data = result.responseData?.data {
-                utility.createImageFileFrom(data: data,
-                                            ocId: file.ocId,
-                                            etag: file.etag,
-                                            userId: activeTableAccount.userId,
-                                            urlBase: activeTableAccount.urlBase)
-                image = utility.getImage(ocId: file.ocId,
-                                         etag: file.etag,
-                                         ext: NCGlobal.shared.previewExt256,
-                                         userId: activeTableAccount.userId,
-                                         urlBase: activeTableAccount.urlBase)
-            }
-        }
+        image = await loadFilesWidgetPreview(for: file, account: activeTableAccount, fileSystem: utilityFileSystem, options: options)
         if image == nil {
             image = utility.loadImage(named: file.iconName, useTypeIconFile: true, account: file.account)
             useTypeIconFile = true
@@ -216,4 +194,50 @@ func getFilesDataEntry(configuration: AccountIntent, displaySize: CGSize) async 
     } else {
         return(FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: datas.isEmpty, allowsRefresh: true, footerImage: "checkmark.icloud", footerText: footerText))
     }
+}
+
+private func loadFilesWidgetPreview(for file: NKFile,
+                                    account: tableAccount,
+                                    fileSystem: NCUtilityFileSystem,
+                                    options: NKRequestOptions) async -> UIImage? {
+    let thumbnailSize = NCGlobal.shared.size256
+    let thumbnailPath = fileSystem.getDirectoryProviderStorageImageOcId(file.ocId,
+                                                                        etag: file.etag,
+                                                                        ext: NCGlobal.shared.previewExt256,
+                                                                        userId: account.userId,
+                                                                        urlBase: account.urlBase)
+    let thumbnailURL = URL(fileURLWithPath: thumbnailPath)
+    if let image = UIImage.thumbnail(imageAt: thumbnailURL, to: thumbnailSize, scale: 1) {
+        return image
+    }
+
+    let largerPath = fileSystem.getDirectoryProviderStorageImageOcId(file.ocId,
+                                                                     etag: file.etag,
+                                                                     ext: NCGlobal.shared.previewExt512,
+                                                                     userId: account.userId,
+                                                                     urlBase: account.urlBase)
+    if let image = UIImage.thumbnail(imageAt: URL(fileURLWithPath: largerPath), to: thumbnailSize, scale: 1) {
+        return image
+    }
+
+    let result = await NextcloudKit.shared.downloadPreviewAsync(fileId: file.fileId,
+                                                                width: Int(thumbnailSize.width),
+                                                                height: Int(thumbnailSize.height),
+                                                                etag: file.etag,
+                                                                account: account.account,
+                                                                options: options)
+    guard result.error == .success,
+          let data = result.responseData?.data else { return nil }
+
+    let sourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
+    guard let source = CGImageSourceCreateWithData(data as CFData, sourceOptions) else { return nil }
+
+    let thumbnailOptions = [
+        kCGImageSourceCreateThumbnailFromImageAlways: true,
+        kCGImageSourceCreateThumbnailWithTransform: true,
+        kCGImageSourceThumbnailMaxPixelSize: Int(thumbnailSize.width)
+    ] as CFDictionary
+    guard let thumbnail = CGImageSourceCreateThumbnailAtIndex(source, 0, thumbnailOptions) else { return nil }
+    // The shared preview cache expects all three sizes. Use this thumbnail only for the widget entry.
+    return UIImage(cgImage: thumbnail)
 }

@@ -123,9 +123,9 @@ class NCService: NSObject {
                                                                 dashboardWidgets: dashboardWidgets,
                                                                 preferredItemAPIVersions: catalog?.preferredItemAPIVersions ?? [:])
             for widget in dashboardWidgets {
-                guard let url = URL(string: widget.iconUrl),
-                      let fileName = widget.iconClass,
-                      let data = await utility.downloadDashboardIcon(from: url, account: account) else { continue }
+                guard let url = URL(string: widget.iconUrl), let fileName = widget.iconClass else { continue }
+                let result = await NextcloudKit.shared.downloadPreviewAsync(url: url, account: account)
+                guard result.error == .success, let data = result.responseData?.data else { continue }
 
                 let size = CGSize(width: 256, height: 256)
                 let image: UIImage?
