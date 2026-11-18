@@ -28,16 +28,38 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     private final class TextAdaptiveWebView: WKWebView {
         var shouldHideKeyboardAccessory: (() -> Bool)?
+        private weak var keyboardAccessory: UIView?
 
         override var inputAccessoryView: UIView? {
-            shouldHideKeyboardAccessory?() == true ? nil : super.inputAccessoryView
+            guard shouldHideKeyboardAccessory?() != true else { return nil }
+            let accessory = super.inputAccessoryView
+            keyboardAccessory = accessory
+            return accessory
+        }
+
+        func refreshKeyboardAccessory() {
+            // UIKit may still be displaying the accessory it fetched before the fold changed.
+            keyboardAccessory?.isHidden = shouldHideKeyboardAccessory?() == true
+            focusedView(in: self)?.reloadInputViews()
+        }
+
+        private func focusedView(in view: UIView) -> UIView? {
+            for subview in view.subviews {
+                if let focusedView = focusedView(in: subview) {
+                    return focusedView
+                }
+            }
+            return view.isFirstResponder ? view : nil
         }
     }
 
     private var foldedBottomConstraint: NSLayoutConstraint?
     private var keyboardBottomConstraint: NSLayoutConstraint?
+    private var standardTopConstraint: NSLayoutConstraint?
+    private var foldedTopConstraint: NSLayoutConstraint?
     private var lastFoldedKeyboardLayout: String?
     private var isViewerVisible = false
+    private var navigationBarWasHidden: Bool?
     private var isTextEditorReady = false
     private var foldFocusAttempt: UUID?
     // END IPHONE DUO EXPERIMENTAL
@@ -115,11 +137,9 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         navigationItem.trailingItemGroups = [group]
         navigationItem.leftBarButtonItems = nil
 
-        // Text releases its lock on the file only when its own close runs (the in-page close
-        // button). Leaving with the system back button skipped that and left the file locked
-        // for everyone else, so for Text the back button runs the same close first.
         if editor == global.editorText {
             navigationItem.hidesBackButton = true
+            // Run Text's close handler first so it releases the file lock.
             navigationItem.leftBarButtonItem = UIBarButtonItem(
                 image: UIImage(systemName: "chevron.backward"),
                 style: .plain,
@@ -145,6 +165,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             config.userContentController.addUserScript(dropSharedWorkersScript)
         }
         if usesTextAdaptiveLayout {
+            extendedLayoutIncludesOpaqueBars = true
             let adaptiveWebView = TextAdaptiveWebView(frame: .zero, configuration: config)
             adaptiveWebView.shouldHideKeyboardAccessory = { [weak self] in
                 self?.foldedBottomConstraint?.isActive == true
@@ -162,11 +183,14 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         webView.translatesAutoresizingMaskIntoConstraints = false
         webView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0).isActive = true
         webView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: 0).isActive = true
-        webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0).isActive = true
+        let topConstraint = webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+        topConstraint.isActive = true
         bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         bottomConstraint?.isActive = true
 
         if usesTextAdaptiveLayout {
+            standardTopConstraint = topConstraint
+            foldedTopConstraint = webView.topAnchor.constraint(equalTo: view.topAnchor)
             foldedBottomConstraint = webView.bottomAnchor.constraint(lessThanOrEqualTo: view.topAnchor)
             let keyboardConstraint = webView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
             keyboardConstraint.priority = .defaultHigh
@@ -210,12 +234,29 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
                     frame.maxY < safeFrame.maxY
             }
 
+        let isFolded = fold != nil
+        let foldChanged = isFolded != foldedBottomConstraint.isActive
+        if foldChanged {
+            if isFolded {
+                standardTopConstraint?.isActive = false
+                foldedTopConstraint?.isActive = true
+            } else {
+                foldedTopConstraint?.isActive = false
+                standardTopConstraint?.isActive = true
+            }
+            webView.scrollView.contentInsetAdjustmentBehavior = isFolded ? .never : .automatic
+            webView.scrollView.topEdgeEffect.isHidden = isFolded
+        }
         guard let fold else {
             foldedBottomConstraint.isActive = false
             keyboardBottomConstraint.isActive = false
             bottomConstraint?.isActive = true
+            if foldChanged {
+                (webView as? TextAdaptiveWebView)?.refreshKeyboardAccessory()
+            }
             lastFoldedKeyboardLayout = nil
             foldFocusAttempt = nil
+            updateAdaptiveNavigationBar(hidden: false)
             return
         }
 
@@ -226,12 +267,28 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         }
         foldedBottomConstraint.isActive = true
         keyboardBottomConstraint.isActive = true
+        if foldChanged {
+            (webView as? TextAdaptiveWebView)?.refreshKeyboardAccessory()
+        }
+        updateAdaptiveNavigationBar(hidden: isViewerVisible)
         requestFoldedTextFocus()
 
         let layout = "fold: \(fold), keyboard guide: \(view.keyboardLayoutGuide.layoutFrame), web view: \(webView.frame)"
         if lastFoldedKeyboardLayout != layout {
             lastFoldedKeyboardLayout = layout
             print("[Duo Editor] \(layout)")
+        }
+    }
+
+    private func updateAdaptiveNavigationBar(hidden: Bool, animated: Bool = false) {
+        if hidden {
+            guard navigationBarWasHidden == nil, let navigationController,
+                  navigationController.topViewController === self else { return }
+            navigationBarWasHidden = navigationController.isNavigationBarHidden
+            navigationController.setNavigationBarHidden(true, animated: animated)
+        } else if let navigationBarWasHidden {
+            self.navigationBarWasHidden = nil
+            navigationController?.setNavigationBarHidden(navigationBarWasHidden, animated: animated)
         }
     }
 
@@ -290,6 +347,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         super.viewDidAppear(animated)
         if usesTextAdaptiveLayout {
             isViewerVisible = true
+            updateAdaptiveNavigationBar(hidden: foldedBottomConstraint?.isActive == true)
             requestFoldedTextFocus()
         }
 
@@ -302,6 +360,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         super.viewWillDisappear(animated)
         if usesTextAdaptiveLayout {
             isViewerVisible = false
+            updateAdaptiveNavigationBar(hidden: false, animated: animated)
         }
 
         let isLeavingViewer = isMovingFromParent || isBeingDismissed || navigationController?.isBeingDismissed == true
