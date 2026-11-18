@@ -198,7 +198,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         self.navigationController?.presentationController?.delegate = self
         collectionView.alwaysBounceVertical = true
         collectionView.accessibilityIdentifier = "NCCollectionViewCommon"
-        collectionView.hideTopScrollEdgeEffect()
 
         view.backgroundColor = .systemBackground
         collectionView.backgroundColor = .systemBackground
@@ -560,7 +559,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         }
 
         // (+)
-        self.mainNavigationController?.menuPlus?.hiddenPlusButton(isEditMode: self.isEditMode, isSearchingMode: self.isSearchingMode)
+        self.mainNavigationController?.menuPlus?.updatePlusButtonVisibility()
     }
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
@@ -614,7 +613,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         self.searchResultStore = nil
 
         // (+)
-        self.mainNavigationController?.menuPlus?.hiddenPlusButton(isEditMode: self.isEditMode, isSearchingMode: self.isSearchingMode)
+        self.mainNavigationController?.menuPlus?.updatePlusButtonVisibility()
 
         Task {
             await searchOperationHandle.cancel()
@@ -710,6 +709,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                 return
             }
 
+            viewController.metadataFolder = metadata.detachedCopy()
             if navigationController.viewControllers.contains(where: { $0 === viewController }) {
                 navigationController.popToViewController(viewController, animated: true)
                 return
@@ -724,6 +724,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         }
 
         viewController.serverUrl = serverUrlPush
+        viewController.metadataFolder = metadata.detachedCopy()
         viewController.titlePreviusFolder = navigationItem.title
         viewController.titleCurrentFolder = metadata.fileNameView
         viewController.endToEndKeySetAccess = endToEndKeySetAccess
@@ -872,7 +873,7 @@ extension NCCollectionViewCommon: NCTransferDelegate {
         Task {
             if error != .success,
                error.errorCode != global.errorResourceNotFound {
-                await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                await showErrorBanner(windowScene: windowScene, error: error, context: NCErrorContext(networkingStatus: networkingStatus, fileName: fileName))
             }
 
             guard session.account == account else {

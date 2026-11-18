@@ -55,7 +55,7 @@ extension NCTrash {
         let results = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account)
 
         if results.error != .success {
-            await showErrorBanner(windowScene: self.windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
+            await showErrorBanner(windowScene: self.windowScene, error: results.error)
         }
         await self.database.deleteTrashAsync(fileId: nil, account: session.account)
         await self.reloadDataSource()
@@ -70,7 +70,7 @@ extension NCTrash {
             let results = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account)
 
             if results.error != .success {
-                await showErrorBanner(windowScene: self.windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
+                await showErrorBanner(windowScene: self.windowScene, error: results.error, context: .delete(fileName: result.trashbinFileName))
             }
             await self.database.deleteTrashAsync(fileId: fileId, account: session.account)
             await self.reloadDataSource()

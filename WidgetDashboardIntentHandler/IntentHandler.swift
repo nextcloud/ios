@@ -41,37 +41,30 @@ class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling
 
     // Application
     func provideApplicationsOptionsCollection(for intent: DashboardIntent, with completion: @escaping (INObjectCollection<Applications>?, Error?) -> Void) {
-        var applications: [Applications] = []
-        var activeTableAccount: tableAccount?
-
-        let accountIdentifier: String = intent.accounts?.identifier ?? "active"
-        if accountIdentifier == "active" {
-            activeTableAccount = NCManageDatabase.shared.getActiveTableAccount()
-        } else {
-            activeTableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
+        guard let account = dashboardAccount(for: intent) else {
+            completion(nil, nil)
+            return
         }
 
-        guard let activeTableAccount else {
-            return completion(nil, nil)
+        let applications = NCManageDatabase.shared.getDashboardWidgetApplications(account: account.account).map {
+            Applications(identifier: $0.id, display: $0.title)
         }
-
-        let results = NCManageDatabase.shared.getDashboardWidgetApplications(account: activeTableAccount.account)
-        for result in results {
-            let application = Applications(identifier: result.id, display: result.title)
-            applications.append(application)
-        }
-
         completion(INObjectCollection(items: applications), nil)
     }
 
     func defaultApplications(for intent: DashboardIntent) -> Applications? {
-        guard let account = NCManageDatabase.shared.getActiveTableAccount() else {
-            return nil
-        }
-        if let result = NCManageDatabase.shared.getDashboardWidgetApplications(account: account.account).first {
-            return Applications(identifier: result.id, display: result.title)
-        }
-        return nil
+        guard let account = dashboardAccount(for: intent),
+              let module = NCManageDatabase.shared.getDashboardWidgetApplications(account: account.account).first else { return nil }
+
+        return Applications(identifier: module.id, display: module.title)
+    }
+
+    private func dashboardAccount(for intent: DashboardIntent) -> tableAccount? {
+        let database = NCManageDatabase.shared
+        let accountIdentifier = intent.accounts?.identifier ?? "active"
+        return accountIdentifier == "active"
+            ? database.getActiveTableAccount()
+            : database.getTableAccount(account: accountIdentifier)
     }
 
     // Account

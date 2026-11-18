@@ -49,7 +49,7 @@ class NCPushNotification {
               let signature = responsePN.signature,
               let subscribingPublicKey = responsePN.publicKey
         else {
-            nkLog(tag: self.global.logTagPN, emoji: .error, message: "Subscribed to Push Notification Server \(urlBase) with error \(responsePN.error.errorDescription)")
+            nkLog(tag: self.global.logTagPN, emoji: .error, message: "Subscribed to Push Notification Server \(urlBase) with error \(responsePN.error.logDescription)")
             return
         }
 
@@ -65,7 +65,7 @@ class NCPushNotification {
                                                                                     options: options)
 
         guard responsePushProxy.error == .success else {
-            nkLog(tag: self.global.logTagPN, emoji: .error, message: "Subscribed to Push Notification Server Proxy \(proxyServerUrl) with error \(responsePushProxy.error.errorDescription)")
+            nkLog(tag: self.global.logTagPN, emoji: .error, message: "Subscribed to Push Notification Server Proxy \(proxyServerUrl) with error \(responsePushProxy.error.logDescription)")
             return
         }
 
@@ -94,8 +94,8 @@ class NCPushNotification {
                                                                                   account: account,
                                                                                   options: options)
 
-        nkLog(tag: self.global.logTagPN, emoji: .info, message: "Unsubscribed to Push Notification Server \(urlBase) with error \(responsePN.error.errorDescription)")
-        nkLog(tag: self.global.logTagPN, emoji: .info, message: "Unsubscribed to Push Notification Server Proxy \(proxyServerUrl) with error \(responseProxy.error.errorDescription)")
+        nkLog(tag: self.global.logTagPN, emoji: .info, message: "Unsubscribed to Push Notification Server \(urlBase) with error \(responsePN.error.logDescription)")
+        nkLog(tag: self.global.logTagPN, emoji: .info, message: "Unsubscribed to Push Notification Server Proxy \(proxyServerUrl) with error \(responseProxy.error.logDescription)")
     }
 
     func applicationdidReceiveRemoteNotification(userInfo: [AnyHashable: Any], completion: @escaping (_ result: UIBackgroundFetchResult) -> Void) {

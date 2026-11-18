@@ -64,7 +64,6 @@ class NCActivity: UIViewController, NCSharePagingContent {
         tableView.separatorColor = UIColor.clear
         tableView.contentInset = insets
         tableView.backgroundColor = usesGroupedBackground ? .systemGroupedBackground : .systemBackground
-        tableView.hideTopScrollEdgeEffect()
 
         if showComments {
             setupComments()
@@ -86,8 +85,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
                 } else {
                     Task {
                         await showErrorBanner(windowScene: self.windowScene,
-                                              text: error.errorDescription,
-                                              errorCode: error.errorCode)
+                                              error: error)
                     }
                 }
             }
@@ -447,8 +445,7 @@ extension NCActivity {
             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
                 Task {
                     await showErrorBanner(windowScene: self.windowScene,
-                                          text: error.errorDescription,
-                                          errorCode: error.errorCode)
+                                          error: error)
                 }
             }
 

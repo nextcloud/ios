@@ -1203,7 +1203,7 @@ extension NCVideoVLCViewController: NCSelectDelegate {
                 let result = await NCNetworking.shared.downloadFile(metadata: metadata)
 
                 guard result.nkError == .success else {
-                    nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO VLC subtitle download error: \(result.nkError.errorDescription)", consoleOnly: true)
+                    nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO VLC subtitle download error: \(result.nkError.logDescription)", consoleOnly: true)
                     showControls(animated: true)
                     return
                 }

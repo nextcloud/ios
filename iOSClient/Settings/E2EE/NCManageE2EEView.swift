@@ -245,8 +245,7 @@ struct NCManageE2EEView: View {
                                              text: "E2E delete publicKey")
                     } else {
                         await showErrorBanner(windowScene: model.windowScene,
-                                              text: results.error.errorDescription,
-                                              errorCode: results.error.errorCode)
+                                              error: results.error)
                     }
                 }
             }
@@ -277,8 +276,7 @@ struct NCManageE2EEView: View {
                                              text: "E2E delete privateKey")
                     } else {
                         await showErrorBanner(windowScene: model.windowScene,
-                                              text: results.error.errorDescription,
-                                              errorCode: results.error.errorCode)
+                                              error: results.error)
                     }
                 }
             }
@@ -308,8 +306,7 @@ struct NCManageE2EEView: View {
                                              text: "E2E delete Keys from FS")
                     } else {
                         await showErrorBanner(windowScene: model.windowScene,
-                                              text: results.error.errorDescription,
-                                              errorCode: results.error.errorCode)
+                                              error: results.error)
                     }
                 }
             }

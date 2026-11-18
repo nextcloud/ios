@@ -4,16 +4,18 @@
 
 import CoreLocation
 import NextcloudKit
+import UIKit
 
-class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
+// Core Location delivers delegate callbacks on the run loop where its manager was created.
+@MainActor
+class NCBackgroundLocationUploadManager: NSObject, @preconcurrency CLLocationManagerDelegate {
     static let shared = NCBackgroundLocationUploadManager()
 
     private let global = NCGlobal.shared
-    private let database = NCManageDatabase.shared
     private let locationManager = CLLocationManager()
-    private weak var presentingViewController: UIViewController?
-    private let explanationShownKey = "locationExplanationShown"
-    private var continuation: CheckedContinuation<CLAuthorizationStatus, Never>?
+    private var authorizationContinuation: CheckedContinuation<Bool, Never>?
+
+    var authorizationStatus: CLAuthorizationStatus { locationManager.authorizationStatus }
 
     private override init() {
         super.init()
@@ -24,40 +26,17 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
     }
 
     func start() {
-        // let status = locationManager.authorizationStatus
         locationManager.startMonitoringSignificantLocationChanges()
     }
 
-    /// Requests `.authorizedAlways` location permission asynchronously.
-    /// - Parameter viewController: A view controller to present UI if needed.
-    /// - Returns: `true` if `.authorizedAlways` permission is granted, otherwise `false`.
-    @MainActor
-    func requestAuthorizationAlwaysAsync(from viewController: UIViewController?) async -> Bool {
-        let status = locationManager.authorizationStatus
+    /// Waits for the initial system prompt, whose choices all change the authorization status.
+    func requestAuthorizationAlwaysAsync() async -> Bool {
+        if authorizationStatus == .authorizedAlways { return true }
+        guard authorizationStatus == .notDetermined, authorizationContinuation == nil, UIApplication.shared.applicationState == .active else { return false }
 
-        switch status {
-        case .authorizedAlways:
-            // Permission already granted
-            return true
-
-        case .notDetermined:
-            // Show explanation view if needed before requesting permission
-            if let viewController, !UserDefaults.standard.bool(forKey: "locationExplanationShown") {
-                presentInitialExplanation(from: viewController)
-                return false
-            }
-
-            return await withCheckedContinuation { (continuation: CheckedContinuation<CLAuthorizationStatus, Never>) in
-                self.continuation = continuation
-                locationManager.requestAlwaysAuthorization()
-            } == .authorizedAlways
-
-        default:
-            // Present alert guiding user to settings if permission is denied or restricted
-            if let viewController {
-                presentSettingsAlert(from: viewController)
-            }
-            return false
+        return await withCheckedContinuation { continuation in
+            authorizationContinuation = continuation
+            locationManager.requestAlwaysAuthorization()
         }
     }
 
@@ -66,39 +45,12 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         nkLog(stop: "Location monitoring stopped")
     }
 
-    private func presentInitialExplanation(from viewController: UIViewController) {
-        let alert = UIAlertController(
-            title: NSLocalizedString("_background_location_access_title_", comment: ""),
-            message: NSLocalizedString("_background_location_access_message_", comment: ""),
-            preferredStyle: .alert
-        )
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        let status = manager.authorizationStatus
+        guard status != .notDetermined, let continuation = authorizationContinuation else { return }
 
-        alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default) { _ in
-            UserDefaults.standard.set(true, forKey: self.explanationShownKey)
-            self.locationManager.requestAlwaysAuthorization()
-        })
-
-        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
-
-        viewController.present(alert, animated: true)
-    }
-
-    private func presentSettingsAlert(from viewController: UIViewController) {
-        let alert = UIAlertController(
-            title: NSLocalizedString("_enable_background_location_title_", comment: ""),
-            message: NSLocalizedString("_enable_background_location_message_", comment: ""),
-            preferredStyle: .alert
-        )
-
-        alert.addAction(UIAlertAction(title: NSLocalizedString("_open_settings_", comment: ""), style: .default) { _ in
-            if let url = URL(string: UIApplication.openSettingsURLString) {
-                UIApplication.shared.open(url)
-            }
-        })
-
-        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
-
-        viewController.present(alert, animated: true)
+        authorizationContinuation = nil
+        continuation.resume(returning: status == .authorizedAlways)
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {

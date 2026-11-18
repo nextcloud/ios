@@ -2,6 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>_share_upload_to_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@files@</string>
+		<key>files</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>one</key>
+			<string>Upload %ld file</string>
+			<key>other</key>
+			<string>Upload %ld files</string>
+		</dict>
+	</dict>
 	<key>_remaining_share_downloads_</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -49,13 +65,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Turite %d elementą, kuriam reikia sukurti atsarginę kopiją</string>
-			<key>few</key>
-			<string>Turite %d elementus, kuriems reikia sukurti atsargines kopijas</string>
-			<key>many</key>
-			<string>Turite %d elementų, kuriems reikia sukurti atsargines kopijas</string>
+			<string>You have %d file to back up</string>
 			<key>other</key>
-			<string>Turite %d elementų, kuriems reikia sukurti atsargines kopijas</string>
+			<string>You have %d files to back up</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>

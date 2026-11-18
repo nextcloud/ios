@@ -18,7 +18,7 @@ final class NCSelectOpen: NCSelectDelegate {
                         let error = await NCNetworking.shared.setStatusWaitCopy(metadata, destination: destination, overwrite: overwrite)
                         if error != .success {
                             let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
-                            await showErrorBanner(windowScene: windowScene, error: error)
+                            await showErrorBanner(windowScene: windowScene, error: error, context: .moveOrCopy(fileName: metadata.fileNameView))
                         }
                     }
 
@@ -30,7 +30,7 @@ final class NCSelectOpen: NCSelectDelegate {
                         let error = await NCNetworking.shared.setStatusWaitMove(metadata, destination: destination, overwrite: overwrite)
                         if error != .success {
                             let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
-                            await showErrorBanner(windowScene: windowScene, error: error)
+                            await showErrorBanner(windowScene: windowScene, error: error, context: .moveOrCopy(fileName: metadata.fileNameView))
                         }
                     }
                 }

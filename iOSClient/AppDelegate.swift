@@ -244,7 +244,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         } else {
             let message = String(
-                format: NSLocalizedString("account_does_not_exist", comment: ""),
+                format: NSLocalizedString("_account_does_not_exist_", comment: ""),
                 account
             )
 

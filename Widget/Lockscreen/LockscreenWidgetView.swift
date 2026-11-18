@@ -29,6 +29,7 @@ struct LockscreenWidgetView: View {
                     label: {
                         Text(" " + entry.quotaTotal + " ")
                             .font(.system(size: 8.0))
+                            .accessibilityLabel(Text(entry.quotaTotalAccessibilityLabel ?? entry.quotaTotal))
                     },
                     currentValueLabel: {
                         Text(entry.quotaUsed)
@@ -59,6 +60,7 @@ struct LockscreenWidgetView: View {
                 } else {
                     Text(entry.activity)
                         .font(.system(size: 12)).bold()
+                        .privacySensitive()
                 }
             }
             .widgetURL(entry.link)
@@ -72,7 +74,7 @@ struct LockscreenWidgetView: View {
 
 struct LockscreenWidgetView_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = LockscreenData(date: Date(), isPlaceholder: false, activity: "Alba Mayoral changed Marketing / Regional Marketing / Agenda Meetings / Q4 2022 / OCTOBER / 13.11 Afrah Kahlid.md", link: URL(string: "https://")!, quotaRelative: 0.5, quotaUsed: "999 GB", quotaTotal: "999 GB", error: false)
+        let entry = LockscreenWidgetProvider.previewEntry()
         LockscreenWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .accessoryRectangular)).previewDisplayName("Rectangular")
         LockscreenWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .accessoryCircular)).previewDisplayName("Circular")
     }

@@ -6,207 +6,325 @@ import UIKit
 import WidgetKit
 import Intents
 import NextcloudKit
-import RealmSwift
 
 struct DashboardDataEntry: TimelineEntry {
     let date: Date
-    let datas: [DashboardData]
-    let dashboard: tableDashboardWidget?
-    let buttons: [tableDashboardWidgetButton]?
+    let rows: [DashboardData]
+    let totalRows: Int
+    let buttons: [DashboardAction]
+    let webURL: URL?
     let isPlaceholder: Bool
-    let isEmpty: Bool
+    let allowsRefresh: Bool
     let titleImage: UIImage
     let title: String
     let footerImage: String
     let footerText: String
-    let account: String
 }
 
-struct DashboardData: Identifiable, Hashable {
+struct DashboardData: Identifiable {
     let id: Int
     let title: String
-    let subTitle: String
-    let link: URL
-    let icon: UIImage
-    let circle: Bool
-    let imageSystem: Bool
-    let imageColor: UIColor?
+    let subtitle: String
+    let link: URL?
+    let icon: UIImage?
+    let isRound: Bool
+    let calendarColor: UIColor?
 }
 
-let dashboardDatasTest: [DashboardData] = [
-    .init(id: 0, title: "title0", subTitle: "subTitle-description0", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "document")!, circle: false, imageSystem: true, imageColor: nil),
-    .init(id: 1, title: "title1", subTitle: "subTitle-description1", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "document")!, circle: false, imageSystem: true, imageColor: nil),
-    .init(id: 2, title: "title2", subTitle: "subTitle-description2", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "document")!, circle: true, imageSystem: false, imageColor: nil),
-    .init(id: 3, title: "title3", subTitle: "subTitle-description3", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "document")!, circle: false, imageSystem: false, imageColor: nil),
-    .init(id: 4, title: "title4", subTitle: "subTitle-description4", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, circle: false, imageSystem: false, imageColor: nil),
-    .init(id: 5, title: "title5", subTitle: "subTitle-description5", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, circle: false, imageSystem: false, imageColor: nil),
-    .init(id: 6, title: "title6", subTitle: "subTitle-description6", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, circle: false, imageSystem: false, imageColor: nil),
-    .init(id: 7, title: "title7", subTitle: "subTitle-description7", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, circle: false, imageSystem: false, imageColor: nil),
-    .init(id: 8, title: "title8", subTitle: "subTitle-description8", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, circle: false, imageSystem: false, imageColor: nil),
-    .init(id: 9, title: "title9", subTitle: "subTitle-description9", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, circle: false, imageSystem: false, imageColor: nil)
-]
+struct DashboardAction: Identifiable, Sendable {
+    let id: String
+    let title: String
+    let url: URL
+    let hidesWhenAllRowsFit: Bool
+}
 
-func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
-    if withButton {
-        let items = Int((displaySize.height - 90) / 55)
-        return items
-    } else {
-        let items = Int((displaySize.height - 50) / 55)
-        return items
+private struct DashboardModuleItem: Decodable {
+    let title: String?
+    let subtitle: String?
+    let link: String?
+    let iconUrl: String?
+}
+
+private struct DashboardItemsResponse: Decodable {
+    struct OCS: Decodable {
+        struct Meta: Decodable {
+            let statuscode: Int
+            let message: String?
+        }
+
+        struct Module: Decodable {
+            let items: [DashboardModuleItem]
+        }
+
+        let meta: Meta
+        let data: [String: Module]
+
+        private enum CodingKeys: String, CodingKey {
+            case meta, data
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            meta = try container.decode(Meta.self, forKey: .meta)
+            if !(200..<300).contains(meta.statuscode) {
+                data = [:]
+            } else if let modules = try? container.decode([Module].self, forKey: .data), modules.isEmpty {
+                // OCS may encode an empty module map as a JSON array.
+                data = [:]
+            } else {
+                data = try container.decode([String: Module].self, forKey: .data)
+            }
+        }
     }
+
+    let ocs: OCS
 }
 
-func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, displaySize: CGSize) async -> DashboardDataEntry {
-    let utilityFileSystem = NCUtilityFileSystem()
+func dashboardSampleEntry(height: CGFloat,
+                          title: String = "Dashboard",
+                          titleImage: UIImage? = UIImage(systemName: "rectangle.grid.2x2"),
+                          footerText: String = NCBrandOptions.shared.brand,
+                          isError: Bool = false,
+                          isPlaceholder: Bool = true) -> DashboardDataEntry {
+    let count = DashboardWidgetLayout.rowCount(for: height, hasActions: false)
+    let examples = ["Project plan", "Meeting notes", "Design review", "Team agenda", "Travel itinerary"]
+    let rows = (0..<count).map { index in
+        DashboardData(id: index,
+                      title: examples[index % examples.count],
+                      subtitle: "Recent activity",
+                      link: nil,
+                      icon: nil,
+                      isRound: false,
+                      calendarColor: nil)
+    }
+    return DashboardDataEntry(date: Date(),
+                              rows: rows,
+                              totalRows: count,
+                              buttons: [],
+                              webURL: nil,
+                              isPlaceholder: isPlaceholder,
+                              allowsRefresh: isError,
+                              titleImage: titleImage ?? UIImage(),
+                              title: title,
+                              footerImage: isError ? "xmark.icloud" : "checkmark.icloud",
+                              footerText: footerText)
+}
+
+func getDashboardDataEntry(configuration: DashboardIntent, displaySize: CGSize) async -> DashboardDataEntry {
+    let height = displaySize.height
     let utility = NCUtility()
-    let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: false)
-    let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems - 1])
-    var activeTableAccount: tableAccount?
-    let versionApp = NCUtility().getVersionMaintenance()
 
     guard let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
-          let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion),
-          lastVersion == versionApp else {
-        return (DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(systemName: "circle.fill") ?? UIImage(), title: "Dashboard", footerImage: "checkmark.icloud", footerText: NSLocalizedString("_version_mismatch_error_", comment: ""), account: ""))
+          groupDefaults.string(forKey: NCGlobal.shared.udLastVersion) == utility.getVersionMaintenance() else {
+        return dashboardSampleEntry(height: height,
+                                    footerText: NSLocalizedString("_version_mismatch_error_", comment: ""),
+                                    isError: true)
     }
 
-    if isPreview,
-        let image = UIImage(systemName: "circle.fill") {
-        return (DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: image, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard", account: ""))
+    let accountIdentifier = configuration.accounts?.identifier ?? "active"
+    let database = NCManageDatabase.shared
+    let selectedAccount = accountIdentifier == "active"
+        ? database.getActiveTableAccount()
+        : database.getTableAccount(account: accountIdentifier)
+
+    guard let account = selectedAccount else {
+        return dashboardSampleEntry(height: height,
+                                    footerText: NSLocalizedString("_no_active_account_", comment: ""),
+                                    isError: true)
     }
 
-    let accountIdentifier: String = configuration?.accounts?.identifier ?? "active"
-    if accountIdentifier == "active" {
-        activeTableAccount = NCManageDatabase.shared.getActiveTableAccount()
-    } else {
-        activeTableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
-    }
-
-    guard let activeTableAccount else {
-        return (DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(systemName: "circle.fill") ?? UIImage(), title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", comment: ""), account: ""))
-    }
     NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
-    NextcloudKit.shared.appendSession(account: activeTableAccount.account,
-                                      urlBase: activeTableAccount.urlBase,
-                                      user: activeTableAccount.user,
-                                      userId: activeTableAccount.userId,
-                                      password: NCPreferences().getPassword(account: activeTableAccount.account),
+    NextcloudKit.shared.appendSession(account: account.account,
+                                      urlBase: account.urlBase,
+                                      user: account.user,
+                                      userId: account.userId,
+                                      password: NCPreferences().getPassword(account: account.account),
                                       userAgent: userAgent,
                                       httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                       httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                       httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                       groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
-    // LOG
-    let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionBuild())
-    NextcloudKit.configureLogger(
-        logLevel: NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log,
-        logDirectory: NCPreferences.sharedLogDirectory
-    )
+    NextcloudKit.configureLogger(logLevel: NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log,
+                                 logDirectory: NCPreferences.sharedLogDirectory)
     defer { NextcloudKit.flushLogger() }
 
-    nkLog(debug: "Start \(NCBrandOptions.shared.brand) dashboard widget session " + versionNextcloudiOS)
+    let version = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionBuild())
+    nkLog(debug: "Start \(NCBrandOptions.shared.brand) dashboard widget session " + version)
 
-    // Widget
-    let widgetApplication = NCManageDatabase.shared.getDashboardWidgetApplications(account: activeTableAccount.account).first
-    let widgetApplicationId: String = configuration?.applications?.identifier ?? (widgetApplication?.id ?? "recommendations")
+    let moduleId = configuration.applications?.identifier
+        ?? database.getDashboardWidgetApplications(account: account.account).first?.id
+        ?? "recommendations"
+    let (module, moduleButtons) = database.getDashboardWidget(account: account.account, id: moduleId)
+    let title = module?.title ?? moduleId
+    let baseURL = URL(string: account.urlBase)
+    let actions = (moduleButtons ?? []).compactMap { button -> DashboardAction? in
+        if moduleId == "circles", button.type == "setup" { return nil }
 
-    let (tableDashboard, tableButton) = NCManageDatabase.shared.getDashboardWidget(account: activeTableAccount.account, id: widgetApplicationId)
-    let existsButton = (tableButton?.isEmpty ?? true) ? false : true
-    let title = tableDashboard?.title ?? widgetApplicationId
-
-    var titleImage: UIImage = UIImage(systemName: "circle.fill") ?? UIImage()
-    if let fileName = tableDashboard?.iconClass {
-        let fileNamePath: String = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName + ".png")
-        if let image = UIImage(contentsOfFile: fileNamePath) {
-            titleImage = image.withTintColor(NCBrandColor.shared.iconImageColor, renderingMode: .alwaysOriginal)
+        let isMore = button.type == "more"
+        let url: URL?
+        if moduleId == "files-favorites", isMore {
+            var components = URLComponents()
+            components.scheme = NCGlobal.shared.appScheme
+            components.host = "openFavorites"
+            components.queryItems = [URLQueryItem(name: "account", value: account.account)]
+            url = components.url
+        } else if moduleId == "notes", button.type == "new" || isMore {
+            url = dashboardWebURL(button.link, relativeTo: baseURL).flatMap(dashboardBrowserDeepLink(for:))
+        } else {
+            url = dashboardWebURL(button.link, relativeTo: baseURL)
         }
+        guard let url else { return nil }
+        let hidesWhenAllRowsFit = isMore && !["files-favorites", "circles", "notes"].contains(moduleId)
+        return DashboardAction(id: button.index, title: button.text, url: url, hidesWhenAllRowsFit: hidesWhenAllRowsFit)
     }
+
+    let titleImage: UIImage?
+    let iconSize = CGSize(width: DashboardWidgetLayout.iconSize, height: DashboardWidgetLayout.iconSize)
+    if let iconClass = module?.iconClass {
+        let fileSystem = NCUtilityFileSystem()
+        let path = fileSystem.createServerUrl(serverUrl: fileSystem.directoryUserData, fileName: iconClass + ".png")
+        titleImage = UIImage.thumbnail(imageAt: URL(fileURLWithPath: path), to: iconSize, scale: 3)
+    } else {
+        titleImage = nil
+    }
+    let moduleImage = titleImage ?? UIImage(systemName: "rectangle.grid.2x2") ?? UIImage()
+    let roundIcons = module?.itemIconsRound ?? false
+
+    let isOnThisDay = moduleId == "photos-onthisday"
+    let itemAPIVersion = module?.preferredItemAPIVersion ?? (isOnThisDay ? .unsupported : nil)
+    let webURL: URL?
+    if itemAPIVersion == .unsupported {
+        let defaultURL = isOnThisDay ? account.urlBase + "/index.php/apps/photos/thisday" : nil
+        webURL = dashboardWebURL(module?.widgetUrl, relativeTo: baseURL) ?? dashboardWebURL(defaultURL, relativeTo: baseURL)
+    } else {
+        webURL = nil
+    }
+
     let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-    let resultsDashboardWidget = await NextcloudKit.shared.getDashboardWidgetsApplicationAsync(widgetApplicationId, account: activeTableAccount.account, options: options)
+    let result = await getDashboardModuleItems(moduleId,
+                                               version: itemAPIVersion,
+                                               account: account.account,
+                                               options: options)
+    guard result.error == .success else {
+        return dashboardSampleEntry(height: height,
+                                    title: title,
+                                    titleImage: moduleImage,
+                                    footerText: result.error.localizedGenericMessage,
+                                    isError: true)
+    }
 
-    var datas = [DashboardData]()
-    var numberItems = 0
+    let items = result.items
+    let visibleActions = DashboardWidgetLayout.visibleActions(actions, totalRows: items.count, height: height)
+    let rowCount = DashboardWidgetLayout.rowCount(for: height, hasActions: !visibleActions.isEmpty)
+    var rows: [DashboardData] = []
 
-    if resultsDashboardWidget.error == .success,
-       let dashboardApplications = resultsDashboardWidget.dashboardApplications {
-        for dashboardApplication in dashboardApplications {
-            if let items = dashboardApplication.items {
-                numberItems = dashboardApplication.items?.count ?? 0
-                var counter: Int = 0
-                let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: existsButton)
-                for item in items {
-                    counter += 1
+    for (index, item) in items.prefix(rowCount).enumerated() {
+        var icon: UIImage?
+        var isRound = roundIcons
+        var calendarColor: UIColor?
 
-                    let title = item.title ?? ""
-                    let subtitle = item.subtitle ?? ""
-
-                    var link: URL = URL(string: "https://")!
-                    if let entryLink = item.link,
-                        let url = URL(string: entryLink) {
-                        link = url
-                    }
-                    var iconImage = UIImage(systemName: "document") ?? UIImage()
-                    var imageCircle: Bool = false
-                    var imageColorized: Bool = false
-                    var imageSystem: Bool = false
-                    var imageColor: UIColor?
-
-                    if let iconUrl = item.iconUrl, let url = URL(string: iconUrl) {
-                        if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
-                            let path = (urlComponents.path as NSString)
-                            let pathComponents = path.components(separatedBy: "/")
-
-                            if pathComponents.contains("avatar") {
-                                imageCircle = true
-                            } else if pathComponents.contains("getCalendarDotSvg") {
-                                imageColorized = true
-                            }
-                        }
-                        // Color
-                        if imageColorized, let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
-                            let path = (urlComponents.path as NSString)
-                            let colorString = ((path.lastPathComponent) as NSString).deletingPathExtension
-                            imageColor = UIColor(hex: colorString)
-                            iconImage = UIImage(systemName: "circle.fill") ?? UIImage()
-                        } else {
-                            let results = await NextcloudKit.shared.downloadPreviewAsync(url: url, account: activeTableAccount.account)
-                            if results.error == .success,
-                               let data = results.responseData?.data {
-                                if let image = UIImage(data: data) {
-                                    iconImage = image
-                                } else {
-                                    imageSystem = true
-                                }
-                                /* NO MEMORY
-                                else if let image = try? await NCSVGRenderer().renderSVGToUIImage(svgData: data) {
-                                    iconImage = image
-                                }
-                                */
-                            }
-                        }
-                    }
-
-                    let data = DashboardData(id: counter, title: title, subTitle: subtitle, link: link, icon: iconImage, circle: imageCircle, imageSystem: imageSystem, imageColor: imageColor)
-                    datas.append(data)
-
-                    if datas.count == dashboardItems { break }
+        if let iconURL = dashboardWebURL(item.iconUrl, relativeTo: baseURL) {
+            isRound = isRound || iconURL.pathComponents.contains("avatar")
+            if iconURL.pathComponents.suffix(2).elementsEqual(["filetypes", "folder.svg"]) {
+                icon = utility.loadImage(named: NKTypeIconFile.directory.rawValue,
+                                         size: DashboardWidgetLayout.iconSize,
+                                         useTypeIconFile: true,
+                                         account: account.account)
+                isRound = false
+            } else if iconURL.pathComponents.contains("getCalendarDotSvg") {
+                calendarColor = UIColor(hex: (iconURL.lastPathComponent as NSString).deletingPathExtension)
+            } else {
+                let result = await NextcloudKit.shared.downloadPreviewAsync(url: iconURL, account: account.account)
+                if result.error == .success, let data = result.responseData?.data {
+                    icon = UIImage.thumbnail(from: data, to: iconSize, scale: 3)
                 }
             }
         }
+
+        rows.append(DashboardData(id: index,
+                                  title: item.title ?? "",
+                                  subtitle: item.subtitle ?? "",
+                                  link: dashboardWebURL(item.link, relativeTo: baseURL),
+                                  icon: icon,
+                                  isRound: isRound,
+                                  calendarColor: calendarColor))
     }
 
-    var buttons = tableButton
-    if numberItems == datas.count, let tableButton = tableButton, tableButton.contains(where: { $0.type == "more"}) {
-        buttons = tableButton.filter(({ $0.type != "more" }))
+    let accountName = account.alias.isEmpty ? account.displayName : "\(account.displayName) (\(account.alias))"
+    return DashboardDataEntry(date: Date(),
+                              rows: rows,
+                              totalRows: items.count,
+                              buttons: actions,
+                              webURL: webURL,
+                              isPlaceholder: false,
+                              allowsRefresh: webURL == nil,
+                              titleImage: moduleImage,
+                              title: title,
+                              footerImage: "checkmark.icloud",
+                              footerText: accountName)
+}
+
+private func getDashboardModuleItems(_ moduleId: String,
+                                     version: DashboardItemAPIVersion?,
+                                     account: String,
+                                     options: NKRequestOptions) async -> (items: [DashboardModuleItem], error: NKError) {
+    if version == .unsupported {
+        return ([], .success)
     }
 
-    let alias = (activeTableAccount.alias.isEmpty) ? "" : (" (" + activeTableAccount.alias + ")")
-    let footerText = "Dashboard " + NSLocalizedString("_of_", comment: "") + " " + activeTableAccount.displayName + alias
+    if version != .v2 {
+        let result = await NextcloudKit.shared.getDashboardWidgetsApplicationAsync(moduleId, account: account, options: options)
+        guard result.error == .success else { return ([], result.error) }
 
-    if resultsDashboardWidget.error != .success {
-        return(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: tableDashboard, buttons: buttons, isPlaceholder: true, isEmpty: false, titleImage: titleImage, title: title, footerImage: "xmark.icloud", footerText: resultsDashboardWidget.error.errorDescription, account: activeTableAccount.account))
-    } else {
-        return(DashboardDataEntry(date: Date(), datas: datas, dashboard: tableDashboard, buttons: buttons, isPlaceholder: false, isEmpty: datas.isEmpty, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: footerText, account: activeTableAccount.account))
+        if let items = result.dashboardApplications?.first(where: { $0.application == moduleId })?.items {
+            return (items.map { DashboardModuleItem(title: $0.title, subtitle: $0.subtitle, link: $0.link, iconUrl: $0.iconUrl) }, .success)
+        }
+        if version == .v1 {
+            return ([], .success)
+        }
     }
+
+    // A catalog without version metadata keeps the v1-to-v2 fallback.
+    var components = URLComponents()
+    components.path = "ocs/v2.php/apps/dashboard/api/v2/widget-items"
+    components.queryItems = [
+        URLQueryItem(name: "widgets[]", value: moduleId),
+        URLQueryItem(name: "format", value: "json")
+    ]
+    guard let endpoint = components.string else { return ([], .urlError) }
+
+    let response = await NextcloudKit.shared.generalWithEndpointAsync(endpoint, account: account, method: "GET", options: options)
+    if version == nil, response.error.errorCode == 404 {
+        return ([], .success)
+    }
+    guard response.error == .success else { return ([], response.error) }
+    guard let data = response.responseData?.data,
+          let payload = try? JSONDecoder().decode(DashboardItemsResponse.self, from: data) else {
+        return ([], .invalidResponseError)
+    }
+
+    let meta = payload.ocs.meta
+    guard (200..<300).contains(meta.statuscode) else {
+        return ([], NKError(errorCode: meta.statuscode, errorDescription: meta.message ?? ""))
+    }
+
+    return (payload.ocs.data[moduleId]?.items ?? [], .success)
+}
+
+func dashboardBrowserDeepLink(for webURL: URL) -> URL? {
+    var components = URLComponents()
+    components.scheme = NCGlobal.shared.appScheme
+    components.host = "openUrl"
+    components.queryItems = [URLQueryItem(name: "url", value: webURL.absoluteString)]
+    return components.url
+}
+
+private func dashboardWebURL(_ value: String?, relativeTo baseURL: URL?) -> URL? {
+    guard let value, !value.isEmpty else { return nil }
+    let url = value.hasPrefix("/") ? URL(string: value, relativeTo: baseURL)?.absoluteURL : URL(string: value)
+    guard let url, let scheme = url.scheme?.lowercased(),
+          scheme == "https" || scheme == "http",
+          let host = url.host, !host.isEmpty else { return nil }
+    return url
 }

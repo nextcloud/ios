@@ -81,13 +81,13 @@ struct NCUploadAssetsView: View {
                                                 Button(action: {
                                                     model.previewStore[index].nativeFormat = false
                                                 }) {
-                                                    Label(NSLocalizedString("_Upload_native_format_yes_", comment: ""), systemImage: "eye")
+                                                    Label(NSLocalizedString("_upload_native_format_yes_", comment: ""), systemImage: "eye")
                                                 }
                                             } else {
                                                 Button(action: {
                                                     model.previewStore[index].nativeFormat = true
                                                 }) {
-                                                    Label(NSLocalizedString("_Upload_native_format_no_", comment: ""), systemImage: "eye.slash")
+                                                    Label(NSLocalizedString("_upload_native_format_no_", comment: ""), systemImage: "eye.slash")
                                                 }
                                             }
                                         }

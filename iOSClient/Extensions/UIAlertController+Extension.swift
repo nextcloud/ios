@@ -11,24 +11,23 @@ extension UIAlertController {
     /// Creates a alert controller with a textfield, asking to create a new folder
     /// - Parameters:
     ///   - serverUrl: Server url of the location where the folder should be created
-    ///   - urlBase: UrlBase object
-    ///   - completion: If not` nil` it overrides the default behavior which shows an error
+    ///   - completion: Receives the result and the folder name.
     /// - Returns: The presentable alert controller
     static func createFolderWith(serverUrl: String,
                                  session: NCSession.Session,
                                  markE2ee: Bool = false,
                                  sceneIdentifier: String? = nil,
                                  capabilities: NKCapabilities.Capabilities,
-                                 completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
+                                 completion: ((_ error: NKError, _ folderName: String) -> Void)? = nil) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: nil, preferredStyle: .alert)
         let isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
 
-        let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
-            guard let fileNameFolder = alertController.textFields?.first?.text else { return }
+        let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { [weak alertController] _ in
+            guard let fileNameFolder = alertController?.textFields?.first?.text else { return }
 
             if markE2ee {
                 if NCNetworking.shared.isOffline {
-                    completion?(NKError(errorCode: NCGlobal.shared.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_"))
+                    completion?(NKError(errorCode: NCGlobal.shared.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_"), fileNameFolder)
                     return
                 }
                 Task {
@@ -51,30 +50,30 @@ extension UIAlertController {
                                 banner.dismiss()
                             }
                         }
-                        completion?(error)
+                        completion?(error, fileNameFolder)
                     } else {
                         if let banner {
                             banner.dismiss()
                         }
-                        completion?(NKError(errorCode: createFolderResults.error.errorCode, errorDescription: createFolderResults.error.errorDescription))
+                        completion?(createFolderResults.error, fileNameFolder)
                     }
                 }
             } else if isDirectoryEncrypted {
                 Task {
                     if NCNetworking.shared.isOffline {
-                        completion?(NKError(errorCode: NCGlobal.shared.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_"))
+                        completion?(NKError(errorCode: NCGlobal.shared.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_"), fileNameFolder)
                         return
                     }
 
                     let error = await NCNetworkingE2EECreateFolder().createFolder(fileName: fileNameFolder, serverUrl: serverUrl, sceneIdentifier: sceneIdentifier, session: session)
 
-                    completion?(error)
+                    completion?(error, fileNameFolder)
                 }
             } else {
 #if EXTENSION
                 Task {
                     let error = await NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, session: session)
-                    completion?(error)
+                    completion?(error, fileNameFolder)
                 }
 #else
                 var metadata = tableMetadata()
@@ -113,14 +112,14 @@ extension UIAlertController {
         let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel)
 
         alertController.addTextField { textField in
-            textField.autocapitalizationType = .words
+            textField.autocapitalizationType = .sentences
         }
 
-        NotificationCenter.default.addObserver(
-            forName: UITextField.textDidChangeNotification,
-            object: alertController.textFields?.first,
-            queue: .main) { _ in
-                guard let text = alertController.textFields?.first?.text else {
+        // The field owns this handler, so validation ends with the dialog's lifetime.
+        // Weak captures avoid retaining the alert through its field and actions.
+        alertController.textFields?.first?.addAction(UIAction { [weak alertController, weak okAction] _ in
+                guard let alertController, let okAction,
+                      let text = alertController.textFields?.first?.text else {
                     return
                 }
                 let folderName = text.trimmingCharacters(in: .whitespaces)
@@ -137,7 +136,7 @@ extension UIAlertController {
                     message = errorMessage
                     messageColor = .red
                 } else if isFileHidden {
-                    message = NSLocalizedString("hidden_file_name_warning", comment: "")
+                    message = NSLocalizedString("_hidden_file_name_warning_", comment: "")
                 } else if alreadyExists {
                     message = NSLocalizedString("_item_with_same_name_already_exists_", comment: "")
                 }
@@ -148,7 +147,7 @@ extension UIAlertController {
                 ])
 
                 alertController.setValue(attributedString, forKey: "attributedMessage")
-            }
+            }, for: .editingChanged)
 
         alertController.addAction(cancelAction)
         alertController.addAction(okAction)
@@ -177,25 +176,23 @@ extension UIAlertController {
         }, completion: completion)
     }
 
-    static func alertDeleteFileOrFolder(titleString: String, message: String?, canDeleteServer: Bool, metadatas: [tableMetadata], completion: @escaping (_ cancelled: Bool) -> Void) -> UIAlertController {
+    static func alertDeleteFileOrFolder(titleString: String,
+                                        message: String?,
+                                        metadata: tableMetadata,
+                                        deleteFromServer: @escaping () -> Void,
+                                        completion: @escaping (_ cancelled: Bool) -> Void) -> UIAlertController {
         let alertController = UIAlertController(
             title: titleString,
             message: message,
             preferredStyle: .alert)
-        if canDeleteServer {
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { (_: UIAlertAction) in
-                Task {
-                    await NCNetworking.shared.setStatusWaitDelete(metadatas: metadatas)
-                }
-                completion(false)
-            })
-        }
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
+            deleteFromServer()
+            completion(false)
+        })
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
             Task {
-                for metadata in metadatas {
-                    await NCNetworking.shared.deleteCache(metadata)
-                }
+                await NCNetworking.shared.deleteCache([metadata])
             }
             completion(false)
         })
@@ -225,7 +222,7 @@ extension UIAlertController {
 
         alertController.addTextField { textField in
             textField.text = fileName
-            textField.autocapitalizationType = .words
+            textField.autocapitalizationType = .sentences
         }
 
         let oldExtension = fileName.fileExtension
@@ -273,7 +270,7 @@ extension UIAlertController {
                     message = errorMessage
                     messageColor = .red
                 } else if isFileHidden {
-                    message = NSLocalizedString("hidden_file_name_warning", comment: "")
+                    message = NSLocalizedString("_hidden_file_name_warning_", comment: "")
                 } else if newExtension != oldExtension {
                     message = NSLocalizedString("_file_name_new_extension_", comment: "")
                 }

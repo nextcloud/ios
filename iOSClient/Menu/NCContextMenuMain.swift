@@ -106,7 +106,7 @@ class NCContextMenuMain: NSObject {
             openingActions.append(NCContextMenuActions.viewInFolder(metadata: metadata, controller: controller, viewController: viewController))
         }
 
-        if !metadata.isDirectoryE2EE,
+        if !metadata.isEndToEndEncrypted,
            metadata.classFile == NKTypeClassFile.document.rawValue,
            NextcloudKit.shared.isNetworkReachable() {
             var availableEditors = Set(
@@ -226,7 +226,7 @@ class NCContextMenuMain: NSObject {
                     sceneIdentifier: self.sceneIdentifier
                 )
                 if error != .success {
-                    await showErrorBanner(windowScene: self.windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                    await showErrorBanner(windowScene: self.windowScene, error: error)
                 }
             }
         }
@@ -243,11 +243,7 @@ class NCContextMenuMain: NSObject {
                     account: metadata.account
                 )
                 guard accessError == .success else {
-                    await showErrorBanner(
-                        windowScene: self.windowScene,
-                        text: accessError.errorDescription,
-                        errorCode: accessError.errorCode
-                    )
+                    await showErrorBanner(windowScene: self.windowScene, error: accessError)
                     return
                 }
 
@@ -264,9 +260,7 @@ class NCContextMenuMain: NSObject {
                     await NCManageDatabase.shared.setMetadataEncryptedAsync(ocId: metadata.ocId, encrypted: false)
                     await (self.viewController as? NCCollectionViewCommon)?.reloadDataSource()
                 } else {
-                    await showErrorBanner(windowScene: self.windowScene,
-                                          text: results.error.errorDescription,
-                                          errorCode: results.error.errorCode)
+                    await showErrorBanner(windowScene: self.windowScene, error: results.error)
                 }
             }
         }
@@ -373,33 +367,7 @@ class NCContextMenuMain: NSObject {
         ) { _ in
             if self.viewController is NCCollectionViewCommon {
                 Task {
-                    if metadata.isDirectoryE2EE {
-                        if NCNetworking.shared.isOffline {
-                            await showErrorBanner(windowScene: self.windowScene,
-                                                  text: "_offline_not_allowed_",
-                                                  errorCode: NCGlobal.shared.errorOfflineNotAllowed)
-                        } else {
-                            let results = showHudBanner(windowScene: self.windowScene,
-                                                        title: "_delete_in_progress_")
-
-                            let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
-
-                            if error == .success {
-                                completeHudBannerSuccess(token: results.token, banner: results.banner)
-                            } else {
-                                completeHudBannerError(description: error.errorDescription, token: results.token, banner: results.banner)
-                            }
-
-                            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                                delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: nil)
-                            }
-                        }
-                    } else {
-                        let error = await NCNetworking.shared.setStatusWaitDelete(metadatas: [metadata])
-                        if error != .success {
-                            await showErrorBanner(windowScene: self.windowScene, error: error)
-                        }
-                    }
+                    await NCContextMenuActions.deleteFromServer(ocId: metadata.ocId, windowScene: self.windowScene)
                 }
             } else if let viewController = self.viewController as? NCMedia {
                 Task {
@@ -415,26 +383,18 @@ class NCContextMenuMain: NSObject {
             image: utility.loadImage(named: "document.on.trash")
         ) { _ in
             Task { @MainActor in
-                var token: Int?
-                var banner: LucidBanner?
                 if metadata.isDirectory {
-                    (banner, token) = showHudBanner(windowScene: self.windowScene, title: "_delete_in_progress_")
-                }
-
-                await NCNetworking.shared.deleteCache(metadata, progress: { progress in
-                    Task {
-                        if let token {
-                            banner?.update(
-                                payload: LucidBannerPayload.Update(progress: progress),
-                                for: token
-                            )
-                        }
+                    let (banner, token) = showHudBanner(windowScene: self.windowScene,
+                                                        title: "_delete_in_progress_",
+                                                        blocksTouches: false)
+                    await NCNetworking.shared.deleteCache([metadata]) { progress in
+                        banner?.update(payload: LucidBannerPayload.Update(progress: progress), for: token)
                     }
-
-                })
-
-                if let banner {
-                    banner.dismiss()
+                    if let banner, banner.isAlive(token) {
+                        banner.dismiss()
+                    }
+                } else {
+                    await NCNetworking.shared.deleteCache([metadata])
                 }
             }
         }
@@ -496,9 +456,7 @@ class NCContextMenuMain: NSObject {
                                         params: item.params
                                     )
                                     if results.error != .success {
-                                        await showErrorBanner(windowScene: self.windowScene,
-                                                              text: results.error.errorDescription,
-                                                              errorCode: results.error.errorCode)
+                                        await showErrorBanner(windowScene: self.windowScene, error: results.error)
                                     } else {
                                         if let tooltip = results.uiResponse?.ocs.data.tooltip {
                                             await showInfoBanner(windowScene: self.windowScene, text: tooltip)

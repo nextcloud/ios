@@ -122,8 +122,9 @@ enum NCContextMenuActions {
         }
     }
 
+    @MainActor
     static func delete(
-        metadatas: [tableMetadata],
+        metadata: tableMetadata,
         controller: NCMainTabBarController?,
         presentViewController: UIViewController? = nil,
         completion: (() -> Void)? = nil
@@ -133,15 +134,73 @@ enum NCContextMenuActions {
             image: NCUtility().loadImage(named: "trash"),
             attributes: [.destructive]
         ) { _ in
+            let presenter = presentViewController ?? controller
+            let windowScene = presenter?.viewIfLoaded?.window?.windowScene ?? SceneManager.shared.getWindowScene(controller: controller)
             let alert = UIAlertController.alertDeleteFileOrFolder(
                 titleString: NSLocalizedString("_delete_", comment: "") + "?",
                 message: NSLocalizedString("_want_delete_", comment: ""),
-                canDeleteServer: true,
-                metadatas: metadatas
+                metadata: metadata,
+                deleteFromServer: {
+                    Task {
+                        await deleteFromServer(ocId: metadata.ocId, windowScene: windowScene)
+                    }
+                }
             ) { _ in
                 completion?()
             }
-            (presentViewController ?? controller)?.present(alert, animated: true)
+            presenter?.present(alert, animated: true)
+        }
+    }
+
+    @MainActor
+    static func deleteFromServer(ocId: String, windowScene: UIWindowScene?) async {
+        guard let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) else { return }
+
+        let networking = NCNetworking.shared
+        let context = NCErrorContext.delete(fileName: metadata.fileNameView)
+        guard metadata.isDeletable else {
+            let error = NKError(errorCode: NCGlobal.shared.errorNotPermission, errorDescription: "_no_permission_delete_file_")
+            await showErrorBanner(windowScene: windowScene, error: error, context: context)
+            return
+        }
+
+        guard metadata.isEndToEndEncrypted else {
+            let error = await networking.setStatusWaitDelete(metadatas: [metadata])
+            if error != .success {
+                await showErrorBanner(windowScene: windowScene, error: error, context: context)
+            }
+            return
+        }
+
+        guard networking.isOnline else {
+            await showErrorBanner(windowScene: windowScene,
+                                  title: context.failureTitle ?? "_error_",
+                                  text: "_offline_not_allowed_",
+                                  errorCode: NCGlobal.shared.errorOfflineNotAllowed)
+            return
+        }
+
+        let results = showHudBanner(windowScene: windowScene, title: "_delete_in_progress_")
+        let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
+        if error == .success {
+            completeHudBannerSuccess(token: results.token, banner: results.banner)
+        } else {
+            let message = error.userFriendlyMessage(for: context) ?? error.localizedGenericMessage
+            completeHudBannerError(title: context.failureTitle, description: message, token: results.token, banner: results.banner)
+        }
+
+        await networking.transferDispatcher.notifyAllDelegates { delegate in
+            if error == .success {
+                delegate.transferChange(networkingStatus: NCGlobal.shared.networkingStatusDelete,
+                                        account: metadata.account,
+                                        fileName: metadata.fileName,
+                                        serverUrl: metadata.serverUrl,
+                                        selector: metadata.sessionSelector,
+                                        ocId: metadata.ocId,
+                                        destination: nil,
+                                        error: error)
+            }
+            delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: nil)
         }
     }
 
@@ -248,6 +307,7 @@ enum NCContextMenuActions {
                 ) != nil {
                     await showErrorBanner(
                         windowScene: windowScene,
+                        title: NCErrorContext.rename.failureTitle ?? "_error_",
                         text: "_rename_already_exists_",
                         errorCode: 0
                     )
@@ -260,7 +320,7 @@ enum NCContextMenuActions {
                     windowScene: windowScene
                 )
                 if error != .success {
-                    await showErrorBanner(windowScene: windowScene, error: error)
+                    await showErrorBanner(windowScene: windowScene, error: error, context: .rename)
                 } else if let renamedMetadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(metadata.ocId) {
                     completion?(renamedMetadata)
                 }

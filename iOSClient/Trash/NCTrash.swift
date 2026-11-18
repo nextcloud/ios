@@ -70,8 +70,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         collectionView.alwaysBounceVertical = true
         collectionView.backgroundColor = .systemBackground
 
-        collectionView.hideTopScrollEdgeEffect()
-
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()
 

@@ -394,7 +394,7 @@ class NCAutoUpload: NSObject {
                 nkLog(
                     tag: self.global.logTagBgSync,
                     emoji: .error,
-                    message: "Create folder '\(metadata.serverUrlFileName)' failed: \(err.errorCode) – aborting sync"
+                    message: "Create folder '\(metadata.serverUrlFileName)' failed: \(err.logDescription) – aborting sync"
                 )
                 return
             }
@@ -475,7 +475,7 @@ class NCAutoUpload: NSObject {
                     nkLog(
                         tag: self.global.logTagBgSync,
                         emoji: .error,
-                        message: "Upload failed \(extractedMetadata.fileName) -> \(extractedMetadata.serverUrl) [\(err.errorDescription)]"
+                        message: "Upload failed \(extractedMetadata.fileName) -> \(extractedMetadata.serverUrl) [\(err.logDescription)]"
                     )
                 }
             }

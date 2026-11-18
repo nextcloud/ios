@@ -16,17 +16,18 @@ class NCContextMenuPlus: NSObject {
     }
 
     let menuPlusButton: UIButton?
-    weak var controller: NCMainTabBarController?
+    private weak var navigationController: NCMainNavigationController?
+    private weak var menuFiles: NCFiles?
     private var menuSignature: String?
     private var creationID = UUID()
 
     internal var windowScene: UIWindowScene? {
-        SceneManager.shared.getWindowScene(controller: controller)
+        SceneManager.shared.getWindowScene(controller: navigationController?.controller)
     }
 
-    init(menuPlusButton: UIButton?, controller: NCMainTabBarController?) {
+    init(menuPlusButton: UIButton?, navigationController: NCMainNavigationController) {
         self.menuPlusButton = menuPlusButton
-        self.controller = controller
+        self.navigationController = navigationController
     }
 
     nonisolated static func menuInfo(for ext: String) -> CreatorMenuInfo? {
@@ -43,11 +44,14 @@ class NCContextMenuPlus: NSObject {
     }
 
     func create(session: NCSession.Session) async {
-        guard let controller,
+        guard let navigationController,
+              let controller = navigationController.controller,
+              let files = navigationController.topViewController as? NCFiles,
               let menuPlusButton,
               controller.account == session.account else {
             return
         }
+        let serverUrl = files.serverUrl
         let creationID = UUID()
         self.creationID = creationID
 
@@ -64,12 +68,12 @@ class NCContextMenuPlus: NSObject {
         let utilityFileSystem = NCUtilityFileSystem()
         let utility = NCUtility()
         let global = NCGlobal.shared
-        let serverUrl = controller.currentServerUrl()
-
-        let isDirectoryE2EE = await NCUtilityFileSystem().isDirectoryE2EEAsync(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
+        let isDirectoryE2EE = await utilityFileSystem.isDirectoryE2EEAsync(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
         let directory = await NCManageDatabase.shared.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
         guard self.creationID == creationID,
-              controller.account == session.account else { return }
+              controller.account == session.account,
+              navigationController.topViewController === files,
+              files.serverUrl == serverUrl else { return }
         let isNetworkReachable = NextcloudKit.shared.isNetworkReachable()
         let isEndToEndEnabled = NCPreferences().isEndToEndEnabled(account: session.account)
         let titleCreateFolder = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
@@ -138,12 +142,12 @@ class NCContextMenuPlus: NSObject {
                     serverUrl: serverUrl,
                     session: session,
                     sceneIdentifier: controller.sceneIdentifier,
-                    capabilities: capabilities) { error in
+                    capabilities: capabilities) { error, folderName in
                         if error != .success {
                             Task {
                                 await showErrorBanner(windowScene: self.windowScene,
-                                                      text: error.errorDescription,
-                                                      errorCode: error.errorCode)
+                                                      error: error,
+                                                      context: .createFolder(folderName: folderName))
                             }
                         }
                     }
@@ -164,12 +168,10 @@ class NCContextMenuPlus: NSObject {
                         session: session,
                         markE2ee: true,
                         sceneIdentifier: controller.sceneIdentifier,
-                        capabilities: capabilities) { error in
+                        capabilities: capabilities) { error, _ in
                             if error != .success {
                                 Task {
-                                    await showErrorBanner(windowScene: self.windowScene,
-                                                          text: error.errorDescription,
-                                                          errorCode: error.errorCode)
+                                    await showErrorBanner(windowScene: self.windowScene, error: error)
                                 }
                             }
                         }
@@ -513,17 +515,12 @@ class NCContextMenuPlus: NSObject {
 
         let plusMenu = UIMenu(children: Array(plusMenuElements.reversed()))
 
-        // PLUS BUTTON
-        updatePlusButtonEnabled(session: session)
-
-        if menuPlusButton.menu != nil,
-           !menuChanged {
-            return
+        if menuPlusButton.menu == nil || menuChanged {
+            menuPlusButton.menu = plusMenu
+            menuPlusButton.showsMenuAsPrimaryAction = true
         }
-
-        menuPlusButton.menu = plusMenu
-        menuPlusButton.showsMenuAsPrimaryAction = true
-        menuPlusButton.alpha = 1
+        menuFiles = files
+        updatePlusButtonVisibility(animation: false)
     }
 
     private func makeFolderMenu(elements: [UIMenuElement]) -> UIMenu {
@@ -628,8 +625,7 @@ class NCContextMenuPlus: NSObject {
               let selectedTemplate = result.selectedTemplate else {
             await showErrorBanner(
                 windowScene: windowScene,
-                text: result.error.errorDescription,
-                errorCode: result.error.errorCode
+                error: result.error
             )
             return
         }
@@ -648,21 +644,9 @@ class NCContextMenuPlus: NSObject {
         )
     }
 
-    func updatePlusButtonEnabled(session: NCSession.Session) {
-        guard let controller, let menuPlusButton else {
-            return
-        }
-
-        let isEnabled = isPlusButtonEnabled(for: controller)
-
-        menuPlusButton.isEnabled = isEnabled
-        menuPlusButton.setPlusButtonColor(isEnabled ? NCBrandColor.shared.getElement(account: session.account) : .lightGray)
-    }
-
-    private func isPlusButtonEnabled(for controller: NCMainTabBarController) -> Bool {
-        guard let viewController = controller.currentViewController() as? NCCollectionViewCommon,
-              let metadataFolder = viewController.metadataFolder else {
-            return true
+    private func canUsePlusButton(in files: NCFiles) -> Bool {
+        guard let metadataFolder = files.metadataFolder else {
+            return files.serverUrl == NCUtilityFileSystem().getHomeServer(session: files.session)
         }
 
         guard metadataFolder.isCreatable else {
@@ -673,29 +657,36 @@ class NCContextMenuPlus: NSObject {
             return true
         }
 
-        guard viewController.endToEndKeySetAccess.canWrite else {
+        guard files.endToEndKeySetAccess.canWrite else {
             return false
         }
 
         return NextcloudKit.shared.isNetworkReachable()
     }
 
-    @MainActor
-    func hiddenPlusButton(isEditMode: Bool, isSearchingMode: Bool, animation: Bool = true) {
-        if isEditMode || isSearchingMode {
-            hiddenPlusButton(true, animation: animation)
-        } else {
-            hiddenPlusButton(false, animation: animation)
-        }
-    }
-
-    @MainActor
-    func hiddenPlusButton(_ isHidden: Bool, animation: Bool = true) {
+    func updatePlusButtonVisibility(for viewController: UIViewController? = nil, animation: Bool = true) {
         guard let menuPlusButton else {
             return
         }
+        let files = (viewController ?? navigationController?.topViewController) as? NCFiles
+        let wasVisible = menuPlusButton.isEnabled
+        let isMenuReady = files === menuFiles && menuPlusButton.menu != nil
+        let isVisible = if let files, wasVisible || isMenuReady {
+            !files.isEditMode && !files.isSearchingMode && canUsePlusButton(in: files)
+        } else {
+            false
+        }
+        menuPlusButton.isEnabled = isVisible
+        if isVisible, let files {
+            // Keep the button in place while preparing the menu for the new folder.
+            if !isMenuReady {
+                menuPlusButton.menu = nil
+            }
+            menuPlusButton.setPlusButtonColor(NCBrandColor.shared.getElement(account: files.session.account))
+        }
+
         let tx = 200.0
-        if isHidden {
+        if !isVisible {
             if menuPlusButton.transform.tx == tx {
                 menuPlusButton.alpha = 0
                 return
@@ -711,7 +702,9 @@ class NCContextMenuPlus: NSObject {
             }
         } else {
             if menuPlusButton.transform.tx == 0.0 {
-                menuPlusButton.alpha = 1
+                if !wasVisible || viewController != nil {
+                    menuPlusButton.alpha = 1
+                }
                 return
             }
             if animation {
@@ -728,7 +721,7 @@ class NCContextMenuPlus: NSObject {
 
     @MainActor
     func resetPlusButtonAlpha(animated: Bool = true) {
-        guard let menuPlusButton else {
+        guard let menuPlusButton, menuPlusButton.isEnabled else {
             return
         }
         let update = {

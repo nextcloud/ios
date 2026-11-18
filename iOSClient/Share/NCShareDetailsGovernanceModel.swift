@@ -40,7 +40,7 @@ final class NCShareDetailsGovernanceModel {
         let result = await NextcloudKit.shared.getGovernanceAvailableLabels(entityId: entityID, account: account)
 
         guard let labels = result.labels else {
-            nkLog(error: "Could not load governance labels: \(result.error.errorDescription) (\(result.error.errorCode))")
+            nkLog(error: "Could not load governance labels: \(result.error.logDescription)")
             state = .error
             return
         }

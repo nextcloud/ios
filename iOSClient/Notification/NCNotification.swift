@@ -38,7 +38,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 50.0
         tableView.backgroundColor = .systemBackground
-        tableView.hideTopScrollEdgeEffect()
 
         refreshControl?.action(for: .valueChanged) { _ in
             Task {
@@ -275,7 +274,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                 self.tableView.reloadData()
             } else if error != .success {
                 Task {
-                    await showErrorBanner(windowScene: self.windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                    await showErrorBanner(windowScene: self.windowScene, error: error)
                 }
             } else {
                 print("[Error] The user has been changed during networking process.")
@@ -317,7 +316,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                 }
             } else if error != .success {
                 Task {
-                    await showErrorBanner(windowScene: self.windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                    await showErrorBanner(windowScene: self.windowScene, error: error)
                 }
             } else {
                 print("[Error] The user has been changed during networking process.")

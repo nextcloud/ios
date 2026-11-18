@@ -4,7 +4,6 @@
 
 import Foundation
 import NextcloudKit
-import Alamofire
 
 extension NCCollectionViewCommon {
     @MainActor
@@ -70,8 +69,7 @@ extension NCCollectionViewCommon {
             )
         } else {
             await showErrorBanner(windowScene: windowScene,
-                                  text: results.error.errorDescription,
-                                  errorCode: results.error.errorCode)
+                                  error: results.error)
         }
 
         collectionView.reloadData()
@@ -112,9 +110,7 @@ extension NCCollectionViewCommon {
 
         if results.error != .success {
             await showErrorBanner(windowScene: windowScene,
-                                  text: results.error.errorDescription,
-                                  errorCode: results.error.errorCode,
-                                  afError: results.error.error as? AFError)
+                                  error: results.error)
         }
 
         guard isSearchingMode,
@@ -145,9 +141,7 @@ extension NCCollectionViewCommon {
 
             if results.error != .success {
                 await showErrorBanner(windowScene: windowScene,
-                                      text: results.error.errorDescription,
-                                      errorCode: results.error.errorCode,
-                                      afError: results.error.error as? AFError)
+                                      error: results.error)
             }
 
             guard isSearchingMode,
@@ -204,9 +198,7 @@ extension NCCollectionViewCommon {
 
         if results.error != .success {
             await showErrorBanner(windowScene: windowScene,
-                                  text: results.error.errorDescription,
-                                  errorCode: results.error.errorCode,
-                                  afError: results.error.error as? AFError)
+                                  error: results.error)
         }
 
         guard isSearchingMode,

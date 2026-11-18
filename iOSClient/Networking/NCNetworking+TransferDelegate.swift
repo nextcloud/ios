@@ -58,6 +58,8 @@ extension NCNetworking: NCTransferDelegate {
 
             switch selector {
             case NCGlobal.shared.selectorLoadFileQuickLook:
+                guard metadata.isModifiableWithQuickLook else { return }
+
                 NCViewerQuickLook.presentEditor(metadata: metadata, from: controller)
 
             case NCGlobal.shared.selectorLoadFileView:
@@ -207,10 +209,11 @@ extension NCNetworking: NCTransferDelegate {
         let resultsFile = await NextcloudKit.shared.getFileFromFileIdAsync(fileId: fileId, account: account)
 
         guard resultsFile.error == .success, let file = resultsFile.file else {
+            let error = resultsFile.error == .success ? NKError(errorCode: NCGlobal.shared.errorResourceNotFound, errorDescription: "File not found") : resultsFile.error
+
             Task {
                 await showErrorBanner(windowScene: windowScene,
-                                      text: resultsFile.error.errorDescription,
-                                      errorCode: resultsFile.error.errorCode)
+                                      error: error)
             }
             return
         }

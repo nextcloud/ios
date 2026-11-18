@@ -73,10 +73,11 @@ class NCNetworkingE2EEUpload: NSObject {
         metadata.session = NCNetworking.shared.sessionUpload
         metadata.status = global.metadataStatusUploading
         metadata.sessionError = ""
+        metadata.errorKind = ""
         metadata.serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
 
         guard let metadata = await self.database.addAndReturnMetadataAsync(metadata) else {
-            return .invalidData
+            return NKError(errorCode: global.errorInternalError, errorDescription: "")
         }
 
         guard let directory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
@@ -227,6 +228,7 @@ class NCNetworkingE2EEUpload: NSObject {
             metadata.session = ""
             metadata.sessionTaskIdentifier = 0
             metadata.sessionError = ""
+            metadata.errorKind = ""
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
             // Remove if exists same file name view

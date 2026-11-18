@@ -39,7 +39,7 @@ extension BackgroundUploadExtension {
                 livePhoto,
                 component: "video",
                 path: livePhoto.serverUrlFileNameVideo,
-                errorCode: videoResult.error.errorCode,
+                error: videoResult.error,
                 account: account
             )
         }
@@ -55,7 +55,7 @@ extension BackgroundUploadExtension {
                 livePhoto,
                 component: "image",
                 path: livePhoto.serverUrlFileNameImage,
-                errorCode: imageResult.error.errorCode,
+                error: imageResult.error,
                 account: account
             )
         }
@@ -86,10 +86,10 @@ extension BackgroundUploadExtension {
         _ livePhoto: tableLivePhoto,
         component: String,
         path: String,
-        errorCode: Int,
+        error: NKError,
         account: String
     ) async -> Bool {
-        if errorCode == global.errorResourceNotFound {
+        if error.errorCode == global.errorResourceNotFound {
             await database.deleteLivePhoto(
                 account: account,
                 serverUrlFileNameNoExt: livePhoto.serverUrlFileNameNoExt
@@ -103,12 +103,12 @@ extension BackgroundUploadExtension {
             serverUrlFileNameNoExt: livePhoto.serverUrlFileNameNoExt
         )
 
-        if errorCode == global.errorUnauthorized {
+        if error.errorCode == global.errorUnauthorized {
             preferences.setBackgroundUploadSuspended(true, account: account)
             logError("Suspended background upload after a Live Photo authentication failure for account \(account)")
         }
 
-        logError("Unable to link Live Photo \(component) \(path), error: \(errorCode)")
+        logError("Unable to link Live Photo \(component) \(path), error: \(error.logDescription)")
         return false
     }
 }

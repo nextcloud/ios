@@ -160,7 +160,7 @@ class AlbumsListViewModel: ObservableObject {
                 }
             case .failure(let error):
                 Task {
-                    await showErrorBanner(windowScene: self?.windowScene, text: error.errorDescription)
+                    await showErrorBanner(windowScene: self?.windowScene, error: error)
                 }
             }
         }
@@ -187,10 +187,7 @@ class AlbumsListViewModel: ObservableObject {
         for photo in selectedPhotos {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(photo) else {
                 Task {
-                    await showErrorBanner(
-                        windowScene: self.windowScene,
-                        text: NKError.invalidData.errorDescription
-                    )
+                    await showErrorBanner(windowScene: self.windowScene, text: "_media_not_available_")
                 }
                 continue
             }
@@ -202,7 +199,7 @@ class AlbumsListViewModel: ObservableObject {
                     hadAnySuccess = true
                 case .failure(let error):
                     Task {
-                        await showErrorBanner(windowScene: self.windowScene, text: error.errorDescription)
+                        await showErrorBanner(windowScene: self.windowScene, error: error)
                     }
                 }
                 group.leave()

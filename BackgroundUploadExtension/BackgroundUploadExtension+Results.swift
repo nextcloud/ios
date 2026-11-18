@@ -111,18 +111,19 @@ extension BackgroundUploadExtension {
     /// Stores the terminal upload error and resets transient task state on the associated metadata.
     /// Authentication failures receive a stable error code so the host app can require manual retry.
     func updateMetadataForUploadFailure(metadata: tableMetadata, job: PHAssetResourceUploadJob) async {
-        let error = job.error.map { $0 as NSError }
-        let authenticationRequired = isAuthenticationFailure(job: job)
-        let message = authenticationRequired
-            ? "Authentication required for account \(metadata.user)"
-            : error?.localizedDescription ?? "Background upload failed"
-        let errorCode = authenticationRequired
-            ? NSURLErrorUserAuthenticationRequired
-            : error?.code ?? NSURLErrorUnknown
+        let error: NKError
 
-        await persistMetadataState(.failed(message: message, errorCode: errorCode), metadata: metadata)
+        if isAuthenticationFailure(job: job) {
+            error = NKError(errorCode: NSURLErrorUserAuthenticationRequired, errorDescription: "Authentication required for account \(metadata.user)")
+        } else if let jobError = job.error {
+            error = NKError(error: jobError)
+        } else {
+            error = NKError(errorCode: NSURLErrorUnknown, errorDescription: "Background upload failed")
+        }
 
-        logError("Background upload failed for \(metadata.fileName), account: \(metadata.account), job: \(job.localIdentifier), error: \(metadata.errorCode) \(metadata.sessionError)")
+        await persistMetadataState(.failed(error), metadata: metadata)
+
+        logError("Background upload failed for \(metadata.fileName), account: \(metadata.account), job: \(job.localIdentifier), error: \(error.logDescription)")
     }
 
     /// Applies Nextcloud response metadata and records the asset as successfully auto-uploaded.
@@ -131,7 +132,7 @@ extension BackgroundUploadExtension {
         let succeeded = await NCBackgroundUploadExtensionManager.shared.recordUploadSuccess(metadata: metadata, job: job)
         if !succeeded, !hasConfirmedUploadResponse(job: job) {
             await persistMetadataState(
-                .failed(message: "Upload response missing oc-fileid", errorCode: NSURLErrorBadServerResponse),
+                .failed(NKError(errorCode: NSURLErrorBadServerResponse, errorDescription: "Upload response missing oc-fileid")),
                 metadata: metadata
             )
         }
@@ -153,6 +154,7 @@ extension BackgroundUploadExtension {
             metadata.sessionDate = Date()
             metadata.sessionError = ""
             metadata.errorCode = 0
+            metadata.errorKind = ""
             metadata.status = global.metadataStatusUploading
 
         case .pendingRetry:
@@ -170,11 +172,12 @@ extension BackgroundUploadExtension {
             metadata.backgroundUploadJobIdentifier = "pending"
             metadata.backgroundUploadNextRetryDate = nil
 
-        case let .failed(message, errorCode):
+        case let .failed(error):
             metadata.sessionTaskIdentifier = 0
             metadata.sessionDate = Date()
-            metadata.sessionError = message
-            metadata.errorCode = errorCode
+            metadata.sessionError = error.errorDescription
+            metadata.errorCode = error.errorCode
+            metadata.errorKind = error.kind?.rawValue ?? ""
             metadata.status = global.metadataStatusUploadError
 
         case .completed:
@@ -182,6 +185,7 @@ extension BackgroundUploadExtension {
             metadata.sceneIdentifier = nil
             metadata.session = ""
             metadata.sessionError = ""
+            metadata.errorKind = ""
             metadata.sessionDate = nil
             metadata.sessionTaskIdentifier = 0
             metadata.status = global.metadataStatusNormal

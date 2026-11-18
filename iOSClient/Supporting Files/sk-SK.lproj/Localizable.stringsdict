@@ -2,6 +2,26 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>_share_upload_to_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@files@</string>
+		<key>files</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>one</key>
+			<string>Nahrať %ld súbor</string>
+			<key>few</key>
+			<string>Nahrať %ld súbory</string>
+			<key>many</key>
+			<string>Nahrať %ld súboru</string>
+			<key>other</key>
+			<string>Nahrať %ld súborov</string>
+		</dict>
+	</dict>
 	<key>_remaining_share_downloads_</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -53,13 +73,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Máte %d položku na zálohovanie</string>
+			<string>Máte %d súbor na zálohovanie</string>
 			<key>few</key>
-			<string>Máte %d položky na zálohovanie</string>
+			<string>Máte %d súbory na zálohovanie</string>
 			<key>many</key>
-			<string>Máte %d položiek na zálohovanie</string>
+			<string>Máte %d súboru na zálohovanie</string>
 			<key>other</key>
-			<string>Máte %d položiek na zálohovanie</string>
+			<string>Máte %d súborov na zálohovanie</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>

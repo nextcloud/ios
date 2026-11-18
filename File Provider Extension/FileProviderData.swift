@@ -246,6 +246,7 @@ class FileProviderData: NSObject {
             metadata.sceneIdentifier = nil
             metadata.session = ""
             metadata.sessionError = ""
+            metadata.errorKind = ""
             metadata.sessionSelector = ""
             metadata.sessionDate = nil
             metadata.sessionTaskIdentifier = 0

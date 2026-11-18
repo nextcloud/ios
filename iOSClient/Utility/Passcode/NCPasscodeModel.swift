@@ -77,18 +77,22 @@ final class NCPasscodeModel: ObservableObject {
 
     var title: String {
         switch step {
-        case .authenticate: return "Enter Passcode"
-        case .enterNew: return "Enter a new passcode"
-        case .confirmNew: return "Confirm new passcode"
+        case .authenticate: return "_enter_passcode_"
+        case .enterNew: return "_enter_new_passcode_"
+        case .confirmNew: return "_confirm_new_passcode_"
         }
     }
 
     var biometricSymbol: String? {
         if isPreview { return step == .authenticate ? "faceid" : nil }
-        guard step == .authenticate, mode != .change, preferences.touchFaceID, preferences.passcode != nil else { return nil }
+        guard isBiometricAuthenticationEnabled else { return nil }
         let context = LAContext()
         guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil) else { return nil }
         return context.biometryType == .faceID ? "faceid" : "touchid"
+    }
+
+    private var isBiometricAuthenticationEnabled: Bool {
+        step == .authenticate && mode != .change && preferences.touchFaceID && preferences.passcode != nil
     }
 
     var canEnterCode: Bool {
@@ -160,8 +164,9 @@ final class NCPasscodeModel: ObservableObject {
     func authenticateWithBiometrics() async {
         guard !isPreview else { return }
         refreshProtection()
-        guard canEnterCode, biometricSymbol != nil else { return }
+        guard canEnterCode, isBiometricAuthenticationEnabled else { return }
         let context = LAContext()
+        guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil) else { return }
         let request = UUID()
         biometricRequest = request
         biometricContext = context
@@ -211,7 +216,7 @@ final class NCPasscodeModel: ObservableObject {
             guard code == newPasscode else {
                 newPasscode = ""
                 step = .enterNew
-                message = "Passcodes didn't match. Try again."
+                message = "_passcodes_did_not_match_"
                 errorFeedback += 1
                 return
             }

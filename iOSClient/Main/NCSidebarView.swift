@@ -58,11 +58,13 @@ struct NCSidebarView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .leading) {
-            Color.clear
-            if isVisible {
-                sidebarPanel
-                    .transition(.move(edge: .leading))
+        GeometryReader { geometry in
+            ZStack(alignment: .leading) {
+                Color.clear
+                if isVisible {
+                    sidebarPanel(geometry: geometry)
+                        .transition(.move(edge: .leading))
+                }
             }
         }
         .task {
@@ -199,8 +201,9 @@ struct NCSidebarView: View {
         }
     }
 
-    private var sidebarPanel: some View {
-        GeometryReader { geometry in
+    private func sidebarPanel(geometry: GeometryProxy) -> some View {
+        // Measure against the stationary container, not the sliding panel.
+        Group {
             // Keep the content clear of the landscape camera area, while glass reaches the edge.
             let leadingInset = contentLeadingInset(geometry: geometry)
             // Preserve the content width and a visible strip of the underlying screen.

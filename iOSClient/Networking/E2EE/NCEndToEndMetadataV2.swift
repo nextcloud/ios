@@ -201,7 +201,9 @@ extension NCEndToEndMetadata {
             return (e2eeJson, signature, counter, NKError())
 
         } catch let error {
-            return (nil, nil, counter, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription))
+            nkLog(tag: NCGlobal.shared.logTagE2EE, emoji: .error, message: "Unable to encode the E2EE metadata: \(error)")
+
+            return (nil, nil, counter, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: NSLocalizedString("_e2ee_encode_metadata_", comment: "")))
         }
     }
 
@@ -289,7 +291,7 @@ extension NCEndToEndMetadata {
                   let metadataKey = tableUser.metadataKey?.base64EncodedString(),
                   let decryptedMetadataKey = tableUser.metadataKey else {
                 return NKError(errorCode: NCGlobal.shared.errorE2EENoUserFound,
-                               errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: ""))
+                               errorDescription: NSLocalizedString("_e2ee_no_metadata_key_found_", comment: ""))
             }
 
             // FILEDROP
@@ -410,8 +412,10 @@ extension NCEndToEndMetadata {
             }
 
         } catch let error {
+            nkLog(tag: global.logTagE2EE, emoji: .error, message: "Unable to decode the E2EE metadata: \(error)")
+
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon,
-                           errorDescription: error.localizedDescription)
+                           errorDescription: NSLocalizedString("_e2ee_decode_metadata_", comment: ""))
         }
 
         return returnError

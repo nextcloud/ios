@@ -170,7 +170,7 @@ extension NCNetworking {
             fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
         }
         if fileNameFolder.isEmpty {
-            return NKError(errorCode: global.errorIncorrectFileName, errorDescription: "")
+            return NKError(errorCode: global.errorIncorrectFileName, errorDescription: "", kind: .invalidName)
         }
         let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileNameFolder)
 
@@ -197,7 +197,8 @@ extension NCNetworking {
             await NCManageDatabase.shared.setMetadataSessionAsync(account: session.account,
                                                                   serverUrlFileName: serverUrlFileName,
                                                                   sessionError: resultCreateFolder.error.errorDescription,
-                                                                  errorCode: resultCreateFolder.error.errorCode)
+                                                                  errorCode: resultCreateFolder.error.errorCode,
+                                                                  errorKind: resultCreateFolder.error.kind?.rawValue ?? "")
         }
 
         return resultCreateFolder.error
@@ -229,7 +230,8 @@ extension NCNetworking {
             await NCManageDatabase.shared.setMetadataSessionAsync(account: account,
                                                                   serverUrlFileName: serverUrlFileName,
                                                                   sessionError: results.error.errorDescription,
-                                                                  errorCode: results.error.errorCode)
+                                                                  errorCode: results.error.errorCode,
+                                                                  errorKind: results.error.kind?.rawValue ?? "")
         }
 
         return results.error
@@ -279,41 +281,67 @@ extension NCNetworking {
 
     // MARK: - Delete
 
-    func deleteCache(_ metadata: tableMetadata,
-                     progress: @escaping (_ progress: Double) -> Void = { _ in }) async {
-        var num: Float = 0
-        func numIncrement() -> Float {
-            num += 1
-            return num
-        }
+    func deleteCache(_ metadatas: [tableMetadata],
+                     progress: (@MainActor @Sendable (Double) -> Void)? = nil) async {
+        guard !metadatas.isEmpty else { return }
 
-        func deleteLocalFile(metadata: tableMetadata) async {
-            if let metadataLive = await NCManageDatabase.shared.getMetadataLivePhotoAsync(metadata: metadata) {
-                await NCManageDatabase.shared.deleteLocalFileAsync(id: metadataLive.ocId)
-                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-            }
-            await NCManageDatabase.shared.deleteVideoAsync(metadata.ocId)
-            await NCManageDatabase.shared.deleteLocalFileAsync(id: metadata.ocId)
-            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-        }
+        let database = NCManageDatabase.shared
+        let selectionsByAccount = Dictionary(grouping: metadatas, by: \.account)
+        let accountCount = selectionsByAccount.count
+        for (index, selection) in selectionsByAccount.values.enumerated() {
+            guard let first = selection.first else { continue }
 
-        await NCManageDatabase.shared.cleanTablesOcIds(account: metadata.account, userId: metadata.userId, urlBase: metadata.urlBase)
+            await database.cleanTablesOcIds(account: first.account, userId: first.userId, urlBase: first.urlBase)
 
-        if metadata.directory {
-            if let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, metadata.serverUrlFileName)) {
-                let total = Float(metadatas.count)
-                for metadata in metadatas {
-                    await deleteLocalFile(metadata: metadata)
-                    let num = numIncrement()
-                    progress(Double(num) / Double(total))
+            var filesByOcId: [String: tableMetadata] = [:]
+            for metadata in selection {
+                if metadata.directory {
+                    let folder = metadata.serverUrlFileName
+                    guard !folder.isEmpty else { continue }
+                    let prefix = folder.hasSuffix("/") ? folder : folder + "/"
+                    let predicate = NSPredicate(format: "account == %@ AND directory == false AND (serverUrl == %@ OR serverUrl BEGINSWITH %@)",
+                                                metadata.account, folder, prefix)
+                    for file in await database.getMetadatasAsync(predicate: predicate) ?? [] where !file.ocId.isEmpty {
+                        filesByOcId[file.ocId] = file
+                    }
+                } else if !metadata.ocId.isEmpty {
+                    filesByOcId[metadata.ocId] = metadata
                 }
             }
-        } else {
-            await deleteLocalFile(metadata: metadata)
+            guard !filesByOcId.isEmpty else { continue }
 
-            await self.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: nil)
+            let videoOcIds = Set(filesByOcId.keys)
+            var cachedFilesByOcId = filesByOcId
+            for file in filesByOcId.values where file.isLivePhoto {
+                if let companion = await database.getMetadataLivePhotoAsync(metadata: file), !companion.ocId.isEmpty {
+                    cachedFilesByOcId[companion.ocId] = companion
+                }
             }
+
+            let localFileOcIds = Set(cachedFilesByOcId.keys)
+            guard await database.deleteCacheRecordsAsync(localFileOcIds: localFileOcIds, videoOcIds: videoOcIds) else { continue }
+
+            let fileNamesByOcId = cachedFilesByOcId.mapValues { metadata in
+                Set([metadata.fileName, metadata.fileNameView].filter { !$0.isEmpty })
+            }
+            let accountProgress: (@MainActor @Sendable (Double) -> Void)?
+            if let progress {
+                accountProgress = { fraction in
+                    progress((Double(index) + fraction) / Double(accountCount))
+                }
+            } else {
+                accountProgress = nil
+            }
+            await utilityFileSystem.removeCachedFilesAsync(fileNamesByOcId: fileNamesByOcId,
+                                                           userId: first.userId,
+                                                           urlBase: first.urlBase,
+                                                           progress: accountProgress)
+        }
+
+        let serverUrls = Set(metadatas.map(\.serverUrl))
+        let serverUrl = serverUrls.count == 1 && !metadatas.contains(where: \.directory) ? serverUrls.first : nil
+        await transferDispatcher.notifyAllDelegates { delegate in
+            delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: nil)
         }
     }
 
@@ -333,25 +361,31 @@ extension NCNetworking {
             }
 
             let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanDeleteOrUnshare)
-            if (!metadata.permissions.isEmpty && permission == false) || (metadata.status != global.metadataStatusNormal) {
+            if !metadata.permissions.isEmpty && permission == false {
                 return NKError(errorCode: global.errorNotPermission, errorDescription: "_no_permission_delete_file_")
+            }
+
+            if metadata.status != global.metadataStatusNormal {
+                return NKError(errorCode: global.errorNotPermission, errorDescription: "_error_file_busy_")
             }
 
             ocIds.insert(metadata.ocId)
             serverUrls.insert(metadata.serverUrl)
         }
 
-        let ocIdss = ocIds
-        let serverUrlss = serverUrls
-        await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
-            for ocId in ocIdss {
-                await NCManageDatabase.shared.setMetadataSessionAsync(
-                    ocId: ocId,
-                    status: self.global.metadataStatusWaitDelete
-                )
-            }
-            serverUrlss.forEach { serverUrl in
-                delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitDelete)
+        guard !ocIds.isEmpty else { return .success }
+        guard let queued = await NCManageDatabase.shared.setMetadataStatusWaitDeleteAsync(ocIds: ocIds) else {
+            return NKError(errorCode: global.errorUnexpectedResponseFromDB, errorDescription: "_error_")
+        }
+        guard queued else {
+            return NKError(errorCode: global.errorNotPermission, errorDescription: "_error_file_busy_")
+        }
+
+        let affectedServerUrls = serverUrls
+        let status = global.metadataStatusWaitDelete
+        await transferDispatcher.notifyAllDelegates { delegate in
+            for serverUrl in affectedServerUrls {
+                delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: status)
             }
         }
         return .success
@@ -402,9 +436,12 @@ extension NCNetworking {
 
     func setStatusWaitRename(_ metadata: tableMetadata, fileNameNew: String, windowScene: UIWindowScene?) async -> NKError {
         let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
-        if (!metadata.permissions.isEmpty && permission == false) ||
-            (metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitRename) {
+        if !metadata.permissions.isEmpty && permission == false {
             return NKError(errorCode: global.errorNotPermission, errorDescription: "_no_permission_modify_file_")
+        }
+
+        if metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitRename {
+            return NKError(errorCode: global.errorNotPermission, errorDescription: "_error_file_busy_")
         }
 
         if metadata.isDirectoryE2EE {
@@ -414,7 +451,7 @@ extension NCNetworking {
 
             let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew, windowScene: windowScene)
             if error != .success {
-                return NKError(errorCode: error.errorCode, errorDescription: error.errorDescription)
+                return error
             }
         } else {
             let ocId = metadata.ocId
@@ -459,9 +496,12 @@ extension NCNetworking {
     func setStatusWaitMove(_ metadata: tableMetadata, destination: String, overwrite: Bool) async -> NKError {
         let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
 
-        if (!metadata.permissions.isEmpty && !permission) ||
-            (metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitMove) {
+        if !metadata.permissions.isEmpty && !permission {
             return NKError(errorCode: global.errorNotPermission, errorDescription: "_no_permission_modify_file_")
+        }
+
+        if metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitMove {
+            return NKError(errorCode: global.errorNotPermission, errorDescription: "_error_file_busy_")
         }
 
         let ocId = metadata.ocId
@@ -516,9 +556,12 @@ extension NCNetworking {
     func setStatusWaitCopy(_ metadata: tableMetadata, destination: String, overwrite: Bool) async -> NKError {
         let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
 
-        if (!metadata.permissions.isEmpty && !permission) ||
-            (metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitCopy) {
+        if !metadata.permissions.isEmpty && !permission {
             return NKError(errorCode: global.errorNotPermission, errorDescription: "_no_permission_modify_file_")
+        }
+
+        if metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitCopy {
+            return NKError(errorCode: global.errorNotPermission, errorDescription: "_error_file_busy_")
         }
 
         let ocId = metadata.ocId

@@ -26,9 +26,9 @@ class DocumentActionViewController: FPUIActionExtensionViewController {
         if let userInfo = (error as NSError).userInfo as NSDictionary?,
            let code = userInfo["code"] as? Int {
             if code == NCGlobal.shared.errorUnauthorizedFilesPasscode {
-                titleError?.text = NSLocalizedString("_unauthorizedFilesPasscode_", comment: "")
+                titleError?.text = NSLocalizedString("_unauthorized_files_passcode_", comment: "")
             } else if code == NCGlobal.shared.errorDisableFilesApp {
-                titleError?.text = NSLocalizedString("_disableFilesApp_", comment: "")
+                titleError?.text = NSLocalizedString("_files_app_disabled_", comment: "")
             } else if code == NCGlobal.shared.errorVersionMismatch {
                 titleError?.text = NSLocalizedString("_version_mismatch_error_", comment: "")
             }

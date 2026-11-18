@@ -38,6 +38,29 @@ struct NCPasscodeView: View {
         }
         let model = NCPasscodeModel(mode: mode, allowCancel: allowCancel)
         let controller = UIHostingController(rootView: NCPasscodeView(model: model, windowScene: top.view.window?.windowScene))
+#if EXTENSION_SHARE
+        let definedPresentationContext = top.definesPresentationContext
+        top.definesPresentationContext = true
+        controller.modalPresentationStyle = .overCurrentContext
+        controller.modalTransitionStyle = .crossDissolve
+        controller.view.accessibilityViewIsModal = true
+        controller.isModalInPresentation = true
+        model.onCompletion = { [weak controller, weak top] result in
+            // Keep the keypad visible while the extension closes on cancellation.
+            guard result == .authenticated, let controller else {
+                completion(result)
+                return
+            }
+            controller.dismiss(animated: false) {
+                top?.definesPresentationContext = definedPresentationContext
+                completion(result)
+            }
+        }
+        // Start once UIKit has finished presenting the keypad inside the Share panel.
+        top.present(controller, animated: true) {
+            Task { await model.start() }
+        }
+#else
         controller.modalPresentationStyle = allowCancel ? .pageSheet : .fullScreen
         controller.isModalInPresentation = !allowCancel
         model.onCompletion = { [weak controller] result in
@@ -51,42 +74,7 @@ struct NCPasscodeView: View {
             }
         }
         top.present(controller, animated: allowCancel)
-    }
-
-    /// Covers an extension's existing panel without presenting another modal or changing its size.
-    static func embed(in container: UIViewController,
-                      completion: @escaping @MainActor (NCPasscodeModel.Result) -> Void) {
-        let navigationController = (container as? UINavigationController) ?? container.navigationController
-        let wasNavigationBarHidden = navigationController?.isNavigationBarHidden ?? true
-        navigationController?.setNavigationBarHidden(true, animated: false)
-        let model = NCPasscodeModel(mode: .authenticate, allowCancel: true)
-        let controller = UIHostingController(rootView: NCPasscodeView(model: model,
-                                                                      windowScene: container.view.window?.windowScene))
-        model.onCompletion = { [weak controller, weak navigationController] result in
-            guard let controller else { return }
-            // Keep protected content covered while the caller closes the extension on cancellation.
-            guard result == .authenticated else {
-                completion(result)
-                return
-            }
-            controller.willMove(toParent: nil)
-            controller.view.removeFromSuperview()
-            controller.removeFromParent()
-            navigationController?.setNavigationBarHidden(wasNavigationBarHidden, animated: false)
-            completion(result)
-        }
-        container.addChild(controller)
-        controller.view.backgroundColor = .systemBackground
-        controller.view.accessibilityViewIsModal = true
-        controller.view.translatesAutoresizingMaskIntoConstraints = false
-        container.view.addSubview(controller.view)
-        NSLayoutConstraint.activate([
-            controller.view.leadingAnchor.constraint(equalTo: container.view.leadingAnchor),
-            controller.view.trailingAnchor.constraint(equalTo: container.view.trailingAnchor),
-            controller.view.topAnchor.constraint(equalTo: container.view.topAnchor),
-            controller.view.bottomAnchor.constraint(equalTo: container.view.bottomAnchor)
-        ])
-        controller.didMove(toParent: container)
+#endif
     }
 
     var body: some View {
@@ -161,11 +149,15 @@ struct NCPasscodeView: View {
         .interactiveDismissDisabled(!model.allowCancel)
         .sensoryFeedback(.error, trigger: model.errorFeedback)
         .task {
+#if EXTENSION_SHARE
+            model.refreshProtection()
+#else
             if let windowScene, windowScene.activationState != .foregroundActive {
                 model.refreshProtection()
             } else {
                 await model.start()
             }
+#endif
         }
         .task(id: model.lockoutEnd) {
             guard let deadline = model.lockoutEnd else { return }
@@ -175,10 +167,12 @@ struct NCPasscodeView: View {
                 model.refreshProtection()
             } catch { return }
         }
+#if !EXTENSION_SHARE
         .onReceive(NotificationCenter.default.publisher(for: UIScene.didActivateNotification)) { notification in
             guard let windowScene, (notification.object as? UIScene) === windowScene else { return }
             Task { await model.start() }
         }
+#endif
         .onReceive(NotificationCenter.default.publisher(for: UIScene.didEnterBackgroundNotification)) { notification in
             guard let windowScene, (notification.object as? UIScene) === windowScene else { return }
             model.cancelBiometrics()

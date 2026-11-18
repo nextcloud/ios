@@ -395,6 +395,48 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         }
     }
 
+    /// Evicts cached data while keeping zero-byte files at the paths used by the File Provider.
+    func removeCachedFilesAsync(fileNamesByOcId: [String: Set<String>], userId: String, urlBase: String, progress: (@MainActor @Sendable (Double) -> Void)?) async {
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            fileIO.async {
+                self.removeCachedFiles(fileNamesByOcId: fileNamesByOcId, userId: userId, urlBase: urlBase, progress: progress)
+                continuation.resume()
+            }
+        }
+    }
+
+    private func removeCachedFiles(fileNamesByOcId: [String: Set<String>], userId: String, urlBase: String, progress: (@MainActor @Sendable (Double) -> Void)?) {
+        let storage = getDocumentStorage(userId: userId, urlBase: urlBase)
+        guard !storage.isEmpty else { return }
+        let storageURL = URL(fileURLWithPath: storage, isDirectory: true)
+
+        let total = fileNamesByOcId.count
+        let progressStep = max(1, (total + 99) / 100)
+        for (index, entry) in fileNamesByOcId.enumerated() {
+            let directory = storageURL.appendingPathComponent(entry.key, isDirectory: true)
+            do {
+                try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
+                for fileName in entry.value {
+                    let fileURL = directory.appendingPathComponent(fileName, isDirectory: false)
+                    try Data().write(to: fileURL, options: .atomic)
+                }
+
+                let cachedItems = try fileManager.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
+                for item in cachedItems where !entry.value.contains(item.lastPathComponent) {
+                    try fileManager.removeItem(at: item)
+                }
+            } catch {
+                print(error)
+            }
+
+            let completed = index + 1
+            if let progress, completed % progressStep == 0 || completed == total {
+                let fraction = Double(completed) / Double(total)
+                DispatchQueue.main.async { progress(fraction) }
+            }
+        }
+    }
+
     func replaceExtension(fileName: String, with newExtension: String) -> String {
         URL(fileURLWithPath: fileName)
             .deletingPathExtension()

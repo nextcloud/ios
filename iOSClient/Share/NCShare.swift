@@ -59,7 +59,7 @@ class NCShare: UIViewController, NCSharePagingContent {
         viewContainerConstraint.constant = height
         searchFieldTopConstraint.constant = 0
 
-        searchField.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
+        searchField.placeholder = NSLocalizedString("_share_link_search_placeholder_", comment: "")
         searchField.autocorrectionType = .no
 
         tableView.dataSource = self

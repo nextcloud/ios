@@ -2,6 +2,24 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>_share_upload_to_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@files@</string>
+		<key>files</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>one</key>
+			<string>Fazer upload de %ld arquivo</string>
+			<key>many</key>
+			<string>Fazer upload de %ld de arquivos</string>
+			<key>other</key>
+			<string>Fazer upload de %ld arquivos</string>
+		</dict>
+	</dict>
 	<key>_remaining_share_downloads_</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -49,11 +67,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Você tem %d item para fazer backup</string>
+			<string>Você precisa fazer backup de %d arquivo</string>
 			<key>many</key>
-			<string>Você tem %d de itens para fazer backup</string>
+			<string>Você precisa fazer backup de %d de arquivos</string>
 			<key>other</key>
-			<string>Você tem %d itens para fazer backup</string>
+			<string>Você precisa fazer backup de %d arquivos</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>

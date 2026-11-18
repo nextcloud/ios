@@ -2,6 +2,24 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>_share_upload_to_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@files@</string>
+		<key>files</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>one</key>
+			<string>Carica %ld file</string>
+			<key>many</key>
+			<string>Carica %ld file</string>
+			<key>other</key>
+			<string>Carica %ld file</string>
+		</dict>
+	</dict>
 	<key>_remaining_share_downloads_</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -31,9 +49,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d file in queue</string>
+			<string>%d file in coda</string>
+			<key>many</key>
+			<string>%d file in coda</string>
 			<key>other</key>
-			<string>%d files in queue</string>
+			<string>%d file in coda</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_photos_to_back_up_</key>
@@ -47,11 +67,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Hai %d elemento da salvare</string>
+			<string>Hai %d file da salvare</string>
 			<key>many</key>
-			<string>Hai %d elementi da salvare</string>
+			<string>Hai %d file da salvare</string>
 			<key>other</key>
-			<string>Hai %d elementi da salvare</string>
+			<string>Hai %d file da salvare</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>
