@@ -7,6 +7,8 @@ import SwiftUI
 struct NCTextCommandBar: View {
     static let height: CGFloat = 48
 
+    @Environment(\.colorScheme) private var colorScheme
+
     let onDetails: () -> Void
 
     var body: some View {
@@ -42,17 +44,33 @@ struct NCTextCommandBar: View {
     }
 
     private var foldDecoration: some View {
-        LinearGradient(
+        let isDark = colorScheme == .dark
+
+        return LinearGradient(
             stops: [
                 .init(color: .clear, location: 0),
-                .init(color: .white.opacity(0.55), location: 0.35),
-                .init(color: .black.opacity(0.32), location: 0.52),
-                .init(color: .black.opacity(0.14), location: 0.72),
+                .init(color: .black.opacity(0.08), location: 0.25),
+                .init(color: .white.opacity(isDark ? 0.24 : 0.72), location: 0.43),
+                .init(color: .white.opacity(isDark ? 0.38 : 0.9), location: 0.47),
+                .init(color: .black.opacity(isDark ? 0.65 : 0.45), location: 0.52),
+                .init(color: .black.opacity(isDark ? 0.36 : 0.18), location: 0.68),
                 .init(color: .clear, location: 1)
             ],
             startPoint: .top,
             endPoint: .bottom
         )
-        .frame(height: 8)
+        .frame(height: 16)
+        .mask {
+            LinearGradient(
+                stops: [
+                    .init(color: .clear, location: 0),
+                    .init(color: .black, location: 0.035),
+                    .init(color: .black, location: 0.965),
+                    .init(color: .clear, location: 1)
+                ],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+        }
     }
 }
