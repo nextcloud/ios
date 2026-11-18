@@ -30,29 +30,8 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     }
 
     private final class TextAdaptiveWebView: WKWebView {
-        var shouldHideKeyboardAccessory: (() -> Bool)?
-        private weak var keyboardAccessory: UIView?
-
         override var inputAccessoryView: UIView? {
-            guard shouldHideKeyboardAccessory?() != true else { return nil }
-            let accessory = super.inputAccessoryView
-            keyboardAccessory = accessory
-            return accessory
-        }
-
-        func refreshKeyboardAccessory() {
-            // UIKit may still be displaying the accessory it fetched before the fold changed.
-            keyboardAccessory?.isHidden = shouldHideKeyboardAccessory?() == true
-            focusedView(in: self)?.reloadInputViews()
-        }
-
-        private func focusedView(in view: UIView) -> UIView? {
-            for subview in view.subviews {
-                if let focusedView = focusedView(in: subview) {
-                    return focusedView
-                }
-            }
-            return view.isFirstResponder ? view : nil
+            nil
         }
     }
 
@@ -155,11 +134,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         }
         if usesTextAdaptiveLayout {
             extendedLayoutIncludesOpaqueBars = true
-            let adaptiveWebView = TextAdaptiveWebView(frame: .zero, configuration: config)
-            adaptiveWebView.shouldHideKeyboardAccessory = { [weak self] in
-                self?.foldedBottomConstraint?.isActive == true
-            }
-            webView = adaptiveWebView
+            webView = TextAdaptiveWebView(frame: .zero, configuration: config)
         } else {
             webView = WKWebView(frame: .zero, configuration: config)
         }
@@ -280,7 +255,6 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             }
             webView.scrollView.contentInsetAdjustmentBehavior = isFolded ? .never : .automatic
             webView.scrollView.topEdgeEffect.isHidden = isFolded
-            (webView as? TextAdaptiveWebView)?.refreshKeyboardAccessory()
         }
         if showsCommandBar {
             hasShownFoldedCommandBar = true
