@@ -15,9 +15,33 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     var userAgent: String
     private(set) var metadata: tableMetadata
     var imageIcon: UIImage?
-
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?
+
+    // IPHONE DUO EXPERIMENTAL
+    private static let isAdaptiveLayoutEnabled = true
+
+    private var usesTextAdaptiveLayout: Bool {
+        guard #available(iOS 27.1, *) else { return false }
+        return Self.isAdaptiveLayoutEnabled && editor == global.editorText
+    }
+
+    private final class TextAdaptiveWebView: WKWebView {
+        var shouldHideKeyboardAccessory: (() -> Bool)?
+
+        override var inputAccessoryView: UIView? {
+            shouldHideKeyboardAccessory?() == true ? nil : super.inputAccessoryView
+        }
+    }
+
+    private var foldedBottomConstraint: NSLayoutConstraint?
+    private var keyboardBottomConstraint: NSLayoutConstraint?
+    private var lastFoldedKeyboardLayout: String?
+    private var isViewerVisible = false
+    private var isTextEditorReady = false
+    private var foldFocusAttempt: UUID?
+    // END IPHONE DUO EXPERIMENTAL
+
     var documentController: UIDocumentInteractionController?
     let utility = NCUtility()
     let utilityFileSystem = NCUtilityFileSystem()
@@ -120,7 +144,15 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             let dropSharedWorkersScript = WKUserScript(source: "delete window.SharedWorker;", injectionTime: WKUserScriptInjectionTime.atDocumentStart, forMainFrameOnly: false)
             config.userContentController.addUserScript(dropSharedWorkersScript)
         }
-        webView = WKWebView(frame: CGRect.zero, configuration: config)
+        if usesTextAdaptiveLayout {
+            let adaptiveWebView = TextAdaptiveWebView(frame: .zero, configuration: config)
+            adaptiveWebView.shouldHideKeyboardAccessory = { [weak self] in
+                self?.foldedBottomConstraint?.isActive == true
+            }
+            webView = adaptiveWebView
+        } else {
+            webView = WKWebView(frame: .zero, configuration: config)
+        }
         webView.navigationDelegate = self
         webView.uiDelegate = self
         webView.scrollView.isScrollEnabled = false
@@ -134,6 +166,13 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         bottomConstraint?.isActive = true
 
+        if usesTextAdaptiveLayout {
+            foldedBottomConstraint = webView.bottomAnchor.constraint(lessThanOrEqualTo: view.topAnchor)
+            let keyboardConstraint = webView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
+            keyboardConstraint.priority = .defaultHigh
+            keyboardBottomConstraint = keyboardConstraint
+        }
+
         if let url = URL(string: link) {
             var request = URLRequest(url: url)
             request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
@@ -146,6 +185,84 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     deinit {
         print("dealloc")
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        guard usesTextAdaptiveLayout,
+              #available(iOS 27.1, *),
+              let foldedBottomConstraint,
+              let keyboardBottomConstraint else {
+            return
+        }
+
+        let safeFrame = view.safeAreaLayoutGuide.layoutFrame
+        let fold = view.reservedRegions(kind: .division)
+            .filter(\.isActive)
+            .map { safeFrame.intersection($0.frame) }
+            .first { frame in
+                !frame.isNull &&
+                    frame.width >= safeFrame.width - 1 &&
+                    frame.width > frame.height &&
+                    frame.height > 0 &&
+                    frame.minY > safeFrame.minY &&
+                    frame.maxY < safeFrame.maxY
+            }
+
+        guard let fold else {
+            foldedBottomConstraint.isActive = false
+            keyboardBottomConstraint.isActive = false
+            bottomConstraint?.isActive = true
+            lastFoldedKeyboardLayout = nil
+            foldFocusAttempt = nil
+            return
+        }
+
+        bottomConstraint?.isActive = false
+        let foldOffset = fold.minY - view.bounds.minY
+        if foldedBottomConstraint.constant != foldOffset {
+            foldedBottomConstraint.constant = foldOffset
+        }
+        foldedBottomConstraint.isActive = true
+        keyboardBottomConstraint.isActive = true
+        requestFoldedTextFocus()
+
+        let layout = "fold: \(fold), keyboard guide: \(view.keyboardLayoutGuide.layoutFrame), web view: \(webView.frame)"
+        if lastFoldedKeyboardLayout != layout {
+            lastFoldedKeyboardLayout = layout
+            print("[Duo Editor] \(layout)")
+        }
+    }
+
+    private func requestFoldedTextFocus() {
+        guard usesTextAdaptiveLayout,
+              isViewerVisible,
+              isTextEditorReady,
+              foldedBottomConstraint?.isActive == true,
+              foldFocusAttempt == nil else {
+            return
+        }
+
+        let attempt = UUID()
+        foldFocusAttempt = attempt
+        let script = """
+        (() => {
+            const editor = document.querySelector('#direct-editor .ProseMirror[contenteditable="true"]');
+            if (!editor) return false;
+            editor.focus({ preventScroll: true });
+            return document.activeElement === editor;
+        })()
+        """
+        webView.evaluateJavaScript(script) { [weak self] result, error in
+            guard let self, self.isViewerVisible, self.foldFocusAttempt == attempt else { return }
+            guard (result as? Bool) == true else {
+                print("[Duo Editor] Text focus failed: \(error?.localizedDescription ?? "editor did not take focus")")
+                return
+            }
+            let accepted = self.webView.becomeFirstResponder()
+            print("[Duo Editor] Text focused; first responder accepted: \(accepted)")
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -171,6 +288,10 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        if usesTextAdaptiveLayout {
+            isViewerVisible = true
+            requestFoldedTextFocus()
+        }
 
         Task {
             await NCNetworking.shared.transferDispatcher.addDelegate(self)
@@ -179,6 +300,9 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        if usesTextAdaptiveLayout {
+            isViewerVisible = false
+        }
 
         let isLeavingViewer = isMovingFromParent || isBeingDismissed || navigationController?.isBeingDismissed == true
         if isLeavingViewer {
@@ -308,6 +432,10 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
         case "loaded", "documentLoaded":
             print(mobileMessage.command)
+            if usesTextAdaptiveLayout, message.frameInfo.isMainFrame, mobileMessage.command == "loaded" {
+                isTextEditorReady = true
+                requestFoldedTextFocus()
+            }
 
         case "paste":
             UIApplication.shared.sendAction(
@@ -486,6 +614,10 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     }
 
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        if usesTextAdaptiveLayout {
+            isTextEditorReady = false
+            foldFocusAttempt = nil
+        }
         NCActivityIndicator.shared.start(backgroundView: view)
     }
 
