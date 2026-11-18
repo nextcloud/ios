@@ -176,23 +176,23 @@ extension UIAlertController {
         }, completion: completion)
     }
 
-    static func alertDeleteFileOrFolder(titleString: String, message: String?, canDeleteServer: Bool, metadatas: [tableMetadata], completion: @escaping (_ cancelled: Bool) -> Void) -> UIAlertController {
+    static func alertDeleteFileOrFolder(titleString: String,
+                                        message: String?,
+                                        metadata: tableMetadata,
+                                        deleteFromServer: @escaping () -> Void,
+                                        completion: @escaping (_ cancelled: Bool) -> Void) -> UIAlertController {
         let alertController = UIAlertController(
             title: titleString,
             message: message,
             preferredStyle: .alert)
-        if canDeleteServer {
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { (_: UIAlertAction) in
-                Task {
-                    await NCNetworking.shared.setStatusWaitDelete(metadatas: metadatas)
-                }
-                completion(false)
-            })
-        }
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
+            deleteFromServer()
+            completion(false)
+        })
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
             Task {
-                await NCNetworking.shared.deleteCache(metadatas)
+                await NCNetworking.shared.deleteCache([metadata])
             }
             completion(false)
         })

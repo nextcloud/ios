@@ -26,8 +26,11 @@ private var hasChangesQuickLook: Bool = false
     private let url: URL
     private let fileNameSource: String
     private var previewItems: [PreviewItem] = []
-    private var isEditingEnabled: Bool
+    private let allowsEditing: Bool
     private var metadata: tableMetadata?
+    private var isEditingEnabled: Bool {
+        allowsEditing && metadata?.isEndToEndEncrypted != true
+    }
     private var timer: Timer?
     /// Used to display the save alert
     private var viewController: UIViewController?
@@ -45,7 +48,7 @@ private var hasChangesQuickLook: Bool = false
     @objc init(with url: URL, fileNameSource: String = "", isEditingEnabled: Bool, metadata: tableMetadata?) {
         self.url = url
         self.fileNameSource = fileNameSource
-        self.isEditingEnabled = isEditingEnabled
+        self.allowsEditing = isEditingEnabled
         if let metadata = metadata {
             self.metadata = tableMetadata.init(value: metadata)
         }
@@ -118,7 +121,7 @@ private var hasChangesQuickLook: Bool = false
     }
 
     private func showSaveAlert() {
-        guard let metadata = metadata else { return }
+        guard isEditingEnabled, let metadata else { return }
 
         let alertController = UIAlertController(title: NSLocalizedString("_save_changes_", comment: ""), message: nil, preferredStyle: .alert)
         var message: String?
@@ -160,7 +163,7 @@ private var hasChangesQuickLook: Bool = false
     }
 
     @objc private func crop(_ sender: Any?) {
-        guard let image = UIImage(contentsOfFile: url.path) else { return }
+        guard isEditingEnabled, let image = UIImage(contentsOfFile: url.path) else { return }
         var toolbarConfig = CropToolbarConfig()
 
         toolbarConfig.heightForVerticalOrientation = 80
@@ -209,7 +212,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
     }
 
     fileprivate func saveModifiedFile(override: Bool) {
-        guard let metadata = self.metadata else {
+        guard isEditingEnabled, let metadata else {
             return
         }
         if !uploadMetadata {
@@ -290,7 +293,8 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
     }
 
     func previewController(_ controller: QLPreviewController, didSaveEditedCopyOf previewItem: QLPreviewItem, at modifiedContentsURL: URL) {
-        guard utilityFileSystem.copyFile(atPath: modifiedContentsURL.path, toPath: url.path) else { return }
+        guard isEditingEnabled,
+              utilityFileSystem.copyFile(atPath: modifiedContentsURL.path, toPath: url.path) else { return }
         hasChangesQuickLook = true
     }
 }
@@ -298,7 +302,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
 extension NCViewerQuickLook: CropViewControllerDelegate {
     func cropViewControllerDidCrop(_ cropViewController: Mantis.CropViewController, cropped: UIImage, transformation: Mantis.Transformation, cropInfo: Mantis.CropInfo) {
         cropViewController.dismiss(animated: true)
-        guard let data = cropped.jpegData(compressionQuality: 0.9) else { return }
+        guard isEditingEnabled, let data = cropped.jpegData(compressionQuality: 0.9) else { return }
         do {
             try data.write(to: self.url)
             hasChangesQuickLook = true

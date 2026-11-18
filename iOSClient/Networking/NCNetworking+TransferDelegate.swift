@@ -58,6 +58,7 @@ extension NCNetworking: NCTransferDelegate {
 
             switch selector {
             case NCGlobal.shared.selectorLoadFileQuickLook:
+                guard metadata.isModifiableWithQuickLook else { return }
 
                 let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                           fileName: metadata.fileNameView,
