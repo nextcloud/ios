@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
+import SwiftUI
 import NextcloudKit
 @preconcurrency import WebKit
 
@@ -20,6 +21,8 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     // IPHONE DUO EXPERIMENTAL
     private static let isAdaptiveLayoutEnabled = true
+    private static let commandBarHeight: CGFloat = 48
+    private static let commandBarSpacing: CGFloat = 2
 
     private var usesTextAdaptiveLayout: Bool {
         guard #available(iOS 27.1, *) else { return false }
@@ -54,12 +57,14 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     }
 
     private var foldedBottomConstraint: NSLayoutConstraint?
-    private var keyboardBottomConstraint: NSLayoutConstraint?
     private var standardTopConstraint: NSLayoutConstraint?
     private var foldedTopConstraint: NSLayoutConstraint?
+    private var foldedCommandBar: UIView?
     private var isViewerVisible = false
     private var navigationBarWasHidden: Bool?
     private var isTextEditorReady = false
+    private var didFinishTextNavigation = false
+    private var hasShownFoldedCommandBar = false
     private var foldFocusAttempt: UUID?
     // END IPHONE DUO EXPERIMENTAL
 
@@ -172,13 +177,11 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         bottomConstraint?.isActive = true
 
-        if usesTextAdaptiveLayout {
+        if #available(iOS 27.1, *), usesTextAdaptiveLayout {
             standardTopConstraint = topConstraint
             foldedTopConstraint = webView.topAnchor.constraint(equalTo: view.topAnchor)
-            foldedBottomConstraint = webView.bottomAnchor.constraint(lessThanOrEqualTo: view.topAnchor)
-            let keyboardConstraint = webView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
-            keyboardConstraint.priority = .defaultHigh
-            keyboardBottomConstraint = keyboardConstraint
+            foldedBottomConstraint = webView.bottomAnchor.constraint(equalTo: view.topAnchor)
+            configureFoldedCommandBar()
         }
 
         if let url = URL(string: link) {
@@ -195,6 +198,36 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         print("dealloc")
     }
 
+    @available(iOS 27.1, *)
+    private func configureFoldedCommandBar() {
+        let commandBar = NCTextCommandBar { [weak self] in
+            guard let self else { return }
+            NCCreate().createShare(
+                controller: self.controller,
+                presentViewController: self.tabBarController,
+                metadata: self.metadata,
+                page: .activity
+            )
+        }
+        let hostingController = UIHostingController(rootView: commandBar)
+        hostingController.safeAreaRegions = []
+        addChild(hostingController)
+
+        let bar: UIView = hostingController.view
+        bar.backgroundColor = .clear
+        bar.translatesAutoresizingMaskIntoConstraints = false
+        bar.isHidden = true
+        view.addSubview(bar)
+        NSLayoutConstraint.activate([
+            bar.topAnchor.constraint(equalTo: webView.bottomAnchor, constant: Self.commandBarSpacing),
+            bar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            bar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            bar.heightAnchor.constraint(equalToConstant: Self.commandBarHeight)
+        ])
+        hostingController.didMove(toParent: self)
+        foldedCommandBar = bar
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
@@ -203,8 +236,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
               let standardTopConstraint,
               let bottomConstraint,
               let foldedTopConstraint,
-              let foldedBottomConstraint,
-              let keyboardBottomConstraint else {
+              let foldedBottomConstraint else {
             return
         }
 
@@ -221,17 +253,22 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
                     frame.maxY < safeFrame.maxY
             }
 
+        let isFolded = fold != nil
+        let keyboardFrame = view.keyboardLayoutGuide.layoutFrame
+        let isKeyboardVisible = !keyboardFrame.isEmpty && keyboardFrame.minY < safeFrame.maxY
+        let showsCommandBar = isFolded && didFinishTextNavigation && isTextEditorReady &&
+            (hasShownFoldedCommandBar || isKeyboardVisible)
         if let fold {
-            let foldOffset = fold.minY - view.bounds.minY
+            let commandBarSpace = Self.commandBarHeight + Self.commandBarSpacing
+            let foldOffset = max(0, fold.minY - view.bounds.minY - commandBarSpace)
             if foldedBottomConstraint.constant != foldOffset {
                 foldedBottomConstraint.constant = foldOffset
             }
         }
 
-        let isFolded = fold != nil
         if isFolded != foldedBottomConstraint.isActive {
             let standardConstraints = [standardTopConstraint, bottomConstraint]
-            let foldedConstraints = [foldedTopConstraint, foldedBottomConstraint, keyboardBottomConstraint]
+            let foldedConstraints = [foldedTopConstraint, foldedBottomConstraint]
             if isFolded {
                 NSLayoutConstraint.deactivate(standardConstraints)
                 NSLayoutConstraint.activate(foldedConstraints)
@@ -239,11 +276,16 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
                 NSLayoutConstraint.deactivate(foldedConstraints)
                 NSLayoutConstraint.activate(standardConstraints)
                 foldFocusAttempt = nil
+                hasShownFoldedCommandBar = false
             }
             webView.scrollView.contentInsetAdjustmentBehavior = isFolded ? .never : .automatic
             webView.scrollView.topEdgeEffect.isHidden = isFolded
             (webView as? TextAdaptiveWebView)?.refreshKeyboardAccessory()
         }
+        if showsCommandBar {
+            hasShownFoldedCommandBar = true
+        }
+        foldedCommandBar?.isHidden = !showsCommandBar
         updateAdaptiveNavigationBar(hidden: isFolded && isViewerVisible)
         requestFoldedTextFocus()
     }
@@ -378,10 +420,16 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         let keyboardFrame = frameInfo.cgRectValue
         let height = keyboardFrame.size.height
         bottomConstraint?.constant = -height
+        if usesTextAdaptiveLayout {
+            view.setNeedsLayout()
+        }
     }
 
     @objc func keyboardWillHide(notification: Notification) {
         bottomConstraint?.constant = 0
+        if usesTextAdaptiveLayout {
+            view.setNeedsLayout()
+        }
     }
 
     @objc private func grabRichDocumentsFocus() {
@@ -425,6 +473,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             print(mobileMessage.command)
             if usesTextAdaptiveLayout, message.frameInfo.isMainFrame, mobileMessage.command == "loaded" {
                 isTextEditorReady = true
+                view.setNeedsLayout()
                 requestFoldedTextFocus()
             }
 
@@ -607,7 +656,11 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         if usesTextAdaptiveLayout {
             isTextEditorReady = false
+            didFinishTextNavigation = false
+            hasShownFoldedCommandBar = false
             foldFocusAttempt = nil
+            foldedCommandBar?.isHidden = true
+            view.setNeedsLayout()
         }
         NCActivityIndicator.shared.start(backgroundView: view)
     }
@@ -618,6 +671,10 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         NCActivityIndicator.shared.stop()
+        if usesTextAdaptiveLayout {
+            didFinishTextNavigation = true
+            view.setNeedsLayout()
+        }
     }
 
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: any Error) {
