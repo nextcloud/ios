@@ -43,7 +43,6 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     private var navigationBarWasHidden: Bool?
     private var isTextEditorReady = false
     private var didFinishTextNavigation = false
-    private var hasShownFoldedCommandBar = false
     private var foldFocusAttempt: UUID?
     // END IPHONE DUO EXPERIMENTAL
 
@@ -231,10 +230,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             }
 
         let isFolded = fold != nil
-        let keyboardFrame = view.keyboardLayoutGuide.layoutFrame
-        let isKeyboardVisible = !keyboardFrame.isEmpty && keyboardFrame.minY < safeFrame.maxY
-        let showsCommandBar = isFolded && didFinishTextNavigation && isTextEditorReady &&
-            (hasShownFoldedCommandBar || isKeyboardVisible)
+        let showsCommandBar = isFolded && didFinishTextNavigation && isTextEditorReady
         if let fold {
             let commandBarSpace = NCTextCommandBar.height + Self.commandBarSpacing
             let foldOffset = max(0, fold.minY - view.bounds.minY - commandBarSpace)
@@ -257,13 +253,9 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
                 NSLayoutConstraint.deactivate(foldedConstraints)
                 NSLayoutConstraint.activate(standardConstraints)
                 foldFocusAttempt = nil
-                hasShownFoldedCommandBar = false
             }
             webView.scrollView.contentInsetAdjustmentBehavior = isFolded ? .never : .automatic
             webView.scrollView.topEdgeEffect.isHidden = isFolded
-        }
-        if showsCommandBar {
-            hasShownFoldedCommandBar = true
         }
         foldedCommandBar?.isHidden = !showsCommandBar
         updateAdaptiveNavigationBar(hidden: isFolded && isViewerVisible)
@@ -285,6 +277,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     private func requestFoldedTextFocus() {
         guard usesTextAdaptiveLayout,
               isViewerVisible,
+              didFinishTextNavigation,
               isTextEditorReady,
               foldedBottomConstraint?.isActive == true,
               foldFocusAttempt == nil else {
@@ -637,7 +630,6 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         if usesTextAdaptiveLayout {
             isTextEditorReady = false
             didFinishTextNavigation = false
-            hasShownFoldedCommandBar = false
             foldFocusAttempt = nil
             foldedCommandBar?.isHidden = true
             view.setNeedsLayout()

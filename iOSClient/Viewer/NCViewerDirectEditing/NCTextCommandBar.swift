@@ -42,8 +42,17 @@ struct NCTextCommandBar: View {
     }
 
     private var foldDecoration: some View {
-        Rectangle()
-            .fill(Color.primary.opacity(0.35))
-            .frame(height: 2)
+        LinearGradient(
+            stops: [
+                .init(color: .clear, location: 0),
+                .init(color: .white.opacity(0.55), location: 0.35),
+                .init(color: .black.opacity(0.32), location: 0.52),
+                .init(color: .black.opacity(0.14), location: 0.72),
+                .init(color: .clear, location: 1)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .frame(height: 8)
     }
 }
