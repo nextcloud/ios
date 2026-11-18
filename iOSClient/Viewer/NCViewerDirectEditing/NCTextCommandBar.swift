@@ -5,9 +5,21 @@
 import SwiftUI
 
 struct NCTextCommandBar: View {
+    static let height: CGFloat = 48
+
     let onDetails: () -> Void
 
     var body: some View {
+        VStack(spacing: 0) {
+            commands
+            foldDecoration
+                .frame(maxHeight: .infinity)
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+        }
+    }
+
+    private var commands: some View {
         HStack(spacing: 0) {
             Spacer(minLength: 0)
             Divider()
@@ -25,7 +37,13 @@ struct NCTextCommandBar: View {
             }
             .buttonStyle(.plain)
         }
-        .frame(maxHeight: .infinity)
+        .frame(height: Self.height)
         .background(Color(uiColor: .systemGray5), in: RoundedRectangle(cornerRadius: 16))
+    }
+
+    private var foldDecoration: some View {
+        Rectangle()
+            .fill(Color.primary.opacity(0.35))
+            .frame(height: 2)
     }
 }

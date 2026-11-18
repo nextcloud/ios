@@ -21,7 +21,6 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     // IPHONE DUO EXPERIMENTAL
     private static let isAdaptiveLayoutEnabled = true
-    private static let commandBarHeight: CGFloat = 48
     private static let commandBarSpacing: CGFloat = 2
 
     private var usesTextAdaptiveLayout: Bool {
@@ -39,6 +38,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     private var standardTopConstraint: NSLayoutConstraint?
     private var foldedTopConstraint: NSLayoutConstraint?
     private var foldedCommandBar: UIView?
+    private var foldedCommandBarHeightConstraint: NSLayoutConstraint?
     private var isViewerVisible = false
     private var navigationBarWasHidden: Bool?
     private var isTextEditorReady = false
@@ -193,14 +193,16 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         bar.translatesAutoresizingMaskIntoConstraints = false
         bar.isHidden = true
         view.addSubview(bar)
+        let heightConstraint = bar.heightAnchor.constraint(equalToConstant: NCTextCommandBar.height)
         NSLayoutConstraint.activate([
             bar.topAnchor.constraint(equalTo: webView.bottomAnchor, constant: Self.commandBarSpacing),
             bar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             bar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            bar.heightAnchor.constraint(equalToConstant: Self.commandBarHeight)
+            heightConstraint
         ])
         hostingController.didMove(toParent: self)
         foldedCommandBar = bar
+        foldedCommandBarHeightConstraint = heightConstraint
     }
 
     override func viewDidLayoutSubviews() {
@@ -234,10 +236,14 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         let showsCommandBar = isFolded && didFinishTextNavigation && isTextEditorReady &&
             (hasShownFoldedCommandBar || isKeyboardVisible)
         if let fold {
-            let commandBarSpace = Self.commandBarHeight + Self.commandBarSpacing
+            let commandBarSpace = NCTextCommandBar.height + Self.commandBarSpacing
             let foldOffset = max(0, fold.minY - view.bounds.minY - commandBarSpace)
             if foldedBottomConstraint.constant != foldOffset {
                 foldedBottomConstraint.constant = foldOffset
+            }
+            let hostedHeight = NCTextCommandBar.height + fold.height
+            if let foldedCommandBarHeightConstraint, foldedCommandBarHeightConstraint.constant != hostedHeight {
+                foldedCommandBarHeightConstraint.constant = hostedHeight
             }
         }
 
