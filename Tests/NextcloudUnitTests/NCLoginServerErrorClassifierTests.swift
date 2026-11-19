@@ -1,0 +1,44 @@
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Milen Pivchev
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+import Foundation
+import NextcloudKit
+import Testing
+@testable import Nextcloud
+
+@Suite("Login server error classification")
+struct NCLoginServerErrorClassifierTests {
+    private let httpsURL = URL(string: "https://cloud.example.com:8443/nextcloud/")!
+
+    @Test("Certificate errors ask to trust the certificate", arguments: [
+        NSURLErrorServerCertificateUntrusted,
+        NSURLErrorServerCertificateHasBadDate,
+        NSURLErrorServerCertificateHasUnknownRoot,
+        NSURLErrorServerCertificateNotYetValid
+    ])
+    func untrustedCertificate(errorCode: Int) {
+        let resolution = NCLoginServerErrorClassifier.classify(NKError(errorCode: errorCode), serverURL: httpsURL)
+
+        #expect(resolution == .untrustedCertificate(host: "cloud.example.com"))
+    }
+
+    @Test("Other https failures offer http with the same port and path", arguments: [NSURLErrorCannotConnectToHost, NSURLErrorSecureConnectionFailed, 404])
+    func insecureFallback(errorCode: Int) {
+        let resolution = NCLoginServerErrorClassifier.classify(NKError(errorCode: errorCode), serverURL: httpsURL)
+
+        #expect(resolution == .insecureFallback(URL(string: "http://cloud.example.com:8443/nextcloud/")!))
+    }
+
+    @Test("Failures over http are shown")
+    func httpFailure() {
+        let httpURL = URL(string: "http://cloud.example.com/")!
+
+        #expect(NCLoginServerErrorClassifier.classify(NKError(errorCode: NSURLErrorCannotConnectToHost), serverURL: httpURL) == .generic)
+    }
+
+    @Test("Cancelled requests are shown")
+    func cancelled() {
+        #expect(NCLoginServerErrorClassifier.classify(NKError(errorCode: NSURLErrorCancelled), serverURL: httpsURL) == .generic)
+    }
+}
