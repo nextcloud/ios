@@ -34,7 +34,7 @@ class NCContextMenuViewer: NSObject {
         self.sender = sender
     }
 
-    func viewMenu(onToggleFavorite: (() -> Void)? = nil) -> UIMenu? {
+    func viewMenu(preferredTopElementSize: UIMenu.ElementSize = .medium, onToggleFavorite: (() -> Void)? = nil) -> UIMenu? {
         guard let controller,
               let capabilities = NCNetworking.shared.capabilities[metadata.account] else {
             return nil
@@ -131,7 +131,7 @@ class NCContextMenuViewer: NSObject {
 
         var finalMenuElements: [UIMenuElement] = []
 
-        if let topMenu = NCContextMenuActions.inlineMenu(children: topMenuItems, preferredElementSize: .medium) {
+        if let topMenu = NCContextMenuActions.inlineMenu(children: topMenuItems, preferredElementSize: preferredTopElementSize) {
             finalMenuElements.append(topMenu)
         }
 

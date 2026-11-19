@@ -111,7 +111,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
                                                    controller: self.controller,
                                                    viewController: self.tabBarController,
                                                    webView: true,
-                                                   sender: self).viewMenu { [weak self] in
+                                                   sender: self).viewMenu(preferredTopElementSize: .large) { [weak self] in
                         self?.toggleFavorite()
                     }
                     completion(menu?.children ?? [])
