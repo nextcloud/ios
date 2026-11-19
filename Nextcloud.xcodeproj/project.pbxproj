@@ -2316,6 +2316,8 @@
 		AA52EB442D42AC500089C348 /* NextcloudUnitTests */ = {
 			isa = PBXGroup;
 			children = (
+				DCCD8BFC693B6BB556D97C47 /* NCLoginAppConfigTests.swift */,
+				CE2A4CC67E2712B70FCFC090 /* NCLoginServerErrorClassifierTests.swift */,
 				AC13ADAF2026101300000001 /* NCMediaAdaptiveLayoutViewTests.swift */,
 				C0DEDA7E30C1000100A00001 /* NCAutoUploadDateTests.swift */,
 				320C20803A58DAF7575440A8 /* NKErrorUserFriendlyMessageTests.swift */,
@@ -2345,8 +2347,6 @@
 				AA8D31692D4123B200FE2775 /* DownloadLimitViewModel.swift */,
 				AA8D316A2D4123B200FE2775 /* NCShareDownloadLimitTableViewController.swift */,
 				AA8D316B2D4123B200FE2775 /* NCShareDownloadLimitTableViewControllerDelegate.swift */,
-				DCCD8BFC693B6BB556D97C47 /* NCLoginAppConfigTests.swift */,
-				CE2A4CC67E2712B70FCFC090 /* NCLoginServerErrorClassifierTests.swift */,
 				AA8D316C2D4123B200FE2775 /* NCShareDownloadLimitViewController.swift */,
 			);
 			path = DownloadLimit;
@@ -3562,6 +3562,11 @@
 		F7BFFA621A24D7300044ED85 /* Login */ = {
 			isa = PBXGroup;
 			children = (
+				5F79FDB4AA1ACCC1AD414CDD /* NCLoginAppConfig.swift */,
+				BCEB88BE3EAFDCE905D77064 /* NCLoginCoordinator.swift */,
+				987B4F1236F0EF15BF30BA8F /* NCLoginHostingController.swift */,
+				4E0AE8A484BEB1B166E78D2A /* NCLoginServerErrorClassifier.swift */,
+				3EB910C38B261399FAD2F20A /* NCProviderSignUp.swift */,
 				F702F2F025EE5CDA008F8E80 /* NCLogin.storyboard */,
 				F702F2F625EE5CEC008F8E80 /* NCLogin.swift */,
 				F745B252222D88AE00346520 /* NCLoginQRCode.swift */,
@@ -3578,11 +3583,6 @@
 				B6DE60601BB3410D92EB99EC /* Passcode */,
 				F39170A82CB8201B006127BC /* FileAutoRenamer+Extensions.swift */,
 				F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */,
-				5F79FDB4AA1ACCC1AD414CDD /* NCLoginAppConfig.swift */,
-				BCEB88BE3EAFDCE905D77064 /* NCLoginCoordinator.swift */,
-				987B4F1236F0EF15BF30BA8F /* NCLoginHostingController.swift */,
-				4E0AE8A484BEB1B166E78D2A /* NCLoginServerErrorClassifier.swift */,
-				3EB910C38B261399FAD2F20A /* NCProviderSignUp.swift */,
 				F752BA042E58C05200616A26 /* Maintenance.swift */,
 				F7F562FF2E15761500631A11 /* MigrationMultiDomains.swift */,
 				F76D364528A4F8BF00214537 /* NCActivityIndicator.swift */,
@@ -4702,6 +4702,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				729609D38218F8A21700723C /* NCLoginAppConfigTests.swift in Sources */,
+				C7724CB38D2A7B4B98CA1AFA /* NCLoginServerErrorClassifierTests.swift in Sources */,
 				AB1028260000000000090120 /* NCShareRecentFoldersStore.swift in Sources */,
 				AB1028260000000000090121 /* NCShareRecentFoldersStoreTests.swift in Sources */,
 				BAF64949B487A080A98F83F2 /* NKErrorUserFriendlyMessageTests.swift in Sources */,
@@ -4736,8 +4738,6 @@
 				AAA7BC302D3E3B88008F1A22 /* CapabilityResponse.swift in Sources */,
 				F3374A942D674454002A38F9 /* AssistantUITests.swift in Sources */,
 				AA3C85EB2D36BBFB00F74F12 /* OCSResponse.swift in Sources */,
-				729609D38218F8A21700723C /* NCLoginAppConfigTests.swift in Sources */,
-				C7724CB38D2A7B4B98CA1AFA /* NCLoginServerErrorClassifierTests.swift in Sources */,
 				AA74AA972D3172D100BE3458 /* UITestError.swift in Sources */,
 				AA3C85E82D36B08C00F74F12 /* UITestBackend.swift in Sources */,
 				AA8E03DC2D2FBAC200E7E89C /* DownloadLimitUITests.swift in Sources */,
@@ -5029,6 +5029,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5E6D3241C08B33DD08B09FE /* NCLoginAppConfig.swift in Sources */,
+				AB0BFE5B60D759FFBDEE99FF /* NCLoginCoordinator.swift in Sources */,
+				2A3D983FCEC820C453EDD1CC /* NCLoginHostingController.swift in Sources */,
+				DE4831E27DECD1D32A381E00 /* NCLoginServerErrorClassifier.swift in Sources */,
+				C27C31EC91411047C288D266 /* NCProviderSignUp.swift in Sources */,
 				AB1028260000000000090110 /* NCShareRecentFoldersStore.swift in Sources */,
 				AB1028260000000000080000 /* NCShareViewModel+Accounts.swift in Sources */,
 				AB1028260000000000080001 /* NCShareViewModel+Folders.swift in Sources */,
@@ -5492,11 +5497,6 @@
 				F7C55C8F2FB5B045004A974F /* NCBrand.swift in Sources */,
 				F72A493A306AA8B600A49375 /* NCPreferences.swift in Sources */,
 				F7C55C8E2FB5B03D004A974F /* NCGlobal.swift in Sources */,
-				B5E6D3241C08B33DD08B09FE /* NCLoginAppConfig.swift in Sources */,
-				AB0BFE5B60D759FFBDEE99FF /* NCLoginCoordinator.swift in Sources */,
-				2A3D983FCEC820C453EDD1CC /* NCLoginHostingController.swift in Sources */,
-				DE4831E27DECD1D32A381E00 /* NCLoginServerErrorClassifier.swift in Sources */,
-				C27C31EC91411047C288D266 /* NCProviderSignUp.swift in Sources */,
 				F72A493B306AA8DC00A49375 /* AwakeMode.swift in Sources */,
 				F7C55CC92FB5CE74004A974F /* ActionViewController.swift in Sources */,
 				F7C55C9B2FB5B1A7004A974F /* UIColor+Extension.swift in Sources */,
