@@ -98,14 +98,18 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             image: NCImageCache.shared.getImageButtonMore(),
             primaryAction: nil,
             menu: UIMenu(title: "", children: [
-                UIDeferredMenuElement.uncached { [self] completion in
-                    if let menu = NCContextMenuViewer(metadata: self.metadata,
-                                                      controller: self.tabBarController as? NCMainTabBarController,
-                                                      viewController: self.tabBarController,
-                                                      webView: true,
-                                                      sender: self).viewMenu() {
-                        completion(menu.children)
+                UIDeferredMenuElement.uncached { [weak self] completion in
+                    guard let self else {
+                        completion([])
+                        return
                     }
+
+                    let menu = NCContextMenuViewer(metadata: self.metadata,
+                                                   controller: self.controller,
+                                                   viewController: self.tabBarController,
+                                                   webView: true,
+                                                   sender: self).viewMenu()
+                    completion(menu?.children ?? [])
                 }
             ]))
         let group = UIBarButtonItemGroup(
