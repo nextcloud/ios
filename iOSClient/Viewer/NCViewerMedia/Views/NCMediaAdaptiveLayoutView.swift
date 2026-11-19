@@ -6,7 +6,7 @@ import UIKit
 
 /// Single experimental switch for images, audio and both video engines. See ../README.md.
 enum NCMediaAdaptiveLayoutConfiguration {
-    /// Keep disabled for TestFlight regression checks of the normal viewer before enabling the experiment.
+    /// Set to false for TestFlight regression checks of the normal viewer.
     static let isAdaptiveLayoutEnabled = false
 }
 
@@ -17,6 +17,7 @@ final class NCMediaAdaptiveLayoutView: UIView {
     private let normalControlsView: UIView
     private let makeAdaptiveControlsView: () -> UIView?
     private var adaptiveControlsView: UIView?
+    private var foldSeparatorView: UIView?
     private var normalLayoutConstraints: [NSLayoutConstraint] = []
 
     /// Container eligibility, inherited from the central switch and selected media type.
@@ -124,6 +125,13 @@ final class NCMediaAdaptiveLayoutView: UIView {
         if let division = foldedDivision {
             mediaView.frame = CGRect(x: bounds.minX, y: bounds.minY, width: bounds.width, height: division.minY - bounds.minY)
             adaptiveControlsView?.frame = CGRect(x: bounds.minX, y: division.maxY, width: bounds.width, height: bounds.maxY - division.maxY)
+            if foldSeparatorView == nil {
+                let separator = NCFoldSeparator.makeContentView()
+                addSubview(separator)
+                foldSeparatorView = separator
+            }
+            foldSeparatorView?.frame = CGRect(x: bounds.minX, y: division.midY - NCFoldSeparator.height / 2,
+                                               width: bounds.width, height: NCFoldSeparator.height)
         } else if isLayoutEnabled {
             mediaView.frame = bounds
             adaptiveControlsView?.frame = bounds
@@ -136,6 +144,7 @@ final class NCMediaAdaptiveLayoutView: UIView {
 
         normalControlsView.isHidden = isFolded
         adaptiveControlsView?.isHidden = !isFolded
+        foldSeparatorView?.isHidden = !isFolded
         isFoldedLayout = isFolded
         onLayoutModeChanged?(isFolded)
     }
