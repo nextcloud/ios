@@ -66,6 +66,14 @@ final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
 
     /// Accounts of other Nextcloud apps on this device which are not added here yet.
     func loadSharedAccounts() -> [SharedAccount] {
+        // Their sheet would still be open when the managed configuration logs in by itself.
+        switch appConfigAction {
+        case .createAccount, .requestAppPassword:
+            return []
+        case .prefill, nil:
+            break
+        }
+
         guard let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps),
               let shareAccounts = NKShareAccounts().getShareAccount(at: directory, application: UIApplication.shared) else {
             return []
@@ -149,7 +157,10 @@ final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
             return
         }
 
-        guard let host = URL(string: serverURL) else { return }
+        guard let host = URL(string: serverURL) else {
+            await showErrorBanner(windowScene: presenter?.view.window?.windowScene, error: .urlError)
+            return
+        }
 
         do {
             try await addAccount(host: host, user: user, password: password)

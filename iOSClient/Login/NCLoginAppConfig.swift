@@ -24,7 +24,7 @@ enum NCLoginAppConfig {
         guard let serverURL = value(in: managed, for: global.configuration_serverUrl, placeholder: nil) else { return nil }
 
         let user = value(in: managed, for: global.configuration_username, placeholder: "username")
-        let password = value(in: managed, for: global.configuration_password, placeholder: "password")
+        let password = value(in: managed, for: global.configuration_password, placeholder: "password", trimming: false)
         let appPassword = value(in: managed, for: global.configuration_apppassword, placeholder: "apppassword")
 
         if let user, let appPassword {
@@ -38,9 +38,15 @@ enum NCLoginAppConfig {
         return .prefill(serverURL: serverURL)
     }
 
-    /// MDM templates ship the key name as a placeholder value.
-    private static func value(in managed: [String: Any], for key: String, placeholder: String?) -> String? {
-        guard let value = managed[key] as? String, !value.isEmpty, value.lowercased() != placeholder else { return nil }
+    /// MDM templates ship the key name as a placeholder value. Only passwords keep surrounding whitespace.
+    private static func value(in managed: [String: Any], for key: String, placeholder: String?, trimming: Bool = true) -> String? {
+        guard var value = managed[key] as? String else { return nil }
+
+        if trimming {
+            value = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+
+        guard !value.isEmpty, value.lowercased() != placeholder else { return nil }
 
         return value
     }

@@ -40,6 +40,14 @@ struct NCLoginAppConfigTests {
         #expect(action(managed) == .requestAppPassword(serverURL: server, user: "jane", password: "plain"))
     }
 
+    @Test("Surrounding whitespace is trimmed except from the password")
+    func trimming() {
+        #expect(action(["serverUrl": " \(server)\n"]) == .prefill(serverURL: server))
+        #expect(action(["serverUrl": server, "username": " jane ", "apppassword": "secret\n"]) == .createAccount(serverURL: server, user: "jane", appPassword: "secret"))
+        #expect(action(["serverUrl": server, "username": "jane", "password": " pass "]) == .requestAppPassword(serverURL: server, user: "jane", password: " pass "))
+        #expect(action(["serverUrl": "  "]) == nil)
+    }
+
     @Test("Template placeholder values are ignored")
     func placeholders() {
         let managed = ["serverUrl": server, "username": "Username", "password": "password", "apppassword": "AppPassword"]
