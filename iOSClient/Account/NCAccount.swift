@@ -172,6 +172,8 @@ class NCAccount: NSObject {
         NCPreferences().clearAllKeysPushNotification(account: account)
         // Remove Account Server in Error
         NCNetworking.shared.removeServerErrorAccount(account)
+        // Stop offering the account to other apps
+        _ = await updateAppsShareAccounts()
     }
 
     func deleteAllAccounts() async {
