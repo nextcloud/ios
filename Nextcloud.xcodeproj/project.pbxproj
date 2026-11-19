@@ -7071,7 +7071,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
 			requirement = {
-				branch = TAG_FAVORITE;
+				branch = main;
 				kind = branch;
 			};
 		};
