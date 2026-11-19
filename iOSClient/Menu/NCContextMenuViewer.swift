@@ -34,7 +34,7 @@ class NCContextMenuViewer: NSObject {
         self.sender = sender
     }
 
-    func viewMenu() -> UIMenu? {
+    func viewMenu(onToggleFavorite: (() -> Void)? = nil) -> UIMenu? {
         guard let controller,
               let capabilities = NCNetworking.shared.capabilities[metadata.account] else {
             return nil
@@ -70,8 +70,8 @@ class NCContextMenuViewer: NSObject {
             )
         }
 
-        if !metadata.lock {
-            topMenuItems.append(NCContextMenuActions.favorite(metadata: metadata))
+        if onToggleFavorite != nil || !metadata.lock {
+            topMenuItems.append(NCContextMenuActions.favorite(metadata: metadata, onToggle: onToggleFavorite))
         }
 
         if !webView {

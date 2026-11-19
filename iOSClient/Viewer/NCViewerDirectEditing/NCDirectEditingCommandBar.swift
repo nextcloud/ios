@@ -4,12 +4,18 @@
 
 import SwiftUI
 
-struct NCTextCommandBar: View {
+struct NCDirectEditingCommandBar: View {
     static let height: CGFloat = 48
+    private static let maximumFileNameWidth: CGFloat = 220
 
     @Environment(\.colorScheme) private var colorScheme
 
+    var fileName: String
+    var isFavorite: Bool
+    var isUpdatingFavorite = false
+    let onBack: () -> Void
     let onDetails: () -> Void
+    let onToggleFavorite: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -23,9 +29,36 @@ struct NCTextCommandBar: View {
 
     private var commands: some View {
         HStack(spacing: 0) {
-            Spacer(minLength: 0)
+            Button(action: onBack) {
+                Image(systemName: "chevron.backward.circle")
+                    .font(.system(size: 28))
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(Text(NSLocalizedString("_back_", comment: "")))
             Divider()
                 .frame(height: 24)
+            Text(verbatim: fileName)
+                .font(.subheadline.weight(.semibold))
+                .lineLimit(1)
+                .truncationMode(.middle)
+                .frame(maxWidth: Self.maximumFileNameWidth, alignment: .leading)
+                .padding(.horizontal, 12)
+            Divider()
+                .frame(height: 24)
+            Spacer(minLength: 0)
+            Button(action: onToggleFavorite) {
+                Image(systemName: isFavorite ? "star.fill" : "star")
+                    .environment(\.symbolVariants, .none)
+                    .symbolRenderingMode(.monochrome)
+                    .foregroundStyle(isFavorite ? Color(uiColor: NCBrandColor.shared.yellowFavorite) : Color.secondary)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .disabled(isUpdatingFavorite)
+            .accessibilityLabel(Text(NSLocalizedString(isFavorite ? "_remove_favorites_" : "_add_favorites_", comment: "")))
             Button(action: onDetails) {
                 HStack(spacing: 6) {
                     Image(systemName: "info.circle")
@@ -38,6 +71,7 @@ struct NCTextCommandBar: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            .layoutPriority(1)
         }
         .frame(height: Self.height)
         .background(Color(uiColor: .systemGray5), in: RoundedRectangle(cornerRadius: 16))

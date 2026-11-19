@@ -18,31 +18,32 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     var imageIcon: UIImage?
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?
+    private var isUpdatingFavorite = false {
+        didSet { foldedCommandBar?.rootView.isUpdatingFavorite = isUpdatingFavorite }
+    }
 
     // IPHONE DUO EXPERIMENTAL
     private static let isAdaptiveLayoutEnabled = true
     private static let commandBarSpacing: CGFloat = 2
 
-    private var usesTextAdaptiveLayout: Bool {
+    private var usesAdaptiveLayout: Bool {
         guard #available(iOS 27.1, *) else { return false }
-        return Self.isAdaptiveLayoutEnabled && editor == global.editorText
+        return Self.isAdaptiveLayoutEnabled
     }
 
-    private final class TextAdaptiveWebView: WKWebView {
+    private final class AdaptiveEditorWebView: WKWebView {
         override var inputAccessoryView: UIView? {
             nil
         }
     }
 
     private var foldedBottomConstraint: NSLayoutConstraint?
-    private var standardTopConstraint: NSLayoutConstraint?
-    private var foldedTopConstraint: NSLayoutConstraint?
-    private var foldedCommandBar: UIView?
+    private var foldedCommandBar: UIHostingController<NCDirectEditingCommandBar>?
     private var foldedCommandBarHeightConstraint: NSLayoutConstraint?
     private var isViewerVisible = false
     private var navigationBarWasHidden: Bool?
-    private var isTextEditorReady = false
-    private var didFinishTextNavigation = false
+    private var isTextReadyForFocus = false
+    private var didFinishEditorNavigation = false
     private var foldFocusAttempt: UUID?
     // END IPHONE DUO EXPERIMENTAL
 
@@ -108,7 +109,9 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
                                                    controller: self.controller,
                                                    viewController: self.tabBarController,
                                                    webView: true,
-                                                   sender: self).viewMenu()
+                                                   sender: self).viewMenu { [weak self] in
+                        self?.toggleFavorite()
+                    }
                     completion(menu?.children ?? [])
                 }
             ]))
@@ -135,9 +138,9 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             let dropSharedWorkersScript = WKUserScript(source: "delete window.SharedWorker;", injectionTime: WKUserScriptInjectionTime.atDocumentStart, forMainFrameOnly: false)
             config.userContentController.addUserScript(dropSharedWorkersScript)
         }
-        if usesTextAdaptiveLayout {
+        if usesAdaptiveLayout {
             extendedLayoutIncludesOpaqueBars = true
-            webView = TextAdaptiveWebView(frame: .zero, configuration: config)
+            webView = AdaptiveEditorWebView(frame: .zero, configuration: config)
         } else {
             webView = WKWebView(frame: .zero, configuration: config)
         }
@@ -150,14 +153,11 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         webView.translatesAutoresizingMaskIntoConstraints = false
         webView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0).isActive = true
         webView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: 0).isActive = true
-        let topConstraint = webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
-        topConstraint.isActive = true
+        webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         bottomConstraint?.isActive = true
 
-        if #available(iOS 27.1, *), usesTextAdaptiveLayout {
-            standardTopConstraint = topConstraint
-            foldedTopConstraint = webView.topAnchor.constraint(equalTo: view.topAnchor)
+        if #available(iOS 27.1, *), usesAdaptiveLayout {
             foldedBottomConstraint = webView.bottomAnchor.constraint(equalTo: view.topAnchor)
             configureFoldedCommandBar()
         }
@@ -178,7 +178,9 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     @available(iOS 27.1, *)
     private func configureFoldedCommandBar() {
-        let commandBar = NCTextCommandBar { [weak self] in
+        let commandBar = NCDirectEditingCommandBar(fileName: metadata.fileNameView, isFavorite: metadata.favorite) { [weak self] in
+            self?.viewUnload()
+        } onDetails: { [weak self] in
             guard let self else { return }
             NCCreate().createShare(
                 controller: self.controller,
@@ -186,6 +188,8 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
                 metadata: self.metadata,
                 page: .activity
             )
+        } onToggleFavorite: { [weak self] in
+            self?.toggleFavorite()
         }
         let hostingController = UIHostingController(rootView: commandBar)
         hostingController.safeAreaRegions = []
@@ -196,7 +200,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         bar.translatesAutoresizingMaskIntoConstraints = false
         bar.isHidden = true
         view.addSubview(bar)
-        let heightConstraint = bar.heightAnchor.constraint(equalToConstant: NCTextCommandBar.height)
+        let heightConstraint = bar.heightAnchor.constraint(equalToConstant: NCDirectEditingCommandBar.height)
         NSLayoutConstraint.activate([
             bar.topAnchor.constraint(equalTo: webView.bottomAnchor, constant: Self.commandBarSpacing),
             bar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
@@ -204,18 +208,16 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             heightConstraint
         ])
         hostingController.didMove(toParent: self)
-        foldedCommandBar = bar
+        foldedCommandBar = hostingController
         foldedCommandBarHeightConstraint = heightConstraint
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        guard usesTextAdaptiveLayout,
+        guard usesAdaptiveLayout,
               #available(iOS 27.1, *),
-              let standardTopConstraint,
               let bottomConstraint,
-              let foldedTopConstraint,
               let foldedBottomConstraint else {
             return
         }
@@ -234,34 +236,33 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             }
 
         let isFolded = fold != nil
-        let showsCommandBar = isFolded && didFinishTextNavigation && isTextEditorReady
         if let fold {
-            let commandBarSpace = NCTextCommandBar.height + Self.commandBarSpacing
-            let foldOffset = max(0, fold.minY - view.bounds.minY - commandBarSpace)
+            let commandBarSpace = NCDirectEditingCommandBar.height + Self.commandBarSpacing
+            let availableBottom = min(fold.minY, safeFrame.maxY + bottomConstraint.constant)
+            let bottomY = max(safeFrame.minY, availableBottom - commandBarSpace)
+            let foldOffset = bottomY - view.bounds.minY
             if foldedBottomConstraint.constant != foldOffset {
                 foldedBottomConstraint.constant = foldOffset
             }
-            let hostedHeight = NCTextCommandBar.height + fold.height
+            let hostedHeight = NCDirectEditingCommandBar.height + fold.height
             if let foldedCommandBarHeightConstraint, foldedCommandBarHeightConstraint.constant != hostedHeight {
                 foldedCommandBarHeightConstraint.constant = hostedHeight
             }
         }
 
         if isFolded != foldedBottomConstraint.isActive {
-            let standardConstraints = [standardTopConstraint, bottomConstraint]
-            let foldedConstraints = [foldedTopConstraint, foldedBottomConstraint]
             if isFolded {
-                NSLayoutConstraint.deactivate(standardConstraints)
-                NSLayoutConstraint.activate(foldedConstraints)
+                bottomConstraint.isActive = false
+                foldedBottomConstraint.isActive = true
             } else {
-                NSLayoutConstraint.deactivate(foldedConstraints)
-                NSLayoutConstraint.activate(standardConstraints)
+                foldedBottomConstraint.isActive = false
+                bottomConstraint.isActive = true
                 foldFocusAttempt = nil
             }
             webView.scrollView.contentInsetAdjustmentBehavior = isFolded ? .never : .automatic
             webView.scrollView.topEdgeEffect.isHidden = isFolded
         }
-        foldedCommandBar?.isHidden = !showsCommandBar
+        foldedCommandBar?.view.isHidden = !(isFolded && didFinishEditorNavigation)
         updateAdaptiveNavigationBar(hidden: isFolded && isViewerVisible)
         requestFoldedTextFocus()
     }
@@ -279,10 +280,11 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     }
 
     private func requestFoldedTextFocus() {
-        guard usesTextAdaptiveLayout,
+        guard usesAdaptiveLayout,
+              editor == global.editorText,
               isViewerVisible,
-              didFinishTextNavigation,
-              isTextEditorReady,
+              didFinishEditorNavigation,
+              isTextReadyForFocus,
               foldedBottomConstraint?.isActive == true,
               foldFocusAttempt == nil else {
             return
@@ -332,7 +334,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if usesTextAdaptiveLayout {
+        if usesAdaptiveLayout {
             isViewerVisible = true
             updateAdaptiveNavigationBar(hidden: foldedBottomConstraint?.isActive == true)
             requestFoldedTextFocus()
@@ -345,7 +347,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if usesTextAdaptiveLayout {
+        if usesAdaptiveLayout {
             isViewerVisible = false
             updateAdaptiveNavigationBar(hidden: false, animated: animated)
         }
@@ -389,6 +391,44 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         navigationController?.popViewController(animated: true)
     }
 
+    private func toggleFavorite() {
+        guard !isUpdatingFavorite, metadata.status == global.metadataStatusNormal else { return }
+        isUpdatingFavorite = true
+
+        Task {
+            defer { isUpdatingFavorite = false }
+
+            let account = metadata.account
+            let ocId = metadata.ocId
+            let serverUrl = metadata.serverUrl
+            let fileName = metadata.fileNameView
+            let filePath = utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: serverUrl, session: session)
+            let favorite = !metadata.favorite
+            let result = await NextcloudKit.shared.setFavoriteTagAsync(filePath: filePath, favorite: favorite, account: account)
+            guard result.error == .success else {
+                nkLog(tag: global.logTagViewer, emoji: .error, message: "Direct Editing favorite: \(result.error.logDescription)", consoleOnly: true)
+                let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                await showErrorBanner(windowScene: windowScene, error: result.error, context: .favorite(fileName: fileName))
+                return
+            }
+
+            await database.setMetadataFavoriteAsync(ocId: ocId, favorite: favorite)
+            metadata.favorite = favorite
+            foldedCommandBar?.rootView.isFavorite = favorite
+
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferChange(networkingStatus: self.global.networkingStatusFavorite,
+                                        account: account,
+                                        fileName: fileName,
+                                        serverUrl: serverUrl,
+                                        selector: nil,
+                                        ocId: ocId,
+                                        destination: nil,
+                                        error: .success)
+            }
+        }
+    }
+
     // MARK: - NotificationCenter
 
     @objc func keyboardDidShow(notification: Notification) {
@@ -397,14 +437,14 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         let keyboardFrame = frameInfo.cgRectValue
         let height = keyboardFrame.size.height
         bottomConstraint?.constant = -height
-        if usesTextAdaptiveLayout {
+        if usesAdaptiveLayout {
             view.setNeedsLayout()
         }
     }
 
     @objc func keyboardWillHide(notification: Notification) {
         bottomConstraint?.constant = 0
-        if usesTextAdaptiveLayout {
+        if usesAdaptiveLayout {
             view.setNeedsLayout()
         }
     }
@@ -448,9 +488,8 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
         case "loaded", "documentLoaded":
             print(mobileMessage.command)
-            if usesTextAdaptiveLayout, message.frameInfo.isMainFrame, mobileMessage.command == "loaded" {
-                isTextEditorReady = true
-                view.setNeedsLayout()
+            if usesAdaptiveLayout, editor == global.editorText, message.frameInfo.isMainFrame, mobileMessage.command == "loaded" {
+                isTextReadyForFocus = true
                 requestFoldedTextFocus()
             }
 
@@ -476,6 +515,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             }
             metadata.fileName = newName
             metadata.fileNameView = newName
+            foldedCommandBar?.rootView.fileName = newName
 
         case "hyperlink":
             guard let values = mobileMessage.values,
@@ -631,11 +671,11 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     }
 
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        if usesTextAdaptiveLayout {
-            isTextEditorReady = false
-            didFinishTextNavigation = false
+        if usesAdaptiveLayout {
+            isTextReadyForFocus = false
+            didFinishEditorNavigation = false
             foldFocusAttempt = nil
-            foldedCommandBar?.isHidden = true
+            foldedCommandBar?.view.isHidden = true
             view.setNeedsLayout()
         }
         NCActivityIndicator.shared.start(backgroundView: view)
@@ -647,8 +687,8 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         NCActivityIndicator.shared.stop()
-        if usesTextAdaptiveLayout {
-            didFinishTextNavigation = true
+        if usesAdaptiveLayout {
+            didFinishEditorNavigation = true
             view.setNeedsLayout()
         }
     }
@@ -758,11 +798,13 @@ extension NCViewerDirectEditing: NCTransferDelegate {
                         destination: String?,
                         error: NKError) {
         Task {@MainActor in
-            if networkingStatus == NCGlobal.shared.networkingStatusFavorite,
-               self.metadata.ocId == ocId,
-               let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) {
-                self.metadata = metadata
-            }
+            guard networkingStatus == global.networkingStatusFavorite,
+                  metadata.account == account, metadata.ocId == ocId,
+                  let metadata = await database.getMetadataFromOcIdAsync(ocId),
+                  !isUpdatingFavorite else { return }
+
+            self.metadata = metadata
+            foldedCommandBar?.rootView.isFavorite = metadata.favorite
         }
     }
 }

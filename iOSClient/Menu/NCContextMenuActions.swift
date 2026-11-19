@@ -68,17 +68,29 @@ enum NCContextMenuActions {
 
     static func favorite(
         metadata: tableMetadata,
+        onToggle: (() -> Void)? = nil,
         completion: (() -> Void)? = nil
     ) -> UIAction {
-        UIAction(
+        let symbol: String
+        let color: UIColor
+        if onToggle != nil {
+            symbol = metadata.favorite ? "star.fill" : "star"
+            color = metadata.favorite ? NCBrandColor.shared.yellowFavorite : .secondaryLabel
+        } else {
+            symbol = metadata.favorite ? "star.slash.fill" : "star.fill"
+            color = NCBrandColor.shared.yellowFavorite
+        }
+
+        return UIAction(
             title: metadata.favorite
                 ? NSLocalizedString("_remove_favorites_", comment: "")
                 : NSLocalizedString("_add_favorites_", comment: ""),
-            image: NCUtility().loadImage(
-                named: metadata.favorite ? "star.slash.fill" : "star.fill",
-                colors: [NCBrandColor.shared.yellowFavorite]
-            )
+            image: NCUtility().loadImage(named: symbol, colors: [color])
         ) { _ in
+            if let onToggle {
+                onToggle()
+                return
+            }
             Task {
                 await NCNetworking.shared.setStatusWaitFavorite(metadata)
                 completion?()
