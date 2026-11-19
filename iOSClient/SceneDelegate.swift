@@ -126,11 +126,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
 
             if NCBrandOptions.shared.disable_intro {
-                if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
-                    let navigationController = UINavigationController(rootViewController: viewController)
-                    window?.rootViewController = navigationController
-                    window?.makeKeyAndVisible()
-                }
+                window?.rootViewController = NCLoginHostingController(controller: nil, presentation: .windowRoot)
+                window?.makeKeyAndVisible()
             } else {
                 if let navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController {
                     window?.rootViewController = navigationController

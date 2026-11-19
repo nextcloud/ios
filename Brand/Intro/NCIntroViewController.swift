@@ -12,17 +12,15 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     @IBOutlet weak var introCollectionView: UICollectionView!
     @IBOutlet weak var pageControl: UIPageControl!
 
-    weak var delegate: NCIntroViewController?
     // Controller
     var controller: NCMainTabBarController?
 
-    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let titles = [NSLocalizedString("_intro_1_title_", comment: ""), NSLocalizedString("_intro_2_title_", comment: ""), NSLocalizedString("_intro_3_title_", comment: ""), NSLocalizedString("_intro_4_title_", comment: "")]
     private let images = [UIImage(named: "intro1"), UIImage(named: "intro2"), UIImage(named: "intro3"), UIImage(named: "intro4")]
     private var timer: Timer?
     private var textColor: UIColor = .white
     private var textColorOpponent: UIColor = .black
-    private var activeLoginProvider: NCLoginProvider?
+    private var providerSignUp: NCProviderSignUp?
 
     // MARK: - View Life Cycle
 
@@ -158,19 +156,19 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     }
 
     @IBAction func login(_ sender: Any) {
-        if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
-            viewController.controller = self.controller
-            self.navigationController?.pushViewController(viewController, animated: true)
-        }
+        let viewController = NCLoginHostingController(controller: controller, presentation: .pushed)
+        navigationController?.pushViewController(viewController, animated: true)
     }
 
     @IBAction func signupWithProvider(_ sender: Any) {
-        let loginProvider = NCLoginProvider()
-        loginProvider.controller = self.controller
-        loginProvider.initialURLString = NCBrandOptions.shared.linkloginPreferredProviders
-        loginProvider.presentingViewController = self
-        loginProvider.startAuthentication()
-        self.activeLoginProvider = loginProvider
+        guard let url = URL(string: NCBrandOptions.shared.linkloginPreferredProviders) else { return }
+
+        let coordinator = NCLoginCoordinator(controller: controller, presentation: .pushed)
+        coordinator.presenter = self
+
+        let providerSignUp = NCProviderSignUp(coordinator: coordinator)
+        providerSignUp.start(url: url)
+        self.providerSignUp = providerSignUp
     }
 
     @IBAction func host(_ sender: Any) {

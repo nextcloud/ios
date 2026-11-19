@@ -437,15 +437,15 @@ class NCFiles: NCCollectionViewCommon {
         let currentAccount = session.account
 
         if database.getAllTableAccount().isEmpty {
-            let navigationController: UINavigationController?
+            let rootViewController: UIViewController?
 
-            if NCBrandOptions.shared.disable_intro, let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
-                navigationController = UINavigationController(rootViewController: viewController)
+            if NCBrandOptions.shared.disable_intro {
+                rootViewController = NCLoginHostingController(controller: nil, presentation: .windowRoot)
             } else {
-                navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController
+                rootViewController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController
             }
 
-            UIApplication.shared.mainAppWindow?.rootViewController = navigationController
+            UIApplication.shared.mainAppWindow?.rootViewController = rootViewController
         } else if let account = tblAccount?.account, account != currentAccount {
             Task {
                 await NCAccount().changeAccount(account, userProfile: nil, controller: controller)

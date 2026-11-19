@@ -142,10 +142,8 @@
 "_privacy_legal_"           = "Privacy and Legal Policy";
 "_source_code_"             = "Get source code";
 "_account_select_"          = "Select the account";
-"_account_select_to_add_"   = "Select the account to add";
 "_remove_local_account_"    = "Remove local account";
 "_want_delete_account_"     = "Do you want to remove local account?";
-"_prevent_http_redirection_"= "The redirection in HTTP is not permitted.";
 "_http_account_insecure_"   = "This account uses an insecure HTTP server address. Data is transmitted unencrypted.";
 "_https_failed_try_http_"   = "A secure connection could not be established. Do you want to try insecure HTTP instead? Your data will be transmitted unencrypted.";
 "_single_file_conflict_title_" = "File conflict";
@@ -267,9 +265,6 @@
 "_set_log_level_"               = "Set Log level";
 "_connect_server_anyway_"       = "Do you want to connect to the server anyway?";
 "_server_is_trusted_"           = "Do you consider this server trusted?";
-"_connection_error_"            = "Connection error";
-"_login_url_"                   = "Server address https:// …";
-"_login_url_error_"             = "URL error, please verify your server URL";
 "_favorites_"                   = "Favorites";
 "_favorite_short_"              = "Favorite";
 "_tutorial_favorite_view_"      = "Files and folders you mark as favorites will show up here";
@@ -347,7 +342,6 @@
 "_good_afternoon_"              = "Good afternoon";
 "_good_evening_"                = "Good evening";
 "_good_night_"                  = "Good night";
-"_servers_"                     = "Servers";
 "_select_server_"               = "Please select a server...";
 
 // MARK: Share
@@ -470,8 +464,6 @@
 "_file_already_exists_"                 = "Could not complete the operation, a file with the same name exists.";
 "_err_permission_microphone_"           = "Please allow Microphone usage from Settings.";
 "_err_permission_photolibrary_"         = "Please allow Photos from Settings.";
-"_qrcode_not_authorized_"   = "This app is not authorized to use the Back Camera.";
-"_qrcode_not_supported_"    = "QR code not supported by the current device.";
 "_create_voice_memo_"       = "Create voice memo";
 "_voice_memo_start_"        = "Tap to start";
 "_voice_memo_stop_"         = "Tap to stop";
@@ -532,8 +524,6 @@
 "_description_lockscreenwidget_"    = "Keep an eye on available space and recent activity";
 
 "_keep_running_"            = "Keep the app running for a better user experience.";
-"_apps_nextcloud_detect_"   = "Detected %@ apps";
-"_add_existing_account_"    = "Other %@ Apps has been detected, do you want to add an existing account?";
 "_status_in_progress_"      = "Status reading in progress …";
 "_status_e2ee_on_server_"   = "The end-to-end encryption is already configured in the server but not yet enabled on this device.";
 "_status_e2ee_not_setup_"   = "The end-to-end encryption is not yet configured on the server.";
@@ -681,10 +671,6 @@
 "_assistant_error_generate_response_" = "Could not generate response. Please try again.";
 
 // MARK: Client certificate
-"_no_client_cert_found_"         = "The server is requesting a client certificate.";
-"_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate? \n Note that the .p12 certificate must be installed on your device first by clicking on it and installing it as an Identitity Certificate Profile in Settings. The certificate MUST also have a password as that is a requirement by iOS.";
-"_client_cert_enter_password_"   = "Enter the password for the chosen certificate";
-"_client_cert_wrong_password_"   = "Sorry, you entered an invalid password.";
 
 // MARK: Login poll
 

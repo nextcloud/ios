@@ -14,7 +14,7 @@ class NCAccount: NSObject {
     let global = NCGlobal.shared
     let utilityFileSystem = NCUtilityFileSystem()
 
-    func createAccount(viewController: UIViewController, urlBase: String, user: String, password: String, controller: NCMainTabBarController?) async {
+    func createAccount(viewController: UIViewController, urlBase: String, user: String, password: String, controller: NCMainTabBarController?) async throws {
         nkLog(debug: "Creating account...")
 
         var urlBase = urlBase
@@ -43,11 +43,7 @@ class NCAccount: NSObject {
 
             nkLog(error: "Getting the user profile failed: \(error.logDescription)")
 
-            let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.userFriendlyMessage() ?? error.localizedGenericMessage, preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-            viewController.present(alertController, animated: true)
-
-            return
+            throw error
         }
 
         // Login log debug
@@ -271,12 +267,9 @@ class NCAccount: NSObject {
                 await changeAccount(account, userProfile: nil, controller: controller)
         } else {
             if NCBrandOptions.shared.disable_intro {
-                if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
-                    viewController.controller = controller
-                    let navigationController = UINavigationController(rootViewController: viewController)
-                    navigationController.modalPresentationStyle = .fullScreen
-                    controller?.present(navigationController, animated: true)
-                }
+                let viewController = NCLoginHostingController(controller: controller, presentation: .modal)
+                viewController.modalPresentationStyle = .fullScreen
+                controller?.present(viewController, animated: true)
             } else {
                 if let navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController {
                     if let viewController = navigationController.topViewController as? NCIntroViewController {

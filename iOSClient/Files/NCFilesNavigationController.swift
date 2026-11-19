@@ -115,12 +115,9 @@ class NCFilesNavigationController: NCMainNavigationController {
 
             let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: utility.loadImage(named: "person.crop.circle.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)) { _ in
                 if NCBrandOptions.shared.disable_intro {
-                    if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
-                        viewController.controller = self.controller
-                        let navigationController = UINavigationController(rootViewController: viewController)
-                        navigationController.modalPresentationStyle = .fullScreen
-                        self.present(navigationController, animated: true)
-                    }
+                    let viewController = NCLoginHostingController(controller: self.controller, presentation: .modal)
+                    viewController.modalPresentationStyle = .fullScreen
+                    self.present(viewController, animated: true)
                 } else {
                     if let navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController {
                         if let viewController = navigationController.topViewController as? NCIntroViewController {

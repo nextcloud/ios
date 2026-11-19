@@ -21,10 +21,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     var notificationSettings: UNNotificationSettings?
 
-    var loginFlowV2Token = ""
-    var loginFlowV2Endpoint = ""
-    var loginFlowV2Login = ""
-
     let backgroundQueue = DispatchQueue(label: "com.nextcloud.bgTaskQueue")
     let global = NCGlobal.shared
 

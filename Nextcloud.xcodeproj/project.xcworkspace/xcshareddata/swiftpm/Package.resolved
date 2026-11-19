@@ -227,15 +227,6 @@
       }
     },
     {
-      "identity" : "qrcodereader.swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/yannickl/QRCodeReader.swift",
-      "state" : {
-        "revision" : "5020b5a47199d8ba80c83a4b4fafd70e9dc9dc7f",
-        "version" : "10.1.1"
-      }
-    },
-    {
       "identity" : "realm-core",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-core.git",
