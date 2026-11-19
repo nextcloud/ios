@@ -200,15 +200,6 @@
       }
     },
     {
-      "identity" : "nextcloudkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/nextcloud/NextcloudKit",
-      "state" : {
-        "branch" : "main",
-        "revision" : "b1bbf831daca1cca49a7b5637e3cf290b7a9393e"
-      }
-    },
-    {
       "identity" : "openssl-package",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/krzyzanowskim/OpenSSL-Package",
