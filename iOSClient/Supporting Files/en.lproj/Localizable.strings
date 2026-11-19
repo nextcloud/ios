@@ -670,10 +670,6 @@
 "_assistant_error_load_messages_" = "Could not load messages. Please try again.";
 "_assistant_error_generate_response_" = "Could not generate response. Please try again.";
 
-// MARK: Client certificate
-
-// MARK: Login poll
-
 // MARK: File name validator
 "_file_name_validator_error_reserved_name_" = "\"%@\" is a forbidden name.";
 "_file_name_new_extension_" = "Changing the extension might cause this file to open in a different application.";
