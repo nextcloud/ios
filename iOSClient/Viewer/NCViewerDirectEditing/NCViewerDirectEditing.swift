@@ -39,7 +39,9 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     private var foldedBottomConstraint: NSLayoutConstraint?
     private var foldedCommandBar: UIHostingController<NCDirectEditingCommandBar>?
-    private var foldedCommandBarHeightConstraint: NSLayoutConstraint?
+    private var foldedCommandBarBottomConstraint: NSLayoutConstraint?
+    private var foldDecorationView: UIView?
+    private var foldDecorationCenterConstraint: NSLayoutConstraint?
     private var isViewerVisible = false
     private var navigationBarWasHidden: Bool?
     private var isTextReadyForFocus = false
@@ -158,8 +160,8 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         bottomConstraint?.isActive = true
 
         if #available(iOS 27.1, *), usesAdaptiveLayout {
-            foldedBottomConstraint = webView.bottomAnchor.constraint(equalTo: view.topAnchor)
             configureFoldedCommandBar()
+            configureFoldDecoration()
         }
 
         if let url = URL(string: link) {
@@ -200,16 +202,42 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         bar.translatesAutoresizingMaskIntoConstraints = false
         bar.isHidden = true
         view.addSubview(bar)
-        let heightConstraint = bar.heightAnchor.constraint(equalToConstant: NCDirectEditingCommandBar.height)
+        let bottom = bar.bottomAnchor.constraint(equalTo: view.topAnchor)
         NSLayoutConstraint.activate([
-            bar.topAnchor.constraint(equalTo: webView.bottomAnchor, constant: Self.commandBarSpacing),
+            bottom,
             bar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             bar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            heightConstraint
+            bar.heightAnchor.constraint(equalToConstant: NCDirectEditingCommandBar.height)
         ])
         hostingController.didMove(toParent: self)
         foldedCommandBar = hostingController
-        foldedCommandBarHeightConstraint = heightConstraint
+        foldedCommandBarBottomConstraint = bottom
+        foldedBottomConstraint = webView.bottomAnchor.constraint(equalTo: bar.topAnchor, constant: -Self.commandBarSpacing)
+    }
+
+    private func configureFoldDecoration() {
+        let hostingController = UIHostingController(rootView: NCDirectEditingCommandBar.FoldDecoration())
+        hostingController.safeAreaRegions = []
+        addChild(hostingController)
+
+        let decoration: UIView = hostingController.view
+        decoration.backgroundColor = .clear
+        decoration.translatesAutoresizingMaskIntoConstraints = false
+        decoration.isUserInteractionEnabled = false
+        decoration.accessibilityElementsHidden = true
+        decoration.isHidden = true
+        view.addSubview(decoration)
+
+        let center = decoration.centerYAnchor.constraint(equalTo: view.topAnchor)
+        NSLayoutConstraint.activate([
+            center,
+            decoration.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            decoration.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            decoration.heightAnchor.constraint(equalToConstant: NCDirectEditingCommandBar.FoldDecoration.height)
+        ])
+        hostingController.didMove(toParent: self)
+        foldDecorationView = decoration
+        foldDecorationCenterConstraint = center
     }
 
     override func viewDidLayoutSubviews() {
@@ -218,11 +246,14 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         guard usesAdaptiveLayout,
               #available(iOS 27.1, *),
               let bottomConstraint,
-              let foldedBottomConstraint else {
+              let foldedBottomConstraint,
+              let foldedCommandBarBottomConstraint,
+              let foldDecorationCenterConstraint else {
             return
         }
 
         let safeFrame = view.safeAreaLayoutGuide.layoutFrame
+        let commandBarSpace = NCDirectEditingCommandBar.height + Self.commandBarSpacing
         let fold = view.reservedRegions(kind: .division)
             .filter(\.isActive)
             .map { safeFrame.intersection($0.frame) }
@@ -231,22 +262,19 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
                     frame.width >= safeFrame.width - 1 &&
                     frame.width > frame.height &&
                     frame.height > 0 &&
-                    frame.minY > safeFrame.minY &&
+                    frame.minY >= safeFrame.minY + commandBarSpace &&
                     frame.maxY < safeFrame.maxY
             }
 
         let isFolded = fold != nil
         if let fold {
-            let commandBarSpace = NCDirectEditingCommandBar.height + Self.commandBarSpacing
-            let availableBottom = min(fold.minY, safeFrame.maxY + bottomConstraint.constant)
-            let bottomY = max(safeFrame.minY, availableBottom - commandBarSpace)
-            let foldOffset = bottomY - view.bounds.minY
-            if foldedBottomConstraint.constant != foldOffset {
-                foldedBottomConstraint.constant = foldOffset
+            let barBottom = fold.minY - view.bounds.minY
+            if foldedCommandBarBottomConstraint.constant != barBottom {
+                foldedCommandBarBottomConstraint.constant = barBottom
             }
-            let hostedHeight = NCDirectEditingCommandBar.height + fold.height
-            if let foldedCommandBarHeightConstraint, foldedCommandBarHeightConstraint.constant != hostedHeight {
-                foldedCommandBarHeightConstraint.constant = hostedHeight
+            let decorationCenter = fold.midY - view.bounds.minY
+            if foldDecorationCenterConstraint.constant != decorationCenter {
+                foldDecorationCenterConstraint.constant = decorationCenter
             }
         }
 
@@ -262,7 +290,9 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             webView.scrollView.contentInsetAdjustmentBehavior = isFolded ? .never : .automatic
             webView.scrollView.topEdgeEffect.isHidden = isFolded
         }
-        foldedCommandBar?.view.isHidden = !(isFolded && didFinishEditorNavigation)
+        let hidesFoldedControls = !(isFolded && didFinishEditorNavigation)
+        foldedCommandBar?.view.isHidden = hidesFoldedControls
+        foldDecorationView?.isHidden = hidesFoldedControls
         updateAdaptiveNavigationBar(hidden: isFolded && isViewerVisible)
         requestFoldedTextFocus()
     }
@@ -437,16 +467,10 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         let keyboardFrame = frameInfo.cgRectValue
         let height = keyboardFrame.size.height
         bottomConstraint?.constant = -height
-        if usesAdaptiveLayout {
-            view.setNeedsLayout()
-        }
     }
 
     @objc func keyboardWillHide(notification: Notification) {
         bottomConstraint?.constant = 0
-        if usesAdaptiveLayout {
-            view.setNeedsLayout()
-        }
     }
 
     @objc private func grabRichDocumentsFocus() {
@@ -676,6 +700,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             didFinishEditorNavigation = false
             foldFocusAttempt = nil
             foldedCommandBar?.view.isHidden = true
+            foldDecorationView?.isHidden = true
             view.setNeedsLayout()
         }
         NCActivityIndicator.shared.start(backgroundView: view)

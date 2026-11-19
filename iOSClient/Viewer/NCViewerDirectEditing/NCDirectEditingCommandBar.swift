@@ -8,8 +8,6 @@ struct NCDirectEditingCommandBar: View {
     static let height: CGFloat = 48
     private static let maximumFileNameWidth: CGFloat = 220
 
-    @Environment(\.colorScheme) private var colorScheme
-
     var fileName: String
     var isFavorite: Bool
     var isUpdatingFavorite = false
@@ -18,13 +16,7 @@ struct NCDirectEditingCommandBar: View {
     let onToggleFavorite: () -> Void
 
     var body: some View {
-        VStack(spacing: 0) {
-            commands
-            foldDecoration
-                .frame(maxHeight: .infinity)
-                .allowsHitTesting(false)
-                .accessibilityHidden(true)
-        }
+        commands
     }
 
     private var commands: some View {
@@ -113,34 +105,39 @@ struct NCDirectEditingCommandBar: View {
         }
     }
 
-    private var foldDecoration: some View {
-        let isDark = colorScheme == .dark
+    struct FoldDecoration: View {
+        static let height: CGFloat = 16
 
-        return LinearGradient(
-            stops: [
-                .init(color: .clear, location: 0),
-                .init(color: .black.opacity(0.08), location: 0.25),
-                .init(color: .white.opacity(isDark ? 0.24 : 0.72), location: 0.43),
-                .init(color: .white.opacity(isDark ? 0.38 : 0.9), location: 0.47),
-                .init(color: .black.opacity(isDark ? 0.65 : 0.45), location: 0.52),
-                .init(color: .black.opacity(isDark ? 0.36 : 0.18), location: 0.68),
-                .init(color: .clear, location: 1)
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-        .frame(height: 16)
-        .mask {
+        @Environment(\.colorScheme) private var colorScheme
+
+        var body: some View {
+            let isDark = colorScheme == .dark
+
             LinearGradient(
                 stops: [
                     .init(color: .clear, location: 0),
-                    .init(color: .black, location: 0.035),
-                    .init(color: .black, location: 0.965),
+                    .init(color: .black.opacity(0.08), location: 0.25),
+                    .init(color: .white.opacity(isDark ? 0.24 : 0.72), location: 0.43),
+                    .init(color: .white.opacity(isDark ? 0.38 : 0.9), location: 0.47),
+                    .init(color: .black.opacity(isDark ? 0.65 : 0.45), location: 0.52),
+                    .init(color: .black.opacity(isDark ? 0.36 : 0.18), location: 0.68),
                     .init(color: .clear, location: 1)
                 ],
-                startPoint: .leading,
-                endPoint: .trailing
+                startPoint: .top,
+                endPoint: .bottom
             )
+            .mask {
+                LinearGradient(
+                    stops: [
+                        .init(color: .clear, location: 0),
+                        .init(color: .black, location: 0.035),
+                        .init(color: .black, location: 0.965),
+                        .init(color: .clear, location: 1)
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            }
         }
     }
 }
