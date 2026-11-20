@@ -60,27 +60,7 @@ extension NCNetworking: NCTransferDelegate {
             case NCGlobal.shared.selectorLoadFileQuickLook:
                 guard metadata.isModifiableWithQuickLook else { return }
 
-                let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                          fileName: metadata.fileNameView,
-                                                                                          userId: metadata.userId,
-                                                                                          urlBase: metadata.urlBase)
-                let fileNameTemp = NSTemporaryDirectory() + metadata.fileNameView
-                let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameTemp), isEditingEnabled: true, metadata: metadata)
-                if let image = UIImage(contentsOfFile: fileNamePath) {
-                    if let data = image.jpegData(compressionQuality: 1) {
-                        do {
-                            try data.write(to: URL(fileURLWithPath: fileNameTemp))
-                        } catch {
-                            return
-                        }
-                    }
-                    let navigationController = UINavigationController(rootViewController: viewerQuickLook)
-                    navigationController.modalPresentationStyle = .fullScreen
-                    controller.present(navigationController, animated: true)
-                } else {
-                    self.utilityFileSystem.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
-                    controller.present(viewerQuickLook, animated: true)
-                }
+                NCViewerQuickLook.presentEditor(metadata: metadata, from: controller)
 
             case NCGlobal.shared.selectorLoadFileView:
                 guard !isAppInBackground

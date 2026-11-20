@@ -560,3 +560,15 @@ final class NCMediaViewerTransferDelegate: NSObject, NCTransferDelegate {
         }
     }
 }
+
+// MARK: - Photo Editing
+
+extension NCMediaViewerHostingController: NCViewerPhotoEditSource {
+    func downloadOriginalForEditing(_ metadata: tableMetadata) async throws {
+        try await model.downloadOriginalImage(for: metadata)
+    }
+
+    func isShowingMedia(ocId: String) -> Bool {
+        viewIfLoaded?.window != nil && model.selectedMetadata?.ocId == ocId
+    }
+}
