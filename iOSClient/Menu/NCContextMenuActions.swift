@@ -68,6 +68,7 @@ enum NCContextMenuActions {
 
     static func favorite(
         metadata: tableMetadata,
+        onToggle: (() -> Void)? = nil,
         completion: (() -> Void)? = nil
     ) -> UIAction {
         UIAction(
@@ -79,6 +80,10 @@ enum NCContextMenuActions {
                 colors: [NCBrandColor.shared.yellowFavorite]
             )
         ) { _ in
+            if let onToggle {
+                onToggle()
+                return
+            }
             Task {
                 await NCNetworking.shared.setStatusWaitFavorite(metadata)
                 completion?()
@@ -377,11 +382,15 @@ enum NCContextMenuActions {
         controller: NCMainTabBarController?,
         completion: (() -> Void)? = nil
     ) -> UIAction {
+        let canUnlockAppLock = !metadata.userId.isEmpty &&
+            metadata.ownerId == metadata.userId &&
+            metadata.lockOwnerType == NKLockType.app.rawValue
+        let canUnlock = metadata.canUnlock(as: metadata.userId) || canUnlockAppLock
         let titleKey: String
         var subtitleKey = ""
         let image: UIImage?
 
-        if !metadata.canUnlock(as: metadata.userId), isLocked {
+        if !canUnlock, isLocked {
             titleKey = String(format: NSLocalizedString("_locked_by_", comment: ""), metadata.lockOwnerDisplayName)
             image = UIImage(systemName: "lock")
         } else {
@@ -396,7 +405,7 @@ enum NCContextMenuActions {
             title: NSLocalizedString(titleKey, comment: ""),
             subtitle: subtitleKey,
             image: image,
-            attributes: metadata.canUnlock(as: metadata.userId) ? [] : [.disabled]
+            attributes: canUnlock ? [] : [.disabled]
         ) { _ in
             Task {
                 let error = await NCNetworking.shared.lockUnlockFile(metadata, shouldLock: !isLocked)

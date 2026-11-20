@@ -149,6 +149,8 @@
 		C0DEA070306D000100000008 /* NCAutoUploadAssetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEA070306D000100000007 /* NCAutoUploadAssetTests.swift */; };
 		C0DECA022F65000100C0D001 /* NCCameraRollTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */; };
 		C0DEDA7E30C1000100A00002 /* NCAutoUploadDateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEDA7E30C1000100A00001 /* NCAutoUploadDateTests.swift */; };
+		C32F8B752EF1985200427C03 /* NCDirectEditingCommandBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C32F8B742EF1985200427C03 /* NCDirectEditingCommandBar.swift */; };
+		BFA11D182026111900000002 /* NCFoldSeparator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA11D182026111900000001 /* NCFoldSeparator.swift */; };
 		CB3666201AF7550816B5CD6A /* NCContextMenuComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8932E90EC4278026D86CCCC9 /* NCContextMenuComment.swift */; };
 		D56DFFE5D5014F66A7C9FED0 /* PasscodeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6C501EF1104A6A8569D9C1 /* PasscodeUITests.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
@@ -1446,6 +1448,8 @@
 		C0DEA070306D000100000007 /* NCAutoUploadAssetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAutoUploadAssetTests.swift; sourceTree = "<group>"; };
 		C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCameraRollTests.swift; sourceTree = "<group>"; };
 		C0DEDA7E30C1000100A00001 /* NCAutoUploadDateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAutoUploadDateTests.swift; sourceTree = "<group>"; };
+		C32F8B742EF1985200427C03 /* NCDirectEditingCommandBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCDirectEditingCommandBar.swift; sourceTree = "<group>"; };
+		BFA11D182026111900000001 /* NCFoldSeparator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFoldSeparator.swift; sourceTree = "<group>"; };
 		CE0CD9A00D74B01055F238E9 /* NCErrorContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCErrorContext.swift; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
 		F0A1B2C330B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerFloatingTitleViewTests.swift; sourceTree = "<group>"; };
@@ -2742,6 +2746,7 @@
 			children = (
 				F75A60542FB4493A00F8247E /* NCDirectEditorAdapter.swift */,
 				F72D404823D2082500A97FD0 /* NCViewerDirectEditing.swift */,
+				C32F8B742EF1985200427C03 /* NCDirectEditingCommandBar.swift */,
 				F73D11F9253C5F4800DF9BEC /* NCViewerDirectEditing.storyboard */,
 			);
 			path = NCViewerDirectEditing;
@@ -3246,6 +3251,7 @@
 				F768823D2C0DD304001CF441 /* LazyView.swift */,
 				F768823F2C0DD30B001CF441 /* ViewOnAppear.swift */,
 				F75CA1462962F13700B01130 /* NCHUDView.swift */,
+				BFA11D182026111900000001 /* NCFoldSeparator.swift */,
 			);
 			path = GUI;
 			sourceTree = "<group>";
@@ -5132,6 +5138,8 @@
 				F71916142E2901FB00E13E96 /* NCNetworking+Upload.swift in Sources */,
 				F704B5E92430C0B800632F5F /* NCCreateFormUploadConflictCell.swift in Sources */,
 				F72D404923D2082500A97FD0 /* NCViewerDirectEditing.swift in Sources */,
+				C32F8B752EF1985200427C03 /* NCDirectEditingCommandBar.swift in Sources */,
+				BFA11D182026111900000002 /* NCFoldSeparator.swift in Sources */,
 				AFCE353927E5DE0500FEA6C2 /* Shareable.swift in Sources */,
 				F77BB746289984CA0090FC19 /* UIViewController+Extension.swift in Sources */,
 				F700510522DF6A89003A3356 /* NCShare.swift in Sources */,

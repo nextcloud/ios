@@ -361,7 +361,7 @@ struct NCMediaAdaptiveLayoutViewTests {
     }
 
     @Test("Folding and unfolding preserve the video surface and controls")
-    func foldingPreservesViews() {
+    func foldingPreservesViews() throws {
         let videoView = UIView()
         let controlsView = UIView()
         let adaptiveControlsView = UIView()
@@ -386,6 +386,11 @@ struct NCMediaAdaptiveLayoutViewTests {
         #expect(adaptiveControlsView.frame == CGRect(x: 0, y: 320, width: 800, height: 280))
         #expect(controlsView.isHidden)
         #expect(!adaptiveControlsView.isHidden)
+        let separator = try #require(view.subviews.last)
+        #expect(separator !== adaptiveControlsView)
+        #expect(separator.frame.midY == fold.midY)
+        #expect(!separator.isHidden)
+        #expect(!separator.isUserInteractionEnabled)
 
         view.updateLayout(divisionFrames: [fold])
         #expect(modes == [true])
@@ -397,7 +402,8 @@ struct NCMediaAdaptiveLayoutViewTests {
         #expect(modes == [true, false])
         #expect(!controlsView.isHidden)
         #expect(adaptiveControlsView.isHidden)
-        #expect(view.subviews.count == 3)
+        #expect(separator.isHidden)
+        #expect(view.subviews.count == 4)
         #expect(view.subviews[0] === videoView)
         #expect(view.subviews[1] === controlsView)
         #expect(view.subviews[2] === adaptiveControlsView)
