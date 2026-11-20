@@ -164,23 +164,31 @@ extension NCCollectionViewCommon {
         self.collectionView.reloadData()
     }
 
+    @MainActor
     func unifiedSearchMore(metadataForSection: NCMetadataForSection?) async {
+        guard isSearchingMode,
+              let metadataForSection,
+              dataSource.getMetadataForSection(metadataForSection.section) === metadataForSection,
+              !metadataForSection.unifiedSearchInProgress,
+              let lastSearchResult = metadataForSection.lastSearchResult,
+              let cursor = lastSearchResult.cursor,
+              let searchResultStore else {
+            return
+        }
+
         defer {
-            metadataForSection?.unifiedSearchInProgress = false
-            Task {
-                if !isSearchingMode {
+            metadataForSection.unifiedSearchInProgress = false
+            if isSearchingMode {
+                if dataSource.getMetadataForSection(metadataForSection.section) === metadataForSection {
+                    collectionView.reloadData()
+                }
+            } else {
+                Task {
                     await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferReloadDataSource(serverUrl: self.serverUrl, requestData: true, status: nil)
                     }
                 }
             }
-        }
-
-        guard let metadataForSection = metadataForSection,
-              let lastSearchResult = metadataForSection.lastSearchResult,
-              let cursor = lastSearchResult.cursor,
-              let searchResultStore else {
-            return
         }
 
         metadataForSection.unifiedSearchInProgress = true
@@ -202,19 +210,29 @@ extension NCCollectionViewCommon {
         }
 
         guard isSearchingMode,
+              dataSource.getMetadataForSection(metadataForSection.section) === metadataForSection,
               results.error == .success,
               let searchResult = results.searchResult,
-                let provider = self.dataSource.getProvider(id: searchResult.id) else {
+              let provider = dataSource.getProvider(id: searchResult.id) else {
             return
         }
 
-        if let metadatas = await getSearchResultMetadatas(
+        let metadatas = await getSearchResultMetadatas(
             session: session,
             provider: provider,
             searchResult: searchResult
-        ) {
-            self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
-            self.collectionView.reloadData()
+        )
+        guard let metadatas,
+              isSearchingMode,
+              dataSource.getMetadataForSection(metadataForSection.section) === metadataForSection else {
+            return
+        }
+
+        // The Files provider can return a cursor even after it runs out of entries.
+        let isExhausted = provider.id == "files" && (searchResult.entries.isEmpty || searchResult.cursor == cursor)
+        metadataForSection.lastSearchResult = isExhausted ? nil : searchResult
+        if !metadatas.isEmpty {
+            dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection)
         }
     }
 

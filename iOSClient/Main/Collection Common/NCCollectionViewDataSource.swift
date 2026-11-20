@@ -156,7 +156,7 @@ class NCCollectionViewDataSource: NSObject {
 
     // MARK: -
 
-    func appendMetadatasToSection(_ metadatas: [tableMetadata], metadataForSection: NCMetadataForSection, lastSearchResult: NKSearchResult) {
+    func appendMetadatasToSection(_ metadatas: [tableMetadata], metadataForSection: NCMetadataForSection) {
         guard let sectionIndex = getSectionIndex(metadataForSection.section)
         else {
             return
@@ -165,7 +165,6 @@ class NCCollectionViewDataSource: NSObject {
 
         self.metadatas.append(contentsOf: metadatas)
         metadataForSection.metadatas.append(contentsOf: metadatas)
-        metadataForSection.lastSearchResult = lastSearchResult
         metadataForSection.createMetadatas()
 
         for metadata in metadatas {
