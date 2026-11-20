@@ -20,7 +20,6 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     private var timer: Timer?
     private var textColor: UIColor = .white
     private var textColorOpponent: UIColor = .black
-    private var providerSignUp: NCProviderSignUp?
 
     // MARK: - View Life Cycle
 
@@ -166,9 +165,9 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         let coordinator = NCLoginCoordinator(controller: controller, presentation: .pushed)
         coordinator.presenter = self
 
-        let providerSignUp = NCProviderSignUp(coordinator: coordinator)
-        providerSignUp.start(url: url)
-        self.providerSignUp = providerSignUp
+        let navigationController = UINavigationController(rootViewController: NCProviderSignUp(url: url, coordinator: coordinator))
+        navigationController.modalPresentationStyle = .fullScreen
+        present(navigationController, animated: true)
     }
 
     @IBAction func host(_ sender: Any) {
