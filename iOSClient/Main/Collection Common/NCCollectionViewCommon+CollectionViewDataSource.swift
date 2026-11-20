@@ -224,9 +224,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 if isSearchingMode {
                     emptyImage = utility.loadImage(named: "magnifyingglass", colors: [NCBrandColor.shared.getElement(account: session.account)])
-                    if self.searchTask?.state == .running {
+                    if activeSearchID != nil {
                         emptyTitle = NSLocalizedString("_search_in_progress_", comment: "")
-                    } else {
+                    } else if let completedSearchText, completedSearchText == searchResultText {
                         emptyTitle = NSLocalizedString("_search_no_record_found_", comment: "")
                     }
                     emptyDescription = NSLocalizedString("_search_instruction_", comment: "")

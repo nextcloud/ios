@@ -76,7 +76,8 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     // Search
     //
     internal var isSearchingMode: Bool = false
-    internal var networkSearchInProgress: Bool = false
+    internal var activeSearchID: UUID?
+    internal var completedSearchText: String?
     internal var searchOperationHandle = NKOperationHandle()
     internal var searchTask: URLSessionTask?
     internal var searchResultText: String?
@@ -545,7 +546,13 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     }
 
     func updateSearchResults(for searchController: UISearchController) {
-        searchResultText = searchController.searchBar.text
+        let text = searchController.searchBar.text
+        guard searchResultText != text else { return }
+
+        searchResultText = text
+        if isSearchingMode, completedSearchText != nil, dataSource.isEmpty() {
+            collectionView.reloadData()
+        }
     }
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
@@ -554,6 +561,9 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
         if !isSearchingMode {
             self.isSearchingMode = true
+            self.activeSearchID = nil
+            self.completedSearchText = nil
+            setSearchBarLoading(false)
             self.dataSource.removeAll()
             self.collectionView.reloadData()
         }
@@ -608,9 +618,11 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
     func willDismissSearchController(_ searchController: UISearchController) {
         self.isSearchingMode = false
-        self.networkSearchInProgress = false
+        self.activeSearchID = nil
+        self.completedSearchText = nil
         self.searchResultText = nil
         self.searchResultStore = nil
+        setSearchBarLoading(false)
 
         // (+)
         self.mainNavigationController?.menuPlus?.updatePlusButtonVisibility()
