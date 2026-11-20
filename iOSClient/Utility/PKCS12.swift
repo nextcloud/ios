@@ -16,7 +16,7 @@ class PKCS12 {
     let label: String?
     let keyID: NSData?
     let trust: SecTrust?
-    let certChain: [SecTrust]?
+    let certChain: [SecCertificate]?
     let identity: SecIdentity?
 
     /// Creates a PKCS12 instance from a piece of data.
@@ -49,9 +49,12 @@ class PKCS12 {
             return nil
         }
 
-        // In most cases you should pass nil to the certArray parameter. You only need to supply an array of intermediate certificates if the server needs those intermediate certificates to authenticate the client. Typically this isn’t necessary because the server already has a copy of the relevant intermediate certificates.
+        // Send the intermediate certificates (the chain without the leaf), so servers that only
+        // know the root CA can still build the path to the client certificate.
+        // kSecImportItemCertChain is an array of SecCertificate with the leaf first.
         // See https://developer.apple.com/documentation/foundation/urlcredential/1418121-init
-        return URLCredential(identity: identity, certificates: nil, persistence: .none)
+        let intermediates = pkcs12.certChain.map { Array($0.dropFirst()) } ?? []
+        return URLCredential(identity: identity, certificates: intermediates.isEmpty ? nil : intermediates, persistence: .none)
     }
 }
 
