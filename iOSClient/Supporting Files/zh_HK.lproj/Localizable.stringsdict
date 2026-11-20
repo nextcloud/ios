@@ -12,10 +12,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
-			<key>one</key>
-			<string>Upload %ld file</string>
 			<key>other</key>
-			<string>Upload %ld files</string>
+			<string>上傳 %ld 個檔案</string>
 		</dict>
 	</dict>
 	<key>_remaining_share_downloads_</key>
@@ -56,10 +54,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>You have %d file to back up</string>
 			<key>other</key>
-			<string>You have %d files to back up</string>
+			<string>您有 %d 個項目需要備份</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>
