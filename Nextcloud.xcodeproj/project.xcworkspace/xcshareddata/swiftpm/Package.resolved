@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk",
       "state" : {
-        "revision" : "dc6dfd442b1f3ec215ed62b8beb2623ffab010d6",
-        "version" : "13.1.1"
+        "revision" : "efad2b784dfae43404dc1fcfdf272981b235e71f",
+        "version" : "13.2.0"
       }
     },
     {
@@ -321,8 +321,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tilltue/TLPhotoPicker",
       "state" : {
-        "revision" : "4e948c4eecae0a164b746767701ed805a6e904d0",
-        "version" : "2.2.0"
+        "revision" : "bf441c101d15634ce62b7e9c2f31e9365de31021",
+        "version" : "2.2.1"
       }
     },
     {
