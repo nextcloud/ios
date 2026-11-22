@@ -35,6 +35,9 @@ extension BackgroundUploadExtension {
         request.setValue(nkSession.userAgent, forHTTPHeaderField: "User-Agent")
         request.setValue("Basic \(loginData.base64EncodedString())", forHTTPHeaderField: "Authorization")
         request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
+        if database.getTableAccount(account: metadata.account)?.autoUploadForceReupload != true {
+            request.setValue("*", forHTTPHeaderField: "If-None-Match")
+        }
         // Let Nextcloud create missing auto-upload folders and identify PhotoKit-specific requests.
         request.setValue("1", forHTTPHeaderField: "X-NC-WebDAV-Auto-Mkcol")
         request.setValue("1", forHTTPHeaderField: "X-NC-PhotoKit-Upload")

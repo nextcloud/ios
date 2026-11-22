@@ -283,6 +283,12 @@ extension BackgroundUploadExtension {
                 continue
             }
 
+            if let existing = await processExistingUpload(metadata: metadata, job: job) {
+                guard existing, try acknowledge(job: job, library: library) else { continue }
+                madeProgress = true
+                continue
+            }
+
             let authenticationRequired = isAuthenticationFailure(job: job)
             let retryLimitReached = !canAutomaticallyRetry(metadata: metadata)
             let queueSuspended = preferences.isBackgroundUploadSuspended(account: metadata.account)
@@ -416,6 +422,13 @@ extension BackgroundUploadExtension {
             }
 
             let sessionIdentifier = database.getTableAccount(account: metadata.account)?.autoUploadSessionIdentifier ?? ""
+            if !hasConfirmedUploadResponse(job: job),
+               let existing = await processExistingUpload(metadata: metadata, job: job) {
+                guard existing, try acknowledge(job: job, library: library) else { continue }
+                madeProgress = true
+                continue
+            }
+
             let uploadSucceeded: Bool
             let createNewJob: Bool
 
