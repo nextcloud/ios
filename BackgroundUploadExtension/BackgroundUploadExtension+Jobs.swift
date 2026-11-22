@@ -197,12 +197,14 @@ extension BackgroundUploadExtension {
                     continue
                 }
 
-                if !(job.responseHeaderFields?["oc-fileid"] ?? "").isEmpty {
-                    guard await processUploadSuccess(metadata: metadata, job: job) else { continue }
-                    await persistMetadataState(.completed, metadata: metadata)
-                } else if job.state == .succeeded {
-                    logError("Stop deferred for successful job without oc-fileid: \(jobIdentifier)")
-                    continue
+                if database.getTableAccount(account: metadata.account)?.autoUploadStart == true {
+                    if !(job.responseHeaderFields?["oc-fileid"] ?? "").isEmpty {
+                        guard await processUploadSuccess(metadata: metadata, job: job) else { continue }
+                        await persistMetadataState(.completed, metadata: metadata)
+                    } else if job.state == .succeeded {
+                        logError("Stop deferred for successful job without oc-fileid: \(jobIdentifier)")
+                        continue
+                    }
                 }
 
                 guard try acknowledge(job: job, library: library) else {

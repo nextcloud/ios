@@ -320,24 +320,55 @@ final class NCBackgroundUploadExtensionManager {
         nkLog(tag: global.logTagBackgroundUpload, message: message)
     }
 
-    /// Drains this account's jobs immediately; successful uploads are recorded before acknowledgement.
+    /// Requests cancellation and drops transfer metadata when Auto Upload is OFF.
+    /// Completed files remain on the server and are recovered by the next folder refresh.
     func cancelUploads(account: String) async {
         defer { NextcloudKit.flushLogger() }
         let library = PHPhotoLibrary.shared()
         let actions: [PHAssetResourceUploadJob.Action] = [.process, .retry, .acknowledge]
+        let stoppingAutoUpload = database.getTableAccount(account: account)?.autoUploadStart != true
         var handled = Set<String>()
         for action in actions {
             let jobs = PHAssetResourceUploadJob.fetchJobs(action: action, options: nil)
             for index in 0..<jobs.count {
                 let job = jobs.object(at: index)
-                guard handled.insert(job.localIdentifier).inserted,
-                      let metadata = await database.getMetadataAsync(backgroundUploadJobIdentifier: job.localIdentifier),
-                      metadata.account == account,
-                      metadata.backgroundUploadCancellationRequested else { continue }
+                guard handled.insert(job.localIdentifier).inserted else { continue }
+                guard let metadata = await database.getMetadataAsync(backgroundUploadJobIdentifier: job.localIdentifier) else {
+                    // OFF owns the whole PhotoKit queue. A single-transfer cancellation must
+                    // leave jobs being registered by the active extension alone.
+                    guard stoppingAutoUpload else { continue }
+                    do {
+                        var changed = false
+                        try library.performChangesAndWait {
+                            guard let request = PHAssetResourceUploadJobChangeRequest(for: job) else { return }
+                            if job.state == .registered || job.state == .pending {
+                                request.cancel()
+                            } else {
+                                request.acknowledge()
+                            }
+                            changed = true
+                        }
+                        if !changed { handled.remove(job.localIdentifier) }
+                    } catch {
+                        handled.remove(job.localIdentifier)
+                        logUploadMessage("Unable to clean up orphan background upload job \(job.localIdentifier): \(error)")
+                    }
+                    continue
+                }
+                guard metadata.account == account, metadata.backgroundUploadCancellationRequested else { continue }
 
                 let confirmed = !(job.responseHeaderFields?["oc-fileid"] ?? "").isEmpty
-                if confirmed {
-                    guard await recordUploadSuccess(metadata: metadata, job: job) else { continue }
+                var recorded = false
+                if !stoppingAutoUpload {
+                    if confirmed {
+                        guard await recordUploadSuccess(metadata: metadata, job: job) else { continue }
+                        recorded = true
+                    } else if job.state == .succeeded {
+                        // Preserve the existing result handling when cancelling a single transfer.
+                        continue
+                    }
+                }
+                if recorded {
                     metadata.status = global.metadataStatusNormal
                     metadata.session = ""
                     metadata.sessionTaskIdentifier = 0
@@ -350,10 +381,6 @@ final class NCBackgroundUploadExtensionManager {
                     metadata.backgroundUploadRetryCount = 0
                     metadata.backgroundUploadNextRetryDate = nil
                     await database.replaceMetadataAsync(ocId: metadata.ocIdTransfer, metadata: metadata)
-                } else if job.state == .succeeded {
-                    // Keep an unverified success recoverable instead of silently losing its result.
-                    logUploadMessage("Stop deferred for successful job without oc-fileid: \(job.localIdentifier)")
-                    continue
                 }
 
                 do {
@@ -367,8 +394,11 @@ final class NCBackgroundUploadExtensionManager {
                         }
                         changed = true
                     }
-                    guard changed else { continue }
-                    if confirmed {
+                    guard changed else {
+                        handled.remove(job.localIdentifier)
+                        continue
+                    }
+                    if recorded || metadata.status == global.metadataStatusNormal {
                         metadata.backgroundUploadJobIdentifier = ""
                         metadata.backgroundUploadCancellationRequested = false
                         await database.replaceMetadataAsync(ocId: metadata.ocIdTransfer, metadata: metadata)
@@ -377,11 +407,33 @@ final class NCBackgroundUploadExtensionManager {
                     }
                     logUploadMessage("Stopped background upload job: \(job.localIdentifier)")
                 } catch {
+                    // A job may have finished during cancellation; process its terminal result below.
+                    handled.remove(job.localIdentifier)
                     logUploadMessage("Unable to stop background upload job \(job.localIdentifier): \(error)")
                 }
             }
         }
-        _ = await disableIfIdle()
+        if stoppingAutoUpload {
+            // Discard the local transfers even if cancellation raced with completion or failed.
+            // PhotoKit job removal is best effort; folder refresh recovers completed server files.
+            let cancelled: [tableMetadata] = await database.getMetadatasAsync(predicate: NSPredicate(
+                format: "account == %@ AND sessionSelector == %@ AND backgroundUploadCancellationRequested == true AND backgroundUploadJobIdentifier != ''",
+                account, global.selectorUploadAutoUpload
+            ))
+            for metadata in cancelled {
+                if metadata.status == global.metadataStatusNormal {
+                    metadata.backgroundUploadJobIdentifier = ""
+                    metadata.backgroundUploadCancellationRequested = false
+                    await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+                } else {
+                    await database.deleteMetadataAsync(predicate: NSPredicate(
+                        format: "ocId == %@ AND backgroundUploadJobIdentifier == %@ AND backgroundUploadCancellationRequested == true AND status != %d",
+                        metadata.ocId, metadata.backgroundUploadJobIdentifier, global.metadataStatusNormal
+                    ))
+                }
+            }
+        }
+        _ = await disableIfIdle(force: stoppingAutoUpload)
     }
 
     /// Includes queued jobs and terminal results still waiting for acknowledgement.
@@ -390,9 +442,9 @@ final class NCBackgroundUploadExtensionManager {
         return actions.contains { PHAssetResourceUploadJob.fetchJobs(action: $0, options: nil).count > 0 }
     }
 
-    /// Disables the PhotoKit extension after the feature or auto upload is turned off and no jobs remain.
-    /// Active metadata defers disabling so cancellations and terminal results can still be reconciled.
-    func disableIfIdle() async -> Bool {
+    /// Disables the PhotoKit extension after the feature or Auto Upload is turned off.
+    /// An explicit stop forces disabling after cancellation, even if PhotoKit still exposes jobs.
+    func disableIfIdle(force: Bool = false) async -> Bool {
         // Foreground cleanup must not trigger the initial Photos permission prompt.
         guard PHPhotoLibrary.authorizationStatus(for: .readWrite) != .notDetermined else {
             return false
@@ -405,12 +457,14 @@ final class NCBackgroundUploadExtensionManager {
             return false
         }
 
-        let predicate = NSPredicate(format: "sessionSelector == %@ AND backgroundUploadJobIdentifier != ''", global.selectorUploadAutoUpload)
-        let metadatas: [tableMetadata] = await database.getMetadatasAsync(predicate: predicate)
+        if !force {
+            let predicate = NSPredicate(format: "sessionSelector == %@ AND backgroundUploadJobIdentifier != ''", global.selectorUploadAutoUpload)
+            let metadatas: [tableMetadata] = await database.getMetadatasAsync(predicate: predicate)
 
-        guard metadatas.isEmpty, !hasOutstandingUploadJobs() else {
-            nkLog(tag: global.logTagBackgroundUpload, message: "Background upload extension disable deferred: metadata or PhotoKit jobs still active")
-            return false
+            guard metadatas.isEmpty, !hasOutstandingUploadJobs() else {
+                nkLog(tag: global.logTagBackgroundUpload, message: "Background upload extension disable deferred: metadata or PhotoKit jobs still active")
+                return false
+            }
         }
 
         let library = PHPhotoLibrary.shared()

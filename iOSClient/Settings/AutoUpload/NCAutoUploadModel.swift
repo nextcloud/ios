@@ -240,8 +240,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             }
 
             if newValue {
-                if #available(iOS 27, *),
-                   await hasUnresolvedAutoUploadTransfers(account: accountIdentifier) {
+                if #available(iOS 27, *) {
                     await cancelAutoUploadTransfers(account: accountIdentifier)
                     guard !(await hasUnresolvedAutoUploadTransfers(account: accountIdentifier)) else {
                         autoUploadStart = false
@@ -278,9 +277,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
                 await database.setAutoUploadStartAsync(false, account: accountIdentifier)
                 await cancelAutoUploadTransfers(account: accountIdentifier)
 
-                if #available(iOS 27, *) {
-                    _ = await NCBackgroundUploadExtensionManager.shared.disableIfIdle()
-                }
                 autoUploadSinceDate = database.getTableAccount(account: accountIdentifier)?.autoUploadSinceDate
                 isChangingAutoUpload = false
             }
@@ -293,19 +289,12 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             account,
             NCGlobal.shared.selectorUploadAutoUpload
         ))
-        if !remaining.isEmpty { return true }
-        if #available(iOS 27, *) {
-            return NCBackgroundUploadExtensionManager.shared.hasOutstandingUploadJobs()
-        }
-        return false
+        // Realm owns the transfer state; leftover PhotoKit jobs alone must not block reactivation.
+        return !remaining.isEmpty
     }
 
     private func cancelAutoUploadTransfers(account: String) async {
         await database.requestBackgroundAutoUploadCancellationAsync(account: account)
-
-        if #available(iOS 27, *) {
-            await NCBackgroundUploadExtensionManager.shared.cancelUploads(account: account)
-        }
 
         let predicate = NSPredicate(
             format: "account == %@ AND sessionSelector == %@ AND backgroundUploadJobIdentifier == '' AND status != %d",
@@ -320,6 +309,12 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
         for metadata in metadatas {
             await NCNetworking.shared.cancelTask(metadata: metadata)
+        }
+        // Cancellation is requested above; discard transfer rows without waiting for callbacks.
+        await database.deleteMetadataAsync(predicate: predicate)
+
+        if #available(iOS 27, *) {
+            await NCBackgroundUploadExtensionManager.shared.cancelUploads(account: account)
         }
     }
 
