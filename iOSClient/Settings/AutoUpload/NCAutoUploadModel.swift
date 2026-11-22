@@ -240,8 +240,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             }
 
             if newValue {
-                if #available(iOS 27, *),
-                   await hasUnresolvedAutoUploadTransfers(account: accountIdentifier) {
+                if #available(iOS 27, *) {
                     await cancelAutoUploadTransfers(account: accountIdentifier)
                     guard !(await hasUnresolvedAutoUploadTransfers(account: accountIdentifier)) else {
                         autoUploadStart = false
@@ -293,11 +292,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             account,
             NCGlobal.shared.selectorUploadAutoUpload
         ))
-        if !remaining.isEmpty { return true }
-        if #available(iOS 27, *) {
-            return NCBackgroundUploadExtensionManager.shared.hasOutstandingUploadJobs()
-        }
-        return false
+        // Realm owns this account's transfer state; PhotoKit may retain orphan or other-account jobs.
+        return !remaining.isEmpty
     }
 
     private func cancelAutoUploadTransfers(account: String) async {

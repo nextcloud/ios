@@ -330,10 +330,24 @@ final class NCBackgroundUploadExtensionManager {
             let jobs = PHAssetResourceUploadJob.fetchJobs(action: action, options: nil)
             for index in 0..<jobs.count {
                 let job = jobs.object(at: index)
-                guard handled.insert(job.localIdentifier).inserted,
-                      let metadata = await database.getMetadataAsync(backgroundUploadJobIdentifier: job.localIdentifier),
-                      metadata.account == account,
-                      metadata.backgroundUploadCancellationRequested else { continue }
+                guard handled.insert(job.localIdentifier).inserted else { continue }
+                guard let metadata = await database.getMetadataAsync(backgroundUploadJobIdentifier: job.localIdentifier) else {
+                    guard await canDiscardOrphanUploadJob(job) else { continue }
+                    do {
+                        try library.performChangesAndWait {
+                            guard let request = PHAssetResourceUploadJobChangeRequest(for: job) else { return }
+                            if job.state == .registered || job.state == .pending {
+                                request.cancel()
+                            } else {
+                                request.acknowledge()
+                            }
+                        }
+                    } catch {
+                        logUploadMessage("Unable to clean up orphan background upload job \(job.localIdentifier): \(error)")
+                    }
+                    continue
+                }
+                guard metadata.account == account, metadata.backgroundUploadCancellationRequested else { continue }
 
                 let confirmed = !(job.responseHeaderFields?["oc-fileid"] ?? "").isEmpty
                 if confirmed {
@@ -382,6 +396,33 @@ final class NCBackgroundUploadExtensionManager {
             }
         }
         _ = await disableIfIdle()
+    }
+
+    /// Only discard jobs with no Realm owner or possible pending owner, across all accounts.
+    /// A successful response must remain available until its result can be recorded locally.
+    func canDiscardOrphanUploadJob(_ job: PHAssetResourceUploadJob) async -> Bool {
+        guard job.state != .succeeded, (job.responseHeaderFields?["oc-fileid"] ?? "").isEmpty else { return false }
+        switch job.state {
+        case .registered, .pending, .failed, .cancelled:
+            break
+        default:
+            return false
+        }
+
+        // Job creation can commit before its identifier is saved. Protect pending metadata too,
+        // including another account's job and both components of a Live Photo.
+        let pending: [tableMetadata] = await database.getMetadatasAsync(predicate: NSPredicate(format: "backgroundUploadJobIdentifier == %@", "pending"))
+        let resource = PHAssetResource.assetResource(forUploadJob: job)
+        let hasPendingOwner = pending.contains { metadata in
+            if let resource, resource.assetLocalIdentifier != metadata.assetLocalIdentifier { return false }
+            guard let destination = job.destination.url,
+                  let metadataURL = metadata.serverUrlFileName.encodedToUrl as? URL else { return true }
+            return metadataURL == destination
+        }
+        guard !hasPendingOwner else { return false }
+
+        // Recheck the identifier after the pending-metadata read, in case creation just finished.
+        return await database.getMetadataAsync(backgroundUploadJobIdentifier: job.localIdentifier) == nil
     }
 
     /// Includes queued jobs and terminal results still waiting for acknowledgement.

@@ -142,6 +142,7 @@ extension BackgroundUploadExtension {
             let metadata = await resolveMetadata(for: job)
 
             guard let metadata else {
+                guard await NCBackgroundUploadExtensionManager.shared.canDiscardOrphanUploadJob(job) else { continue }
                 guard try cancel(job: job, library: library) else {
                     logError("Unable to cancel orphan background upload job \(jobIdentifier)")
                     continue
@@ -183,6 +184,7 @@ extension BackgroundUploadExtension {
                 let metadata = await resolveMetadata(for: job)
 
                 guard let metadata else {
+                    guard await NCBackgroundUploadExtensionManager.shared.canDiscardOrphanUploadJob(job) else { continue }
                     guard try acknowledge(job: job, library: library) else {
                         logError("Unable to acknowledge orphan background upload job \(jobIdentifier)")
                         continue
@@ -238,6 +240,7 @@ extension BackgroundUploadExtension {
             let jobIdentifier = job.localIdentifier
 
             guard let metadata = await resolveMetadata(for: job) else {
+                guard await NCBackgroundUploadExtensionManager.shared.canDiscardOrphanUploadJob(job) else { continue }
                 guard try acknowledge(job: job, library: library) else {
                     logError("Unable to acknowledge orphan retry job \(jobIdentifier)")
                     continue
@@ -397,6 +400,7 @@ extension BackgroundUploadExtension {
             let jobIdentifier = job.localIdentifier
 
             guard let metadata = await resolveMetadata(for: job) else {
+                guard await NCBackgroundUploadExtensionManager.shared.canDiscardOrphanUploadJob(job) else { continue }
                 guard try acknowledge(job: job, library: library) else {
                     logError("Unable to acknowledge orphan job \(jobIdentifier)")
                     continue
