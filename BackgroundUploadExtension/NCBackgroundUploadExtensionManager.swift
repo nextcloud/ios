@@ -12,6 +12,13 @@ final class NCBackgroundUploadExtensionManager {
 
     static let maximumBackgroundUploadAttempts = 3
 
+    /// Only resources with a known size within the limit are delegated to PhotoKit.
+    /// The host app measures unknown resources after extraction before choosing chunked upload.
+    static func requiresHostUpload(resourceSize: Int?) -> Bool {
+        guard let resourceSize, resourceSize >= 0 else { return true }
+        return resourceSize > NCGlobal.shared.chunkSize
+    }
+
     private let database = NCManageDatabase.shared
     private let global = NCGlobal.shared
 

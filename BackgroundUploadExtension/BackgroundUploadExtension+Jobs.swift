@@ -80,6 +80,12 @@ extension BackgroundUploadExtension {
                 continue
             }
 
+            // Recheck queued metadata too: the resource size may have changed or been unknown.
+            if await deferToHostUploadIfNeeded(metadata: metadata, resourceSize: resource.dataSize, sessionIdentifier: account.autoUploadSessionIdentifier) {
+                madeProgress = true
+                continue
+            }
+
             guard let destination = buildDestination(metadata: metadata, asset: asset) else {
                 continue
             }
@@ -127,6 +133,24 @@ extension BackgroundUploadExtension {
         }
 
         return madeProgress
+    }
+
+    /// Routes large and unknown resources to host extraction without creating another PhotoKit job.
+    private func deferToHostUploadIfNeeded(metadata: tableMetadata, resourceSize: Int?, sessionIdentifier: String) async -> Bool {
+        guard NCBackgroundUploadExtensionManager.requiresHostUpload(resourceSize: resourceSize) else { return false }
+        let expectedJobIdentifier = metadata.backgroundUploadJobIdentifier
+        metadata.size = Int64(resourceSize ?? 0)
+        metadata.chunk = global.chunkSize
+        metadata.backgroundUploadJobIdentifier = ""
+        metadata.status = global.metadataStatusWaitUpload
+        metadata.sessionTaskIdentifier = 0
+        metadata.sessionDate = Date()
+        metadata.sessionError = ""
+        metadata.errorCode = 0
+        metadata.errorKind = ""
+        await database.updateBackgroundUploadMetadataAsync(metadata, expectedJobIdentifier: expectedJobIdentifier, sessionIdentifier: sessionIdentifier)
+        logInfo("Deferred large or unknown resource to the host app: \(metadata.fileName)")
+        return true
     }
 
     /// Cancels jobs requested by the app and recovers jobs whose identifier was not persisted after creation.
@@ -336,6 +360,13 @@ extension BackgroundUploadExtension {
                 await database.deleteMetadataAsync(id: metadata.ocId)
                 madeProgress = true
                 logInfo("Acknowledged retry job and deleted metadata for missing asset \(metadata.assetLocalIdentifier), file: \(metadata.fileName)")
+                continue
+            }
+
+            let resourceSize = uploadResource(for: asset, metadata: metadata)?.dataSize
+            if await deferToHostUploadIfNeeded(metadata: metadata, resourceSize: resourceSize, sessionIdentifier: sessionIdentifier) {
+                guard try acknowledge(job: job, library: library) else { continue }
+                madeProgress = true
                 continue
             }
 
