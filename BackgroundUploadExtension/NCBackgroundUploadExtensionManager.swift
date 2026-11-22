@@ -401,27 +401,9 @@ final class NCBackgroundUploadExtensionManager {
     /// Only discard jobs with no Realm owner or possible pending owner, across all accounts.
     /// A successful response must remain available until its result can be recorded locally.
     func canDiscardOrphanUploadJob(_ job: PHAssetResourceUploadJob) async -> Bool {
-        if job.state == .succeeded || !(job.responseHeaderFields?["oc-fileid"] ?? "").isEmpty {
-            // Completion may already be persisted even if acknowledgement was interrupted.
-            // Require both the final Realm metadata and upload history before discarding it.
-            guard job.state == .succeeded || job.state == .failed,
-                  let ocId = job.responseHeaderFields?["oc-fileid"], !ocId.isEmpty,
-                  let metadata = await database.getMetadataAsync(predicate: NSPredicate(
-                    format: "ocId == %@ AND status == %d AND backgroundUploadJobIdentifier == ''", ocId, global.metadataStatusNormal
-                  )),
-                  let resource = PHAssetResource.assetResource(forUploadJob: job),
-                  metadata.assetLocalIdentifier == resource.assetLocalIdentifier,
-                  let destination = job.destination.url,
-                  let metadataURL = metadata.serverUrlFileName.encodedToUrl as? URL,
-                  metadataURL == destination else { return false }
-            do {
-                guard try await NCLocalDatabase.shared.autoUploadTransferIsUploaded(metadata) else { return false }
-            } catch {
-                logUploadMessage("Unable to verify orphan upload completion \(job.localIdentifier): \(error)")
-                return false
-            }
-            return await database.getMetadataAsync(backgroundUploadJobIdentifier: job.localIdentifier) == nil
-        }
+        // A previous upload can share the same server file ID, asset and destination.
+        // Without this job's Realm association, old history cannot prove its result was saved.
+        guard job.state != .succeeded, (job.responseHeaderFields?["oc-fileid"] ?? "").isEmpty else { return false }
         switch job.state {
         case .registered, .pending, .failed, .cancelled:
             break
