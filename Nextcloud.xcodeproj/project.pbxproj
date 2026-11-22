@@ -144,13 +144,13 @@
 		AFCE353927E5DE0500FEA6C2 /* Shareable.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCE353827E5DE0400FEA6C2 /* Shareable.swift */; };
 		B601AA012F10000100C0D3E5 /* NCLogFilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B601AA002F10000100C0D3E5 /* NCLogFilesView.swift */; };
 		BAF64949B487A080A98F83F2 /* NKErrorUserFriendlyMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320C20803A58DAF7575440A8 /* NKErrorUserFriendlyMessageTests.swift */; };
+		BFA11D182026111900000002 /* NCFoldSeparator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA11D182026111900000001 /* NCFoldSeparator.swift */; };
 		C0DEA070306D000100000005 /* NCLocalDatabase+AutoUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEA070306D000100000004 /* NCLocalDatabase+AutoUpload.swift */; };
 		C0DEA070306D000100000006 /* NCLocalDatabase+AutoUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEA070306D000100000004 /* NCLocalDatabase+AutoUpload.swift */; };
 		C0DEA070306D000100000008 /* NCAutoUploadAssetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEA070306D000100000007 /* NCAutoUploadAssetTests.swift */; };
 		C0DECA022F65000100C0D001 /* NCCameraRollTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */; };
 		C0DEDA7E30C1000100A00002 /* NCAutoUploadDateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEDA7E30C1000100A00001 /* NCAutoUploadDateTests.swift */; };
 		C32F8B752EF1985200427C03 /* NCDirectEditingCommandBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C32F8B742EF1985200427C03 /* NCDirectEditingCommandBar.swift */; };
-		BFA11D182026111900000002 /* NCFoldSeparator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA11D182026111900000001 /* NCFoldSeparator.swift */; };
 		CB3666201AF7550816B5CD6A /* NCContextMenuComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8932E90EC4278026D86CCCC9 /* NCContextMenuComment.swift */; };
 		D56DFFE5D5014F66A7C9FED0 /* PasscodeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6C501EF1104A6A8569D9C1 /* PasscodeUITests.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
@@ -1442,6 +1442,7 @@
 		B601AA002F10000100C0D3E5 /* NCLogFilesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCLogFilesView.swift; sourceTree = "<group>"; };
 		BB7697C94BA14450A0867940 /* NCContextMenuProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCContextMenuProfile.swift; sourceTree = "<group>"; };
 		BC6C501EF1104A6A8569D9C1 /* PasscodeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasscodeUITests.swift; sourceTree = "<group>"; };
+		BFA11D182026111900000001 /* NCFoldSeparator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFoldSeparator.swift; sourceTree = "<group>"; };
 		C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0DEA070306D000100000004 /* NCLocalDatabase+AutoUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCLocalDatabase+AutoUpload.swift"; sourceTree = "<group>"; };
@@ -1449,7 +1450,6 @@
 		C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCameraRollTests.swift; sourceTree = "<group>"; };
 		C0DEDA7E30C1000100A00001 /* NCAutoUploadDateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAutoUploadDateTests.swift; sourceTree = "<group>"; };
 		C32F8B742EF1985200427C03 /* NCDirectEditingCommandBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCDirectEditingCommandBar.swift; sourceTree = "<group>"; };
-		BFA11D182026111900000001 /* NCFoldSeparator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFoldSeparator.swift; sourceTree = "<group>"; };
 		CE0CD9A00D74B01055F238E9 /* NCErrorContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCErrorContext.swift; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
 		F0A1B2C330B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerFloatingTitleViewTests.swift; sourceTree = "<group>"; };
@@ -6626,7 +6626,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
@@ -6693,7 +6693,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
