@@ -39,9 +39,11 @@ class NCAccount: NSObject {
         guard resultsGetUserProfile.error == .success, let userProfile = resultsGetUserProfile.userProfile else {
             NextcloudKit.shared.nkCommonInstance.nksessions.remove(account: account)
 
-            let error = resultsGetUserProfile.error == .success ? NKError.invalidData : resultsGetUserProfile.error
+            nkLog(error: "Getting the user profile failed: \(resultsGetUserProfile.error.logDescription)")
 
-            nkLog(error: "Getting the user profile failed: \(error.logDescription)")
+            // A reply that is no profile, such as the login page of a proxy, has no kind and so no message to show.
+            let isUnclassified = resultsGetUserProfile.error == .success || resultsGetUserProfile.error.kind == nil
+            let error = isUnclassified ? NKError.invalidData : resultsGetUserProfile.error
 
             throw error
         }
