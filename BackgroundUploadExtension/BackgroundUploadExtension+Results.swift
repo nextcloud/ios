@@ -126,6 +126,51 @@ extension BackgroundUploadExtension {
         logError("Background upload failed for \(metadata.fileName), account: \(metadata.account), job: \(job.localIdentifier), error: \(error.logDescription)")
     }
 
+    /// Checks for an existing destination only after a protected PUT failed.
+    /// PhotoKit sanitizes HTTP errors, so a generic failure cannot be assumed to be HTTP 412.
+    /// Returns nil for ordinary failures, false to retain a result that could not be persisted,
+    /// or true once the existing resource is recorded and the transfer metadata is removed.
+    func processExistingUpload(metadata: tableMetadata, job: PHAssetResourceUploadJob) async -> Bool? {
+        guard job.state == .failed,
+              job.destination.value(forHTTPHeaderField: "If-None-Match") == "*",
+              !isAuthenticationFailure(job: job),
+              database.getTableAccount(account: metadata.account)?.autoUploadForceReupload == false else { return nil }
+
+        let result = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName, depth: "0", account: metadata.account)
+        guard result.error == .success, result.files?.count == 1, let file = result.files?.first else { return nil }
+        let remote = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
+        guard !remote.directory, !remote.ocId.isEmpty else { return nil }
+
+        // Stop or a new upload session may have replaced this transfer while checking the server.
+        guard let account = database.getTableAccount(account: metadata.account),
+              account.autoUploadStart, !account.autoUploadForceReupload,
+              let current = await database.getMetadataAsync(backgroundUploadJobIdentifier: job.localIdentifier),
+              current.ocId == metadata.ocId, !current.backgroundUploadCancellationRequested else { return false }
+
+        do {
+            guard try await NCLocalDatabase.shared.recordAutoUploadTransfer(current, sessionIdentifier: account.autoUploadSessionIdentifier, uploaded: true) else { return false }
+            try await NCLocalDatabase.shared.recordPhotoLibraryAssetUpload(
+                account: current.account, assetLocalIdentifier: current.assetLocalIdentifier,
+                classFile: current.classFile, isLivePhoto: current.isLivePhoto, creationDate: current.creationDate as Date
+            )
+        } catch {
+            logError("Unable to record existing background upload file \(current.fileName): \(error)")
+            return false
+        }
+
+        if current.isLivePhoto,
+           let capabilities = await database.getCapabilities(account: current.account),
+           capabilities.isLivePhotoServerAvailable {
+            await database.setLivePhotoVideo(account: current.account, serverUrlFileName: current.serverUrlFileName, fileId: remote.fileId, classFile: current.classFile)
+        }
+        await database.deleteMetadataAsync(predicate: NSPredicate(
+            format: "ocId == %@ AND backgroundUploadJobIdentifier == %@ AND backgroundUploadCancellationRequested == false",
+            current.ocId, job.localIdentifier
+        ))
+        logInfo("Skipped existing background upload file \(current.fileName), job: \(job.localIdentifier)")
+        return true
+    }
+
     /// Applies Nextcloud response metadata and records the asset as successfully auto-uploaded.
     /// A missing `oc-fileid` converts the result to an upload error and requires manual recovery.
     func processUploadSuccess(metadata: tableMetadata, job: PHAssetResourceUploadJob) async -> Bool {

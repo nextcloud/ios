@@ -137,9 +137,10 @@ extension BackgroundUploadExtension {
                 !uploadedClasses.contains($0.classFile) && !queuedClasses.contains($0.classFile) && !trackedMetadataFileNames.contains($0.fileName)
             }
 
-            // Each resource selects its own pipeline: PhotoKit up to 100 MB, host-app chunks above it.
+            // Large or unknown resources use the host app, which measures them after extraction.
             for uploadResource in resourcesToUpload {
-                let chunkSize = Int64(uploadResource.resource.dataSize ?? 0) > Int64(global.chunkSize) ? global.chunkSize : nil
+                let requiresHost = NCBackgroundUploadExtensionManager.requiresHostUpload(resourceSize: uploadResource.resource.dataSize)
+                let chunkSize = requiresHost ? global.chunkSize : nil
 
                 let inserted = await createPendingMetadata(
                     asset: asset,
