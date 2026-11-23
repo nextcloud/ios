@@ -18,6 +18,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     var imageIcon: UIImage?
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?
+    private var isClosingTextEditor = false
     private var isUpdatingFavorite = false {
         didSet { foldedCommandBar?.rootView.isUpdatingFavorite = isUpdatingFavorite }
     }
@@ -124,6 +125,18 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         navigationItem.trailingItemGroups = [group]
         navigationItem.leftBarButtonItems = nil
 
+        if editor == global.editorText {
+            let backButton = UIBarButtonItem(
+                image: UIImage(systemName: "chevron.backward"),
+                style: .plain,
+                target: self,
+                action: #selector(closeEditor)
+            )
+            backButton.accessibilityLabel = NSLocalizedString("_back_", comment: "")
+            navigationItem.hidesBackButton = true
+            navigationItem.leftBarButtonItem = backButton
+        }
+
         // Prevent back navigation gesture of iOS >= 26 as that can cause unintended swipe backs
         if #available(iOS 26.0, *) {
             navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = false
@@ -181,7 +194,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     @available(iOS 27.1, *)
     private func configureFoldedCommandBar() {
         let commandBar = NCDirectEditingCommandBar(fileName: metadata.fileNameView, isFavorite: metadata.favorite) { [weak self] in
-            self?.viewUnload()
+            self?.closeEditor()
         } onDetails: { [weak self] in
             guard let self else { return }
             NCCreate().createShare(
@@ -409,8 +422,39 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         )
     }
 
-    @objc func viewUnload() {
-        navigationController?.popViewController(animated: true)
+    private func viewUnload() {
+        guard let navigationController, navigationController.topViewController === self else { return }
+        isClosingTextEditor = false
+        navigationController.popViewController(animated: true)
+    }
+
+    @objc private func closeEditor() {
+        guard editor == global.editorText else {
+            viewUnload()
+            return
+        }
+        guard !isClosingTextEditor else { return }
+        isClosingTextEditor = true
+
+        // Text saves and releases its editing session before sending the close message.
+        let pressCloseButton = """
+            (function () {
+                const button = document.querySelector('#direct-editor .icon-close');
+                if (!button) { return false; }
+                button.click();
+                return true;
+            })();
+            """
+        webView.evaluateJavaScript(pressCloseButton) { [weak self] result, _ in
+            guard let self, self.isClosingTextEditor, (result as? Bool) != true else { return }
+            self.viewUnload()
+        }
+
+        // Keep navigation available even if the web view never responds.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+            guard let self, self.isClosingTextEditor else { return }
+            self.viewUnload()
+        }
     }
 
     private func toggleFavorite() {
