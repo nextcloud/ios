@@ -99,8 +99,8 @@ final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
     func addAccount(host: URL, user: String, password: String) async throws {
         guard let presenter else { return }
 
-        // A closing QR scanner or shared accounts sheet would otherwise receive the dismissal below.
-        await waitForPresentedViewControllerDismissal()
+        // The shared accounts sheet may still be closing, while the QR code scanner stays open and closes with the login.
+        await waitForClosingSheet()
 
         let controller = self.controller ?? SceneManager.shared.getController(window: UIApplication.shared.mainAppWindow)
 
@@ -225,7 +225,7 @@ final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
 
     /// - Returns: The index of the chosen action, or `nil` when nothing could present the alert.
     private func presentChoice(title: String, message: String, actions: [(title: String, style: UIAlertAction.Style)]) async -> Int? {
-        await waitForPresentedViewControllerDismissal()
+        await waitForClosingSheet()
 
         guard let topViewController else { return nil }
 
@@ -265,10 +265,11 @@ final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
         }
     }
 
-    private func waitForPresentedViewControllerDismissal() async {
+    /// A sheet that is still closing would otherwise receive what is presented or dismissed next.
+    private func waitForClosingSheet() async {
         let deadline = ContinuousClock.now + .seconds(2)
 
-        while presenter?.presentedViewController != nil, ContinuousClock.now < deadline {
+        while presenter?.presentedViewController?.isBeingDismissed == true, ContinuousClock.now < deadline {
             try? await Task.sleep(for: .milliseconds(50))
         }
     }

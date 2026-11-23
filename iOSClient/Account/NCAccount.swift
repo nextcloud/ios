@@ -64,13 +64,16 @@ class NCAccount: NSObject {
         if let controller {
             controller.account = account
             nkLog(debug: "Dismissing login provider view controller...")
-            viewController.dismiss(animated: true)
+            // From its presenter, so a sheet the login still shows, such as the QR code scanner, closes too.
+            (viewController.presentingViewController ?? viewController).dismiss(animated: true)
         } else if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
             nkLog(debug: "Presenting initial view controller from main storyboard...")
             controller.account = account
             controller.modalPresentationStyle = .fullScreen
             controller.view.alpha = 0
 
+            // A sheet the replaced login still shows, such as the QR code scanner, would stay on screen.
+            UIApplication.shared.mainAppWindow?.rootViewController?.dismiss(animated: false)
             UIApplication.shared.mainAppWindow?.rootViewController = controller
             UIApplication.shared.mainAppWindow?.makeKeyAndVisible()
 
