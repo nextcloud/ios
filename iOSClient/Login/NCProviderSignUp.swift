@@ -114,7 +114,42 @@ final class NCProviderSignUp: UIViewController, WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        showLoadError(error, in: webView)
+    }
+
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        showLoadError(error, in: webView)
+    }
+
+    // MARK: - Errors
+
+    private func showLoadError(_ error: Error, in webView: WKWebView) {
         NCActivityIndicator.shared.stop()
+
+        // Page loads this class replaces end as interrupted or cancelled.
+        let nsError = error as NSError
+        let isInterrupted = nsError.domain == "WebKitErrorDomain" && nsError.code == 102
+
+        guard !isFinished, !isInterrupted, presentedViewController == nil,
+              let message = NKError(error: error).userFriendlyMessage() else { return }
+
+        let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
+
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_close_", comment: ""), style: .cancel) { [weak self] _ in
+            self?.dismiss(animated: true)
+        })
+
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_retry_", comment: ""), style: .default) { [weak self, weak webView] _ in
+            guard let self, let webView else { return }
+
+            if webView.backForwardList.currentItem == nil {
+                webView.load(Self.apiRequest(for: Self.uncachedURL(url)))
+            } else {
+                webView.reload()
+            }
+        })
+
+        present(alert, animated: true)
     }
 
     // MARK: - Account
