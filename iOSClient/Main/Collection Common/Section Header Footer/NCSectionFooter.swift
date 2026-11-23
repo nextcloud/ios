@@ -63,16 +63,12 @@ class NCSectionFooter: UICollectionReusableView {
         var foldersText = ""
         var filesText = ""
 
-        if directories > 1 {
-            foldersText = "\(directories) " + NSLocalizedString("_folders_", comment: "")
-        } else if directories == 1 {
-            foldersText = "1 " + NSLocalizedString("_folder_", comment: "")
+        if directories > 0 {
+            foldersText = String.localizedStringWithFormat(NSLocalizedString("_folders_count_", comment: ""), directories)
         }
 
-        if files > 1 {
-            filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " • " + utilityFileSystem.transformedSize(size)
-        } else if files == 1 {
-            filesText = "1 " + NSLocalizedString("_file_", comment: "") + " • " + utilityFileSystem.transformedSize(size)
+        if files > 0 {
+            filesText = String.localizedStringWithFormat(NSLocalizedString("_files_count_", comment: ""), files) + " • " + utilityFileSystem.transformedSize(size)
         }
 
         if foldersText.isEmpty {
