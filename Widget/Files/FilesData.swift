@@ -144,7 +144,7 @@ func getFilesDataEntry(configuration: AccountIntent, displaySize: CGSize) async 
 
     nkLog(debug: "Start \(NCBrandOptions.shared.brand) widget session " + versionNextcloudiOS)
 
-    let options = NKRequestOptions(timeout: 30, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+    let options = NKRequestOptions(timeout: 30)
     let results = await NextcloudKit.shared.searchBodyRequestAsync(serverUrl: activeTableAccount.urlBase, requestBody: requestBody, showHiddenFiles: showHiddenFiles, account: activeTableAccount.account, options: options)
 
     var datas: [FilesData] = []

@@ -36,7 +36,7 @@ extension NCNetworking {
               ownerId: String?,
               permissions: String?,
               error: NKError) {
-        let options = NKRequestOptions(customHeader: customHeaders, queue: nkComm.backgroundQueue)
+        let options = NKRequestOptions(customHeader: customHeaders, queue: .global(qos: .utility))
         let results = await NextcloudKit.shared.uploadAsync(serverUrlFileName: serverUrlFileName,
                                                             fileNameLocalPath: fileNameLocalPath,
                                                             dateCreationFile: creationDate,
@@ -88,7 +88,7 @@ extension NCNetworking {
                                                                           urlBase: metadata.urlBase)
         let chunkFolder = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
         let filesChunk = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
-        let options = NKRequestOptions(customHeader: customHeaders, queue: nkComm.backgroundQueue)
+        let options = NKRequestOptions(customHeader: customHeaders, queue: .global(qos: .utility))
         var backupError = NKError()
         var backupFile: NKFile?
 

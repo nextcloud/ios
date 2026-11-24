@@ -54,7 +54,7 @@ final class NCMediaNetwork {
                                            paginateToken: paginateToken,
                                            paginateOffset: paginateOffset,
                                            paginateCount: paginateCount,
-                                           queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+                                           queue: .global(qos: .utility))
 
             let results = await NextcloudKit.shared.searchAsync(serverUrl: nkSession.urlBase, httpBody: httpBody, showHiddenFiles: false, includeHiddenFiles: [], account: account, options: options, taskHandler: taskHandler)
             error = results.error
