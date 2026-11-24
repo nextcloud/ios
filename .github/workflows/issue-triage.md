@@ -58,7 +58,6 @@ tools:
       - search_pull_requests
       - get_commit
       - list_commits
-      - search_commits
       - list_releases
       - get_file_contents
 
