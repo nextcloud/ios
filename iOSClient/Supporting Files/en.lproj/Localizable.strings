@@ -452,6 +452,7 @@
 "_create_new_diagram_"              = "Diagram";
 "_more_documents_"                  = "More Documents";
 "_go_online_"                       = "Go online to see the document";
+"_onboarding_title_"                = "Welcome to %@";
 "_intro_1_title_"                   = "Keep your data secure and under your control";
 "_intro_2_title_"                   = "Secure collaboration & file exchange";
 "_intro_3_title_"                   = "Easy-to-use web mail, calendaring & contacts";

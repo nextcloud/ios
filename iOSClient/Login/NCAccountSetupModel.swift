@@ -7,33 +7,45 @@ import NextcloudKitUI
 import SwiftUI
 import UIKit
 
-/// Connects the shared NextcloudKitUI login to the app: branding, managed configuration, certificate trust and account creation.
+/// Connects the shared NextcloudKitUI onboarding and login to the app: branding, managed configuration, certificate trust and account creation.
 @MainActor
-final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
-    enum Presentation {
-        case windowRoot
-        case modal
-        case pushed
-    }
+@Observable
+final class NCAccountSetupModel {
+    /// Shown before the login while the app has no account, unless the brand turned it off.
+    var showsOnboarding: Bool
 
-    weak var presenter: UIViewController?
+    var isPresentingCertificatePrompt = false
+    var isPresentingInsecureConnectionPrompt = false
+    var isPresentingCertificateDetails = false
 
-    private let presentation: Presentation
-    private let controller: NCMainTabBarController?
-    /// A server to log in to right away, such as one the user just signed up on.
-    private let loginServerURL: URL?
-    private var certificateDetailsContinuation: CheckedContinuation<Void, Never>?
+    /// The server whose certificate the prompt and its details are about.
+    private(set) var certificateHost = ""
 
-    init(controller: NCMainTabBarController?, presentation: Presentation, loginServerURL: URL? = nil) {
+    /// The controller hosting the setup, which dismisses it and shows its error banners.
+    @ObservationIgnored weak var presenter: UIViewController?
+
+    @ObservationIgnored private(set) var configuration = LoginFlowConfiguration()
+    @ObservationIgnored private(set) var sharedAccounts: [SharedAccount] = []
+
+    @ObservationIgnored private let controller: NCMainTabBarController?
+    @ObservationIgnored private var answerContinuation: CheckedContinuation<Bool, Never>?
+    @ObservationIgnored private var hasLoginAppeared = false
+
+    /// - Parameter controller: The tab bar the setup is presented on, or `nil` when the setup is the root of the window.
+    init(controller: NCMainTabBarController?) {
         self.controller = controller
-        self.presentation = presentation
-        self.loginServerURL = loginServerURL
+
+        let hasAccounts = !NCManageDatabase.shared.getAllTableAccount().isEmpty
+
+        showsOnboarding = !NCBrandOptions.shared.disable_intro && !hasAccounts
+        configuration = makeConfiguration(showsCancelButton: controller != nil && hasAccounts)
+        sharedAccounts = loadSharedAccounts()
     }
 
     // MARK: - Configuration
 
-    /// Built from the brand options at presentation time, so values overridden by the managed configuration apply.
-    func makeConfiguration() -> LoginFlowConfiguration {
+    /// Built from the brand options when the setup is created, so values overridden by the managed configuration apply.
+    private func makeConfiguration(showsCancelButton: Bool) -> LoginFlowConfiguration {
         let brandOptions = NCBrandOptions.shared
         var configuration = LoginFlowConfiguration()
 
@@ -41,10 +53,7 @@ final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
         configuration.serverAddressDescription = String.localizedStringWithFormat(NSLocalizedString("_login_address_detail_", comment: ""), brandOptions.brand)
         configuration.enforcedServersPrompt = NSLocalizedString("_select_server_", comment: "")
 
-        if let loginServerURL {
-            configuration.initialServerAddress = loginServerURL.absoluteString
-            configuration.startsLoginOnAppear = true
-        } else if case .prefill(let serverURL) = appConfigAction {
+        if case .prefill(let serverURL) = appConfigAction {
             configuration.initialServerAddress = serverURL
         } else if !brandOptions.loginBaseUrl.isEmpty {
             configuration.initialServerAddress = brandOptions.loginBaseUrl
@@ -56,8 +65,18 @@ final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
         }
         configuration.upgradesInsecureHTTP = true
         configuration.loginURLScheme = brandOptions.webLoginAutenticationProtocol.replacingOccurrences(of: "://", with: "")
-        configuration.embedsNavigationStack = presentation != .pushed
-        configuration.showsCancelButton = presentation == .modal && !NCManageDatabase.shared.getAllTableAccount().isEmpty
+        configuration.showsCancelButton = showsCancelButton
+
+        // Branded apps link to neither the nextcloud.com providers nor its install page.
+        if !brandOptions.disable_intro {
+            configuration.providerSignUp = URL(string: brandOptions.linkloginPreferredProviders).map {
+                LoginFlowConfiguration.WebLink(title: NSLocalizedString("_sign_up_", comment: ""), url: $0)
+            }
+
+            configuration.hostingInformation = URL(string: brandOptions.linkLoginHost).map {
+                LoginFlowConfiguration.WebLink(title: NSLocalizedString("_host_your_own_server_", comment: ""), url: $0)
+            }
+        }
 
         configuration.onCancel = { [weak self] in
             self?.presenter?.dismiss(animated: true)
@@ -71,7 +90,7 @@ final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
     }
 
     /// Accounts of other Nextcloud apps on this device which are not added here yet.
-    func loadSharedAccounts() -> [SharedAccount] {
+    private func loadSharedAccounts() -> [SharedAccount] {
         // Their sheet would still be open when the managed configuration logs in by itself.
         switch appConfigAction {
         case .createAccount, .requestAppPassword:
@@ -105,8 +124,8 @@ final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
     func addAccount(host: URL, user: String, password: String) async throws {
         guard let presenter else { return }
 
-        // The shared accounts sheet may still be closing, while the QR code scanner stays open and closes with the login.
-        await waitForClosingSheet()
+        // The shared accounts sheet may still be closing, while the QR code scanner stays open and closes with the setup.
+        await waitForTransitions()
 
         let controller = self.controller ?? SceneManager.shared.getController(window: UIApplication.shared.mainAppWindow)
 
@@ -117,15 +136,19 @@ final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
         try await NCAccount().createAccount(viewController: presenter, urlBase: host.absoluteString, user: user, password: password, controller: controller)
     }
 
-    /// Pushes the login for a server, which starts right away.
-    /// - Returns: Whether the presenter has a navigation stack to show it on.
-    func showLogin(serverURL: URL) -> Bool {
-        guard let navigationController = presenter?.navigationController else { return false }
+    /// Publishes the accounts for other apps and logs in with the managed configuration, once.
+    func loginDidAppear() {
+        guard !hasLoginAppeared else { return }
 
-        let viewController = NCLoginHostingController(controller: controller, presentation: .pushed, loginServerURL: serverURL)
-        navigationController.pushViewController(viewController, animated: true)
+        hasLoginAppeared = true
 
-        return true
+        Task {
+            _ = await NCAccount().updateAppsShareAccounts()
+        }
+
+        Task {
+            await runAppConfigAutoLoginIfNeeded()
+        }
     }
 
     // MARK: - Managed configuration
@@ -149,10 +172,7 @@ final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
                                        accountCount: NCManageDatabase.shared.getAccounts()?.count ?? 0)
     }
 
-    func runAppConfigAutoLoginIfNeeded() async {
-        // It would race the login that starts by itself for this server.
-        guard loginServerURL == nil else { return }
-
+    private func runAppConfigAutoLoginIfNeeded() async {
         let serverURL: String
         let user: String
         let password: String
@@ -193,106 +213,73 @@ final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
 
     // MARK: - Server errors
 
-    private func recover(from error: NKError, serverURL: URL) async -> LoginFlowConfiguration.Recovery {
+    func recover(from error: NKError, serverURL: URL) async -> LoginFlowConfiguration.Recovery {
         switch NCLoginServerErrorClassifier.classify(error, serverURL: serverURL) {
         case .untrustedCertificate(let host):
-            return await resolveUntrustedCertificate(host: host, serverURL: serverURL)
+            certificateHost = host
+
+            guard await ask(\.isPresentingCertificatePrompt) else { return .cancel }
+
+            NCNetworking.shared.writeCertificate(host: host)
+            return .retry(serverURL)
         case .insecureFallback(let httpURL):
 #if DEBUG
             return .retry(httpURL)
 #else
-            let choice = await presentChoice(title: NSLocalizedString("_warning_", comment: ""),
-                                             message: NSLocalizedString("_https_failed_try_http_", comment: ""),
-                                             actions: [(NSLocalizedString("_cancel_", comment: ""), .cancel),
-                                                       (NSLocalizedString("_continue_", comment: ""), .destructive)])
-
-            return choice == 1 ? .retry(httpURL) : .cancel
+            return await ask(\.isPresentingInsecureConnectionPrompt) ? .retry(httpURL) : .cancel
 #endif
         case .generic:
             return .presentError
         }
     }
 
-    private func resolveUntrustedCertificate(host: String, serverURL: URL) async -> LoginFlowConfiguration.Recovery {
-        while true {
-            let choice = await presentChoice(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""),
-                                             message: NSLocalizedString("_connect_server_anyway_", comment: ""),
-                                             actions: [(NSLocalizedString("_yes_", comment: ""), .default),
-                                                       (NSLocalizedString("_no_", comment: ""), .default),
-                                                       (NSLocalizedString("_certificate_details_", comment: ""), .default)])
-
-            switch choice {
-            case 0:
-                NCNetworking.shared.writeCertificate(host: host)
-                return .retry(serverURL)
-            case 2:
-                await presentCertificateDetails(host: host)
-            default:
-                return .cancel
-            }
-        }
-    }
-
-    // MARK: - Presentation
-
-    private var topViewController: UIViewController? {
-        var top = presenter
-
-        while let presented = top?.presentedViewController, !presented.isBeingDismissed {
-            top = presented
-        }
-
-        return top
-    }
-
-    /// - Returns: The index of the chosen action, or `nil` when nothing could present the alert.
-    private func presentChoice(title: String, message: String, actions: [(title: String, style: UIAlertAction.Style)]) async -> Int? {
-        await waitForClosingSheet()
-
-        guard let topViewController else { return nil }
+    /// Shows the prompt once nothing else is closing, and waits for its answer.
+    private func ask(_ prompt: ReferenceWritableKeyPath<NCAccountSetupModel, Bool>) async -> Bool {
+        await waitForTransitions()
 
         return await withCheckedContinuation { continuation in
-            let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-
-            for (index, action) in actions.enumerated() {
-                alertController.addAction(UIAlertAction(title: action.title, style: action.style) { _ in
-                    continuation.resume(returning: index)
-                })
-            }
-
-            topViewController.present(alertController, animated: true)
+            answerContinuation?.resume(returning: false)
+            answerContinuation = continuation
+            self[keyPath: prompt] = true
         }
     }
 
-    private func presentCertificateDetails(host: String) async {
-        guard let topViewController,
-              let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController,
-              let viewController = navigationController.topViewController as? NCViewCertificateDetails else {
-            return
-        }
+    /// Resumes the login waiting for the prompt.
+    func answer(_ isConfirmed: Bool) {
+        isPresentingCertificatePrompt = false
+        isPresentingInsecureConnectionPrompt = false
 
-        viewController.host = host
-        viewController.delegate = self
-
-        await withCheckedContinuation { continuation in
-            certificateDetailsContinuation = continuation
-            topViewController.present(navigationController, animated: true)
-        }
+        answerContinuation?.resume(returning: isConfirmed)
+        answerContinuation = nil
     }
 
-    nonisolated func viewCertificateDetailsDismiss(host: String) {
-        MainActor.assumeIsolated {
-            certificateDetailsContinuation?.resume()
-            certificateDetailsContinuation = nil
-        }
+    func presentCertificateDetails() {
+        isPresentingCertificateDetails = true
     }
 
-    /// A sheet that is still closing would otherwise receive what is presented or dismissed next.
-    private func waitForClosingSheet() async {
+    /// Asks again about the certificate whose details were shown.
+    func certificateDetailsDidClose() {
+        isPresentingCertificateDetails = false
+
+        guard answerContinuation != nil else { return }
+
+        isPresentingCertificatePrompt = true
+    }
+
+    // MARK: - Transitions
+
+    /// A sheet still closing, or the setup still sliding in, would drop what is presented or dismissed next.
+    private func waitForTransitions() async {
         let deadline = ContinuousClock.now + .seconds(2)
 
-        while presenter?.presentedViewController?.isBeingDismissed == true, ContinuousClock.now < deadline {
+        while isTransitioning, ContinuousClock.now < deadline {
             try? await Task.sleep(for: .milliseconds(50))
         }
+    }
+
+    private var isTransitioning: Bool {
+        guard let presenter else { return false }
+
+        return presenter.isBeingPresented || presenter.presentedViewController?.isBeingDismissed == true
     }
 }

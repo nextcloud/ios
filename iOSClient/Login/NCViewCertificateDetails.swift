@@ -101,6 +101,12 @@ struct certificateDetailsView: UIViewControllerRepresentable {
     var privateKeyString: String = ""
     var host: String = ""
     var title: String = ""
+    /// Called when the details close, also when they close themselves.
+    var onClose: (() -> Void)?
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onClose: onClose)
+    }
 
     func makeUIViewController(context: Context) -> UINavigationController {
         let storyboard = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil)
@@ -110,9 +116,22 @@ struct certificateDetailsView: UIViewControllerRepresentable {
         viewController?.privateKeyString = privateKeyString
         viewController?.host = host
         viewController?.certificateTitle = title
+        viewController?.delegate = context.coordinator
 
         return navigationController!
     }
 
     func updateUIViewController(_ uiViewController: UINavigationController, context: Context) { }
+
+    final class Coordinator: NCViewCertificateDetailsDelegate {
+        let onClose: (() -> Void)?
+
+        init(onClose: (() -> Void)?) {
+            self.onClose = onClose
+        }
+
+        func viewCertificateDetailsDismiss(host: String) {
+            onClose?()
+        }
+    }
 }

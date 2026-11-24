@@ -265,7 +265,7 @@ class NCAccount: NSObject {
             && NCPreferences().getPassword(account: session.account) == token
     }
 
-    /// Presents the login (or intro) screen if no account remains.
+    /// Presents the account setup if no account remains.
     func switchToFirstAvailableAccount(controller: NCMainTabBarController?) async {
         let accounts = await NCManageDatabase.shared.getAccountsAsync()
 
@@ -273,19 +273,7 @@ class NCAccount: NSObject {
            let account = accounts.first {
                 await changeAccount(account, userProfile: nil, controller: controller)
         } else {
-            if NCBrandOptions.shared.disable_intro {
-                let viewController = NCLoginHostingController(controller: controller, presentation: .modal)
-                viewController.modalPresentationStyle = .fullScreen
-                controller?.present(viewController, animated: true)
-            } else {
-                if let navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController {
-                    if let viewController = navigationController.topViewController as? NCIntroViewController {
-                        viewController.controller = controller
-                    }
-                    navigationController.modalPresentationStyle = .fullScreen
-                    controller?.present(navigationController, animated: true)
-                }
-            }
+            controller?.present(NCAccountSetupView.viewController(controller: controller), animated: true)
         }
     }
 }
