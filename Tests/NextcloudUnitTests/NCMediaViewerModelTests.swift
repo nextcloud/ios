@@ -440,6 +440,55 @@ struct NCMediaViewerModelTests {
         try await waitForOriginals([], in: loader)
     }
 
+    @Test
+    func livePhotoCompanionsFollowTheImageBuffer() async throws {
+        var items = bufferItems()
+        for index in items.indices { items[index].livePhotoFile = "\(index).mov" }
+        let loader = NCMediaViewerTestLoader(items: items)
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+        await model.loadSelectedPageIfNeeded()
+        let deadline = ContinuousClock.now.advanced(by: .seconds(2))
+        while await loader.liveOriginals.count != 6, ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        #expect(await loader.liveOriginals == Set((0...5).map(String.init)))
+        model.beginThumbnailScrubbing()
+        await model.displayPreviewPage(at: 12)
+        #expect(await loader.liveOriginals == Set((0...5).map(String.init)))
+        await model.endThumbnailScrubbing(at: 12)
+        let finalDeadline = ContinuousClock.now.advanced(by: .seconds(2))
+        let expected = Set((7...12).map(String.init))
+        while await loader.liveOriginals != expected, ContinuousClock.now < finalDeadline {
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        #expect(await loader.liveOriginals == expected)
+        model.cancelAllDownloads()
+        try await waitForOriginals([], in: loader)
+        #expect(await loader.liveOriginals.isEmpty)
+    }
+
+    @Test
+    func audioThumbnailRetriesAfterDeferredLoading() async {
+        var items = bufferItems()
+        items[12].classFile = NKTypeClassFile.audio.rawValue
+        let loader = NCMediaViewerTestLoader(items: items)
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+        await model.loadSelectedPageIfNeeded()
+        #expect(await model.loadAudioForThumbnail(at: 12) == false)
+        model.beginThumbnailScrubbing()
+        await model.displayPreviewPage(at: 12)
+        #expect(await model.loadAudioForThumbnail(at: 12) == false)
+        #expect(await loader.downloadCounts["12"] == nil)
+        let revision = model.thumbnailReloadRevision
+        await model.endThumbnailScrubbing(at: 12)
+        #expect(model.thumbnailReloadRevision > revision)
+        #expect(await model.loadAudioForThumbnail(at: 12))
+        #expect(await loader.downloadCounts["12"] == 1)
+        model.cancelAllDownloads()
+    }
+
     private func bufferItems() -> [NCMediaViewerItem] {
         let account = UUID().uuidString
         return (0..<13).map { index in

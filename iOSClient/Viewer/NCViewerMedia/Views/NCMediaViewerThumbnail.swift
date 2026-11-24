@@ -27,7 +27,7 @@ struct NCMediaViewerThumbnailStrip: View {
                 await model.previewURL(for: metadata, ext: NCGlobal.shared.previewExt256)
             },
             audioLoadProvider: { index in
-                await model.loadPageIfNeeded(index: index)
+                await model.loadAudioForThumbnail(at: index)
             },
             isDeletedProvider: { index in
                 model.isThumbnailDeleted(at: index)
@@ -111,7 +111,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
     let metadataProvider: (_ index: Int) -> NCMediaViewerItem?
     let metadataResolver: (_ index: Int) async -> NCMediaViewerItem?
     let previewURLProvider: (_ metadata: NCMediaViewerItem) async -> URL?
-    let audioLoadProvider: (_ index: Int) async -> Void
+    let audioLoadProvider: (_ index: Int) async -> Bool
     let isDeletedProvider: (_ index: Int) -> Bool
     var onScrollStateChanged: (_ isScrolling: Bool, _ index: Int) -> Void = { _, _ in }
     let onSelect: (_ index: Int) -> Void
@@ -207,7 +207,7 @@ extension NCMediaViewerThumbnail {
         var metadataProvider: (_ index: Int) -> NCMediaViewerItem?
         var metadataResolver: (_ index: Int) async -> NCMediaViewerItem?
         var previewURLProvider: (_ metadata: NCMediaViewerItem) async -> URL?
-        var audioLoadProvider: (_ index: Int) async -> Void
+        var audioLoadProvider: (_ index: Int) async -> Bool
         var isDeletedProvider: (_ index: Int) -> Bool
         var onScrollStateChanged: (_ isScrolling: Bool, _ index: Int) -> Void
         var onSelect: (_ index: Int) -> Void
@@ -236,7 +236,7 @@ extension NCMediaViewerThumbnail {
             metadataProvider: @escaping (_ index: Int) -> NCMediaViewerItem?,
             metadataResolver: @escaping (_ index: Int) async -> NCMediaViewerItem?,
             previewURLProvider: @escaping (_ metadata: NCMediaViewerItem) async -> URL?,
-            audioLoadProvider: @escaping (_ index: Int) async -> Void,
+            audioLoadProvider: @escaping (_ index: Int) async -> Bool,
             isDeletedProvider: @escaping (_ index: Int) -> Bool,
             onScrollStateChanged: @escaping (_ isScrolling: Bool, _ index: Int) -> Void = { _, _ in },
             onSelect: @escaping (_ index: Int) -> Void
@@ -690,7 +690,10 @@ extension NCMediaViewerThumbnail {
 
                 // Let the normal viewer pipeline resolve/download the audio first.
                 // It can trigger a SwiftUI update that clears this thumbnail cache.
-                await self.audioLoadProvider(index)
+                guard await self.audioLoadProvider(index) else {
+                    self.pendingPrefetchIndexes.remove(index)
+                    return
+                }
 
                 guard let metadata,
                       !metadata.ocId.isEmpty,

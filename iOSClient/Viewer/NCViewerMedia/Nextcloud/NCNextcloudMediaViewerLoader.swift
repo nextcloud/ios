@@ -263,7 +263,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             return localURL
         }
 
-        guard NCNetworking.shared.isOnline,
+        guard !Task.isCancelled, NCNetworking.shared.isOnline,
               let livePhotoMetadata = livePhotoMetadata(for: metadata),
               let downloadMetadata = await database.setMetadataSessionInWaitDownloadAsync(
                 ocId: livePhotoMetadata.ocId,
@@ -274,11 +274,11 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         }
 
         await downloadTaskRegistry.beginDownload(for: downloadMetadata.ocId)
-        guard !Task.isCancelled else { return nil }
-
         do {
             try await NCTransferCoordinator.shared.acquire(priority: .visible)
         } catch {
+            await database.setMetadataSessionAsync(ocId: downloadMetadata.ocId, session: "", sessionTaskIdentifier: 0,
+                                                   sessionError: "", selector: "", status: NCGlobal.shared.metadataStatusNormal)
             return nil
         }
 
@@ -323,7 +323,10 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
     }
 
     func releaseOriginalImage(for metadata: NCMediaViewerItem) async {
-        await database.removeViewerImageIfNotOfflineAsync(ocId: metadata.ocId, account: metadata.account)
+        await database.removeViewerOriginalIfNotOfflineAsync(ocId: metadata.ocId, account: metadata.account)
+        if let companion = livePhotoMetadata(for: metadata) {
+            await database.removeViewerOriginalIfNotOfflineAsync(ocId: companion.ocId, account: companion.account)
+        }
     }
 
     // MARK: - Private Helpers

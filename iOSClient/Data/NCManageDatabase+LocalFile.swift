@@ -110,11 +110,10 @@ extension NCManageDatabase {
 
     /// Evicts a viewer original without removing its previews or changing offline availability.
     /// Check protection and remove the local record in the same Realm write as the file removal.
-    func removeViewerImageIfNotOfflineAsync(ocId: String, account: String) async {
+    func removeViewerOriginalIfNotOfflineAsync(ocId: String, account: String) async {
         await core.performRealmWriteAsync { realm in
             guard let metadata = realm.objects(tableMetadata.self)
                 .filter("ocId == %@ AND account == %@", ocId, account).first,
-                  metadata.classFile == NKTypeClassFile.image.rawValue,
                   metadata.session.isEmpty,
                   metadata.status == NCGlobal.shared.metadataStatusNormal,
                   let local = realm.objects(tableLocalFile.self)

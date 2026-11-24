@@ -9,6 +9,7 @@ import Foundation
 actor NCMediaViewerTestLoader: NCMediaViewerLoading {
     let items: [String: NCMediaViewerItem]
     private(set) var originals = Set<String>()
+    private(set) var liveOriginals = Set<String>()
     private(set) var downloadCounts: [String: Int] = [:]
     private var pausedOcIds: Set<String>
     private var pausedReleaseOcIds: Set<String>
@@ -75,9 +76,16 @@ actor NCMediaViewerTestLoader: NCMediaViewerLoading {
             await withCheckedContinuation { pendingReleases[metadata.ocId] = $0 }
         }
         originals.remove(metadata.ocId)
+        liveOriginals.remove(metadata.ocId)
     }
-    func localLivePhotoURL(for metadata: NCMediaViewerItem) async -> URL? { nil }
-    func downloadLivePhotoMedia(for metadata: NCMediaViewerItem) async -> URL? { nil }
+    func localLivePhotoURL(for metadata: NCMediaViewerItem) async -> URL? {
+        liveOriginals.contains(metadata.ocId) ? URL(fileURLWithPath: "/original/\(metadata.ocId).mov") : nil
+    }
+    func downloadLivePhotoMedia(for metadata: NCMediaViewerItem) async -> URL? {
+        guard !Task.isCancelled else { return nil }
+        liveOriginals.insert(metadata.ocId)
+        return await localLivePhotoURL(for: metadata)
+    }
     func cancelLivePhotoMediaDownload(for metadata: NCMediaViewerItem) async { }
     nonisolated func fileProviderStorageExists(for metadata: NCMediaViewerItem) -> Bool { false }
     nonisolated func videoSubtitleTrack(for metadata: NCMediaViewerItem) -> Int? { nil }

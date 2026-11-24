@@ -80,6 +80,11 @@ canvas exploration does not change saved playback preferences. These are graphic
 previews, not verification of playback or navigation. Xcode still compiles preview
 code; running/installing the complete app is unnecessary.
 
+Live Photo images and companion videos follow the same original-file buffer.
+The HD image appears as soon as it is ready; playback waits for the companion.
+Leaving a page stops playback without cancelling buffered downloads. Eviction
+removes both originals, checking offline protection independently for each file.
+
 ## Viewer data boundary
 
 Pages, thumbnails, details and playback use `NCMediaViewerItem`, a `Sendable`

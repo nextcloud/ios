@@ -4,7 +4,7 @@
 import Foundation
 
 struct NCMediaViewerLoadingPolicy: Sendable {
-    static let standard = NCMediaViewerLoadingPolicy(automaticallyDownloadsOriginalImages: true, automaticallyDownloadsLivePhotoResources: false)
+    static let standard = NCMediaViewerLoadingPolicy(automaticallyDownloadsOriginalImages: true, automaticallyDownloadsLivePhotoResources: true)
 
     let automaticallyDownloadsOriginalImages: Bool
     let automaticallyDownloadsLivePhotoResources: Bool

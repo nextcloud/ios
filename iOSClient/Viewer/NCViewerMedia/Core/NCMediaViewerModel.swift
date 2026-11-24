@@ -366,6 +366,9 @@ final class NCMediaViewerModel: ObservableObject {
         guard thumbnailScrubID == scrubID, !isClosed else { return }
         thumbnailScrubID = nil
         await loadSelectedPageIfNeeded()
+        guard !isClosed, thumbnailScrubID == nil else { return }
+        // Retry audio thumbnails whose loading was deferred while scrubbing.
+        thumbnailReloadRevision &+= 1
     }
 
     func displayPreviewPage(at index: Int) async {
@@ -430,6 +433,18 @@ final class NCMediaViewerModel: ObservableObject {
     func loadSelectedPageIfNeeded() async {
         prefetchNeighborPages(around: selectedIndex)
         await loadPageIfNeeded(index: selectedIndex)
+    }
+
+    /// False means the thumbnail must retry: no completed audio load is available yet.
+    func loadAudioForThumbnail(at index: Int) async -> Bool {
+        await loadPageIfNeeded(index: index)
+        guard !isClosed, ocIds.indices.contains(index) else { return false }
+        switch pageState(for: ocIds[index]) {
+        case .audio, .failed:
+            return true
+        default:
+            return false
+        }
     }
 
     func loadPageIfNeeded(index: Int) async {
@@ -543,7 +558,7 @@ final class NCMediaViewerModel: ObservableObject {
             let imageURL = try await downloadOriginalImage(for: metadata)
 
             guard !Task.isCancelled,
-                  let videoURL = await loader.downloadLivePhotoMedia(for: metadata),
+                  let videoURL = await loader.localLivePhotoURL(for: metadata),
                   !Task.isCancelled, !isClosed, bufferedOcIds.contains(metadata.ocId) else {
                 return nil
             }
@@ -553,13 +568,6 @@ final class NCMediaViewerModel: ObservableObject {
             return (imageURL, videoURL)
         } catch {
             return nil
-        }
-    }
-
-    func cancelLivePhotoResourceDownload(for metadata: NCMediaViewerItem) {
-        Task {
-            await loader.cancelDownload(for: metadata.ocId)
-            await loader.cancelLivePhotoMediaDownload(for: metadata)
         }
     }
 
@@ -937,6 +945,9 @@ final class NCMediaViewerModel: ObservableObject {
         loading?.task.cancel()
         Self.releasingImagesByAccount[session.account, default: [:]][ocId] = Task {
             await loader.cancelDownload(for: ocId)
+            if let metadata = cachedPagesByOcId[ocId]?.metadata, metadata.isLivePhoto {
+                await loader.cancelLivePhotoMediaDownload(for: metadata)
+            }
             await loading?.task.value
             defer {
                 Self.releasingImagesByAccount[session.account]?[ocId] = nil
@@ -993,7 +1004,11 @@ final class NCMediaViewerModel: ObservableObject {
         case .video(nil, nil):
             return true
 
-        case .image(_, .some, _, _),
+        case .image(_, .some, nil, _):
+            guard let metadata = cachedPagesByOcId[ocId]?.metadata else { return false }
+            return loadingPolicy.shouldDownloadLivePhotoResources(for: metadata)
+
+        case .image(_, .some, .some, _),
              .audio,
              .video,
              .loadingMetadata,
@@ -1061,10 +1076,13 @@ final class NCMediaViewerModel: ObservableObject {
         if metadata.classFile == NKTypeClassFile.image.rawValue {
             var livePhotoURL: URL?
 
+            guard !Task.isCancelled, !isClosed, bufferedOcIds.contains(ocId) else { return }
+            // Display HD immediately while the companion video is being prepared.
+            setState(.image(previewURL: previewURL, localURL: localURL, livePhotoURL: nil, progress: nil), for: ocId)
             if metadata.isLivePhoto {
                 livePhotoURL = await loader.localLivePhotoURL(for: metadata)
 
-                if livePhotoURL == nil,
+                if livePhotoURL == nil, !Task.isCancelled, thumbnailScrubID == nil,
                    loadingPolicy.shouldDownloadLivePhotoResources(for: metadata) {
                     livePhotoURL = await loader.downloadLivePhotoMedia(for: metadata)
                 }
