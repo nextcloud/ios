@@ -5,7 +5,7 @@
 import Foundation
 import UIKit
 
-public struct ExifData {
+public struct ExifData: Sendable {
     var colorModel: String?
     var width: Int?
     var height: Int?

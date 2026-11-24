@@ -303,7 +303,6 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         }
         guard let metadata = model.selectedMetadata,
               metadata.classFile == NKTypeClassFile.image.rawValue,
-              let appMetadata = model.appMetadata(for: metadata),
               model.loader.fileProviderStorageExists(for: metadata) else {
             localImageInformationKey = nil
             isAdaptiveImageLocal = false
@@ -318,12 +317,10 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         let key = "\(ocId)|\(etag)"
         guard localImageInformationKey != key else { return }
         localImageInformationKey = key
-        NCUtility().getExif(metadata: appMetadata) { [weak self] exif in
-            Task { @MainActor [weak self] in
-                guard let self, self.isFoldedMediaLayout, !self.isSelectedPageDeleted, self.localImageInformationKey == key,
-                      self.model.selectedMetadata?.ocId == ocId, self.model.selectedMetadata?.etag == etag else { return }
-                self.adaptiveControlsState.imageInformation = (ocId: ocId, exif: exif)
-            }
+        model.loader.exif(for: metadata) { [weak self] exif in
+            guard let self, self.isFoldedMediaLayout, !self.isSelectedPageDeleted, self.localImageInformationKey == key,
+                  self.model.selectedMetadata?.ocId == ocId, self.model.selectedMetadata?.etag == etag else { return }
+            self.adaptiveControlsState.imageInformation = (ocId: ocId, exif: exif)
         }
     }
 
@@ -379,8 +376,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         }
 
         guard detailLoadingTask == nil,
-              let selectedMetadata = model.selectedMetadata,
-              let appMetadata = model.appMetadata(for: selectedMetadata) else {
+              let selectedMetadata = model.selectedMetadata else {
             return
         }
 
@@ -395,8 +391,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                 return
             }
 
-            let updatedMetadata = await NCNetworking.shared.updateMetadataPlaceholder(appMetadata)
-            let metadata = self.model.viewerItem(from: updatedMetadata)
+            let metadata = await self.model.loader.metadataForDetails(for: selectedMetadata)
 
             if downloadsOriginal {
                 _ = try? await self.model.downloadOriginalImage(
@@ -424,17 +419,15 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             self.detailLoadingTask = nil
             self.setMediaDetailLoading(false)
 
-            NCUtility().getExif(metadata: updatedMetadata) { exif in
-                Task { @MainActor in
-                    guard self.isShowingDetail,
-                          !self.isSelectedPageDeleted,
-                          self.detailHostingController == nil,
-                          self.model.selectedMetadata?.ocId == selectedOcId else {
-                        return
-                    }
-
-                    self.presentDetailView(metadata: metadata, index: index, exif: exif, animated: animated)
+            self.model.loader.exif(for: metadata) { exif in
+                guard self.isShowingDetail,
+                      !self.isSelectedPageDeleted,
+                      self.detailHostingController == nil,
+                      self.model.selectedMetadata?.ocId == selectedOcId else {
+                    return
                 }
+
+                self.presentDetailView(metadata: metadata, index: index, exif: exif, animated: animated)
             }
         }
     }

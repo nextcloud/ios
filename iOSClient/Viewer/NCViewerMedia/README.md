@@ -94,6 +94,10 @@ The loader retains detached full records for the lifetime of the viewer so app
 menus and EXIF helpers keep all their fields, including permissions and metadata
 that is not persisted yet. Do not rebuild database records from the reduced item.
 
+Image details request placeholder hydration and EXIF through the loader. The
+Nextcloud implementation keeps the existing metadata fallback, local file reading
+and location lookup. EXIF reads alone do not download the original image.
+
 This is the data boundary, not the library extraction: the hosting controller,
 player menus, subtitle picker and other Nextcloud app services still need app
 integration when extracting the viewer. Verify rename, sharing, EXIF, Live Photos

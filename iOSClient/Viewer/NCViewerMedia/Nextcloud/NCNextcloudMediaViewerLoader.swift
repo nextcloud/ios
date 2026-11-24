@@ -92,6 +92,25 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
     }
 
     // MARK: - NCMediaViewerLoading
+    func metadataForDetails(for metadata: NCMediaViewerItem) async -> NCMediaViewerItem {
+        guard let appMetadata = appMetadata(for: metadata) else { return metadata }
+        let updatedMetadata = await NCNetworking.shared.updateMetadataPlaceholder(appMetadata)
+        return item(from: updatedMetadata)
+    }
+
+    @MainActor
+    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (ExifData) -> Void) {
+        guard let appMetadata = appMetadata(for: metadata) else {
+            completion(ExifData())
+            return
+        }
+        NCUtility().getExif(metadata: appMetadata) { exif in
+            Task { @MainActor in
+                completion(exif)
+            }
+        }
+    }
+
     func metadata(for ocId: String, account: String) async -> NCMediaViewerItem? {
         if let metadata = await database.getMetadataFromOcIdAsync(ocId) {
             return item(from: metadata)

@@ -7,6 +7,13 @@ import Foundation
 protocol NCMediaViewerLoading: Sendable {
     func metadata(for ocId: String, account: String) async -> NCMediaViewerItem?
 
+    /// Hydrates server placeholders before an explicit request for image details.
+    func metadataForDetails(for metadata: NCMediaViewerItem) async -> NCMediaViewerItem
+
+    /// Reads existing metadata and local EXIF without downloading the original.
+    @MainActor
+    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (ExifData) -> Void)
+
     func localMediaURL(for metadata: NCMediaViewerItem) async -> URL?
 
     func previewURL(for metadata: NCMediaViewerItem, ext: String) async -> URL?
