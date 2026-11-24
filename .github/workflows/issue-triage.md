@@ -3,9 +3,9 @@
 # SPDX-FileCopyrightText: 2026 Milen Pivchev
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-# GitHub Agentic Workflow. After editing the frontmatter, run `gh aw compile issue-triage` with
-# gh-aw v1.2.2 (`gh extension install github/gh-aw --pin v1.2.2`) and commit the regenerated
-# issue-triage.lock.yml; never edit the lock file. Body-only edits need no recompile.
+# GitHub Agentic Workflow. After any edit, run `gh aw compile issue-triage` with gh-aw v1.2.2
+# (`gh extension install github/gh-aw --pin v1.2.2`) and commit the regenerated
+# issue-triage.lock.yml; never edit the lock file.
 # Needs the COPILOT_GITHUB_TOKEN secret (fine-grained PAT, Account > Copilot Requests: Read).
 # Closes issues only when the repository variable ISSUE_TRIAGE_LIVE is "true"; otherwise it
 # lists what it would close in the run summary. Pull requests that change this workflow always
@@ -37,6 +37,8 @@ engine:
   model: gpt-5-mini # Keep in sync with AGENT_MODEL in close-as-fixed.
 
 strict: true
+# Embeds the prompt in the lock file; pull request runs otherwise read it from the base branch.
+inlined-imports: true
 network: defaults
 timeout-minutes: 20
 max-turns: 60

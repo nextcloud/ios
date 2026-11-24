@@ -4,6 +4,8 @@
 
 # Labels issues "stale" after 30 days without a human comment and removes the label once someone replies.
 # Escalates issues closed by the AI triage agent (issue-triage.md) when a human objects.
+# Stale labels are only logged until the repository variable ISSUE_LIFECYCLE_LIVE is "true".
+# Escalation always runs; it only touches issues the agent closed.
 
 name: Issue lifecycle
 
@@ -42,7 +44,7 @@ jobs:
     steps:
       - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
-          DRY_RUN: ${{ github.event_name == 'pull_request' || inputs.dry_run }}
+          DRY_RUN: ${{ github.event_name == 'pull_request' || inputs.dry_run || vars.ISSUE_LIFECYCLE_LIVE != 'true' }}
           MAX_WRITES: ${{ inputs.max_writes }}
         with:
           retries: 3
@@ -152,10 +154,17 @@ jobs:
       issues: write
     steps:
       - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          DRY_RUN: ${{ vars.ISSUE_LIFECYCLE_LIVE != 'true' }}
         with:
           retries: 3
           retry-exempt-status-codes: 400,401,404,422
           script: |
+            if (process.env.DRY_RUN === 'true') {
+              core.info(`Would remove "stale" from #${context.issue.number}`);
+              return;
+            }
+
             await github.rest.issues.removeLabel({ ...context.repo, issue_number: context.issue.number, name: 'stale' })
               .catch(error => { if (error.status !== 404) throw error; });
 
