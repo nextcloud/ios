@@ -167,14 +167,19 @@ struct NCMediaViewerModelTests {
         ))
     }
 
-    @Test("Live Photo resources remain on demand unless their switch is enabled")
+    @Test("Live Photo resources download by default and respect an explicitly disabled switch")
     func livePhotoResourcesRespectInternalSwitch() {
         var metadata = imageMetadata(fileName: "live-photo.heic")
         metadata.livePhotoFile = "live-photo.mov"
 
-        #expect(!NCMediaViewerLoadingPolicy.standard.shouldDownloadLivePhotoResources(
+        #expect(NCMediaViewerLoadingPolicy.standard.shouldDownloadLivePhotoResources(
             for: metadata
         ))
+        let disabledPolicy = NCMediaViewerLoadingPolicy(
+            automaticallyDownloadsOriginalImages: true,
+            automaticallyDownloadsLivePhotoResources: false
+        )
+        #expect(!disabledPolicy.shouldDownloadLivePhotoResources(for: metadata))
 
         let automaticPolicy = NCMediaViewerLoadingPolicy(
             automaticallyDownloadsOriginalImages: false,
