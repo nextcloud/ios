@@ -175,9 +175,3 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         UIApplication.shared.open(url)
     }
 }
-
-extension UINavigationController {
-    open override var childForStatusBarStyle: UIViewController? {
-        return topViewController?.childForStatusBarStyle ?? topViewController
-    }
-}
