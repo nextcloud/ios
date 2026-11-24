@@ -66,3 +66,9 @@ path = ["iOSClient/Utility/NYMnemonic/**"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2014 Nybex, Inc. <https://nybex.com>"
 SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = [".github/workflows/*.lock.yml", ".github/aw/actions-lock.json"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "GPL-3.0-or-later"

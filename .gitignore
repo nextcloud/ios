@@ -41,3 +41,6 @@ DerivedData
 
 ## Claude Code
 .claude/
+
+## GitHub Agentic Workflows (`gh aw logs` / `gh aw audit` downloads)
+.github/aw/logs/
