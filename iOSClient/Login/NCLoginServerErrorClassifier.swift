@@ -20,13 +20,21 @@ enum NCLoginServerErrorClassifier {
         NSURLErrorServerCertificateNotYetValid
     ]
 
+    /// The host name does not exist, which plain http can't change.
+    private static let unknownHostErrorCodes = [
+        NSURLErrorCannotFindHost,
+        NSURLErrorDNSLookupFailed
+    ]
+
     static func classify(_ error: NKError, serverURL: URL) -> Resolution {
         if certificateErrorCodes.contains(error.errorCode), let host = serverURL.host {
             return .untrustedCertificate(host: host)
         }
 
-        // Any other failed https attempt may fall back to plain http.
+        // Other failed https attempts may fall back to plain http, unless there is no network or no such host.
         guard error.kind != .cancelled,
+              error.kind != .offline,
+              !unknownHostErrorCodes.contains(error.errorCode),
               serverURL.scheme?.lowercased() == "https",
               var components = URLComponents(url: serverURL, resolvingAgainstBaseURL: false) else {
             return .generic

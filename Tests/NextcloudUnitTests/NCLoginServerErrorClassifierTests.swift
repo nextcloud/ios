@@ -30,6 +30,11 @@ struct NCLoginServerErrorClassifierTests {
         #expect(resolution == .insecureFallback(URL(string: "http://cloud.example.com:8443/nextcloud/")!))
     }
 
+    @Test("No network or an unknown host is shown, as http can't help", arguments: [NSURLErrorNotConnectedToInternet, NSURLErrorCannotFindHost, NSURLErrorDNSLookupFailed])
+    func unreachable(errorCode: Int) {
+        #expect(NCLoginServerErrorClassifier.classify(NKError(errorCode: errorCode), serverURL: httpsURL) == .generic)
+    }
+
     @Test("Failures over http are shown")
     func httpFailure() {
         let httpURL = URL(string: "http://cloud.example.com/")!
