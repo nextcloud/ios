@@ -9,7 +9,7 @@ struct NCMediaViewerLoadingPolicy: Sendable {
     let automaticallyDownloadsOriginalImages: Bool
     let automaticallyDownloadsLivePhotoResources: Bool
 
-    func shouldDownloadOriginalImage(for metadata: tableMetadata, hasUsablePreview: Bool) -> Bool {
+    func shouldDownloadOriginalImage(for metadata: NCMediaViewerItem, hasUsablePreview: Bool) -> Bool {
         if Self.originalRequiredExtensions.contains(metadata.fileExtension.lowercased()) {
             return true
         }
@@ -26,7 +26,7 @@ struct NCMediaViewerLoadingPolicy: Sendable {
         return automaticallyDownloadsOriginalImages
     }
 
-    func shouldDownloadLivePhotoResources(for metadata: tableMetadata) -> Bool {
+    func shouldDownloadLivePhotoResources(for metadata: NCMediaViewerItem) -> Bool {
         metadata.isLivePhoto && automaticallyDownloadsLivePhotoResources
     }
 

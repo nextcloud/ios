@@ -1065,6 +1065,10 @@
 		F7FDFF6F2E437E55000D7688 /* NCAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FDFF592E437E55000D7688 /* NCAccount.swift */; };
 		F7FF2CB12842159500EBB7A1 /* NCSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */; };
 		F7FFFCA22FB300600015441E /* NCAssistantSharedTextStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FFFC9D2FB300440015441E /* NCAssistantSharedTextStore.swift */; };
+		AC20261124DB000000000000 /* NCMediaViewerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000000 /* NCMediaViewerItem.swift */; };
+		AC20261124DB000000000001 /* NCMediaViewerLoading.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000001 /* NCMediaViewerLoading.swift */; };
+		AC20261124DB000000000002 /* NCMediaViewerItem+Nextcloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000002 /* NCMediaViewerItem+Nextcloud.swift */; };
+		AC20261124DB000000000003 /* NCMediaViewerModel+Nextcloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000003 /* NCMediaViewerModel+Nextcloud.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2089,6 +2093,10 @@
 		F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSectionHeader.xib; sourceTree = "<group>"; };
 		F7FFFC9D2FB300440015441E /* NCAssistantSharedTextStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantSharedTextStore.swift; sourceTree = "<group>"; };
 		F902B24E44354B6D9F329F12 /* NCPasscodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCPasscodeView.swift; sourceTree = "<group>"; };
+		AC20261124DA000000000000 /* NCMediaViewerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMediaViewerItem.swift"; sourceTree = "<group>"; };
+		AC20261124DA000000000001 /* NCMediaViewerLoading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMediaViewerLoading.swift"; sourceTree = "<group>"; };
+		AC20261124DA000000000002 /* NCMediaViewerItem+Nextcloud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMediaViewerItem+Nextcloud.swift"; sourceTree = "<group>"; };
+		AC20261124DA000000000003 /* NCMediaViewerModel+Nextcloud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMediaViewerModel+Nextcloud.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -2877,6 +2885,8 @@
 				F75175C7307F52E60057C9B0 /* NCMediaPlaybackOptions.swift */,
 				F75175C8307F52E60057C9B0 /* NCMediaViewerLoadingPolicy.swift */,
 				F75175C9307F52E60057C9B0 /* NCMediaViewerModel.swift */,
+				AC20261124DA000000000001 /* NCMediaViewerLoading.swift */,
+				AC20261124DA000000000000 /* NCMediaViewerItem.swift */,
 				F75175CA307F52E60057C9B0 /* NCMediaViewerView.swift */,
 				F75175CB307F52E60057C9B0 /* NCVideoPlaybackPresentationContext.swift */,
 			);
@@ -2927,7 +2937,7 @@
 				F75175D0307F52E60057C9B0 /* Helpers */,
 				F75175DB307F52E60057C9B0 /* NCMediaViewerHostingController.swift */,
 				F75175DC307F52E60057C9B0 /* NCMediaViewerPresenter.swift */,
-				F75175DD307F52E60057C9B0 /* NCNextcloudMediaViewerLoader.swift */,
+				AC20261124DC000000000001 /* Nextcloud */,
 				F75175DE307F52E60057C9B0 /* README.md */,
 			);
 			path = NCViewerMedia;
@@ -3900,6 +3910,16 @@
 				F7EFC0CB256BF89300461AAD /* UserStatus */,
 			);
 			path = Account;
+			sourceTree = "<group>";
+		};
+		AC20261124DC000000000001 /* Nextcloud */ = {
+			isa = PBXGroup;
+			children = (
+				F75175DD307F52E60057C9B0 /* NCNextcloudMediaViewerLoader.swift */,
+				AC20261124DA000000000003 /* NCMediaViewerModel+Nextcloud.swift */,
+				AC20261124DA000000000002 /* NCMediaViewerItem+Nextcloud.swift */,
+			);
+			path = Nextcloud;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -5208,6 +5228,10 @@
 				F7517603307F52E60057C9B0 /* NCMediaViewerDetailView.swift in Sources */,
 				F7517604307F52E60057C9B0 /* NCNextcloudMediaViewerLoader.swift in Sources */,
 				F7517605307F52E60057C9B0 /* NCMediaViewerModel.swift in Sources */,
+				AC20261124DB000000000003 /* NCMediaViewerModel+Nextcloud.swift in Sources */,
+				AC20261124DB000000000002 /* NCMediaViewerItem+Nextcloud.swift in Sources */,
+				AC20261124DB000000000001 /* NCMediaViewerLoading.swift in Sources */,
+				AC20261124DB000000000000 /* NCMediaViewerItem.swift in Sources */,
 				F7517606307F52E60057C9B0 /* NCVideoAVPlayerViewController.swift in Sources */,
 				F7517608307F52E60057C9B0 /* NCMediaViewerAppearance.swift in Sources */,
 				AC14ADAF2026101400000002 /* NCMediaAdaptiveControlsLayout.swift in Sources */,

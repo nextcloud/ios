@@ -13,6 +13,9 @@ import NextcloudKit
 @MainActor
 final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerView>, UIAdaptivePresentationControllerDelegate {
     private let model: NCMediaViewerModel
+    private var selectedAppMetadata: tableMetadata? {
+        model.selectedMetadata.flatMap { model.appMetadata(for: $0) }
+    }
     private let onZoomChanged: (Bool) -> Void
     private let onClose: (_ ocId: String?) -> Void
     private weak var contextMenuController: NCMainTabBarController?
@@ -33,7 +36,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         closeAction: UIAction { [weak self] _ in self?.closeButtonTapped() },
         moreButton: NCContextMenuViewer.mediaActionsButton(
             viewController: self,
-            metadataProvider: { [weak self] in self?.model.selectedMetadata },
+            metadataProvider: { [weak self] in self?.selectedAppMetadata },
             controllerProvider: { [weak self] in self?.contextMenuController }
         ),
         infoAction: UIAction { [weak self] _ in self?.mediaDetailButtonTapped() }
@@ -49,7 +52,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     private lazy var moreNavigationItem = NCContextMenuViewer.mediaNavigationItem(
         viewController: self,
-        metadataProvider: { [weak self] in self?.model.selectedMetadata },
+        metadataProvider: { [weak self] in self?.selectedAppMetadata },
         controllerProvider: { [weak self] in self?.contextMenuController }
     )
 
@@ -241,7 +244,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     }
 
     /// Info belongs to images only, including when paging between different media types.
-    private func updateInformationNavigationItem(metadata: tableMetadata?) {
+    private func updateInformationNavigationItem(metadata: NCMediaViewerItem?) {
         let items = metadata?.classFile == NKTypeClassFile.image.rawValue ? [moreNavigationItem, mediaDetailNavigationItem] : [moreNavigationItem]
         guard navigationItem.rightBarButtonItems != items else { return }
         navigationItem.rightBarButtonItems = items
@@ -269,7 +272,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     }
 
     /// Updates the floating title using the current media metadata.
-    private func updateTitleLabel(metadata: tableMetadata?) {
+    private func updateTitleLabel(metadata: NCMediaViewerItem?) {
         updateInformationNavigationItem(metadata: metadata)
         guard let metadata else {
             floatingTitleView.clear()
@@ -300,7 +303,8 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         }
         guard let metadata = model.selectedMetadata,
               metadata.classFile == NKTypeClassFile.image.rawValue,
-              NCUtilityFileSystem().fileProviderStorageExists(metadata) else {
+              let appMetadata = model.appMetadata(for: metadata),
+              model.loader.fileProviderStorageExists(for: metadata) else {
             localImageInformationKey = nil
             isAdaptiveImageLocal = false
             adaptiveActionsView.informationButton?.isEnabled = !mediaDetailActivityIndicator.isAnimating
@@ -314,7 +318,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         let key = "\(ocId)|\(etag)"
         guard localImageInformationKey != key else { return }
         localImageInformationKey = key
-        NCUtility().getExif(metadata: metadata) { [weak self] exif in
+        NCUtility().getExif(metadata: appMetadata) { [weak self] exif in
             Task { @MainActor [weak self] in
                 guard let self, self.isFoldedMediaLayout, !self.isSelectedPageDeleted, self.localImageInformationKey == key,
                       self.model.selectedMetadata?.ocId == ocId, self.model.selectedMetadata?.etag == etag else { return }
@@ -324,7 +328,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     }
 
     /// Builds the secondary floating title text.
-    private func floatingTitleSecondaryText(for metadata: tableMetadata) -> String? {
+    private func floatingTitleSecondaryText(for metadata: NCMediaViewerItem) -> String? {
         floatingTitleDateFormatter.string(from: metadata.date as Date)
     }
 
@@ -375,7 +379,8 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         }
 
         guard detailLoadingTask == nil,
-              let selectedMetadata = model.selectedMetadata else {
+              let selectedMetadata = model.selectedMetadata,
+              let appMetadata = model.appMetadata(for: selectedMetadata) else {
             return
         }
 
@@ -390,7 +395,8 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                 return
             }
 
-            let metadata = await NCNetworking.shared.updateMetadataPlaceholder(selectedMetadata)
+            let updatedMetadata = await NCNetworking.shared.updateMetadataPlaceholder(appMetadata)
+            let metadata = self.model.viewerItem(from: updatedMetadata)
 
             if downloadsOriginal {
                 _ = try? await self.model.downloadOriginalImage(
@@ -418,7 +424,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             self.detailLoadingTask = nil
             self.setMediaDetailLoading(false)
 
-            NCUtility().getExif(metadata: metadata) { exif in
+            NCUtility().getExif(metadata: updatedMetadata) { exif in
                 Task { @MainActor in
                     guard self.isShowingDetail,
                           !self.isSelectedPageDeleted,
@@ -455,7 +461,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     }
 
     /// Presents the SwiftUI media detail panel.
-    private func presentDetailView(metadata: tableMetadata, index: Int, exif: ExifData, animated: Bool) {
+    private func presentDetailView(metadata: NCMediaViewerItem, index: Int, exif: ExifData, animated: Bool) {
         let detailView = NCMediaViewerDetailView(metadata: metadata, exif: exif)
 
         // Only images have inline information. Audio/video keep the standard Info sheet.

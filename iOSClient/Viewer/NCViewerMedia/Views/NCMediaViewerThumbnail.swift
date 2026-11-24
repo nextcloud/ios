@@ -101,9 +101,9 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
     let selectedIndex: Int
     let numberOfPages: Int
     let reloadRevision: Int
-    let metadataProvider: (_ index: Int) -> tableMetadata?
-    let metadataResolver: (_ index: Int) async -> tableMetadata?
-    let previewURLProvider: (_ metadata: tableMetadata) async -> URL?
+    let metadataProvider: (_ index: Int) -> NCMediaViewerItem?
+    let metadataResolver: (_ index: Int) async -> NCMediaViewerItem?
+    let previewURLProvider: (_ metadata: NCMediaViewerItem) async -> URL?
     let audioLoadProvider: (_ index: Int) async -> Void
     let isDeletedProvider: (_ index: Int) -> Bool
     let onSelect: (_ index: Int) -> Void
@@ -190,9 +190,9 @@ extension NCMediaViewerThumbnail {
         var selectedIndex: Int
         var numberOfPages: Int
         var reloadRevision: Int
-        var metadataProvider: (_ index: Int) -> tableMetadata?
-        var metadataResolver: (_ index: Int) async -> tableMetadata?
-        var previewURLProvider: (_ metadata: tableMetadata) async -> URL?
+        var metadataProvider: (_ index: Int) -> NCMediaViewerItem?
+        var metadataResolver: (_ index: Int) async -> NCMediaViewerItem?
+        var previewURLProvider: (_ metadata: NCMediaViewerItem) async -> URL?
         var audioLoadProvider: (_ index: Int) async -> Void
         var isDeletedProvider: (_ index: Int) -> Bool
         var onSelect: (_ index: Int) -> Void
@@ -218,9 +218,9 @@ extension NCMediaViewerThumbnail {
             selectedIndex: Int,
             numberOfPages: Int,
             reloadRevision: Int,
-            metadataProvider: @escaping (_ index: Int) -> tableMetadata?,
-            metadataResolver: @escaping (_ index: Int) async -> tableMetadata?,
-            previewURLProvider: @escaping (_ metadata: tableMetadata) async -> URL?,
+            metadataProvider: @escaping (_ index: Int) -> NCMediaViewerItem?,
+            metadataResolver: @escaping (_ index: Int) async -> NCMediaViewerItem?,
+            previewURLProvider: @escaping (_ metadata: NCMediaViewerItem) async -> URL?,
             audioLoadProvider: @escaping (_ index: Int) async -> Void,
             isDeletedProvider: @escaping (_ index: Int) -> Bool,
             onSelect: @escaping (_ index: Int) -> Void
@@ -661,7 +661,7 @@ extension NCMediaViewerThumbnail {
                     return
                 }
 
-                let metadata: tableMetadata?
+                let metadata: NCMediaViewerItem?
 
                 if let cachedMetadata = self.metadataProvider(index) {
                     metadata = cachedMetadata
@@ -758,7 +758,7 @@ extension NCMediaViewerThumbnail {
             }
         }
 
-        private func loadThumbnailIfNeeded(index: Int, metadata initialMetadata: tableMetadata?) {
+        private func loadThumbnailIfNeeded(index: Int, metadata initialMetadata: NCMediaViewerItem?) {
             guard index >= 0,
                   index < numberOfPages,
                   !isDeletedProvider(index),

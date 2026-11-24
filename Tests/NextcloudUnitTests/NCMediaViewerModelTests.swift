@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2026 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import Foundation
 import Testing
 import NextcloudKit
 @testable import Nextcloud
@@ -11,7 +12,7 @@ import NextcloudKit
 struct NCMediaViewerModelTests {
     @Test("Duplicate media identifiers produce a single viewer page")
     func removesDuplicateIdentifiers() {
-        let metadata = tableMetadata()
+        var metadata = NCMediaViewerItem()
         metadata.ocId = "current"
 
         let model = NCMediaViewerInitialModel(
@@ -25,7 +26,7 @@ struct NCMediaViewerModelTests {
 
     @Test("Missing current media is inserted before the supplied identifiers")
     func insertsMissingCurrentIdentifier() {
-        let metadata = tableMetadata()
+        var metadata = NCMediaViewerItem()
         metadata.ocId = "current"
 
         let model = NCMediaViewerInitialModel(
@@ -168,7 +169,7 @@ struct NCMediaViewerModelTests {
 
     @Test("Live Photo resources remain on demand unless their switch is enabled")
     func livePhotoResourcesRespectInternalSwitch() {
-        let metadata = imageMetadata(fileName: "live-photo.heic")
+        var metadata = imageMetadata(fileName: "live-photo.heic")
         metadata.livePhotoFile = "live-photo.mov"
 
         #expect(!NCMediaViewerLoadingPolicy.standard.shouldDownloadLivePhotoResources(
@@ -187,8 +188,76 @@ struct NCMediaViewerModelTests {
         ))
     }
 
-    private func makeViewerModel() -> NCMediaViewerModel {
+    @Test("Viewer metadata is a value snapshot, including Live Photo and file names")
+    func metadataSnapshotDoesNotFollowRealmObjectMutations() {
         let metadata = tableMetadata()
+        metadata.account = "account"
+        metadata.ocId = "photo"
+        metadata.fileId = "42"
+        metadata.fileName = "encrypted-name"
+        metadata.fileNameView = "Photo.HEIC"
+        metadata.livePhotoFile = "companion-id"
+        metadata.date = NSDate(timeIntervalSince1970: 123)
+        metadata.size = 2048
+        metadata.width = 4000
+        metadata.height = 3000
+        metadata.latitude = 45.46
+        metadata.longitude = 9.19
+        let item = NCMediaViewerItem(metadata: metadata)
+
+        metadata.fileNameView = "Renamed.jpg"
+        metadata.livePhotoFile = ""
+        metadata.size = 0
+        metadata.latitude = 0
+        metadata.longitude = 0
+
+        #expect(item.account == "account")
+        #expect(item.ocId == "photo")
+        #expect(item.fileId == "42")
+        #expect(item.fileName == "encrypted-name")
+        #expect(item.fileNameView == "Photo.HEIC")
+        #expect(item.fileExtension == "HEIC")
+        #expect(item.isLivePhoto)
+        #expect(item.livePhotoFile == "companion-id")
+        #expect(item.date == Date(timeIntervalSince1970: 123))
+        #expect(item.size == 2048)
+        #expect(item.width == 4000)
+        #expect(item.height == 3000)
+        #expect(item.latitude == 45.46)
+        #expect(item.longitude == 9.19)
+    }
+
+    @Test("The app boundary preserves fields not exposed by the viewer")
+    func appBoundaryPreservesCompleteDetachedMetadata() throws {
+        let metadata = tableMetadata()
+        metadata.account = "first-account"
+        metadata.ocId = "same-id"
+        metadata.permissions = "RGDNVW"
+        metadata.placeholder = true
+        metadata.url = "/temporary/movie.mov"
+        let loader = NCMediaViewerLoader()
+        let model = NCMediaViewerModel(
+            currentMetadata: metadata, ocIds: [metadata.ocId],
+            session: NCSession().getSession(account: ""), loader: loader
+        )
+        let item = try #require(model.selectedMetadata)
+        metadata.permissions = ""
+
+        let copy = try #require(model.appMetadata(for: item))
+        #expect(copy.permissions == "RGDNVW")
+        #expect(copy.placeholder)
+        #expect(item.url == "/temporary/movie.mov")
+        copy.permissions = "changed-by-action"
+        #expect(model.appMetadata(for: item)?.permissions == "RGDNVW")
+
+        metadata.account = "second-account"
+        let otherItem = loader.item(from: metadata)
+        #expect(loader.appMetadata(for: otherItem)?.permissions == "")
+        #expect(model.appMetadata(for: item)?.permissions == "RGDNVW")
+    }
+
+    private func makeViewerModel() -> NCMediaViewerModel {
+        var metadata = NCMediaViewerItem()
         metadata.ocId = "first"
 
         return NCMediaViewerModel(
@@ -199,8 +268,8 @@ struct NCMediaViewerModelTests {
         )
     }
 
-    private func imageMetadata(fileName: String) -> tableMetadata {
-        let metadata = tableMetadata()
+    private func imageMetadata(fileName: String) -> NCMediaViewerItem {
+        var metadata = NCMediaViewerItem()
         metadata.classFile = NKTypeClassFile.image.rawValue
         metadata.fileName = fileName
         metadata.fileNameView = fileName

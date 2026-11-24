@@ -80,6 +80,25 @@ canvas exploration does not change saved playback preferences. These are graphic
 previews, not verification of playback or navigation. Xcode still compiles preview
 code; running/installing the complete app is unnecessary.
 
+## Viewer data boundary
+
+Pages, thumbnails, details and playback use `NCMediaViewerItem`, a `Sendable`
+value snapshot. `NCMediaViewerLoading` accepts and returns these values and also
+handles VLC track preferences. A different app can implement this protocol with
+its own persistence layer.
+
+The current app still opens the viewer with `tableMetadata`. The overload in
+`Nextcloud/NCMediaViewerModel+Nextcloud.swift` converts it through `NCMediaViewerLoader`.
+The `Nextcloud/` directory groups the app-specific loader and conversion extensions.
+The loader retains detached full records for the lifetime of the viewer so app
+menus and EXIF helpers keep all their fields, including permissions and metadata
+that is not persisted yet. Do not rebuild database records from the reduced item.
+
+This is the data boundary, not the library extraction: the hosting controller,
+player menus, subtitle picker and other Nextcloud app services still need app
+integration when extracting the viewer. Verify rename, sharing, EXIF, Live Photos
+and VLC track selection alongside the playback checks above.
+
 ## State and ownership
 
 Keep these responsibilities separate when editing the viewer:

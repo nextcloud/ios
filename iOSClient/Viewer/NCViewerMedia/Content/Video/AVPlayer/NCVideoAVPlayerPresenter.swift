@@ -17,7 +17,7 @@ enum NCVideoAVPlayerPresenter {
     // MARK: - Public API
     // Presents or updates the single AVPlayer fullscreen controller.
     static func present(
-        metadata: tableMetadata,
+        metadata: NCMediaViewerItem,
         preparedPlayback: NCVideoAVPreparedPlayback,
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,

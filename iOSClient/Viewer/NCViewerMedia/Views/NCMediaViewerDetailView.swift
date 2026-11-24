@@ -8,7 +8,7 @@ import NextcloudKit
 
 // MARK: - Media Viewer Detail View
 struct NCMediaViewerDetailView: View {
-    let metadata: tableMetadata
+    let metadata: NCMediaViewerItem
     let exif: ExifData
     /// Adaptive inline use omits missing fields; normal sheets retain their existing presentation.
     var showsOnlyAvailableData = false
@@ -428,8 +428,8 @@ private struct FlowingDetailValues: View {
 // MARK: - Previews
 
 #Preview("Full EXIF") {
-    let metadata: tableMetadata = {
-        let metadata = tableMetadata()
+    let metadata: NCMediaViewerItem = {
+        var metadata = NCMediaViewerItem()
         metadata.fileNameView = "IMG_0042.HEIC"
         metadata.size = 3_145_728
         metadata.livePhotoFile = "IMG_0042.MOV"
@@ -459,8 +459,8 @@ private struct FlowingDetailValues: View {
 }
 
 #Preview("No EXIF") {
-    let metadata: tableMetadata = {
-        let metadata = tableMetadata()
+    let metadata: NCMediaViewerItem = {
+        var metadata = NCMediaViewerItem()
         metadata.fileNameView = "Document scan.png"
         metadata.size = 482_133
         return metadata

@@ -7,7 +7,7 @@ import NextcloudKit
 
 /// Image-only lower content. Actions and the fixed thumbnail area belong to the shared adaptive panel.
 struct NCImageAdaptiveControlsView: View {
-    let metadata: tableMetadata
+    let metadata: NCMediaViewerItem
     let exif: ExifData?
     let detailView: NCMediaViewerDetailView?
     let canGoPrevious: Bool
@@ -84,7 +84,7 @@ struct NCImageAdaptiveControlsView: View {
 
 private extension NCImageAdaptiveControlsView {
     static func previewView(isShowingInformation: Bool) -> some View {
-        let metadata = tableMetadata()
+        var metadata = NCMediaViewerItem()
         metadata.ocId = "adaptive-image-preview"
         metadata.fileName = "Waterfall.jpg"
         metadata.fileNameView = metadata.fileName

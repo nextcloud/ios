@@ -65,7 +65,7 @@ extension Color {
 // MARK: - Viewer Background Resolution
 
 /// Default viewer background. `.system` follows the inherited light/dark appearance.
-func ncViewerBackgroundStyle(for metadata: tableMetadata?) -> NCViewerBackgroundStyle {
+func ncViewerBackgroundStyle(for metadata: NCMediaViewerItem?) -> NCViewerBackgroundStyle {
     .system
 }
 
@@ -74,7 +74,7 @@ func ncViewerBackgroundStyle(for metadata: tableMetadata?) -> NCViewerBackground
 /// Shared by normal and folded content: hiding chrome makes the background black.
 /// Folding only hides the traditional navigation bar; it does not change this policy
 /// or `isChromeHidden`. The adaptive panel inherits this policy by default.
-func ncViewerBackgroundStyle(for metadata: tableMetadata?, isChromeHidden: Bool) -> NCViewerBackgroundStyle {
+func ncViewerBackgroundStyle(for metadata: NCMediaViewerItem?, isChromeHidden: Bool) -> NCViewerBackgroundStyle {
     if isChromeHidden {
         return .black
     }
@@ -87,7 +87,7 @@ func ncViewerBackgroundStyle(for metadata: tableMetadata?, isChromeHidden: Bool)
 /// Presented video playback uses black across both folded regions, independently
 /// of appearance, chrome visibility and the paged preview's panel customization.
 /// Unfolded playback retains the existing chrome-aware background policy.
-func ncViewerVideoPlaybackBackgroundStyle(for metadata: tableMetadata?, isChromeHidden: Bool, isFoldedLayout: Bool) -> NCViewerBackgroundStyle {
+func ncViewerVideoPlaybackBackgroundStyle(for metadata: NCMediaViewerItem?, isChromeHidden: Bool, isFoldedLayout: Bool) -> NCViewerBackgroundStyle {
     isFoldedLayout ? .black : ncViewerBackgroundStyle(for: metadata, isChromeHidden: isChromeHidden)
 }
 
