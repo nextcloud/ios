@@ -34,7 +34,7 @@ permissions:
 
 engine:
   id: copilot
-  model: gpt-5-mini # Keep in sync with AGENT_MODEL in close-as-fixed.
+  model: claude-haiku-5.5 # Keep in sync with AGENT_MODEL in close-as-fixed.
 
 strict: true
 # Embeds the prompt in the lock file; pull request runs otherwise read it from the base branch.
@@ -280,7 +280,7 @@ safe-outputs:
   noop:
     report-as-issue: false
   threat-detection:
-    model: gpt-5-mini
+    model: claude-haiku-5.5
     max-ai-credits: 40
     report-as-issue: false
   jobs:
@@ -296,7 +296,7 @@ safe-outputs:
         issues: write
       env:
         ISSUE_TRIAGE_LIVE: ${{ github.event_name != 'pull_request' && vars.ISSUE_TRIAGE_LIVE || '' }}
-        AGENT_MODEL: gpt-5-mini
+        AGENT_MODEL: claude-haiku-5.5
       inputs:
         issue_number:
           description: Issue number as a string, for example "1234"
