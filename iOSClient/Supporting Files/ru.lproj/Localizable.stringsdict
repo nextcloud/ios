@@ -142,5 +142,37 @@
 			<string>%d фото и видео</string>
 		</dict>
 	</dict>
+	<key>_folders_count_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@folders@</string>
+		<key>folders</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>one</key>
+			<string>%ld folder</string>
+			<key>other</key>
+			<string>%ld folders</string>
+		</dict>
+	</dict>
+	<key>_files_count_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@files@</string>
+		<key>files</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>one</key>
+			<string>%ld file</string>
+			<key>other</key>
+			<string>%ld files</string>
+		</dict>
+	</dict>
 </dict>
 </plist>
