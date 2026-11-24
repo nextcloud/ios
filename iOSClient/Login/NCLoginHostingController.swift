@@ -11,8 +11,9 @@ final class NCLoginHostingController: UIHostingController<ServerAddressView> {
     private let coordinator: NCLoginCoordinator
     private var hasAppeared = false
 
-    init(controller: NCMainTabBarController?, presentation: NCLoginCoordinator.Presentation) {
-        let coordinator = NCLoginCoordinator(controller: controller, presentation: presentation)
+    /// - Parameter loginServerURL: A server to log in to right away, such as one the user just signed up on.
+    init(controller: NCMainTabBarController?, presentation: NCLoginCoordinator.Presentation, loginServerURL: URL? = nil) {
+        let coordinator = NCLoginCoordinator(controller: controller, presentation: presentation, loginServerURL: loginServerURL)
 
         let rootView = ServerAddressView(backgroundColor: .constant(Color(uiColor: NCBrandColor.shared.customer)),
                                          brandImage: Image("logo"),

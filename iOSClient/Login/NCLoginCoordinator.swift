@@ -20,11 +20,14 @@ final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
 
     private let presentation: Presentation
     private let controller: NCMainTabBarController?
+    /// A server to log in to right away, such as one the user just signed up on.
+    private let loginServerURL: URL?
     private var certificateDetailsContinuation: CheckedContinuation<Void, Never>?
 
-    init(controller: NCMainTabBarController?, presentation: Presentation) {
+    init(controller: NCMainTabBarController?, presentation: Presentation, loginServerURL: URL? = nil) {
         self.controller = controller
         self.presentation = presentation
+        self.loginServerURL = loginServerURL
     }
 
     // MARK: - Configuration
@@ -38,7 +41,10 @@ final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
         configuration.serverAddressDescription = String.localizedStringWithFormat(NSLocalizedString("_login_address_detail_", comment: ""), brandOptions.brand)
         configuration.enforcedServersPrompt = NSLocalizedString("_select_server_", comment: "")
 
-        if case .prefill(let serverURL) = appConfigAction {
+        if let loginServerURL {
+            configuration.initialServerAddress = loginServerURL.absoluteString
+            configuration.startsLoginOnAppear = true
+        } else if case .prefill(let serverURL) = appConfigAction {
             configuration.initialServerAddress = serverURL
         } else if !brandOptions.loginBaseUrl.isEmpty {
             configuration.initialServerAddress = brandOptions.loginBaseUrl
@@ -111,6 +117,17 @@ final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
         try await NCAccount().createAccount(viewController: presenter, urlBase: host.absoluteString, user: user, password: password, controller: controller)
     }
 
+    /// Pushes the login for a server, which starts right away.
+    /// - Returns: Whether the presenter has a navigation stack to show it on.
+    func showLogin(serverURL: URL) -> Bool {
+        guard let navigationController = presenter?.navigationController else { return false }
+
+        let viewController = NCLoginHostingController(controller: controller, presentation: .pushed, loginServerURL: serverURL)
+        navigationController.pushViewController(viewController, animated: true)
+
+        return true
+    }
+
     // MARK: - Managed configuration
 
     private var appConfigAction: NCLoginAppConfig.Action? {
@@ -133,6 +150,9 @@ final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
     }
 
     func runAppConfigAutoLoginIfNeeded() async {
+        // It would race the login that starts by itself for this server.
+        guard loginServerURL == nil else { return }
+
         let serverURL: String
         let user: String
         let password: String

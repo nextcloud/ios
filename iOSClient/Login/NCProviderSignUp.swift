@@ -248,7 +248,14 @@ final class NCProviderSignUp: UIViewController, WKNavigationDelegate {
             do {
                 let credentials = try LoginCallbackParser.parse(callbackURL, scheme: scheme)
 
-                try await coordinator.addAccount(host: credentials.host, user: credentials.user, password: credentials.password)
+                do {
+                    try await coordinator.addAccount(host: credentials.host, user: credentials.user, password: credentials.password)
+                } catch let error as NKError where error.kind == .unauthorized {
+                    // Providers may hand over a session token, which servers refuse, so the user logs in to the new account instead.
+                    nkLog(error: "The new account refused its sign-up credentials, starting the login: \(error.logDescription)")
+
+                    guard coordinator.showLogin(serverURL: credentials.host) else { throw error }
+                }
             } catch let error as NKError {
                 await showErrorBanner(windowScene: windowScene, error: error, context: .login)
             } catch {
