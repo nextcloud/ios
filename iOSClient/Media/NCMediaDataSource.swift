@@ -198,10 +198,9 @@ extension NCMedia {
             guard self.isViewActived,
                   !self.searchMediaInProgress,
                   !self.isPinchGestureActive,
-                  (!self.isEditMode || self.allowsSearchWhileSelecting) else {
+                  !self.isEditMode || self.allowsSearchWhileSelecting else {
                 return false
             }
-
             self.searchMediaInProgress = true
             return true
         }
@@ -297,7 +296,8 @@ extension NCMedia {
 
         // SEARCH NEW MEDIA WITH AN ACTIVE FILTER (VIDEOS OR IMAGES)
         //
-        if (self.showOnlyImages || self.showOnlyVideos), distant || lastDateNew == .distantPast {
+        if self.showOnlyImages || self.showOnlyVideos,
+           distant || lastDateNew == .distantPast {
             await searchEarlierFilteredMedia(mediaPath: tblAccount.mediaPath, account: account)
             return
         }

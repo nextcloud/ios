@@ -8,7 +8,7 @@ import NextcloudKit
 struct NCVideoURLResolver {
     private let utilityFileSystem = NCUtilityFileSystem()
 
-    func getVideoURL(metadata: tableMetadata) async -> (url: URL?, autoplay: Bool, error: NKError) {
+    func getVideoURL(metadata: NCMediaViewerItem, isLocal: Bool) async -> (url: URL?, autoplay: Bool, error: NKError) {
         if !metadata.url.isEmpty {
             if metadata.url.hasPrefix("/") {
                 return (
@@ -25,7 +25,7 @@ struct NCVideoURLResolver {
             }
         }
 
-        if utilityFileSystem.fileProviderStorageExists(metadata) {
+        if isLocal {
             let localPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
 
             return (
@@ -38,7 +38,7 @@ struct NCVideoURLResolver {
         return await getDirectDownloadURL(metadata: metadata)
     }
 
-    private func getDirectDownloadURL(metadata: tableMetadata) async -> (url: URL?, autoplay: Bool, error: NKError) {
+    private func getDirectDownloadURL(metadata: NCMediaViewerItem) async -> (url: URL?, autoplay: Bool, error: NKError) {
         await withCheckedContinuation { continuation in
             NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId, account: metadata.account) { _ in
             } completion: { _, urlString, _, error in

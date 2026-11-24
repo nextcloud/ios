@@ -7,7 +7,7 @@ import UIKit
 /// Single experimental switch for images, audio and both video engines. See ../README.md.
 enum NCMediaAdaptiveLayoutConfiguration {
     /// Set to false for TestFlight regression checks of the normal viewer.
-    static let isAdaptiveLayoutEnabled = false
+    static let isAdaptiveLayoutEnabled = true
 }
 
 /// Arranges the same media surface above the fold and independent controls below it.
@@ -94,6 +94,11 @@ final class NCMediaAdaptiveLayoutView: UIView {
         }
 
         updateLayout(divisionFrames: divisionFrames)
+    }
+
+    /// In DUO, touches in the information panel belong to its scroll view and map.
+    func allowsDismissGesture(at point: CGPoint) -> Bool {
+        !isFoldedLayout || mediaView.frame.contains(point)
     }
 
     func updateLayout(divisionFrames: [CGRect]) {

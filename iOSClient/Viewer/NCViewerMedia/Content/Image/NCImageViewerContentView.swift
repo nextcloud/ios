@@ -130,7 +130,7 @@ struct NCImageViewerContentView: View {
         let expectedPreviewURL = previewURL
         let expectedFullURL = fullURL
 
-        if loadedIdentifier != expectedIdentifier {
+        if loadedIdentifier != expectedIdentifier || (expectedFullURL == nil && loadedFullURL != nil) {
             currentImage = nil
             loadedPreviewURL = nil
             loadedFullURL = nil

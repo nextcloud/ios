@@ -22,7 +22,7 @@ struct NCMediaAdaptiveControlsView: View {
         VStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
             NCMediaAdaptiveActionsHost(
                 makeActionsView: makeActionsView,
-                showsInformation: !isSelectedPageDeleted && model.selectedMetadata?.classFile == NKTypeClassFile.image.rawValue,
+                showsInformation: false,
                 showsAudioOptions: !isSelectedPageDeleted && model.selectedMetadata?.classFile == NKTypeClassFile.audio.rawValue,
                 playbackOptions: model.playbackOptions,
                 fileName: model.selectedMetadata.map { $0.fileNameView.isEmpty ? $0.fileName : $0.fileNameView } ?? ""
@@ -62,7 +62,7 @@ struct NCMediaAdaptiveControlsView: View {
     // Audio handles swipes locally outside its slider; keep this common gesture away from seeking.
     // Other media preserve information scrolling/map gestures and the action/thumbnail rows.
     private var isPageSwipeEnabled: Bool {
-        state.isFoldedLayout && state.detailView == nil && model.numberOfPages > 1 && model.selectedMetadata?.classFile != NKTypeClassFile.audio.rawValue
+        state.isFoldedLayout && state.detailView == nil && model.numberOfPages > 1 && model.selectedMetadata?.classFile != NKTypeClassFile.audio.rawValue && model.selectedMetadata?.classFile != NKTypeClassFile.image.rawValue
     }
 
     private var pageSwipe: some Gesture {
@@ -169,7 +169,7 @@ struct NCMediaAdaptiveControlsView: View {
 final class NCMediaAdaptiveControlsState: ObservableObject {
     @Published var detailView: NCMediaViewerDetailView?
     @Published var isFoldedLayout = false
-    /// Retain only the last inspected image's EXIF for its compact summary; no automatic original download.
+    /// Retain only the visible image's EXIF; the model owns original downloads in the buffer.
     @Published var imageInformation: (ocId: String, exif: ExifData)?
     private struct VideoCoverRegistration {
         let owner: UUID

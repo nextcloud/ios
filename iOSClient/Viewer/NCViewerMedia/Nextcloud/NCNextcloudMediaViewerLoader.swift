@@ -9,9 +9,14 @@ import NextcloudKit
 private actor NCMediaViewerDownloadTaskRegistry {
     private var tasks: [String: URLSessionTask] = [:]
     private var isCancelled = false
+    private var cancelledOcIds = Set<String>()
+
+    func beginDownload(for ocId: String) {
+        cancelledOcIds.remove(ocId)
+    }
 
     func setTask(_ task: URLSessionTask, for ocId: String) {
-        guard !isCancelled else {
+        guard !isCancelled, !cancelledOcIds.contains(ocId) else {
             task.cancel()
             return
         }
@@ -24,6 +29,7 @@ private actor NCMediaViewerDownloadTaskRegistry {
     }
 
     func cancelTask(for ocId: String) {
+        cancelledOcIds.insert(ocId)
         tasks.removeValue(forKey: ocId)?.cancel()
     }
 
@@ -44,10 +50,76 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
     private let fileManager = FileManager.default
     private let downloadTaskRegistry = NCMediaViewerDownloadTaskRegistry()
 
+    // Keep complete app records here for menus, EXIF and existing networking APIs.
+    // Only detached copies enter this lock-protected cache; the viewer sees values.
+    private let metadataLock = NSLock()
+    private var appMetadataByAccount: [String: [String: tableMetadata]] = [:]
+
+    func item(from metadata: tableMetadata) -> NCMediaViewerItem {
+        let copy = metadata.detachedCopy()
+        metadataLock.withLock {
+            appMetadataByAccount[copy.account, default: [:]][copy.ocId] = copy
+        }
+        return NCMediaViewerItem(metadata: copy)
+    }
+
+    func appMetadata(for item: NCMediaViewerItem) -> tableMetadata? {
+        metadataLock.withLock {
+            appMetadataByAccount[item.account]?[item.ocId]?.detachedCopy()
+        }
+    }
+
+    private func livePhotoMetadata(for item: NCMediaViewerItem) -> tableMetadata? {
+        guard let metadata = appMetadata(for: item) else { return nil }
+        return database.getMetadataLivePhoto(metadata: metadata)
+    }
+
+    func fileProviderStorageExists(for item: NCMediaViewerItem) -> Bool {
+        guard let metadata = appMetadata(for: item) else { return false }
+        return utilityFileSystem.fileProviderStorageExists(metadata)
+    }
+
+    func videoSubtitleTrack(for item: NCMediaViewerItem) -> Int? {
+        database.getVideo(metadata: appMetadata(for: item))?.currentVideoSubTitleIndex
+    }
+
+    func videoAudioTrack(for item: NCMediaViewerItem) -> Int? {
+        database.getVideo(metadata: appMetadata(for: item))?.currentAudioTrackIndex
+    }
+
+    func saveVideoSubtitleTrack(_ index: Int, for item: NCMediaViewerItem) {
+        guard let metadata = appMetadata(for: item) else { return }
+        database.addVideo(metadata: metadata, currentVideoSubTitleIndex: index)
+    }
+
+    func saveVideoAudioTrack(_ index: Int, for item: NCMediaViewerItem) {
+        guard let metadata = appMetadata(for: item) else { return }
+        database.addVideo(metadata: metadata, currentAudioTrackIndex: index)
+    }
+
     // MARK: - NCMediaViewerLoading
-    func metadata(for ocId: String, account: String) async -> tableMetadata? {
+    func metadataForDetails(for metadata: NCMediaViewerItem) async -> NCMediaViewerItem {
+        guard let appMetadata = appMetadata(for: metadata) else { return metadata }
+        let updatedMetadata = await NCNetworking.shared.updateMetadataPlaceholder(appMetadata)
+        return item(from: updatedMetadata)
+    }
+
+    @MainActor
+    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (ExifData) -> Void) {
+        guard let appMetadata = appMetadata(for: metadata) else {
+            completion(ExifData())
+            return
+        }
+        NCUtility().getExif(metadata: appMetadata) { exif in
+            Task { @MainActor in
+                completion(exif)
+            }
+        }
+    }
+
+    func metadata(for ocId: String, account: String) async -> NCMediaViewerItem? {
         if let metadata = await database.getMetadataFromOcIdAsync(ocId) {
-            return metadata
+            return item(from: metadata)
         }
 
         guard let fileId = NCUtilityFileSystem().extractFileId(from: ocId) else {
@@ -64,10 +136,10 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
         await NCManageDatabase.shared.addMetadataAsync(metadata)
 
-        return metadata
+        return item(from: metadata)
     }
 
-    func previewURL(for metadata: tableMetadata, ext: String) async -> URL? {
+    func previewURL(for metadata: NCMediaViewerItem, ext: String) async -> URL? {
         let localPath = utilityFileSystem.getDirectoryProviderStorageImageOcId(metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase)
 
         if isValidLocalFile(path: localPath, validateAsImage: true) {
@@ -88,7 +160,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
 
         if result.error == .success,
            let data = result.responseData?.data {
-            NCUtility().createImageFileFrom(data: data, metadata: metadata)
+            NCUtility().createImageFileFrom(data: data, ocId: metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
         }
 
         guard isValidLocalFile(path: localPath, validateAsImage: true) else {
@@ -99,7 +171,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         return URL(fileURLWithPath: localPath)
     }
 
-    func localMediaURL(for metadata: tableMetadata) async -> URL? {
+    func localMediaURL(for metadata: NCMediaViewerItem) async -> URL? {
         let localPath = fullLocalPath(for: metadata)
         let validateAsImage = metadata.classFile == NKTypeClassFile.image.rawValue
 
@@ -111,20 +183,14 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         return URL(fileURLWithPath: localPath)
     }
 
-    func downloadMedia(for metadata: tableMetadata, onDownloadStarted: (@Sendable () async -> Void)? = nil) async throws -> URL {
+    func downloadMedia(for metadata: NCMediaViewerItem, onDownloadStarted: (@Sendable () async -> Void)? = nil) async throws -> URL {
         if let localURL = await localMediaURL(for: metadata) {
             return localURL
         }
 
+        try Task.checkCancellation()
+        await downloadTaskRegistry.beginDownload(for: metadata.ocId)
         await onDownloadStarted?()
-
-        guard let downloadMetadata = await database.setMetadataSessionInWaitDownloadAsync(
-            ocId: metadata.ocId,
-            session: NCNetworking.shared.sessionDownload,
-            selector: NCGlobal.shared.selectorDownloadFile
-        ) else {
-            throw NSError(domain: "Download Media", code: 1, userInfo: [NSLocalizedDescriptionKey: "Unable to prepare media download."])
-        }
 
         try await NCTransferCoordinator.shared.acquire(priority: .userInitiated)
         defer {
@@ -133,6 +199,20 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             }
         }
 
+        try Task.checkCancellation()
+        guard let downloadMetadata = await database.setMetadataSessionInWaitDownloadAsync(
+            ocId: metadata.ocId,
+            session: NCNetworking.shared.sessionDownload,
+            selector: NCGlobal.shared.selectorDownloadFile
+        ) else {
+            throw NSError(domain: "Download Media", code: 1, userInfo: [NSLocalizedDescriptionKey: "Unable to prepare media download."])
+        }
+
+        if Task.isCancelled {
+            await database.setMetadataSessionAsync(ocId: metadata.ocId, session: "", sessionTaskIdentifier: 0,
+                                                   sessionError: "", selector: "", status: NCGlobal.shared.metadataStatusNormal)
+            throw CancellationError()
+        }
         let result = await NCNetworking.shared.downloadFile(
             metadata: downloadMetadata,
             taskHandler: { [downloadTaskRegistry] task in
@@ -148,23 +228,23 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             throw result.nkError
         }
 
-        if let localURL = await localMediaURL(for: downloadMetadata) {
+        if let localURL = await localMediaURL(for: NCMediaViewerItem(metadata: downloadMetadata)) {
             return localURL
         }
 
         throw NSError(domain: "Download Media", code: 2)
     }
 
-    func localLivePhotoURL(for metadata: tableMetadata) async -> URL? {
+    func localLivePhotoURL(for metadata: NCMediaViewerItem) async -> URL? {
         guard metadata.isLivePhoto else {
             return nil
         }
 
-        guard let livePhotoMetadata = database.getMetadataLivePhoto(metadata: metadata) else {
+        guard let livePhotoMetadata = livePhotoMetadata(for: metadata) else {
             return nil
         }
 
-        let localPath = fullLocalPath(for: livePhotoMetadata)
+        let localPath = fullLocalPath(for: NCMediaViewerItem(metadata: livePhotoMetadata))
 
         guard isValidLocalFile(path: localPath, validateAsImage: false) else {
             removeInvalidLocalFileIfNeeded(path: localPath, validateAsImage: false)
@@ -174,7 +254,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         return URL(fileURLWithPath: localPath)
     }
 
-    func downloadLivePhotoMedia(for metadata: tableMetadata) async -> URL? {
+    func downloadLivePhotoMedia(for metadata: NCMediaViewerItem) async -> URL? {
         guard metadata.isLivePhoto else {
             return nil
         }
@@ -183,8 +263,8 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             return localURL
         }
 
-        guard NCNetworking.shared.isOnline,
-              let livePhotoMetadata = database.getMetadataLivePhoto(metadata: metadata),
+        guard !Task.isCancelled, NCNetworking.shared.isOnline,
+              let livePhotoMetadata = livePhotoMetadata(for: metadata),
               let downloadMetadata = await database.setMetadataSessionInWaitDownloadAsync(
                 ocId: livePhotoMetadata.ocId,
                 session: NCNetworking.shared.sessionDownload,
@@ -193,9 +273,12 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             return nil
         }
 
+        await downloadTaskRegistry.beginDownload(for: downloadMetadata.ocId)
         do {
             try await NCTransferCoordinator.shared.acquire(priority: .visible)
         } catch {
+            await database.setMetadataSessionAsync(ocId: downloadMetadata.ocId, session: "", sessionTaskIdentifier: 0,
+                                                   sessionError: "", selector: "", status: NCGlobal.shared.metadataStatusNormal)
             return nil
         }
 
@@ -227,8 +310,8 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         await downloadTaskRegistry.cancelTask(for: ocId)
     }
 
-    func cancelLivePhotoMediaDownload(for metadata: tableMetadata) async {
-        guard let livePhotoMetadata = database.getMetadataLivePhoto(metadata: metadata) else {
+    func cancelLivePhotoMediaDownload(for metadata: NCMediaViewerItem) async {
+        guard let livePhotoMetadata = livePhotoMetadata(for: metadata) else {
             return
         }
 
@@ -239,8 +322,15 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         await downloadTaskRegistry.cancelAllTasks()
     }
 
+    func releaseOriginalImage(for metadata: NCMediaViewerItem) async {
+        await database.removeViewerOriginalIfNotOfflineAsync(ocId: metadata.ocId, account: metadata.account)
+        if let companion = livePhotoMetadata(for: metadata) {
+            await database.removeViewerOriginalIfNotOfflineAsync(ocId: companion.ocId, account: companion.account)
+        }
+    }
+
     // MARK: - Private Helpers
-    private func fullLocalPath(for metadata: tableMetadata) -> String {
+    private func fullLocalPath(for metadata: NCMediaViewerItem) -> String {
         utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
     }
 
@@ -277,24 +367,4 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
 
         try? fileManager.removeItem(atPath: path)
     }
-}
-
-protocol NCMediaViewerLoading: Sendable {
-    func metadata(for ocId: String, account: String) async -> tableMetadata?
-
-    func localMediaURL(for metadata: tableMetadata) async -> URL?
-
-    func previewURL(for metadata: tableMetadata, ext: String) async -> URL?
-
-    func downloadMedia(for metadata: tableMetadata, onDownloadStarted: (@Sendable () async -> Void)?) async throws -> URL
-
-    func localLivePhotoURL(for metadata: tableMetadata) async -> URL?
-
-    func downloadLivePhotoMedia(for metadata: tableMetadata) async -> URL?
-
-    func cancelDownload(for ocId: String) async
-
-    func cancelLivePhotoMediaDownload(for metadata: tableMetadata) async
-
-    func cancelAllDownloads() async
 }

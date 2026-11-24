@@ -176,7 +176,7 @@ final class NCMediaMetadataBackfillProcessor {
             }
 
             if pageOffset < searchResultLimit,
-               (!result.paginate || files.count < limit) {
+               !result.paginate || files.count < limit {
                 await database.completeMediaMetadataBackfillAsync(account: account.account)
                 return .completed(account: account.account, processed: processed, inserted: inserted, updated: updated)
             }

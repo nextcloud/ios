@@ -13,7 +13,10 @@ final class NCVideoVLCViewController: UIViewController {
 
     // MARK: - Input
 
-    private var metadata: tableMetadata
+    private var metadata: NCMediaViewerItem
+    private var appMetadata: tableMetadata? {
+        mediaViewerModel?.appMetadata(for: metadata)
+    }
     private var preparedPlayback: NCVideoVLCPreparedPlayback
     private var url: URL
     private var userAgent: String?
@@ -26,7 +29,7 @@ final class NCVideoVLCViewController: UIViewController {
 
     // MARK: - Paging Callbacks
 
-    private var mediaViewerModel: NCMediaViewerModel?
+    private(set) var mediaViewerModel: NCMediaViewerModel?
     private var onSelectPage: ((_ index: Int) -> Void)?
 
     var onPrevious: (() -> Void)?
@@ -60,7 +63,7 @@ final class NCVideoVLCViewController: UIViewController {
             closeAction: UIAction { [weak self] _ in self?.close() },
             moreButton: NCContextMenuViewer.mediaActionsButton(
                 viewController: self,
-                metadataProvider: { [weak self] in self?.metadata },
+                metadataProvider: { [weak self] in self?.appMetadata },
                 controllerProvider: { [weak self] in self?.contextMenuController }
             )
         )
@@ -78,7 +81,7 @@ final class NCVideoVLCViewController: UIViewController {
 
     private lazy var moreNavigationItem = NCContextMenuViewer.mediaNavigationItem(
         viewController: self,
-        metadataProvider: { [weak self] in self?.metadata },
+        metadataProvider: { [weak self] in self?.appMetadata },
         controllerProvider: { [weak self] in self?.contextMenuController }
     )
 
@@ -125,7 +128,7 @@ final class NCVideoVLCViewController: UIViewController {
     // MARK: - Init
 
     init(
-        metadata: tableMetadata,
+        metadata: NCMediaViewerItem,
         preparedPlayback: NCVideoVLCPreparedPlayback,
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
@@ -249,7 +252,7 @@ final class NCVideoVLCViewController: UIViewController {
     // MARK: - Public API
 
     func update(
-        metadata: tableMetadata,
+        metadata: NCMediaViewerItem,
         preparedPlayback: NCVideoVLCPreparedPlayback,
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
@@ -319,14 +322,14 @@ final class NCVideoVLCViewController: UIViewController {
 
     }
 
-    func updateMetadata(_ metadata: tableMetadata) {
+    func updateMetadata(_ metadata: NCMediaViewerItem) {
         guard self.metadata.ocId == metadata.ocId, self.metadata.account == metadata.account else { return }
 
         self.metadata = metadata
         updateTitleLabel(metadata: metadata)
     }
 
-    private func updateTitleLabel(metadata: tableMetadata) {
+    private func updateTitleLabel(metadata: NCMediaViewerItem) {
         normalControlsView.setAccount(metadata.account)
         let primaryTitle = metadata.fileNameView.isEmpty
             ? metadata.fileName
@@ -846,7 +849,7 @@ final class NCVideoVLCViewController: UIViewController {
     func selectSubtitleTrack(index: Int32) {
         mediaPlayer.currentVideoSubTitleIndex = index
 
-        NCManageDatabase.shared.addVideo(metadata: metadata, currentVideoSubTitleIndex: Int(index))
+        mediaViewerModel?.loader.saveVideoSubtitleTrack(Int(index), for: metadata)
 
         Task { @MainActor [weak self] in
             try? await Task.sleep(for: .milliseconds(200))
@@ -857,7 +860,7 @@ final class NCVideoVLCViewController: UIViewController {
     func selectAudioTrack(index: Int32) {
         mediaPlayer.currentAudioTrackIndex = index
 
-        NCManageDatabase.shared.addVideo(metadata: metadata, currentAudioTrackIndex: Int(index))
+        mediaViewerModel?.loader.saveVideoAudioTrack(Int(index), for: metadata)
 
         Task { @MainActor [weak self] in
             try? await Task.sleep(for: .milliseconds(200))
@@ -1013,7 +1016,7 @@ final class NCVideoVLCViewController: UIViewController {
             return playerIndex
         }
 
-        return NCManageDatabase.shared.getVideo(metadata: metadata)?.currentVideoSubTitleIndex
+        return mediaViewerModel?.loader.videoSubtitleTrack(for: metadata)
     }
 
     private func currentAudioTrackIndex() -> Int? {
@@ -1023,7 +1026,7 @@ final class NCVideoVLCViewController: UIViewController {
             return playerIndex
         }
 
-        return NCManageDatabase.shared.getVideo(metadata: metadata)?.currentAudioTrackIndex
+        return mediaViewerModel?.loader.videoAudioTrack(for: metadata)
     }
 
     private func makeTrackMenuItems(titles: [Any], indexes: [Any], currentIndex: Int?) -> [NCVideoTrackMenuItem] {
@@ -1187,32 +1190,28 @@ extension NCVideoVLCViewController: NCSelectDelegate {
         session: NCSession.Session,
         controller: NCMainTabBarController?
     ) {
-        guard let metadata else {
+        guard let metadata, let model = mediaViewerModel else {
             showControls(animated: true)
             return
         }
+        let item = model.viewerItem(from: metadata)
 
         Task { @MainActor [weak self] in
-            guard let self else {
-                return
-            }
+            guard let self else { return }
+            defer { showControls(animated: true) }
 
-            let utilityFileSystem = NCUtilityFileSystem()
-
-            if !utilityFileSystem.fileProviderStorageExists(metadata) {
-                let result = await NCNetworking.shared.downloadFile(metadata: metadata)
-
-                guard result.nkError == .success else {
-                    nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO VLC subtitle download error: \(result.nkError.logDescription)", consoleOnly: true)
-                    showControls(animated: true)
-                    return
+            do {
+                let localURL: URL
+                if let existingURL = await model.loader.localMediaURL(for: item) {
+                    localURL = existingURL
+                } else {
+                    localURL = try await model.loader.downloadMedia(for: item, onDownloadStarted: nil)
                 }
+                guard !Task.isCancelled else { return }
+                loadExternalSubtitle(url: localURL)
+            } catch {
+                nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO VLC subtitle download error: \(error)", consoleOnly: true)
             }
-
-            let localPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
-
-            loadExternalSubtitle(url: URL(fileURLWithPath: localPath))
-            showControls(animated: true)
         }
     }
 }

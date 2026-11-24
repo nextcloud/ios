@@ -8,7 +8,7 @@ import NextcloudKit
 // MARK: - Video Viewer Content View
 
 struct NCVideoViewerContentView: View {
-    let metadata: tableMetadata
+    let metadata: NCMediaViewerItem
     /// The existing viewer collection, used for the adaptive footer; never a second player model.
     let mediaViewerModel: NCMediaViewerModel?
     let localURL: URL?
@@ -51,7 +51,7 @@ struct NCVideoViewerContentView: View {
     private static var resolvingTasks = [String: Task<(url: URL?, autoplay: Bool, error: NKError), Never>]()
 
     init(
-        metadata: tableMetadata,
+        metadata: NCMediaViewerItem,
         mediaViewerModel: NCMediaViewerModel? = nil,
         localURL: URL?,
         previewURL: URL? = nil,
@@ -802,7 +802,7 @@ private extension NCVideoViewerContentView {
         }
 
         let task = Task {
-            await resolver.getVideoURL(metadata: metadata)
+            await resolver.getVideoURL(metadata: metadata, isLocal: mediaViewerModel?.loader.fileProviderStorageExists(for: metadata) ?? false)
         }
 
         Self.resolvingTasks[taskIdentifier] = task

@@ -34,7 +34,10 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     // MARK: - Input
 
-    private var metadata: tableMetadata
+    private var metadata: NCMediaViewerItem
+    private var appMetadata: tableMetadata? {
+        mediaViewerModel?.appMetadata(for: metadata)
+    }
     private var preparedPlayback: NCVideoAVPreparedPlayback
     private var url: URL
     private var userAgent: String?
@@ -45,7 +48,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     // MARK: - Paging Callbacks
 
-    private var mediaViewerModel: NCMediaViewerModel?
+    private(set) var mediaViewerModel: NCMediaViewerModel?
     private var onSelectPage: ((_ index: Int) -> Void)?
 
     var onPrevious: (() -> Void)?
@@ -79,7 +82,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
             closeAction: UIAction { [weak self] _ in self?.close() },
             moreButton: NCContextMenuViewer.mediaActionsButton(
                 viewController: self,
-                metadataProvider: { [weak self] in self?.metadata },
+                metadataProvider: { [weak self] in self?.appMetadata },
                 controllerProvider: { [weak self] in self?.contextMenuController }
             )
         )
@@ -97,7 +100,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     private lazy var moreNavigationItem = NCContextMenuViewer.mediaNavigationItem(
         viewController: self,
-        metadataProvider: { [weak self] in self?.metadata },
+        metadataProvider: { [weak self] in self?.appMetadata },
         controllerProvider: { [weak self] in self?.contextMenuController }
     )
 
@@ -152,7 +155,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     // MARK: - Init
 
     init(
-        metadata: tableMetadata,
+        metadata: NCMediaViewerItem,
         preparedPlayback: NCVideoAVPreparedPlayback,
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
@@ -281,7 +284,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     // MARK: - Public API
 
     func update(
-        metadata: tableMetadata,
+        metadata: NCMediaViewerItem,
         preparedPlayback: NCVideoAVPreparedPlayback,
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
@@ -344,14 +347,14 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     }
 
-    func updateMetadata(_ metadata: tableMetadata) {
+    func updateMetadata(_ metadata: NCMediaViewerItem) {
         guard self.metadata.ocId == metadata.ocId, self.metadata.account == metadata.account else { return }
 
         self.metadata = metadata
         updateTitleLabel(metadata: metadata)
     }
 
-    private func updateTitleLabel(metadata: tableMetadata) {
+    private func updateTitleLabel(metadata: NCMediaViewerItem) {
         normalControlsView.setAccount(metadata.account)
         let primaryTitle = metadata.fileNameView.isEmpty
             ? metadata.fileName

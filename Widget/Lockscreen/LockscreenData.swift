@@ -55,7 +55,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, family: WidgetFamily,
                                       httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                       groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
-    let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+    let options = NKRequestOptions(timeout: 90, queue: .global(qos: .utility))
 
     if family == .accessoryCircular {
         NextcloudKit.shared.getUserMetadata(account: activeTableAccount.account, userId: activeTableAccount.userId, options: options) { _, userProfile, _, error in

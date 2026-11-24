@@ -21,7 +21,7 @@ extension NCNetworking {
               date: Date?,
               length: Int64,
               nkError: NKError ) {
-        let options = NKRequestOptions(queue: nkComm.backgroundQueue)
+        let options = NKRequestOptions(queue: .global(qos: .utility))
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
 
         if metadata.status == global.metadataStatusDownloading || metadata.status == global.metadataStatusUploading {

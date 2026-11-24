@@ -213,9 +213,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         let options = NKRequestOptions(paginate: optionsPaginate,
                                        paginateToken: self.paginateToken,
                                        paginateOffset: paginateOffset,
-                                       paginateCount: paginateCount,
-                                       queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue
-        )
+                                       paginateCount: paginateCount)
 
         // Read folder metadata
         //

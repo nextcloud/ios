@@ -201,7 +201,7 @@ func getDashboardDataEntry(configuration: DashboardIntent, displaySize: CGSize) 
         webURL = nil
     }
 
-    let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+    let options = NKRequestOptions(timeout: 90)
     let result = await getDashboardModuleItems(moduleId,
                                                version: itemAPIVersion,
                                                account: account.account,

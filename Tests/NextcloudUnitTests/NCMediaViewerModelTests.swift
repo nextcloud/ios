@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2026 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import Foundation
 import Testing
 import NextcloudKit
 @testable import Nextcloud
@@ -11,7 +12,7 @@ import NextcloudKit
 struct NCMediaViewerModelTests {
     @Test("Duplicate media identifiers produce a single viewer page")
     func removesDuplicateIdentifiers() {
-        let metadata = tableMetadata()
+        var metadata = NCMediaViewerItem()
         metadata.ocId = "current"
 
         let model = NCMediaViewerInitialModel(
@@ -25,7 +26,7 @@ struct NCMediaViewerModelTests {
 
     @Test("Missing current media is inserted before the supplied identifiers")
     func insertsMissingCurrentIdentifier() {
-        let metadata = tableMetadata()
+        var metadata = NCMediaViewerItem()
         metadata.ocId = "current"
 
         let model = NCMediaViewerInitialModel(
@@ -116,12 +117,12 @@ struct NCMediaViewerModelTests {
         #expect(model.activePageIndex == 0)
     }
 
-    @Test("Regular image previews do not require the original file")
-    func regularImagePreviewDoesNotRequireOriginal() {
+    @Test("Buffered images load originals even when previews are available")
+    func bufferedImagePreviewLoadsOriginal() {
         let metadata = imageMetadata(fileName: "photo.HEIC")
         let policy = NCMediaViewerLoadingPolicy.standard
 
-        #expect(!policy.shouldDownloadOriginalImage(
+        #expect(policy.shouldDownloadOriginalImage(
             for: metadata,
             hasUsablePreview: true
         ))
@@ -166,14 +167,19 @@ struct NCMediaViewerModelTests {
         ))
     }
 
-    @Test("Live Photo resources remain on demand unless their switch is enabled")
+    @Test("Live Photo resources download by default and respect an explicitly disabled switch")
     func livePhotoResourcesRespectInternalSwitch() {
-        let metadata = imageMetadata(fileName: "live-photo.heic")
+        var metadata = imageMetadata(fileName: "live-photo.heic")
         metadata.livePhotoFile = "live-photo.mov"
 
-        #expect(!NCMediaViewerLoadingPolicy.standard.shouldDownloadLivePhotoResources(
+        #expect(NCMediaViewerLoadingPolicy.standard.shouldDownloadLivePhotoResources(
             for: metadata
         ))
+        let disabledPolicy = NCMediaViewerLoadingPolicy(
+            automaticallyDownloadsOriginalImages: true,
+            automaticallyDownloadsLivePhotoResources: false
+        )
+        #expect(!disabledPolicy.shouldDownloadLivePhotoResources(for: metadata))
 
         let automaticPolicy = NCMediaViewerLoadingPolicy(
             automaticallyDownloadsOriginalImages: false,
@@ -187,8 +193,327 @@ struct NCMediaViewerModelTests {
         ))
     }
 
-    private func makeViewerModel() -> NCMediaViewerModel {
+    @Test("Viewer metadata is a value snapshot, including Live Photo and file names")
+    func metadataSnapshotDoesNotFollowRealmObjectMutations() {
         let metadata = tableMetadata()
+        metadata.account = "account"
+        metadata.ocId = "photo"
+        metadata.fileId = "42"
+        metadata.fileName = "encrypted-name"
+        metadata.fileNameView = "Photo.HEIC"
+        metadata.livePhotoFile = "companion-id"
+        metadata.date = NSDate(timeIntervalSince1970: 123)
+        metadata.size = 2048
+        metadata.width = 4000
+        metadata.height = 3000
+        metadata.latitude = 45.46
+        metadata.longitude = 9.19
+        let item = NCMediaViewerItem(metadata: metadata)
+
+        metadata.fileNameView = "Renamed.jpg"
+        metadata.livePhotoFile = ""
+        metadata.size = 0
+        metadata.latitude = 0
+        metadata.longitude = 0
+
+        #expect(item.account == "account")
+        #expect(item.ocId == "photo")
+        #expect(item.fileId == "42")
+        #expect(item.fileName == "encrypted-name")
+        #expect(item.fileNameView == "Photo.HEIC")
+        #expect(item.fileExtension == "HEIC")
+        #expect(item.isLivePhoto)
+        #expect(item.livePhotoFile == "companion-id")
+        #expect(item.date == Date(timeIntervalSince1970: 123))
+        #expect(item.size == 2048)
+        #expect(item.width == 4000)
+        #expect(item.height == 3000)
+        #expect(item.latitude == 45.46)
+        #expect(item.longitude == 9.19)
+    }
+
+    @Test("The app boundary preserves fields not exposed by the viewer")
+    func appBoundaryPreservesCompleteDetachedMetadata() throws {
+        let metadata = tableMetadata()
+        metadata.account = "first-account"
+        metadata.ocId = "same-id"
+        metadata.permissions = "RGDNVW"
+        metadata.placeholder = true
+        metadata.url = "/temporary/movie.mov"
+        let loader = NCMediaViewerLoader()
+        let model = NCMediaViewerModel(
+            currentMetadata: metadata, ocIds: [metadata.ocId],
+            session: NCSession().getSession(account: ""), loader: loader
+        )
+        let item = try #require(model.selectedMetadata)
+        metadata.permissions = ""
+
+        let copy = try #require(model.appMetadata(for: item))
+        #expect(copy.permissions == "RGDNVW")
+        #expect(copy.placeholder)
+        #expect(item.url == "/temporary/movie.mov")
+        copy.permissions = "changed-by-action"
+        #expect(model.appMetadata(for: item)?.permissions == "RGDNVW")
+
+        metadata.account = "second-account"
+        let otherItem = loader.item(from: metadata)
+        #expect(loader.appMetadata(for: otherItem)?.permissions == "")
+        #expect(model.appMetadata(for: item)?.permissions == "RGDNVW")
+    }
+
+    @Test("Originals follow the existing buffer and previews survive eviction")
+    func originalsFollowBuffer() async throws {
+        let items = bufferItems()
+        let loader = NCMediaViewerTestLoader(items: items)
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+        await model.loadSelectedPageIfNeeded()
+        try await waitForOriginals(Set((0...5).map(String.init)), in: loader)
+
+        model.finishPageTransition(at: 6)
+        await model.loadSelectedPageIfNeeded()
+        try await waitForOriginals(Set((1...11).map(String.init)), in: loader)
+        if let page = model.pageModel(at: 0), case .image(let preview, let original, _, _) = page.state {
+            #expect(preview != nil)
+            #expect(original == nil)
+        } else {
+            Issue.record("An evicted image must retain its preview")
+        }
+
+        model.finishPageTransition(at: 0)
+        await model.loadSelectedPageIfNeeded()
+        try await waitForOriginals(Set((0...5).map(String.init)), in: loader)
+        #expect(await loader.downloadCounts["0"] == 2)
+        model.cancelAllDownloads()
+        try await waitForOriginals([], in: loader)
+    }
+
+    @Test("Opening details shares the buffered original download")
+    func detailsWaitForBufferedDownload() async throws {
+        let items = bufferItems()
+        let loader = NCMediaViewerTestLoader(items: items, pausedOcIds: ["0"])
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+        let loading = Task { await model.loadSelectedPageIfNeeded() }
+        try await waitForOriginals(Set((1...5).map(String.init)), in: loader)
+        try await waitForPendingDownload("0", in: loader)
+        let details = Task { try await model.downloadOriginalImage(for: items[0]) }
+        await loader.resumeDownload(for: "0")
+        await loading.value
+        _ = try await details.value
+        #expect(await loader.downloadCounts["0"] == 1)
+        model.cancelAllDownloads()
+        try await waitForOriginals([], in: loader)
+    }
+
+    @Test("Eviction cancels an in-flight original and re-entry can download it again")
+    func evictionCancelsPendingOriginal() async throws {
+        let items = bufferItems()
+        let loader = NCMediaViewerTestLoader(items: items, pausedOcIds: ["0"])
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+        let loading = Task { await model.loadSelectedPageIfNeeded() }
+        try await waitForPendingDownload("0", in: loader)
+        model.finishPageTransition(at: 6)
+        await model.loadSelectedPageIfNeeded()
+        await loading.value
+        try await waitForOriginals(Set((1...11).map(String.init)), in: loader)
+        #expect(await loader.pendingOcIds.isEmpty)
+
+        model.finishPageTransition(at: 0)
+        let reloading = Task { await model.loadSelectedPageIfNeeded() }
+        try await waitForPendingDownload("0", in: loader)
+        await loader.resumeDownload(for: "0")
+        await reloading.value
+        #expect(await loader.downloadCounts["0"] == 2)
+        model.cancelAllDownloads()
+        try await waitForOriginals([], in: loader)
+    }
+
+    private func waitForPendingDownload(_ ocId: String, in loader: NCMediaViewerTestLoader) async throws {
+        let deadline = ContinuousClock.now.advanced(by: .seconds(2))
+        while !(await loader.pendingOcIds.contains(ocId)), ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        try #require(await loader.pendingOcIds.contains(ocId))
+    }
+
+    @Test("Fast thumbnail scrubbing applies only the latest requested selection")
+    func latestThumbnailSelectionWins() async throws {
+        let items = bufferItems()
+        let loader = NCMediaViewerTestLoader(items: items, pausedMetadataOcIds: ["1", "12"])
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+        let first = Task { await model.displayPreviewPage(at: 1) }
+        try await waitForPendingMetadata("1", in: loader)
+        let latest = Task { await model.displayPreviewPage(at: 12) }
+        try await waitForPendingMetadata("12", in: loader)
+
+        await loader.resumeMetadata(for: "1")
+        await first.value
+        #expect(model.selectedIndex == 0)
+        await loader.resumeMetadata(for: "12")
+        await latest.value
+        #expect(model.selectedIndex == 12)
+        model.cancelAllDownloads()
+    }
+
+    @Test("Returning to the current thumbnail supersedes pending navigation")
+    func currentThumbnailCancelsPendingSelection() async throws {
+        let items = bufferItems()
+        let loader = NCMediaViewerTestLoader(items: items, pausedMetadataOcIds: ["12"])
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+        let pending = Task { await model.displayPreviewPage(at: 12) }
+        try await waitForPendingMetadata("12", in: loader)
+        await model.displayPreviewPage(at: 0)
+        await loader.resumeMetadata(for: "12")
+        await pending.value
+        #expect(model.selectedIndex == 0)
+        model.cancelAllDownloads()
+    }
+
+    private func waitForPendingMetadata(_ ocId: String, in loader: NCMediaViewerTestLoader) async throws {
+        let deadline = ContinuousClock.now.advanced(by: .seconds(2))
+        while !(await loader.pendingMetadataOcIds.contains(ocId)), ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        try #require(await loader.pendingMetadataOcIds.contains(ocId))
+    }
+
+    @Test("Returning during removal waits before downloading the same original again")
+    func reentryWaitsForRemoval() async throws {
+        let items = bufferItems()
+        let loader = NCMediaViewerTestLoader(items: items, pausedReleaseOcIds: ["0"])
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+        await model.loadSelectedPageIfNeeded()
+        try await waitForOriginals(Set((0...5).map(String.init)), in: loader)
+        model.finishPageTransition(at: 6)
+        await model.loadSelectedPageIfNeeded()
+
+        let deadline = ContinuousClock.now.advanced(by: .seconds(2))
+        while !(await loader.pendingReleaseOcIds.contains("0")), ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        try #require(await loader.pendingReleaseOcIds.contains("0"))
+        model.finishPageTransition(at: 0)
+        let returning = Task { await model.loadSelectedPageIfNeeded() }
+        // Give the returning load an opportunity to run while removal is suspended.
+        for _ in 0..<20 { await Task.yield() }
+        #expect(await loader.downloadCounts["0"] == 1)
+        await loader.resumeRelease(for: "0")
+        await returning.value
+        try await waitForOriginals(Set((0...5).map(String.init)), in: loader)
+        #expect(await loader.downloadCounts["0"] == 2)
+        if let page = model.pageModel(at: 0), case .image(_, let original, _, _) = page.state {
+            #expect(original != nil)
+        } else {
+            Issue.record("The returning page must display the new original")
+        }
+        model.cancelAllDownloads()
+        try await waitForOriginals([], in: loader)
+    }
+
+    @Test("Thumbnail dragging freezes originals until the final selection settles")
+    func thumbnailScrubbingDefersOriginalBuffer() async throws {
+        let items = bufferItems()
+        let loader = NCMediaViewerTestLoader(items: items)
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+        await model.loadSelectedPageIfNeeded()
+        let initialOriginals = Set((0...5).map(String.init))
+        try await waitForOriginals(initialOriginals, in: loader)
+        let initialDownloads = await loader.downloadCounts
+
+        model.beginThumbnailScrubbing()
+        for index in [6, 9, 2, 12] {
+            await model.displayPreviewPage(at: index)
+            // Simulate the pager callbacks caused by each intermediate thumbnail selection.
+            await model.displayPage(at: index)
+            await model.prefetchVisiblePageIfNeeded(index: index)
+            await model.loadSelectedPageIfNeeded()
+            #expect(await loader.originals == initialOriginals)
+            #expect(await loader.downloadCounts == initialDownloads)
+        }
+
+        await model.endThumbnailScrubbing(at: 12)
+        try await waitForOriginals(Set((7...12).map(String.init)), in: loader)
+        #expect(model.selectedIndex == 12)
+        #expect(await loader.downloadCounts["6"] == nil)
+        model.cancelAllDownloads()
+        try await waitForOriginals([], in: loader)
+    }
+
+    @Test
+    func livePhotoCompanionsFollowTheImageBuffer() async throws {
+        var items = bufferItems()
+        for index in items.indices { items[index].livePhotoFile = "\(index).mov" }
+        let loader = NCMediaViewerTestLoader(items: items)
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+        await model.loadSelectedPageIfNeeded()
+        let deadline = ContinuousClock.now.advanced(by: .seconds(2))
+        while await loader.liveOriginals.count != 6, ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        #expect(await loader.liveOriginals == Set((0...5).map(String.init)))
+        model.beginThumbnailScrubbing()
+        await model.displayPreviewPage(at: 12)
+        #expect(await loader.liveOriginals == Set((0...5).map(String.init)))
+        await model.endThumbnailScrubbing(at: 12)
+        let finalDeadline = ContinuousClock.now.advanced(by: .seconds(2))
+        let expected = Set((7...12).map(String.init))
+        while await loader.liveOriginals != expected, ContinuousClock.now < finalDeadline {
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        #expect(await loader.liveOriginals == expected)
+        model.cancelAllDownloads()
+        try await waitForOriginals([], in: loader)
+        #expect(await loader.liveOriginals.isEmpty)
+    }
+
+    @Test
+    func audioThumbnailRetriesAfterDeferredLoading() async {
+        var items = bufferItems()
+        items[12].classFile = NKTypeClassFile.audio.rawValue
+        let loader = NCMediaViewerTestLoader(items: items)
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+        await model.loadSelectedPageIfNeeded()
+        #expect(await model.loadAudioForThumbnail(at: 12) == false)
+        model.beginThumbnailScrubbing()
+        await model.displayPreviewPage(at: 12)
+        #expect(await model.loadAudioForThumbnail(at: 12) == false)
+        #expect(await loader.downloadCounts["12"] == nil)
+        let revision = model.thumbnailReloadRevision
+        await model.endThumbnailScrubbing(at: 12)
+        #expect(model.thumbnailReloadRevision > revision)
+        #expect(await model.loadAudioForThumbnail(at: 12))
+        #expect(await loader.downloadCounts["12"] == 1)
+        model.cancelAllDownloads()
+    }
+
+    private func bufferItems() -> [NCMediaViewerItem] {
+        let account = UUID().uuidString
+        return (0..<13).map { index in
+            var item = imageMetadata(fileName: "\(index).jpg")
+            item.ocId = String(index)
+            item.account = account
+            return item
+        }
+    }
+
+    private func waitForOriginals(_ expected: Set<String>, in loader: NCMediaViewerTestLoader) async throws {
+        let deadline = ContinuousClock.now.advanced(by: .seconds(2))
+        while await loader.originals != expected, ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        #expect(await loader.originals == expected)
+    }
+
+    private func makeViewerModel() -> NCMediaViewerModel {
+        var metadata = NCMediaViewerItem()
         metadata.ocId = "first"
 
         return NCMediaViewerModel(
@@ -199,8 +524,8 @@ struct NCMediaViewerModelTests {
         )
     }
 
-    private func imageMetadata(fileName: String) -> tableMetadata {
-        let metadata = tableMetadata()
+    private func imageMetadata(fileName: String) -> NCMediaViewerItem {
+        var metadata = NCMediaViewerItem()
         metadata.classFile = NKTypeClassFile.image.rawValue
         metadata.fileName = fileName
         metadata.fileNameView = fileName

@@ -80,6 +80,51 @@ canvas exploration does not change saved playback preferences. These are graphic
 previews, not verification of playback or navigation. Xcode still compiles preview
 code; running/installing the complete app is unnecessary.
 
+Live Photo images and companion videos follow the same original-file buffer.
+The HD image appears as soon as it is ready; playback waits for the companion.
+Leaving a page stops playback without cancelling buffered downloads. Eviction
+removes both originals, checking offline protection independently for each file.
+
+## Viewer data boundary
+
+Pages, thumbnails, details and playback use `NCMediaViewerItem`, a `Sendable`
+value snapshot. `NCMediaViewerLoading` accepts and returns these values and also
+handles VLC track preferences. A different app can implement this protocol with
+its own persistence layer.
+
+The current app still opens the viewer with `tableMetadata`. The overload in
+`Nextcloud/NCMediaViewerModel+Nextcloud.swift` converts it through `NCMediaViewerLoader`.
+The `Nextcloud/` directory groups the app-specific loader and conversion extensions.
+The loader retains detached full records for the lifetime of the viewer so app
+menus and EXIF helpers keep all their fields, including permissions and metadata
+that is not persisted yet. Do not rebuild database records from the reduced item.
+
+Image details request placeholder hydration and EXIF through the loader. The
+Nextcloud implementation keeps the existing metadata fallback, local file reading
+and location lookup. EXIF reads alone do not download the original image.
+
+This is the data boundary, not the library extraction: the hosting controller,
+player menus, subtitle picker and other Nextcloud app services still need app
+integration when extracting the viewer. Verify rename, sharing, EXIF, Live Photos
+and VLC track selection alongside the playback checks above.
+
+## Original image buffer
+
+The existing prefetch radius is five pages on either side of the current page.
+Image originals load inside this window; videos and audio retain their existing
+loading rules. During thumbnail dragging and deceleration, the original buffer
+stays fixed while previews follow the selection. Once scrolling ends, the buffer
+moves once to the final selection. Already-started downloads can finish; they are
+not repeatedly cancelled and restarted for intermediate thumbnails. Leaving the window releases the original and decoded image state,
+preserving previews. Closing the viewer releases the remaining image originals.
+Files explicitly available offline, including descendants of offline folders,
+are protected. Other pre-existing local originals are also eligible for eviction.
+
+In-flight image loads are cancelled and awaited before removal. Re-entry waits
+for that removal before starting another load; opening Info shares the active
+page load. Verify fast forward/backward paging, closure during a download, and
+both individual-file and ancestor-folder offline protection on a device.
+
 ## State and ownership
 
 Keep these responsibilities separate when editing the viewer:
@@ -239,14 +284,13 @@ normal mode and other media. Changes inside that information view affect both
 modes; its hosting island, buttons and thumbnail placement remain independent.
 
 The adaptive image island always uses the same scrollable information panel.
-It starts with available file metadata (including dimensions and coordinates),
-without downloading the original. When the original already exists locally,
-its EXIF is read automatically and the adaptive Info button is disabled. Reads
-are deduplicated by media ID/etag; callbacks from another page/version are ignored.
-For remote-only images, the existing Info action loads the original and updates
-the same panel, then disables Info once the original is local. Normal-mode Info
-behavior is unchanged. Data is retained for the last inspected image only,
-matched by media ID, and remains visible after closing Info. The adaptive caller
+It starts with available file metadata (including dimensions and coordinates).
+The existing five-neighbor buffer downloads image originals in both layouts;
+when an original arrives it replaces the preview in HD. DUO reads its EXIF
+automatically and has no Info button. Reads are deduplicated by media ID/etag;
+callbacks from another page/version are ignored. Normal-mode Info opens the
+sheet and waits for the same download if the original is not ready yet.
+Only the visible image's EXIF is retained in the panel. The adaptive caller
 sets `showsOnlyAvailableData` to omit missing camera/lens/exposure fields; the
 default remains false for normal sheets. The filename is displayed by the viewer
 header, not repeated inside the information panel. Both information presentations
@@ -286,13 +330,13 @@ The adaptive paging panel is shared, not an image-specific container. In
 `Views/Controls/NCMediaAdaptiveControlsView.swift`, edit the top-level `VStack`
 to arrange standalone buttons, the flexible `mediaControls` area and thumbnails.
 There is no adaptive `UINavigationBar`, navigation item or title.
-`NCMediaAdaptiveActionsView` contains standalone Close, Info (paged media) and
+`NCMediaAdaptiveActionsView` contains standalone Close and
 More buttons; rearrange or replace them independently of the normal navigation.
 The deferred More menu uses the button itself as its popover anchor.
 The same row contains a filename island for every media type, including presented
 video. Buttons are square (`actionsHeight` wide/high), while the filename uses
 the remaining width: a leading-aligned filename on up to two lines, truncated at the end,
-with 12-point horizontal insets and no logo. Image: Close, Name, Info, More. Audio:
+with 12-point horizontal insets and no logo. Image: Close, Name, More. Audio:
 Close, Name, Repeat, Auto-advance, More. Playing video uses the same order,
 with player-specific options between Close and Name. All top buttons are square,
 using the shared 60-point `actionsHeight` for both width and height. The row height
@@ -368,9 +412,9 @@ A separate 60-point island above Previous/Next contains the seek slider and a
 remaining-time countdown on its right. Normal audio/video also show only the
 remaining-time countdown at the right and use the same account branding tint. There is no empty spacer between the
 rows. The slider island shrinks only when the region cannot accommodate it. The header observes the existing playback options for icon updates. Video covers
-keep their playback/download controls visible. The adaptive Info button is shown
-only for images; audio/video show Close and More without an empty button slot.
-Normal mode also shows Info only for images. Its navigation items update when
+keep their playback/download controls visible. DUO has no Info button: image
+details are always visible, and audio/video keep their playback controls.
+Normal mode shows Info only for images. Its navigation items update when
 paging between media types, keeping More available for audio/video. Image
 information sheets retain their existing behavior.
 
@@ -479,9 +523,9 @@ Start with the normal layout before testing the fold:
    previous/next; dragging the seek bar must not change pages. Fold/unfold during
    playback and check that sound and position continue without restarting.
    In folded mode, compare a local original with a preview-only image: local EXIF
-   should appear without tapping Info; preview-only images should not download
-   automatically. After Info downloads the original, check that its button is
-   disabled and page changes cannot apply EXIF from the previous image.
+   should appear without tapping Info; preview-only images should download
+   automatically inside the buffer and switch to HD. There is no DUO Info button.
+   Page changes must not apply EXIF from the previous image.
 4. Fold/unfold repeatedly while loading or playing; check position and playback
    continuity with each engine. In folded playback, check that previous/next and
    thumbnails keep the same bottom position as images/audio, including a single

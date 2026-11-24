@@ -355,13 +355,6 @@ struct NCMediaViewerPageView: View {
                     }
 
                     return await model.downloadLivePhotoResources(for: metadata)
-                },
-                cancelResourceDownload: {
-                    guard let metadata = page.metadata else {
-                        return
-                    }
-
-                    model.cancelLivePhotoResourceDownload(for: metadata)
                 }
             )
             .background(Color.ncViewerBackground(backgroundStyle))
