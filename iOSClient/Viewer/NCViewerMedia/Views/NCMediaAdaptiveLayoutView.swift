@@ -96,6 +96,11 @@ final class NCMediaAdaptiveLayoutView: UIView {
         updateLayout(divisionFrames: divisionFrames)
     }
 
+    /// In DUO, touches in the information panel belong to its scroll view and map.
+    func allowsDismissGesture(at point: CGPoint) -> Bool {
+        !isFoldedLayout || mediaView.frame.contains(point)
+    }
+
     func updateLayout(divisionFrames: [CGRect]) {
         let activeDivisionFrames = isLayoutEnabled ? divisionFrames : []
         let division = activeDivisionFrames
