@@ -250,9 +250,9 @@ final class NCProviderSignUp: UIViewController, WKNavigationDelegate {
 
                 try await coordinator.addAccount(host: credentials.host, user: credentials.user, password: credentials.password)
             } catch let error as NKError {
-                await showErrorBanner(windowScene: windowScene, error: error)
+                await showErrorBanner(windowScene: windowScene, error: error, context: .login)
             } catch {
-                await showErrorBanner(windowScene: windowScene, text: error.localizedDescription)
+                await showErrorBanner(windowScene: windowScene, title: NCErrorContext.login.failureTitle ?? "_error_", text: error.localizedDescription)
             }
         }
     }

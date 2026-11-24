@@ -870,5 +870,7 @@
 "_error_title_favorite_" = "Couldn't update the favorite for “%@”";
 "_error_title_create_document_" = "Couldn't create “%@”";
 "_error_title_open_document_" = "Couldn't open “%@”";
+"_error_title_login_" = "Couldn't log in";
 "_error_password_incorrect_" = "The password is incorrect.";
 "_error_file_busy_" = "The file is still being transferred. Try again later.";
+"_error_login_server_not_found_" = "No server was found at this address.";

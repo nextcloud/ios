@@ -146,7 +146,9 @@ final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
             let results = await NextcloudKit.shared.getAppPasswordAsync(url: url, user: name, password: userPassword)
 
             guard results.error == .success, let token = results.token else {
-                await showErrorBanner(windowScene: presenter?.view.window?.windowScene, error: results.error == .success ? .invalidData : results.error)
+                let isUnclassified = results.error == .success || results.error.kind == nil
+
+                await showErrorBanner(windowScene: presenter?.view.window?.windowScene, error: isUnclassified ? .invalidData : results.error, context: .login)
                 return
             }
 
@@ -158,14 +160,14 @@ final class NCLoginCoordinator: NCViewCertificateDetailsDelegate {
         }
 
         guard let host = URL(string: serverURL) else {
-            await showErrorBanner(windowScene: presenter?.view.window?.windowScene, error: .urlError)
+            await showErrorBanner(windowScene: presenter?.view.window?.windowScene, error: .urlError, context: .login)
             return
         }
 
         do {
             try await addAccount(host: host, user: user, password: password)
         } catch {
-            await showErrorBanner(windowScene: presenter?.view.window?.windowScene, error: error as? NKError ?? NKError(error: error))
+            await showErrorBanner(windowScene: presenter?.view.window?.windowScene, error: error as? NKError ?? NKError(error: error), context: .login)
         }
     }
 
