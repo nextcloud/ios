@@ -23,6 +23,8 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     private var detailHostingController: UIHostingController<NCMediaViewerDetailView>?
     private var detailLoadingTask: Task<Void, Never>?
     private var isShowingDetail = false
+    private var detailRequestID: UUID?
+    private var detailOcId: String?
     private var cancellables = Set<AnyCancellable>()
     private var transferDelegate: NCMediaViewerTransferDelegate?
     private weak var currentNavigationBar: UINavigationBar?
@@ -30,7 +32,6 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     private var isFoldedMediaLayout = false
     private var localImageInformationKey: String?
-    private var isAdaptiveImageLocal = false
     private lazy var adaptiveControlsState = NCMediaAdaptiveControlsState()
     private lazy var adaptiveActionsView = NCMediaAdaptiveActionsView(
         closeAction: UIAction { [weak self] _ in self?.closeButtonTapped() },
@@ -38,8 +39,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             viewController: self,
             metadataProvider: { [weak self] in self?.selectedAppMetadata },
             controllerProvider: { [weak self] in self?.contextMenuController }
-        ),
-        infoAction: UIAction { [weak self] _ in self?.mediaDetailButtonTapped() }
+        )
     )
 
     private lazy var floatingTitleDateFormatter: DateFormatter = {
@@ -175,7 +175,14 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             contextMenuController: contextMenuController,
             navigationBar: navigationBar,
             onVisibleMetadataChanged: { [weak self] metadata in
-                self?.updateTitleLabel(metadata: metadata)
+                // The pager also calls this from updateUIView. Publish adaptive state
+                // only after that SwiftUI update, and discard superseded selections.
+                Task { @MainActor [weak self] in
+                    guard let self,
+                          self.model.selectedMetadata?.ocId == metadata?.ocId,
+                          self.model.selectedMetadata?.etag == metadata?.etag else { return }
+                    self.updateTitleLabel(metadata: metadata)
+                }
             },
             onZoomChanged: onZoomChanged,
             onClose: { [weak self] ocId in
@@ -202,6 +209,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         adaptiveControlsState.isFoldedLayout = isFolded
         isFoldedMediaLayout = isFolded
         setChromeHidden(model.isChromeHidden, animated: false)
+        updateInformationNavigationItem(metadata: model.selectedMetadata)
         updateLocalAdaptiveImageInformation()
     }
 
@@ -209,6 +217,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     /// Stops media playback before the viewer is closed.
     private func stop() {
+        detailRequestID = nil
         localImageInformationKey = nil
         detailLoadingTask?.cancel()
         detailLoadingTask = nil
@@ -245,7 +254,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     /// Info belongs to images only, including when paging between different media types.
     private func updateInformationNavigationItem(metadata: NCMediaViewerItem?) {
-        let items = metadata?.classFile == NKTypeClassFile.image.rawValue ? [moreNavigationItem, mediaDetailNavigationItem] : [moreNavigationItem]
+        let items = !isFoldedMediaLayout && metadata?.classFile == NKTypeClassFile.image.rawValue ? [moreNavigationItem, mediaDetailNavigationItem] : [moreNavigationItem]
         guard navigationItem.rightBarButtonItems != items else { return }
         navigationItem.rightBarButtonItems = items
     }
@@ -255,11 +264,12 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         model.$revision
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
-                guard let self, self.isSelectedPageDeleted else { return }
-                self.closeDetail(animated: false)
-                self.adaptiveControlsState.imageInformation = nil
-                self.localImageInformationKey = nil
-                self.isAdaptiveImageLocal = false
+                guard let self else { return }
+                if self.isSelectedPageDeleted {
+                    self.closeDetail(animated: false)
+                    self.localImageInformationKey = nil
+                }
+                self.updateLocalAdaptiveImageInformation()
             }
             .store(in: &cancellables)
 
@@ -284,43 +294,33 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             : metadata.fileNameView
 
         floatingTitleView.update(primaryText: primaryTitle, secondaryText: floatingTitleSecondaryText(for: metadata))
-        if NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled,
-           let detailView = adaptiveControlsState.detailView,
-           detailView.metadata.ocId != metadata.ocId, isFoldedMediaLayout {
+        if let detailOcId, detailOcId != metadata.ocId {
             closeDetail(animated: false)
         }
         updateLocalAdaptiveImageInformation()
     }
 
-    /// Read only an existing original; never download it just to populate the adaptive information island.
+    /// Reads the original once the existing buffer has made it available; never starts a download.
     private func updateLocalAdaptiveImageInformation() {
-        guard NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled else { return }
-        guard !isSelectedPageDeleted else { return }
-        guard isFoldedMediaLayout else {
-            localImageInformationKey = nil
-            isAdaptiveImageLocal = false
-            return
-        }
-        guard let metadata = model.selectedMetadata,
+        guard isFoldedMediaLayout, !isSelectedPageDeleted,
+              let metadata = model.selectedMetadata,
               metadata.classFile == NKTypeClassFile.image.rawValue,
-              model.loader.fileProviderStorageExists(for: metadata) else {
+              let page = model.selectedPageModel(),
+              case .image(_, .some, _, _) = page.state else {
             localImageInformationKey = nil
-            isAdaptiveImageLocal = false
-            adaptiveActionsView.informationButton?.isEnabled = !mediaDetailActivityIndicator.isAnimating
+            if adaptiveControlsState.imageInformation != nil {
+                adaptiveControlsState.imageInformation = nil
+            }
             return
         }
-
-        isAdaptiveImageLocal = true
-        adaptiveActionsView.informationButton?.isEnabled = false
-        let ocId = metadata.ocId
-        let etag = metadata.etag
-        let key = "\(ocId)|\(etag)"
+        let key = "\(metadata.ocId)|\(metadata.etag)"
         guard localImageInformationKey != key else { return }
         localImageInformationKey = key
         model.loader.exif(for: metadata) { [weak self] exif in
-            guard let self, self.isFoldedMediaLayout, !self.isSelectedPageDeleted, self.localImageInformationKey == key,
-                  self.model.selectedMetadata?.ocId == ocId, self.model.selectedMetadata?.etag == etag else { return }
-            self.adaptiveControlsState.imageInformation = (ocId: ocId, exif: exif)
+            guard let self, self.isFoldedMediaLayout, !self.isSelectedPageDeleted,
+                  self.localImageInformationKey == key,
+                  self.model.selectedMetadata?.ocId == metadata.ocId else { return }
+            self.adaptiveControlsState.imageInformation = (ocId: metadata.ocId, exif: exif)
         }
     }
 
@@ -384,6 +384,9 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         let index = model.selectedIndex
         let downloadsOriginal = selectedMetadata.classFile == NKTypeClassFile.image.rawValue
 
+        let requestID = UUID()
+        detailRequestID = requestID
+        detailOcId = selectedOcId
         isShowingDetail = true
 
         detailLoadingTask = Task { [weak self] in
@@ -392,35 +395,31 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             }
 
             let metadata = await self.model.loader.metadataForDetails(for: selectedMetadata)
+            guard !Task.isCancelled, self.detailRequestID == requestID else { return }
 
             if downloadsOriginal {
                 _ = try? await self.model.downloadOriginalImage(
                     for: metadata,
                     onDownloadStarted: { [weak self] in
+                        guard self?.detailRequestID == requestID else { return }
                         self?.setMediaDetailLoading(true)
                     }
                 )
             }
 
+            guard self.detailRequestID == requestID else { return }
             guard !Task.isCancelled,
                   self.model.selectedMetadata?.ocId == selectedOcId else {
                 self.finishDetailLoadingWithoutPresentation()
                 return
             }
 
-            if self.isFoldedMediaLayout, downloadsOriginal {
-                self.updateLocalAdaptiveImageInformation()
-                if self.isAdaptiveImageLocal {
-                    self.finishDetailLoadingWithoutPresentation()
-                    return
-                }
-            }
-
             self.detailLoadingTask = nil
             self.setMediaDetailLoading(false)
 
             self.model.loader.exif(for: metadata) { exif in
-                guard self.isShowingDetail,
+                guard self.detailRequestID == requestID,
+                      self.isShowingDetail,
                       !self.isSelectedPageDeleted,
                       self.detailHostingController == nil,
                       self.model.selectedMetadata?.ocId == selectedOcId else {
@@ -433,15 +432,14 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     }
 
     private func finishDetailLoadingWithoutPresentation() {
+        detailRequestID = nil
+        detailOcId = nil
         detailLoadingTask = nil
         isShowingDetail = false
         setMediaDetailLoading(false)
     }
 
     private func setMediaDetailLoading(_ isLoading: Bool) {
-        if NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled {
-            adaptiveActionsView.informationButton?.isEnabled = !isLoading && !isAdaptiveImageLocal
-        }
         if isLoading {
             mediaDetailActivityIndicator.startAnimating()
             mediaDetailNavigationItem.customView = mediaDetailActivityIndicator
@@ -483,13 +481,15 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     /// Closes the media detail panel.
     private func closeDetail(animated: Bool = true) {
+        detailRequestID = nil
+        detailOcId = nil
+        isShowingDetail = false
         detailLoadingTask?.cancel()
         detailLoadingTask = nil
         setMediaDetailLoading(false)
 
-        if NCMediaAdaptiveLayoutConfiguration.isAdaptiveLayoutEnabled || isFoldedMediaLayout {
-            adaptiveControlsState.detailView = nil
-        }
+        adaptiveControlsState.detailView = nil
+        adaptiveControlsState.imageInformation = nil
 
         guard let detailHostingController else {
             isShowingDetail = false
@@ -504,6 +504,8 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     /// Resets the detail state when the sheet is dismissed interactively.
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        detailRequestID = nil
+        detailOcId = nil
         detailHostingController = nil
         isShowingDetail = false
     }

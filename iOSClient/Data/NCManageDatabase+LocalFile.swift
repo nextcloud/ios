@@ -108,6 +108,45 @@ extension NCManageDatabase {
         }
     }
 
+    /// Evicts a viewer original without removing its previews or changing offline availability.
+    /// Check protection and remove the local record in the same Realm write as the file removal.
+    func removeViewerImageIfNotOfflineAsync(ocId: String, account: String) async {
+        await core.performRealmWriteAsync { realm in
+            guard let metadata = realm.objects(tableMetadata.self)
+                .filter("ocId == %@ AND account == %@", ocId, account).first,
+                  metadata.classFile == NKTypeClassFile.image.rawValue,
+                  metadata.session.isEmpty,
+                  metadata.status == NCGlobal.shared.metadataStatusNormal,
+                  let local = realm.objects(tableLocalFile.self)
+                .filter("ocId == %@ AND account == %@", ocId, account).first,
+                  !local.offline else { return }
+
+            let offlineDirectories = realm.objects(tableDirectory.self)
+                .filter("account == %@ AND offline == true", account)
+            for directory in offlineDirectories {
+                let folder = directory.serverUrl.hasSuffix("/") ? String(directory.serverUrl.dropLast()) : directory.serverUrl
+                if metadata.serverUrl == folder || metadata.serverUrl.hasPrefix(folder + "/") {
+                    return
+                }
+            }
+
+            let fileSystem = NCUtilityFileSystem()
+            let manager = FileManager.default
+            do {
+                for name in Set([metadata.fileName, metadata.fileNameView]) where !name.isEmpty {
+                    let path = fileSystem.getDirectoryProviderStorageOcId(ocId, fileName: name, userId: metadata.userId, urlBase: metadata.urlBase)
+                    if manager.fileExists(atPath: path) {
+                        // Preserve the empty storage placeholder, as the existing cache removal does.
+                        try Data().write(to: URL(fileURLWithPath: path), options: .atomic)
+                    }
+                }
+                realm.delete(local)
+            } catch {
+                nkLog(error: "Unable to release viewer image: \(error)")
+            }
+        }
+    }
+
     func deleteCacheRecordsAsync(localFileOcIds: Set<String>, videoOcIds: Set<String>) async -> Bool {
         await core.performRealmWriteWithResultAsync { realm in
             realm.delete(realm.objects(tableLocalFile.self).filter("ocId IN %@", Array(localFileOcIds)))

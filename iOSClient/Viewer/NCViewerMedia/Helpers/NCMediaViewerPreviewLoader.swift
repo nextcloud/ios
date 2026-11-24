@@ -22,6 +22,7 @@ struct NCMediaViewerPreviewLoader: NCMediaViewerLoading {
     func cancelDownload(for ocId: String) async { }
     func cancelLivePhotoMediaDownload(for metadata: NCMediaViewerItem) async { }
     func cancelAllDownloads() async { }
+    func releaseOriginalImage(for metadata: NCMediaViewerItem) async { }
 
     func fileProviderStorageExists(for metadata: NCMediaViewerItem) -> Bool { false }
     func videoSubtitleTrack(for metadata: NCMediaViewerItem) -> Int? { nil }

@@ -32,6 +32,13 @@ struct NCMediaViewerThumbnailStrip: View {
             isDeletedProvider: { index in
                 model.isThumbnailDeleted(at: index)
             },
+            onScrollStateChanged: { isScrolling, index in
+                if isScrolling {
+                    model.beginThumbnailScrubbing()
+                } else {
+                    Task { await model.endThumbnailScrubbing(at: index) }
+                }
+            },
             onSelect: { index in
                 if let onSelectPage {
                     onSelectPage(index)
@@ -106,6 +113,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
     let previewURLProvider: (_ metadata: NCMediaViewerItem) async -> URL?
     let audioLoadProvider: (_ index: Int) async -> Void
     let isDeletedProvider: (_ index: Int) -> Bool
+    var onScrollStateChanged: (_ isScrolling: Bool, _ index: Int) -> Void = { _, _ in }
     let onSelect: (_ index: Int) -> Void
 
     static var preferredHeight: CGFloat {
@@ -155,6 +163,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
         context.coordinator.previewURLProvider = previewURLProvider
         context.coordinator.audioLoadProvider = audioLoadProvider
         context.coordinator.isDeletedProvider = isDeletedProvider
+        context.coordinator.onScrollStateChanged = onScrollStateChanged
         context.coordinator.onSelect = onSelect
         context.coordinator.syncDisplayedSelectedIndexFromInput()
 
@@ -162,6 +171,10 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
         context.coordinator.scrollToSelectedIndexIfNeeded(animated: false)
         context.coordinator.performInitialDeferredCenteringIfNeeded()
         context.coordinator.prefetchAroundDisplayedSelectedIndexIfNeeded()
+    }
+
+    static func dismantleUIView(_ uiView: UICollectionView, coordinator: Coordinator) {
+        coordinator.finishUserThumbnailScroll()
     }
 
     func makeCoordinator() -> Coordinator {
@@ -174,6 +187,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
             previewURLProvider: previewURLProvider,
             audioLoadProvider: audioLoadProvider,
             isDeletedProvider: isDeletedProvider,
+            onScrollStateChanged: onScrollStateChanged,
             onSelect: onSelect
         )
     }
@@ -195,6 +209,7 @@ extension NCMediaViewerThumbnail {
         var previewURLProvider: (_ metadata: NCMediaViewerItem) async -> URL?
         var audioLoadProvider: (_ index: Int) async -> Void
         var isDeletedProvider: (_ index: Int) -> Bool
+        var onScrollStateChanged: (_ isScrolling: Bool, _ index: Int) -> Void
         var onSelect: (_ index: Int) -> Void
 
         weak var collectionView: UICollectionView?
@@ -223,6 +238,7 @@ extension NCMediaViewerThumbnail {
             previewURLProvider: @escaping (_ metadata: NCMediaViewerItem) async -> URL?,
             audioLoadProvider: @escaping (_ index: Int) async -> Void,
             isDeletedProvider: @escaping (_ index: Int) -> Bool,
+            onScrollStateChanged: @escaping (_ isScrolling: Bool, _ index: Int) -> Void = { _, _ in },
             onSelect: @escaping (_ index: Int) -> Void
         ) {
             self.selectedIndex = selectedIndex
@@ -234,6 +250,7 @@ extension NCMediaViewerThumbnail {
             self.previewURLProvider = previewURLProvider
             self.audioLoadProvider = audioLoadProvider
             self.isDeletedProvider = isDeletedProvider
+            self.onScrollStateChanged = onScrollStateChanged
             self.onSelect = onSelect
             self.displayedSelectedIndex = selectedIndex
             self.lastSentSelectedIndex = selectedIndex
@@ -281,6 +298,7 @@ extension NCMediaViewerThumbnail {
 
         func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
             isUserScrollingThumbnails = true
+            onScrollStateChanged(true, displayedSelectedIndex ?? selectedIndex)
             shouldEmphasizeSelectedThumbnail = false
             selectionFeedbackGenerator.prepare()
 
@@ -513,12 +531,13 @@ extension NCMediaViewerThumbnail {
             onSelect(centeredIndex)
         }
 
-        private func finishUserThumbnailScroll() {
+        func finishUserThumbnailScroll() {
             guard isUserScrollingThumbnails else {
                 return
             }
 
             isUserScrollingThumbnails = false
+            onScrollStateChanged(false, displayedSelectedIndex ?? selectedIndex)
             shouldEmphasizeSelectedThumbnail = true
             lastCenteredIndex = nil
 

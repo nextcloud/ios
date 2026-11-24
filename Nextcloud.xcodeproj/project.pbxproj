@@ -1069,6 +1069,7 @@
 		AC20261124DB000000000001 /* NCMediaViewerLoading.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000001 /* NCMediaViewerLoading.swift */; };
 		AC20261124DB000000000002 /* NCMediaViewerItem+Nextcloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000002 /* NCMediaViewerItem+Nextcloud.swift */; };
 		AC20261124DB000000000003 /* NCMediaViewerModel+Nextcloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000003 /* NCMediaViewerModel+Nextcloud.swift */; };
+		AC20261124DB000000000004 /* NCMediaViewerTestLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000004 /* NCMediaViewerTestLoader.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2097,6 +2098,7 @@
 		AC20261124DA000000000001 /* NCMediaViewerLoading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMediaViewerLoading.swift"; sourceTree = "<group>"; };
 		AC20261124DA000000000002 /* NCMediaViewerItem+Nextcloud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMediaViewerItem+Nextcloud.swift"; sourceTree = "<group>"; };
 		AC20261124DA000000000003 /* NCMediaViewerModel+Nextcloud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMediaViewerModel+Nextcloud.swift"; sourceTree = "<group>"; };
+		AC20261124DA000000000004 /* NCMediaViewerTestLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerTestLoader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -2324,6 +2326,7 @@
 				AABBCC0330A8000100F0A001 /* NCMediaPlaybackOptionsTests.swift */,
 				AABBCC0730A8000100F0A001 /* NCVideoPlaybackPresentationContextTests.swift */,
 				AABBCC0930A8000100F0A001 /* NCMediaViewerModelTests.swift */,
+				AC20261124DA000000000004 /* NCMediaViewerTestLoader.swift */,
 				F0A1B2C330B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift */,
 				F0A1B2C530B6000100D4E5F6 /* NCImageZoomViewTests.swift */,
 				F34BDB3B2F574A58007A222C /* BidiSafeFilenameTests.swift */,
@@ -4719,6 +4722,7 @@
 				AABBCC0430A8000100F0A001 /* NCMediaPlaybackOptionsTests.swift in Sources */,
 				AABBCC0830A8000100F0A001 /* NCVideoPlaybackPresentationContextTests.swift in Sources */,
 				AABBCC0A30A8000100F0A001 /* NCMediaViewerModelTests.swift in Sources */,
+				AC20261124DB000000000004 /* NCMediaViewerTestLoader.swift in Sources */,
 				F0A1B2C430B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift in Sources */,
 				F0A1B2C630B6000100D4E5F6 /* NCImageZoomViewTests.swift in Sources */,
 				F34BDB3C2F574A58007A222C /* BidiSafeFilenameTests.swift in Sources */,

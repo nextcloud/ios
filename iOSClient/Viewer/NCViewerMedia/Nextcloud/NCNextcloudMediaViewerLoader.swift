@@ -9,9 +9,14 @@ import NextcloudKit
 private actor NCMediaViewerDownloadTaskRegistry {
     private var tasks: [String: URLSessionTask] = [:]
     private var isCancelled = false
+    private var cancelledOcIds = Set<String>()
+
+    func beginDownload(for ocId: String) {
+        cancelledOcIds.remove(ocId)
+    }
 
     func setTask(_ task: URLSessionTask, for ocId: String) {
-        guard !isCancelled else {
+        guard !isCancelled, !cancelledOcIds.contains(ocId) else {
             task.cancel()
             return
         }
@@ -24,6 +29,7 @@ private actor NCMediaViewerDownloadTaskRegistry {
     }
 
     func cancelTask(for ocId: String) {
+        cancelledOcIds.insert(ocId)
         tasks.removeValue(forKey: ocId)?.cancel()
     }
 
@@ -182,15 +188,9 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             return localURL
         }
 
+        try Task.checkCancellation()
+        await downloadTaskRegistry.beginDownload(for: metadata.ocId)
         await onDownloadStarted?()
-
-        guard let downloadMetadata = await database.setMetadataSessionInWaitDownloadAsync(
-            ocId: metadata.ocId,
-            session: NCNetworking.shared.sessionDownload,
-            selector: NCGlobal.shared.selectorDownloadFile
-        ) else {
-            throw NSError(domain: "Download Media", code: 1, userInfo: [NSLocalizedDescriptionKey: "Unable to prepare media download."])
-        }
 
         try await NCTransferCoordinator.shared.acquire(priority: .userInitiated)
         defer {
@@ -199,6 +199,20 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             }
         }
 
+        try Task.checkCancellation()
+        guard let downloadMetadata = await database.setMetadataSessionInWaitDownloadAsync(
+            ocId: metadata.ocId,
+            session: NCNetworking.shared.sessionDownload,
+            selector: NCGlobal.shared.selectorDownloadFile
+        ) else {
+            throw NSError(domain: "Download Media", code: 1, userInfo: [NSLocalizedDescriptionKey: "Unable to prepare media download."])
+        }
+
+        if Task.isCancelled {
+            await database.setMetadataSessionAsync(ocId: metadata.ocId, session: "", sessionTaskIdentifier: 0,
+                                                   sessionError: "", selector: "", status: NCGlobal.shared.metadataStatusNormal)
+            throw CancellationError()
+        }
         let result = await NCNetworking.shared.downloadFile(
             metadata: downloadMetadata,
             taskHandler: { [downloadTaskRegistry] task in
@@ -259,6 +273,9 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             return nil
         }
 
+        await downloadTaskRegistry.beginDownload(for: downloadMetadata.ocId)
+        guard !Task.isCancelled else { return nil }
+
         do {
             try await NCTransferCoordinator.shared.acquire(priority: .visible)
         } catch {
@@ -303,6 +320,10 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
 
     func cancelAllDownloads() async {
         await downloadTaskRegistry.cancelAllTasks()
+    }
+
+    func releaseOriginalImage(for metadata: NCMediaViewerItem) async {
+        await database.removeViewerImageIfNotOfflineAsync(ocId: metadata.ocId, account: metadata.account)
     }
 
     // MARK: - Private Helpers

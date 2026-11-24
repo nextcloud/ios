@@ -30,6 +30,9 @@ protocol NCMediaViewerLoading: Sendable {
 
     func cancelAllDownloads() async
 
+    /// Removes only the original, preserving previews and offline files/folders.
+    func releaseOriginalImage(for metadata: NCMediaViewerItem) async
+
     func fileProviderStorageExists(for metadata: NCMediaViewerItem) -> Bool
 
     func videoSubtitleTrack(for metadata: NCMediaViewerItem) -> Int?
