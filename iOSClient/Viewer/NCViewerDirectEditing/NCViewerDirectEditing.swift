@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
-import SwiftUI
 import NextcloudKit
 @preconcurrency import WebKit
 
@@ -19,17 +18,12 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?
     private var isClosingTextEditor = false
-    private var isUpdatingFavorite = false {
-        didSet { foldedCommandBar?.rootView.isUpdatingFavorite = isUpdatingFavorite }
-    }
+    private var isUpdatingFavorite = false
 
     // IPHONE DUO EXPERIMENTAL
-    private static let isAdaptiveLayoutEnabled = false
-    private static let commandBarSpacing: CGFloat = 2
-
     private var usesAdaptiveLayout: Bool {
         guard #available(iOS 27.1, *) else { return false }
-        return Self.isAdaptiveLayoutEnabled
+        return true
     }
 
     private final class AdaptiveEditorWebView: WKWebView {
@@ -39,12 +33,9 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     }
 
     private var foldedBottomConstraint: NSLayoutConstraint?
-    private var foldedCommandBar: UIHostingController<NCDirectEditingCommandBar>?
-    private var foldedCommandBarBottomConstraint: NSLayoutConstraint?
     private var foldSeparatorView: UIView?
     private var foldSeparatorCenterConstraint: NSLayoutConstraint?
     private var isViewerVisible = false
-    private var navigationBarWasHidden: Bool?
     private var isTextReadyForFocus = false
     private var didFinishEditorNavigation = false
     private var foldFocusAttempt: UUID?
@@ -173,7 +164,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         bottomConstraint?.isActive = true
 
         if #available(iOS 27.1, *), usesAdaptiveLayout {
-            configureFoldedCommandBar()
+            foldedBottomConstraint = webView.bottomAnchor.constraint(equalTo: view.topAnchor)
             configureFoldSeparator()
         }
 
@@ -189,43 +180,6 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     deinit {
         print("dealloc")
-    }
-
-    @available(iOS 27.1, *)
-    private func configureFoldedCommandBar() {
-        let commandBar = NCDirectEditingCommandBar(fileName: metadata.fileNameView, isFavorite: metadata.favorite) { [weak self] in
-            self?.closeEditor()
-        } onDetails: { [weak self] in
-            guard let self else { return }
-            NCCreate().createShare(
-                controller: self.controller,
-                presentViewController: self.tabBarController,
-                metadata: self.metadata,
-                page: .activity
-            )
-        } onToggleFavorite: { [weak self] in
-            self?.toggleFavorite()
-        }
-        let hostingController = UIHostingController(rootView: commandBar)
-        hostingController.safeAreaRegions = []
-        addChild(hostingController)
-
-        let bar: UIView = hostingController.view
-        bar.backgroundColor = .clear
-        bar.translatesAutoresizingMaskIntoConstraints = false
-        bar.isHidden = true
-        view.addSubview(bar)
-        let bottom = bar.bottomAnchor.constraint(equalTo: view.topAnchor)
-        NSLayoutConstraint.activate([
-            bottom,
-            bar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            bar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            bar.heightAnchor.constraint(equalToConstant: NCDirectEditingCommandBar.height)
-        ])
-        hostingController.didMove(toParent: self)
-        foldedCommandBar = hostingController
-        foldedCommandBarBottomConstraint = bottom
-        foldedBottomConstraint = webView.bottomAnchor.constraint(equalTo: bar.topAnchor, constant: -Self.commandBarSpacing)
     }
 
     private func configureFoldSeparator() {
@@ -252,13 +206,11 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
               #available(iOS 27.1, *),
               let bottomConstraint,
               let foldedBottomConstraint,
-              let foldedCommandBarBottomConstraint,
               let foldSeparatorCenterConstraint else {
             return
         }
 
         let safeFrame = view.safeAreaLayoutGuide.layoutFrame
-        let commandBarSpace = NCDirectEditingCommandBar.height + Self.commandBarSpacing
         let fold = view.reservedRegions(kind: .division)
             .filter(\.isActive)
             .map { safeFrame.intersection($0.frame) }
@@ -267,15 +219,15 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
                     frame.width >= safeFrame.width - 1 &&
                     frame.width > frame.height &&
                     frame.height > 0 &&
-                    frame.minY >= safeFrame.minY + commandBarSpace &&
+                    frame.minY > safeFrame.minY &&
                     frame.maxY < safeFrame.maxY
             }
 
         let isFolded = fold != nil
         if let fold {
-            let barBottom = fold.minY - view.bounds.minY
-            if foldedCommandBarBottomConstraint.constant != barBottom {
-                foldedCommandBarBottomConstraint.constant = barBottom
+            let editorBottom = fold.minY - view.bounds.minY
+            if foldedBottomConstraint.constant != editorBottom {
+                foldedBottomConstraint.constant = editorBottom
             }
             let separatorCenter = fold.midY - view.bounds.minY
             if foldSeparatorCenterConstraint.constant != separatorCenter {
@@ -292,26 +244,9 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
                 bottomConstraint.isActive = true
                 foldFocusAttempt = nil
             }
-            webView.scrollView.contentInsetAdjustmentBehavior = isFolded ? .never : .automatic
-            webView.scrollView.topEdgeEffect.isHidden = isFolded
         }
-        let hidesFoldedControls = !(isFolded && didFinishEditorNavigation)
-        foldedCommandBar?.view.isHidden = hidesFoldedControls
-        foldSeparatorView?.isHidden = hidesFoldedControls
-        updateAdaptiveNavigationBar(hidden: isFolded && isViewerVisible)
+        foldSeparatorView?.isHidden = !(isFolded && didFinishEditorNavigation)
         requestFoldedTextFocus()
-    }
-
-    private func updateAdaptiveNavigationBar(hidden: Bool, animated: Bool = false) {
-        if hidden {
-            guard navigationBarWasHidden == nil, let navigationController,
-                  navigationController.topViewController === self else { return }
-            navigationBarWasHidden = navigationController.isNavigationBarHidden
-            navigationController.setNavigationBarHidden(true, animated: animated)
-        } else if let navigationBarWasHidden {
-            self.navigationBarWasHidden = nil
-            navigationController?.setNavigationBarHidden(navigationBarWasHidden, animated: animated)
-        }
     }
 
     private func requestFoldedTextFocus() {
@@ -371,7 +306,6 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         super.viewDidAppear(animated)
         if usesAdaptiveLayout {
             isViewerVisible = true
-            updateAdaptiveNavigationBar(hidden: foldedBottomConstraint?.isActive == true)
             requestFoldedTextFocus()
         }
 
@@ -384,7 +318,6 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         super.viewWillDisappear(animated)
         if usesAdaptiveLayout {
             isViewerVisible = false
-            updateAdaptiveNavigationBar(hidden: false, animated: animated)
         }
 
         let isLeavingViewer = isMovingFromParent || isBeingDismissed || navigationController?.isBeingDismissed == true
@@ -480,7 +413,6 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
             await database.setMetadataFavoriteAsync(ocId: ocId, favorite: favorite)
             metadata.favorite = favorite
-            foldedCommandBar?.rootView.isFavorite = favorite
 
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(networkingStatus: self.global.networkingStatusFavorite,
@@ -575,7 +507,6 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             }
             metadata.fileName = newName
             metadata.fileNameView = newName
-            foldedCommandBar?.rootView.fileName = newName
 
         case "hyperlink":
             guard let values = mobileMessage.values,
@@ -735,7 +666,6 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             isTextReadyForFocus = false
             didFinishEditorNavigation = false
             foldFocusAttempt = nil
-            foldedCommandBar?.view.isHidden = true
             foldSeparatorView?.isHidden = true
             view.setNeedsLayout()
         }
@@ -865,7 +795,6 @@ extension NCViewerDirectEditing: NCTransferDelegate {
                   !isUpdatingFavorite else { return }
 
             self.metadata = metadata
-            foldedCommandBar?.rootView.isFavorite = metadata.favorite
         }
     }
 }
