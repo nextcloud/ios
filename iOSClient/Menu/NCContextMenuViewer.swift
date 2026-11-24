@@ -90,8 +90,13 @@ class NCContextMenuViewer: NSObject {
                 presenter: viewController ?? controller,
                 windowScene: windowScene
             ) { [weak viewController = self.viewController] renamedMetadata in
-                (viewController as? NCVideoAVPlayerViewController)?.updateMetadata(renamedMetadata)
-                (viewController as? NCVideoVLCViewController)?.updateMetadata(renamedMetadata)
+                if let player = viewController as? NCVideoAVPlayerViewController,
+                   let model = player.mediaViewerModel {
+                    player.updateMetadata(model.viewerItem(from: renamedMetadata))
+                } else if let player = viewController as? NCVideoVLCViewController,
+                          let model = player.mediaViewerModel {
+                    player.updateMetadata(model.viewerItem(from: renamedMetadata))
+                }
             })
         }
 

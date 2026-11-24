@@ -29,7 +29,7 @@ final class NCVideoVLCViewController: UIViewController {
 
     // MARK: - Paging Callbacks
 
-    private var mediaViewerModel: NCMediaViewerModel?
+    private(set) var mediaViewerModel: NCMediaViewerModel?
     private var onSelectPage: ((_ index: Int) -> Void)?
 
     var onPrevious: (() -> Void)?
@@ -322,12 +322,11 @@ final class NCVideoVLCViewController: UIViewController {
 
     }
 
-    func updateMetadata(_ metadata: tableMetadata) {
-        guard self.metadata.ocId == metadata.ocId, self.metadata.account == metadata.account,
-              let mediaViewerModel else { return }
+    func updateMetadata(_ metadata: NCMediaViewerItem) {
+        guard self.metadata.ocId == metadata.ocId, self.metadata.account == metadata.account else { return }
 
-        self.metadata = mediaViewerModel.viewerItem(from: metadata)
-        updateTitleLabel(metadata: self.metadata)
+        self.metadata = metadata
+        updateTitleLabel(metadata: metadata)
     }
 
     private func updateTitleLabel(metadata: NCMediaViewerItem) {
@@ -1191,32 +1190,28 @@ extension NCVideoVLCViewController: NCSelectDelegate {
         session: NCSession.Session,
         controller: NCMainTabBarController?
     ) {
-        guard let metadata else {
+        guard let metadata, let model = mediaViewerModel else {
             showControls(animated: true)
             return
         }
+        let item = model.viewerItem(from: metadata)
 
         Task { @MainActor [weak self] in
-            guard let self else {
-                return
-            }
+            guard let self else { return }
+            defer { showControls(animated: true) }
 
-            let utilityFileSystem = NCUtilityFileSystem()
-
-            if !utilityFileSystem.fileProviderStorageExists(metadata) {
-                let result = await NCNetworking.shared.downloadFile(metadata: metadata)
-
-                guard result.nkError == .success else {
-                    nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO VLC subtitle download error: \(result.nkError.logDescription)", consoleOnly: true)
-                    showControls(animated: true)
-                    return
+            do {
+                let localURL: URL
+                if let existingURL = await model.loader.localMediaURL(for: item) {
+                    localURL = existingURL
+                } else {
+                    localURL = try await model.loader.downloadMedia(for: item, onDownloadStarted: nil)
                 }
+                guard !Task.isCancelled else { return }
+                loadExternalSubtitle(url: localURL)
+            } catch {
+                nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .error, message: "VIDEO VLC subtitle download error: \(error)", consoleOnly: true)
             }
-
-            let localPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
-
-            loadExternalSubtitle(url: URL(fileURLWithPath: localPath))
-            showControls(animated: true)
         }
     }
 }

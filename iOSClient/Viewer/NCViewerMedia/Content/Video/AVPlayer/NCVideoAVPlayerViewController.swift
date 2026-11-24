@@ -48,7 +48,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     // MARK: - Paging Callbacks
 
-    private var mediaViewerModel: NCMediaViewerModel?
+    private(set) var mediaViewerModel: NCMediaViewerModel?
     private var onSelectPage: ((_ index: Int) -> Void)?
 
     var onPrevious: (() -> Void)?
@@ -347,12 +347,11 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     }
 
-    func updateMetadata(_ metadata: tableMetadata) {
-        guard self.metadata.ocId == metadata.ocId, self.metadata.account == metadata.account,
-              let mediaViewerModel else { return }
+    func updateMetadata(_ metadata: NCMediaViewerItem) {
+        guard self.metadata.ocId == metadata.ocId, self.metadata.account == metadata.account else { return }
 
-        self.metadata = mediaViewerModel.viewerItem(from: metadata)
-        updateTitleLabel(metadata: self.metadata)
+        self.metadata = metadata
+        updateTitleLabel(metadata: metadata)
     }
 
     private func updateTitleLabel(metadata: NCMediaViewerItem) {
