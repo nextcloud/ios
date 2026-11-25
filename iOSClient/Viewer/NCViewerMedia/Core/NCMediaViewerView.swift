@@ -114,7 +114,7 @@ private extension NCMediaViewerView {
                 metadata.ocId
             ],
             session: NCSession().getSession(account: ""),
-            loader: NCMediaViewerLoader()
+            loader: NCMediaViewerPreviewLoader(imageURL: nil)
         )
 
         return NCMediaViewerView(model: model)

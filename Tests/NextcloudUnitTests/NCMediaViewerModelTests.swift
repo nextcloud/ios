@@ -494,6 +494,50 @@ struct NCMediaViewerModelTests {
         model.cancelAllDownloads()
     }
 
+    @Test("The common loader validates and reuses originals through injected services")
+    func commonLoaderUsesHostStorageAndDownloads() async throws {
+        var item = imageMetadata(fileName: "audio.mp3")
+        item.ocId = "audio"
+        item.classFile = NKTypeClassFile.audio.rawValue
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let services = NCMediaViewerTestLoader(items: [item], storageDirectory: directory)
+        let loader = NCMediaViewerLoader(services: services)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let url = URL(fileURLWithPath: services.originalPath(for: item))
+        try Data().write(to: url)
+        #expect(await loader.localMediaURL(for: item) == nil)
+        #expect(!FileManager.default.fileExists(atPath: url.path))
+        #expect(try await loader.downloadMedia(for: item) == url)
+        #expect(try await loader.downloadMedia(for: item) == url)
+        #expect(await services.downloadCounts[item.ocId] == 1)
+        await loader.releaseOriginalImage(for: item)
+        #expect(!FileManager.default.fileExists(atPath: url.path))
+    }
+
+    @Test("The common loader resolves and releases a Live Photo companion through host services")
+    func commonLoaderUsesHostLivePhotoCompanion() async throws {
+        var image = imageMetadata(fileName: "photo.heic")
+        image.ocId = "photo"
+        image.livePhotoFile = "movie"
+        var movie = imageMetadata(fileName: "photo.mov")
+        movie.ocId = "movie"
+        movie.classFile = NKTypeClassFile.video.rawValue
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let services = NCMediaViewerTestLoader(items: [image, movie], storageDirectory: directory)
+        let loader = NCMediaViewerLoader(services: services)
+        let url = await loader.downloadLivePhotoMedia(for: image)
+        #expect(url == URL(fileURLWithPath: services.originalPath(for: movie)))
+        #expect(await services.downloadCounts[movie.ocId] == 1)
+        #expect(await services.downloadCounts[image.ocId] == nil)
+        let preview = URL(fileURLWithPath: services.previewPath(for: image, ext: "jpg"))
+        try Data([1]).write(to: preview)
+        await loader.releaseOriginalImage(for: image)
+        #expect(await loader.localLivePhotoURL(for: image) == nil)
+        #expect(FileManager.default.fileExists(atPath: preview.path))
+    }
+
     private func bufferItems() -> [NCMediaViewerItem] {
         let account = UUID().uuidString
         return (0..<13).map { index in
