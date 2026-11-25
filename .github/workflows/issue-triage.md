@@ -54,8 +54,8 @@ network: defaults
 # The credit budget ends a run, not the clock; unreported issues continue in the next run.
 timeout-minutes: 120
 max-turns: 1000
-max-ai-credits: 300
-max-daily-ai-credits: 600
+max-ai-credits: 1200
+max-daily-ai-credits: 1200
 
 jobs:
   agent:
