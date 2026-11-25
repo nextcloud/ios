@@ -139,6 +139,13 @@ not repeatedly cancelled and restarted for intermediate thumbnails. Deferred aud
 thumbnail loads are retried after scrubbing finishes. Leaving the window releases
 the originals and decoded image state, preserving previews. Closing the viewer
 releases the remaining buffered originals.
+On metered networks (cellular, personal hotspot or Low Data Mode) neighboring
+pages keep their previews: only the selected page downloads its original and
+Live Photo companion. The app supplies this rule through
+`NCMediaViewerLoadingPolicy.app`, which reads `NCMediaViewerNetworkMonitor`
+(`AppIntegration/`); the core policy defaults to downloading neighbors. The check
+runs on every prefetch, so moving to an unmetered network resumes neighbor
+originals at the next page change.
 Files explicitly available offline, including descendants of offline folders,
 are protected. Other pre-existing local originals are also eligible for eviction.
 

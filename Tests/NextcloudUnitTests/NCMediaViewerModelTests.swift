@@ -561,6 +561,45 @@ struct NCMediaViewerModelTests {
         #expect(!FileManager.default.fileExists(atPath: jpgURL.path))
     }
 
+    @Test("On metered networks neighbors keep previews and only the selected page downloads its original")
+    func meteredNetworkKeepsNeighborPreviews() async throws {
+        let items = bufferItems()
+        let loader = NCMediaViewerTestLoader(items: items)
+        let policy = NCMediaViewerLoadingPolicy(
+            automaticallyDownloadsOriginalImages: true,
+            automaticallyDownloadsLivePhotoResources: true,
+            allowsNeighborOriginalDownloads: { false }
+        )
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       account: items[0].account, loader: loader, loadingPolicy: policy)
+        await model.loadSelectedPageIfNeeded()
+        try await waitForPreviewOnlyPages(1...5, in: model)
+        #expect(await loader.originals == ["0"])
+
+        model.finishPageTransition(at: 1)
+        await model.loadSelectedPageIfNeeded()
+        try await waitForOriginals(["0", "1"], in: loader)
+        try await waitForPreviewOnlyPages(2...6, in: model)
+        #expect(await loader.originals == ["0", "1"])
+        model.cancelAllDownloads()
+    }
+
+    private func waitForPreviewOnlyPages(_ indexes: ClosedRange<Int>, in model: NCMediaViewerModel) async throws {
+        func showsPreviewOnly() -> Bool {
+            indexes.allSatisfy { index in
+                if let page = model.pageModel(at: index), case .image(.some, nil, _, _) = page.state {
+                    return true
+                }
+                return false
+            }
+        }
+        let deadline = ContinuousClock.now.advanced(by: .seconds(2))
+        while !showsPreviewOnly(), ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        #expect(showsPreviewOnly())
+    }
+
     private func bufferItems() -> [NCMediaViewerItem] {
         let account = UUID().uuidString
         return (0..<13).map { index in

@@ -11,7 +11,7 @@ extension NCMediaViewerModel {
         ocIds: [String],
         account: String,
         loader: NCMediaViewerLoader,
-        loadingPolicy: NCMediaViewerLoadingPolicy = .standard
+        loadingPolicy: NCMediaViewerLoadingPolicy = .app
     ) {
         self.init(currentMetadata: loader.item(from: currentMetadata), ocIds: ocIds,
                   account: account, loader: loader, loadingPolicy: loadingPolicy,
@@ -43,4 +43,13 @@ extension NCMediaViewerLoader {
         }
         return NCMediaViewerItem(metadata: metadata)
     }
+}
+
+/// App policy: neighboring originals download only on unmetered networks.
+extension NCMediaViewerLoadingPolicy {
+    static let app = NCMediaViewerLoadingPolicy(
+        automaticallyDownloadsOriginalImages: true,
+        automaticallyDownloadsLivePhotoResources: true,
+        allowsNeighborOriginalDownloads: { NCMediaViewerNetworkMonitor.shared.isUnmetered }
+    )
 }

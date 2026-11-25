@@ -8,6 +8,17 @@ struct NCMediaViewerLoadingPolicy: Sendable {
 
     let automaticallyDownloadsOriginalImages: Bool
     let automaticallyDownloadsLivePhotoResources: Bool
+    /// Read on every prefetch. When false (for example on a metered network), neighboring pages keep
+    /// their previews and only the selected page downloads its original and Live Photo companion.
+    let allowsNeighborOriginalDownloads: @Sendable () -> Bool
+
+    init(automaticallyDownloadsOriginalImages: Bool,
+         automaticallyDownloadsLivePhotoResources: Bool,
+         allowsNeighborOriginalDownloads: @escaping @Sendable () -> Bool = { true }) {
+        self.automaticallyDownloadsOriginalImages = automaticallyDownloadsOriginalImages
+        self.automaticallyDownloadsLivePhotoResources = automaticallyDownloadsLivePhotoResources
+        self.allowsNeighborOriginalDownloads = allowsNeighborOriginalDownloads
+    }
 
     func shouldDownloadOriginalImage(for metadata: NCMediaViewerItem, hasUsablePreview: Bool) -> Bool {
         if Self.originalRequiredExtensions.contains(metadata.fileExtension.lowercased()) {

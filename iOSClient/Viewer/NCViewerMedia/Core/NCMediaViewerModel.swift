@@ -787,8 +787,10 @@ final class NCMediaViewerModel: ObservableObject {
 
         if let release = Self.releasingImagesByAccount[account]?[ocId] { await release.value }
         guard !isClosed, thumbnailScrubID == nil, bufferedOcIds.contains(ocId), !Task.isCancelled else { return }
+        // On metered networks, neighbors that already show a preview wait for selection or an unmetered network.
         guard pageState(for: ocId).isIdle ||
-                (cachedPagesByOcId[ocId]?.metadata?.classFile == NKTypeClassFile.image.rawValue && pageNeedsSelectedPageLoading(for: ocId)) else { return }
+                (loadingPolicy.allowsNeighborOriginalDownloads() &&
+                 cachedPagesByOcId[ocId]?.metadata?.classFile == NKTypeClassFile.image.rawValue && pageNeedsSelectedPageLoading(for: ocId)) else { return }
         guard loadingTasksByOcId[ocId] == nil else { return }
 
         let identifier = UUID()
@@ -834,10 +836,15 @@ final class NCMediaViewerModel: ObservableObject {
 
         switch metadata.classFile {
         case NKTypeClassFile.image.rawValue:
+            let allowsOriginalDownloads = loadingPolicy.allowsNeighborOriginalDownloads()
             if let localURL {
-                await setReadyState(metadata: metadata, previewURL: previewURL, localURL: localURL, for: ocId, index: index)
-            } else {
+                await setReadyState(metadata: metadata, previewURL: previewURL, localURL: localURL, for: ocId, index: index,
+                                    downloadsLivePhotoCompanion: allowsOriginalDownloads)
+            } else if allowsOriginalDownloads {
                 await loadRemotePage(metadata: metadata, previewURL: previewURL, for: ocId, index: index)
+            } else if let previewURL {
+                // Metered network: keep the preview; the original downloads once this page is selected.
+                setState(.image(previewURL: previewURL, localURL: nil, livePhotoURL: nil, progress: nil), for: ocId)
             }
         case NKTypeClassFile.video.rawValue:
             setState(.video(localURL: localURL, previewURL: previewURL), for: ocId)
@@ -996,7 +1003,7 @@ final class NCMediaViewerModel: ObservableObject {
         }
     }
 
-    private func setReadyState(metadata: NCMediaViewerItem, previewURL: URL?, localURL: URL, for ocId: String, index: Int) async {
+    private func setReadyState(metadata: NCMediaViewerItem, previewURL: URL?, localURL: URL, for ocId: String, index: Int, downloadsLivePhotoCompanion: Bool = true) async {
         if metadata.classFile == NKTypeClassFile.image.rawValue {
             var livePhotoURL: URL?
 
@@ -1006,7 +1013,7 @@ final class NCMediaViewerModel: ObservableObject {
             if metadata.isLivePhoto {
                 livePhotoURL = await loader.localLivePhotoURL(for: metadata)
 
-                if livePhotoURL == nil, !Task.isCancelled, thumbnailScrubID == nil,
+                if livePhotoURL == nil, downloadsLivePhotoCompanion, !Task.isCancelled, thumbnailScrubID == nil,
                    loadingPolicy.shouldDownloadLivePhotoResources(for: metadata) {
                     livePhotoURL = await loader.downloadLivePhotoMedia(for: metadata)
                 }
