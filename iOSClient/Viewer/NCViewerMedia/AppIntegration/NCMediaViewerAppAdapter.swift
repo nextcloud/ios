@@ -66,9 +66,9 @@ final class NCMediaViewerAppAdapter: NCMediaViewerServices, @unchecked Sendable 
     }
 
     @MainActor
-    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (ExifData) -> Void) {
+    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (NCExifData) -> Void) {
         guard let appMetadata = appMetadata(for: metadata) else {
-            completion(ExifData())
+            completion(NCExifData())
             return
         }
         NCUtility().getExif(metadata: appMetadata) { exif in

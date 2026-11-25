@@ -13,7 +13,7 @@ protocol NCMediaViewerServices: Sendable {
     func metadata(for ocId: String, account: String) async -> NCMediaViewerItem?
     func metadataForDetails(for metadata: NCMediaViewerItem) async -> NCMediaViewerItem
     @MainActor
-    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (ExifData) -> Void)
+    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (NCExifData) -> Void)
     func livePhotoMetadata(for item: NCMediaViewerItem) -> NCMediaViewerItem?
     func originalPath(for item: NCMediaViewerItem) -> String
     func previewPath(for item: NCMediaViewerItem, ext: String) -> String
@@ -48,7 +48,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, Sendable {
     }
 
     @MainActor
-    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (ExifData) -> Void) {
+    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (NCExifData) -> Void) {
         services.exif(for: metadata, completion: completion)
     }
 

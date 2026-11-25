@@ -8,7 +8,7 @@ import NextcloudKit
 /// Image-only lower content. Actions and the fixed thumbnail area belong to the shared adaptive panel.
 struct NCImageAdaptiveControlsView: View {
     let metadata: NCMediaViewerItem
-    let exif: ExifData?
+    let exif: NCExifData?
     let detailView: NCMediaViewerDetailView?
     let canGoPrevious: Bool
     let canGoNext: Bool
@@ -59,8 +59,8 @@ struct NCImageAdaptiveControlsView: View {
         .opacity(isEnabled ? 1 : 0.45)
     }
 
-    private var availableExif: ExifData {
-        var data = detailView?.exif ?? exif ?? ExifData()
+    private var availableExif: NCExifData {
+        var data = detailView?.exif ?? exif ?? NCExifData()
         let source = detailView?.metadata ?? metadata
         if data.width == nil, source.width > 0 { data.width = source.width }
         if data.height == nil, source.height > 0 { data.height = source.height }
@@ -92,7 +92,7 @@ private extension NCImageAdaptiveControlsView {
         metadata.size = 1_400_000
         metadata.width = 3000
         metadata.height = 2002
-        var exif = ExifData()
+        var exif = NCExifData()
         exif.make = "Nikon"
         exif.model = "Nikon D800E"
         exif.lensModel = "16 mm"

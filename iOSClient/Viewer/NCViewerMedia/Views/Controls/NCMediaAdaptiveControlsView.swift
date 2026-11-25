@@ -170,7 +170,7 @@ final class NCMediaAdaptiveControlsState: ObservableObject {
     @Published var detailView: NCMediaViewerDetailView?
     @Published var isFoldedLayout = false
     /// Retain only the visible image's EXIF; the model owns original downloads in the buffer.
-    @Published var imageInformation: (ocId: String, exif: ExifData)?
+    @Published var imageInformation: (ocId: String, exif: NCExifData)?
     private struct VideoCoverRegistration {
         let owner: UUID
         let controls: NCVideoPlaybackCoverPresentation
@@ -565,7 +565,7 @@ private extension NCMediaAdaptiveControlsView {
         state.isFoldedLayout = true
         if let metadata = model.selectedMetadata {
             if classFile == NKTypeClassFile.image.rawValue {
-                var exif = ExifData()
+                var exif = NCExifData()
                 exif.make = "Nikon"
                 exif.model = "D800E"
                 exif.iso = 200

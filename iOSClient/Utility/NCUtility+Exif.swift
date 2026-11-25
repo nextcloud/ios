@@ -5,47 +5,9 @@
 import Foundation
 import UIKit
 
-public struct ExifData: Sendable {
-    var colorModel: String?
-    var width: Int?
-    var height: Int?
-    var dpiWidth: Int?
-    var dpiHeight: Int?
-    var depth: Int?
-    var orientation: Int?
-    var apertureValue: Double?
-    var exposureValue: Int?
-    var shutterSpeedApex: Double?
-    var iso: Int?
-    var lensLength: Int?
-    var brightnessValue: String?
-    var dateTimeDigitized: String?
-    var dateTimeOriginal: String?
-    var offsetTime: String?
-    var offsetTimeDigitized: String?
-    var offsetTimeOriginal: String?
-    var make: String?
-    var model: String?
-    var software: String?
-    var tileLength: Double?
-    var tileWidth: Double?
-    var xResolution: Double?
-    var yResolution: Double?
-    var altitude: String?
-    var destBearing: String?
-    var hPositioningError: String?
-    var imgDirection: String?
-    var latitude: Double?
-    var longitude: Double?
-    var speed: Double?
-    var location: String?
-    var lensModel: String?
-    var date: Date?
-}
-
 extension NCUtility {
-    func getExif(metadata: tableMetadata, completion: @escaping (ExifData) -> Void) {
-        var data = ExifData()
+    func getExif(metadata: tableMetadata, completion: @escaping (NCExifData) -> Void) {
+        var data = NCExifData()
         // Deliver one complete result, including local EXIF and any resolved location.
         defer {
             if let latitude = data.latitude, let longitude = data.longitude {
@@ -135,7 +97,7 @@ extension NCUtility {
     /**
      Since non-downloaded images are usually thumbnails, the server sends some exif metadata of the real image. This function writes that data to the local exif object, if that data doesn't exist already.
      */
-    private func writeExifFromMetadata(metadata: tableMetadata, data: inout ExifData) {
+    private func writeExifFromMetadata(metadata: tableMetadata, data: inout NCExifData) {
         if metadata.latitude != 0, metadata.longitude != 0 {
             if data.latitude == nil { data.latitude = metadata.latitude }
             if data.longitude == nil { data.longitude = metadata.longitude }

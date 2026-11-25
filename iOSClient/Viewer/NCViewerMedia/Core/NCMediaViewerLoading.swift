@@ -12,7 +12,7 @@ protocol NCMediaViewerLoading: Sendable {
 
     /// Reads existing metadata and local EXIF without downloading the original.
     @MainActor
-    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (ExifData) -> Void)
+    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (NCExifData) -> Void)
 
     func localMediaURL(for metadata: NCMediaViewerItem) async -> URL?
 

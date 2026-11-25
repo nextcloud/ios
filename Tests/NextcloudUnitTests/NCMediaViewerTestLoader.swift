@@ -113,5 +113,5 @@ actor NCMediaViewerTestLoader: NCMediaViewerLoading, NCMediaViewerServices {
     nonisolated func saveVideoSubtitleTrack(_ index: Int, for metadata: NCMediaViewerItem) { }
     nonisolated func saveVideoAudioTrack(_ index: Int, for metadata: NCMediaViewerItem) { }
     @MainActor
-    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (ExifData) -> Void) { completion(ExifData()) }
+    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (NCExifData) -> Void) { completion(NCExifData()) }
 }

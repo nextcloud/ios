@@ -13,7 +13,7 @@ struct NCMediaViewerPreviewLoader: NCMediaViewerLoading {
     func metadata(for ocId: String, account: String) async -> NCMediaViewerItem? { nil }
     func metadataForDetails(for metadata: NCMediaViewerItem) async -> NCMediaViewerItem { metadata }
     @MainActor
-    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (ExifData) -> Void) { completion(ExifData()) }
+    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (NCExifData) -> Void) { completion(NCExifData()) }
     func localMediaURL(for metadata: NCMediaViewerItem) async -> URL? { nil }
     func previewURL(for metadata: NCMediaViewerItem, ext: String) async -> URL? { imageURL }
     func downloadMedia(for metadata: NCMediaViewerItem, onDownloadStarted: (@Sendable () async -> Void)?) async throws -> URL { throw URLError(.unsupportedURL) }
