@@ -12,6 +12,7 @@ actor NCMediaViewerTestLoader: NCMediaViewerLoading, NCMediaViewerServices {
     private(set) var originals = Set<String>()
     private(set) var liveOriginals = Set<String>()
     private(set) var downloadCounts: [String: Int] = [:]
+    private var updatedItems: [String: NCMediaViewerItem] = [:]
     private var pausedOcIds: Set<String>
     private var pausedReleaseOcIds: Set<String>
     private var pendingReleases: [String: CheckedContinuation<Void, Never>] = [:]
@@ -31,7 +32,11 @@ actor NCMediaViewerTestLoader: NCMediaViewerLoading, NCMediaViewerServices {
         if pausedMetadataOcIds.contains(ocId) {
             return await withCheckedContinuation { pendingMetadata[ocId] = $0 }
         }
-        return items[ocId]
+        return updatedItems[ocId] ?? items[ocId]
+    }
+    /// Simulates a database change, such as a rename, returned by later metadata reads.
+    func updateItem(_ item: NCMediaViewerItem) {
+        updatedItems[item.ocId] = item
     }
     var pendingMetadataOcIds: Set<String> { Set(pendingMetadata.keys) }
     func resumeMetadata(for ocId: String) {

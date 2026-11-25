@@ -618,6 +618,36 @@ struct NCMediaViewerModelTests {
         #expect(showsPreviewOnly())
     }
 
+    @Test("A data-source refresh keeps the page unless the file itself changed")
+    func refreshKeepsUnchangedPage() async throws {
+        let items = bufferItems()
+        let loader = NCMediaViewerTestLoader(items: items)
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       account: items[0].account, loader: loader)
+        await model.loadSelectedPageIfNeeded()
+        guard let page = model.pageModel(at: 0), case .image(_, .some, _, _) = page.state else {
+            Issue.record("The selected image must show its original")
+            return
+        }
+        // Only a full page reload bumps the thumbnail revision; neighbor prefetch does not.
+        let reloadRevision = model.thumbnailReloadRevision
+
+        await model.refreshPage(index: 0)
+        #expect(model.thumbnailReloadRevision == reloadRevision)
+        if case .image(_, .some, _, _) = page.state { } else {
+            Issue.record("An unchanged file must keep its loaded original")
+        }
+
+        var renamed = items[0]
+        renamed.fileName = "renamed.jpg"
+        renamed.fileNameView = "renamed.jpg"
+        await loader.updateItem(renamed)
+        await model.refreshPage(index: 0)
+        #expect(model.thumbnailReloadRevision > reloadRevision)
+        #expect(page.metadata?.fileNameView == "renamed.jpg")
+        model.cancelAllDownloads()
+    }
+
     private func fileSize(at url: URL) -> Int64? {
         (try? FileManager.default.attributesOfItem(atPath: url.path)[.size] as? NSNumber)?.int64Value
     }

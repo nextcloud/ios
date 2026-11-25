@@ -473,6 +473,28 @@ final class NCMediaViewerModel: ObservableObject {
         clearLoadingTaskIfCurrent(ocId: ocId, identifier: identifier)
     }
 
+    /// Re-reads the item after a data-source change (rename, move, favorite, offline, ...).
+    /// Only a change to the file itself rebuilds the page; anything else keeps zoom, playback and
+    /// the loaded original. Reading the item also refreshes the host's record used by the menus.
+    func refreshPage(index: Int) async {
+        guard let ocId = ocId(at: index), !isClosed, thumbnailScrubID == nil,
+              let current = cachedPagesByOcId[ocId]?.metadata else { return }
+        if case .deleted = pageState(for: ocId) { return }
+
+        guard let updated = await loader.metadata(for: ocId, account: account),
+              !isClosed, !Task.isCancelled else { return }
+
+        let fileChanged = updated.etag != current.etag ||
+            updated.fileName != current.fileName ||
+            updated.fileNameView != current.fileNameView ||
+            updated.serverUrl != current.serverUrl ||
+            updated.size != current.size ||
+            updated.livePhotoFile != current.livePhotoFile
+        guard fileChanged else { return }
+
+        await reloadPage(index: index)
+    }
+
     /// Reloads the page from the beginning, forcing a fresh metadata resolution before rebuilding the preview and media state.
     /// - Parameter index: The index of the page that must be reloaded.
     func reloadPage(index: Int) async {
