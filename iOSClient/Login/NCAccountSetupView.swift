@@ -67,6 +67,10 @@ struct NCAccountSetupView: View {
                 model.certificateDetailsDidClose()
             }
         }
+        .onAppear {
+            // Turns to portrait right away when shown over the files in landscape.
+            model.presenter?.setNeedsUpdateOfSupportedInterfaceOrientations()
+        }
         .onDisappear {
             // A login must not wait for a prompt of a setup that is gone.
             model.answer(false)
@@ -80,6 +84,21 @@ struct NCAccountSetupView: View {
             OnboardingFeature(icon: Image(systemName: "envelope"), title: NSLocalizedString("_intro_3_title_", comment: "")),
             OnboardingFeature(icon: Image(systemName: "video"), title: NSLocalizedString("_intro_4_title_", comment: ""))
         ]
+    }
+
+    /// Whether the setup is the root of the window or presented in it, with anything it presents on top.
+    static func isShown(in window: UIWindow?) -> Bool {
+        var viewController = window?.rootViewController
+
+        while let current = viewController {
+            if current is UIHostingController<NCAccountSetupView> {
+                return true
+            }
+
+            viewController = current.presentedViewController
+        }
+
+        return false
     }
 
     /// The setup in a full screen controller, for the root of a window or to present on the tab bar.
