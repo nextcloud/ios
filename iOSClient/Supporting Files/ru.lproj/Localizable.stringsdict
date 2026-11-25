@@ -153,9 +153,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%ld folder</string>
+			<string>%ld папка</string>
+			<key>few</key>
+			<string>%ld папки</string>
+			<key>many</key>
+			<string>%ld папок</string>
 			<key>other</key>
-			<string>%ld folders</string>
+			<string>%ld папки</string>
 		</dict>
 	</dict>
 	<key>_files_count_</key>
@@ -169,9 +173,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%ld file</string>
+			<string>%ld файл</string>
+			<key>few</key>
+			<string>%ld файла</string>
+			<key>many</key>
+			<string>%ld файлов</string>
 			<key>other</key>
-			<string>%ld files</string>
+			<string>%ld файла</string>
 		</dict>
 	</dict>
 </dict>

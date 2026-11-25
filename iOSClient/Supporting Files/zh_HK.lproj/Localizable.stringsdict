@@ -110,10 +110,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
-			<key>one</key>
-			<string>%ld folder</string>
 			<key>other</key>
-			<string>%ld folders</string>
+			<string>%ld 個資料夾</string>
 		</dict>
 	</dict>
 	<key>_files_count_</key>
@@ -126,10 +124,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
-			<key>one</key>
-			<string>%ld file</string>
 			<key>other</key>
-			<string>%ld files</string>
+			<string>%ld 個檔案</string>
 		</dict>
 	</dict>
 </dict>

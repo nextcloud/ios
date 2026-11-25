@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%ld folder</string>
+			<string>%ld klasör</string>
 			<key>other</key>
-			<string>%ld folders</string>
+			<string>%ld klasör</string>
 		</dict>
 	</dict>
 	<key>_files_count_</key>
@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%ld file</string>
+			<string>%ld dosya</string>
 			<key>other</key>
-			<string>%ld files</string>
+			<string>%ld dosya</string>
 		</dict>
 	</dict>
 </dict>

@@ -139,9 +139,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%ld folder</string>
+			<string>%ld pasta</string>
+			<key>many</key>
+			<string>%ld de pastas</string>
 			<key>other</key>
-			<string>%ld folders</string>
+			<string>%ld pastas</string>
 		</dict>
 	</dict>
 	<key>_files_count_</key>
@@ -155,9 +157,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%ld file</string>
+			<string>%ld arquivo</string>
+			<key>many</key>
+			<string>%ld de arquivos</string>
 			<key>other</key>
-			<string>%ld files</string>
+			<string>%ld arquivos</string>
 		</dict>
 	</dict>
 </dict>
