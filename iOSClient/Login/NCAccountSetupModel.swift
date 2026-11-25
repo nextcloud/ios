@@ -91,7 +91,7 @@ final class NCAccountSetupModel {
 
     /// Accounts of other Nextcloud apps on this device which are not added here yet.
     private func loadSharedAccounts() -> [SharedAccount] {
-        // Their sheet would still be open when the managed configuration logs in by itself.
+        // Not offered while the managed configuration logs in by itself.
         switch appConfigAction {
         case .createAccount, .requestAppPassword:
             return []
