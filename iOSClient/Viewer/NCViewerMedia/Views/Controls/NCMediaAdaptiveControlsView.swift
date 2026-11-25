@@ -105,7 +105,7 @@ struct NCMediaAdaptiveControlsView: View {
             )
         } else if let metadata = model.selectedMetadata, metadata.classFile == NKTypeClassFile.audio.rawValue {
             NCAudioAdaptiveControlsView(
-                account: metadata.account,
+                playbackProgressTint: model.playbackProgressTint(metadata.account),
                 playbackModel: NCAudioViewerPlaybackRegistry.shared.model(for: metadata.ocId),
                 isSelected: isSelectedAudioReady,
                 canGoPrevious: model.selectedIndex > 0,

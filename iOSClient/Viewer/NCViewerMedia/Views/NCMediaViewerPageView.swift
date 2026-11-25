@@ -205,6 +205,7 @@ struct NCMediaViewerPageView: View {
                 localURL: localURL,
                 previewURL: previewURL,
                 backgroundStyle: backgroundStyle,
+                playbackProgressTint: model.playbackProgressTint(metadata.account),
                 navigationBar: navigationBar,
                 canGoPrevious: canGoPrevious,
                 canGoNext: canGoNext,

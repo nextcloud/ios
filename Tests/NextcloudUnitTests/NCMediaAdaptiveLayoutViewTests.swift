@@ -77,7 +77,7 @@ struct NCMediaAdaptiveLayoutViewTests {
         metadata.classFile = NKTypeClassFile.video.rawValue
         let model = NCMediaViewerModel(
             currentMetadata: metadata, ocIds: [metadata.ocId],
-            session: NCSession().getSession(account: ""), loader: NCMediaViewerLoader()
+            account: "", loader: NCMediaViewerLoader()
         )
         let controls = NCVideoAdaptiveControlsView(state: NCVideoControlsState())
         // Give Auto Layout a fixed container; the hosted SwiftUI content must not size the test root.
@@ -204,7 +204,7 @@ struct NCMediaAdaptiveLayoutViewTests {
         let model = NCMediaViewerModel(
             currentMetadata: metadata,
             ocIds: [metadata.ocId],
-            session: NCSession().getSession(account: ""),
+            account: "",
             loader: NCMediaViewerLoader()
         )
         let state = NCMediaAdaptiveControlsState()

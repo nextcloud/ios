@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
+import SwiftUI
 import NextcloudKit
 
 // MARK: - Page State
@@ -130,7 +131,8 @@ final class NCMediaViewerModel: ObservableObject {
 
     // MARK: - Source Context
 
-    private let session: NCSession.Session
+    private let account: String
+    let playbackProgressTint: @MainActor (String) -> Color
 
     // MARK: - Source Data
 
@@ -282,12 +284,13 @@ final class NCMediaViewerModel: ObservableObject {
 
     // MARK: - Init
 
-    init(initialModel: NCMediaViewerInitialModel, session: NCSession.Session, loader: NCMediaViewerLoading, loadingPolicy: NCMediaViewerLoadingPolicy = .standard) {
+    init(initialModel: NCMediaViewerInitialModel, account: String, loader: NCMediaViewerLoading, loadingPolicy: NCMediaViewerLoadingPolicy = .standard, playbackProgressTint: @escaping @MainActor (String) -> Color = { _ in .accentColor }) {
         let normalizedOcIds = initialModel.normalizedOcIds
         let initialIndex = normalizedOcIds.firstIndex(of: initialModel.currentMetadata.ocId) ?? 0
         self.loader = loader
         self.loadingPolicy = loadingPolicy
-        self.session = session
+        self.account = account
+        self.playbackProgressTint = playbackProgressTint
         self.ocIds = normalizedOcIds
         self.selectedIndex = initialIndex
 
@@ -304,13 +307,14 @@ final class NCMediaViewerModel: ObservableObject {
     convenience init(
         currentMetadata: NCMediaViewerItem,
         ocIds: [String],
-        session: NCSession.Session,
+        account: String,
         loader: NCMediaViewerLoading,
-        loadingPolicy: NCMediaViewerLoadingPolicy = .standard
+        loadingPolicy: NCMediaViewerLoadingPolicy = .standard,
+        playbackProgressTint: @escaping @MainActor (String) -> Color = { _ in .accentColor }
     ) {
         let initialModel = NCMediaViewerInitialModel(currentMetadata: currentMetadata, ocIds: ocIds)
 
-        self.init(initialModel: initialModel, session: session, loader: loader, loadingPolicy: loadingPolicy)
+        self.init(initialModel: initialModel, account: account, loader: loader, loadingPolicy: loadingPolicy, playbackProgressTint: playbackProgressTint)
     }
 
     deinit {
@@ -455,7 +459,7 @@ final class NCMediaViewerModel: ObservableObject {
         let ocId = ocIds[index]
 
         guard !isClosed, thumbnailScrubID == nil else { return }
-        if let release = Self.releasingImagesByAccount[session.account]?[ocId] { await release.value }
+        if let release = Self.releasingImagesByAccount[account]?[ocId] { await release.value }
         guard !isClosed, thumbnailScrubID == nil, !Task.isCancelled, bufferedOcIds.contains(ocId) else { return }
 
         if let loading = loadingTasksByOcId[ocId] {
@@ -839,7 +843,7 @@ final class NCMediaViewerModel: ObservableObject {
 
         let ocId = ocIds[index]
 
-        if let release = Self.releasingImagesByAccount[session.account]?[ocId] { await release.value }
+        if let release = Self.releasingImagesByAccount[account]?[ocId] { await release.value }
         guard !isClosed, thumbnailScrubID == nil, bufferedOcIds.contains(ocId), !Task.isCancelled else { return }
         guard pageState(for: ocId).isIdle ||
                 (cachedPagesByOcId[ocId]?.metadata?.classFile == NKTypeClassFile.image.rawValue && pageNeedsSelectedPageLoading(for: ocId)) else { return }
@@ -938,21 +942,21 @@ final class NCMediaViewerModel: ObservableObject {
 
     /// Await the old download before removing its file. Re-entry waits for this task too.
     private func releaseBufferedImage(ocId: String) {
-        guard Self.releasingImagesByAccount[session.account]?[ocId] == nil else { return }
+        guard Self.releasingImagesByAccount[account]?[ocId] == nil else { return }
         if let metadata = cachedPagesByOcId[ocId]?.metadata,
            metadata.classFile != NKTypeClassFile.image.rawValue { return }
         let loading = loadingTasksByOcId.removeValue(forKey: ocId)
         loading?.task.cancel()
-        Self.releasingImagesByAccount[session.account, default: [:]][ocId] = Task {
+        Self.releasingImagesByAccount[account, default: [:]][ocId] = Task {
             await loader.cancelDownload(for: ocId)
             if let metadata = cachedPagesByOcId[ocId]?.metadata, metadata.isLivePhoto {
                 await loader.cancelLivePhotoMediaDownload(for: metadata)
             }
             await loading?.task.value
             defer {
-                Self.releasingImagesByAccount[session.account]?[ocId] = nil
-                if Self.releasingImagesByAccount[session.account]?.isEmpty == true {
-                    Self.releasingImagesByAccount[session.account] = nil
+                Self.releasingImagesByAccount[account]?[ocId] = nil
+                if Self.releasingImagesByAccount[account]?.isEmpty == true {
+                    Self.releasingImagesByAccount[account] = nil
                 }
             }
             guard !bufferedOcIds.contains(ocId),
@@ -979,7 +983,7 @@ final class NCMediaViewerModel: ObservableObject {
             return existingMetadata
         }
 
-        return await loader.metadata(for: ocId, account: session.account)
+        return await loader.metadata(for: ocId, account: account)
     }
 
     private func pageState(for ocId: String) -> NCMediaViewerPageState {

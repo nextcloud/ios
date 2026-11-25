@@ -54,7 +54,7 @@ struct NCMediaViewerPreviewLoader: NCMediaViewerLoading {
         }
         let model = NCMediaViewerModel(
             currentMetadata: items[selectedIndex], ocIds: items.map(\.ocId),
-            session: NCSession.Session(account: "", urlBase: "", user: "", userId: ""),
+            account: "",
             loader: NCMediaViewerPreviewLoader(imageURL: imageURL)
         )
         for (index, metadata) in items.enumerated() {

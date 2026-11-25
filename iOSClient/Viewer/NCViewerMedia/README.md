@@ -87,6 +87,10 @@ removes both originals, checking offline protection independently for each file.
 
 ## Viewer data boundary
 
+The model accepts an account identifier rather than the app session. The host
+also supplies its playback progress tint; app session lookup and branding stay
+outside the core.
+
 Pages, thumbnails, details and playback use `NCMediaViewerItem`, a `Sendable`
 value snapshot. `NCMediaViewerLoading` accepts and returns these values and also
 handles VLC track preferences. A different app can implement this protocol with
@@ -169,7 +173,7 @@ default, but has its own customization entry.
 | Control text and icon color | `UIColor.ncViewerAdaptiveControlForeground` | Adaptive image/audio and video-cover controls, the common lower panel and shared action buttons. |
 | Control border color/width | `UIColor.ncViewerAdaptiveControlBorder` / `ncViewerAdaptiveControlBorderWidth` | All adaptive control islands and buttons, including thumbnails and video playback controls. |
 | Control contrast in light/dark appearance | `ncViewerAdaptiveControlsColorScheme(for:inherited:)` | The common lower panel: black uses dark appearance, white uses light, system/custom inherit. |
-| Audio/video played-track tint, both layouts | `Color.ncViewerPlaybackProgressTint(account:)` | Selected file account’s `NCBrandColor.shared.getElement(account:)`; other controls retain their palette. |
+| Audio/video played-track tint, both layouts | `NCMediaViewerModel.playbackProgressTint` | Supplied by the app for the selected file account; defaults to the host accent color. The app integration retains the current account branding. |
 | Loading indicator tint | `Color.ncViewerProgressTint(_:)` | Media loading indicators. |
 
 For example, changing an island fill requires editing only
