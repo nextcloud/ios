@@ -473,25 +473,41 @@ struct NCMediaViewerModelTests {
         #expect(await loader.liveOriginals.isEmpty)
     }
 
-    @Test
-    func audioThumbnailRetriesAfterDeferredLoading() async {
+    @Test("Audio downloads only for the selected page and is released when it leaves the buffer or the viewer closes")
+    func audioOriginalsFollowBuffer() async throws {
         var items = bufferItems()
-        items[12].classFile = NKTypeClassFile.audio.rawValue
+        for index in items.indices { items[index].classFile = NKTypeClassFile.audio.rawValue }
         let loader = NCMediaViewerTestLoader(items: items)
         let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
                                        account: items[0].account, loader: loader)
         await model.loadSelectedPageIfNeeded()
-        #expect(await model.loadAudioForThumbnail(at: 12) == false)
-        model.beginThumbnailScrubbing()
-        await model.displayPreviewPage(at: 12)
-        #expect(await model.loadAudioForThumbnail(at: 12) == false)
-        #expect(await loader.downloadCounts["12"] == nil)
-        let revision = model.thumbnailReloadRevision
-        await model.endThumbnailScrubbing(at: 12)
-        #expect(model.thumbnailReloadRevision > revision)
-        #expect(await model.loadAudioForThumbnail(at: 12))
-        #expect(await loader.downloadCounts["12"] == 1)
+        try await waitForAudioWithoutFile(1...5, in: model)
+        #expect(await loader.originals == ["0"])
+        #expect(await loader.downloadCounts.keys.sorted() == ["0"])
+
+        model.finishPageTransition(at: 6)
+        await model.loadSelectedPageIfNeeded()
+        try await waitForOriginals(["6"], in: loader)
+        try await waitForAudioWithoutFile(0...0, in: model)
+
         model.cancelAllDownloads()
+        try await waitForOriginals([], in: loader)
+    }
+
+    private func waitForAudioWithoutFile(_ indexes: ClosedRange<Int>, in model: NCMediaViewerModel) async throws {
+        func hasNoFile() -> Bool {
+            indexes.allSatisfy { index in
+                if let page = model.pageModel(at: index), case .downloading = page.state {
+                    return true
+                }
+                return false
+            }
+        }
+        let deadline = ContinuousClock.now.advanced(by: .seconds(2))
+        while !hasNoFile(), ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        #expect(hasNoFile())
     }
 
     @Test("The common loader validates and reuses originals through injected services")

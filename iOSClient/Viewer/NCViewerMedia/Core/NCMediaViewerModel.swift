@@ -367,9 +367,6 @@ final class NCMediaViewerModel: ObservableObject {
         guard thumbnailScrubID == scrubID, !isClosed else { return }
         thumbnailScrubID = nil
         await loadSelectedPageIfNeeded()
-        guard !isClosed, thumbnailScrubID == nil else { return }
-        // Retry audio thumbnails whose loading was deferred while scrubbing.
-        thumbnailReloadRevision &+= 1
     }
 
     func displayPreviewPage(at index: Int) async {
@@ -434,18 +431,6 @@ final class NCMediaViewerModel: ObservableObject {
     func loadSelectedPageIfNeeded() async {
         prefetchNeighborPages(around: selectedIndex)
         await loadPageIfNeeded(index: selectedIndex)
-    }
-
-    /// False means the thumbnail must retry: no completed audio load is available yet.
-    func loadAudioForThumbnail(at index: Int) async -> Bool {
-        await loadPageIfNeeded(index: index)
-        guard !isClosed, ocIds.indices.contains(index) else { return false }
-        switch pageState(for: ocIds[index]) {
-        case .audio, .failed:
-            return true
-        default:
-            return false
-        }
     }
 
     func loadPageIfNeeded(index: Int) async {
@@ -861,10 +846,11 @@ final class NCMediaViewerModel: ObservableObject {
     }
 
     /// Await the old download before removing its file. Re-entry waits for this task too.
+    /// Images (with Live Photo companions) and audio follow the buffer; video keeps its own rules.
     private func releaseBufferedImage(ocId: String) {
         guard Self.releasingImagesByAccount[account]?[ocId] == nil else { return }
         if let metadata = cachedPagesByOcId[ocId]?.metadata,
-           metadata.classFile != NKTypeClassFile.image.rawValue { return }
+           !Self.followsOriginalBuffer(metadata) { return }
         let loading = loadingTasksByOcId.removeValue(forKey: ocId)
         loading?.task.cancel()
         Self.releasingImagesByAccount[account, default: [:]][ocId] = Task {
@@ -881,18 +867,27 @@ final class NCMediaViewerModel: ObservableObject {
             }
             guard !bufferedOcIds.contains(ocId),
                   let metadata = cachedPagesByOcId[ocId]?.metadata,
-                  metadata.classFile == NKTypeClassFile.image.rawValue else { return }
+                  Self.followsOriginalBuffer(metadata) else { return }
             if case .deleted = pageState(for: ocId) {
                 // Keep the deleted placeholder.
             } else {
                 let previewURL = currentPreviewURL(for: ocId)
                 updatePage(ocId: ocId) { page in
                     page.imageZoomState = nil
-                    page.state = .image(previewURL: previewURL, localURL: nil, livePhotoURL: nil, progress: nil)
+                    if metadata.classFile == NKTypeClassFile.audio.rawValue {
+                        // Selecting the page again downloads the audio file.
+                        page.state = .downloading(previewURL: previewURL, progress: nil)
+                    } else {
+                        page.state = .image(previewURL: previewURL, localURL: nil, livePhotoURL: nil, progress: nil)
+                    }
                 }
             }
             await loader.releaseOriginalImage(for: metadata)
         }
+    }
+
+    private static func followsOriginalBuffer(_ metadata: NCMediaViewerItem) -> Bool {
+        metadata.classFile == NKTypeClassFile.image.rawValue || metadata.classFile == NKTypeClassFile.audio.rawValue
     }
 
     // MARK: - Page Updates
