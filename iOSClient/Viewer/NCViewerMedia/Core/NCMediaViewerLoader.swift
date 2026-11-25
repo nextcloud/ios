@@ -72,7 +72,8 @@ protocol NCMediaViewerServices: Sendable {
 /// Shared loading, validation and cancellation, independent of the host database.
 final class NCMediaViewerLoader: NCMediaViewerLoading, Sendable {
     let services: any NCMediaViewerServices
-    private let fileManager = FileManager.default
+    /// Computed so this `Sendable` class stores no non-`Sendable` value; `FileManager.default` is thread-safe.
+    private var fileManager: FileManager { .default }
     private let downloadTaskRegistry = NCMediaViewerDownloadTaskRegistry()
 
     init(services: any NCMediaViewerServices) {
