@@ -9,7 +9,7 @@ import NextcloudKit
 // MARK: - Audio Viewer View
 
 struct NCAudioViewerContentView: View {
-    let metadata: tableMetadata
+    let metadata: NCMediaViewerItem
     let localURL: URL
     let previewURL: URL?
     let backgroundStyle: NCViewerBackgroundStyle
@@ -30,7 +30,7 @@ struct NCAudioViewerContentView: View {
     @StateObject private var model: NCAudioViewerModel
 
     init(
-        metadata: tableMetadata,
+        metadata: NCMediaViewerItem,
         localURL: URL,
         previewURL: URL? = nil,
         backgroundStyle: NCViewerBackgroundStyle = .system,

@@ -10,22 +10,32 @@ import NextcloudKit
 struct NCMediaViewerPreviewLoader: NCMediaViewerLoading {
     let imageURL: URL?
 
-    func metadata(for ocId: String, account: String) async -> tableMetadata? { nil }
-    func localMediaURL(for metadata: tableMetadata) async -> URL? { nil }
-    func previewURL(for metadata: tableMetadata, ext: String) async -> URL? { imageURL }
-    func downloadMedia(for metadata: tableMetadata, onDownloadStarted: (@Sendable () async -> Void)?) async throws -> URL { throw URLError(.unsupportedURL) }
-    func localLivePhotoURL(for metadata: tableMetadata) async -> URL? { nil }
-    func downloadLivePhotoMedia(for metadata: tableMetadata) async -> URL? { nil }
+    func metadata(for ocId: String, account: String) async -> NCMediaViewerItem? { nil }
+    func metadataForDetails(for metadata: NCMediaViewerItem) async -> NCMediaViewerItem { metadata }
+    @MainActor
+    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (ExifData) -> Void) { completion(ExifData()) }
+    func localMediaURL(for metadata: NCMediaViewerItem) async -> URL? { nil }
+    func previewURL(for metadata: NCMediaViewerItem, ext: String) async -> URL? { imageURL }
+    func downloadMedia(for metadata: NCMediaViewerItem, onDownloadStarted: (@Sendable () async -> Void)?) async throws -> URL { throw URLError(.unsupportedURL) }
+    func localLivePhotoURL(for metadata: NCMediaViewerItem) async -> URL? { nil }
+    func downloadLivePhotoMedia(for metadata: NCMediaViewerItem) async -> URL? { nil }
     func cancelDownload(for ocId: String) async { }
-    func cancelLivePhotoMediaDownload(for metadata: tableMetadata) async { }
+    func cancelLivePhotoMediaDownload(for metadata: NCMediaViewerItem) async { }
     func cancelAllDownloads() async { }
+    func releaseOriginalImage(for metadata: NCMediaViewerItem) async { }
+
+    func fileProviderStorageExists(for metadata: NCMediaViewerItem) -> Bool { false }
+    func videoSubtitleTrack(for metadata: NCMediaViewerItem) -> Int? { nil }
+    func videoAudioTrack(for metadata: NCMediaViewerItem) -> Int? { nil }
+    func saveVideoSubtitleTrack(_ index: Int, for metadata: NCMediaViewerItem) { }
+    func saveVideoAudioTrack(_ index: Int, for metadata: NCMediaViewerItem) { }
 
     @MainActor
     static func makeModel(classFile: String) -> NCMediaViewerModel {
         let types = [NKTypeClassFile.image.rawValue, NKTypeClassFile.audio.rawValue, NKTypeClassFile.video.rawValue]
         let selectedIndex = types.firstIndex(of: classFile) ?? 0
-        let items = (0..<12).map { index -> tableMetadata in
-            let metadata = tableMetadata()
+        let items = (0..<12).map { index -> NCMediaViewerItem in
+            var metadata = NCMediaViewerItem()
             metadata.ocId = "canvas-media-\(index)"
             metadata.classFile = types[index % types.count]
             metadata.fileName = ["Waterfall.jpg", "Waterfall.m4a", "Waterfall.mp4"][index % types.count]

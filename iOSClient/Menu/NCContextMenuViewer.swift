@@ -34,7 +34,7 @@ class NCContextMenuViewer: NSObject {
         self.sender = sender
     }
 
-    func viewMenu() -> UIMenu? {
+    func viewMenu(preferredTopElementSize: UIMenu.ElementSize = .medium, onToggleFavorite: (() -> Void)? = nil) -> UIMenu? {
         guard let controller,
               let capabilities = NCNetworking.shared.capabilities[metadata.account] else {
             return nil
@@ -70,8 +70,8 @@ class NCContextMenuViewer: NSObject {
             )
         }
 
-        if !metadata.lock {
-            topMenuItems.append(NCContextMenuActions.favorite(metadata: metadata))
+        if onToggleFavorite != nil || !metadata.lock {
+            topMenuItems.append(NCContextMenuActions.favorite(metadata: metadata, onToggle: onToggleFavorite))
         }
 
         if !webView {
@@ -90,8 +90,13 @@ class NCContextMenuViewer: NSObject {
                 presenter: viewController ?? controller,
                 windowScene: windowScene
             ) { [weak viewController = self.viewController] renamedMetadata in
-                (viewController as? NCVideoAVPlayerViewController)?.updateMetadata(renamedMetadata)
-                (viewController as? NCVideoVLCViewController)?.updateMetadata(renamedMetadata)
+                if let player = viewController as? NCVideoAVPlayerViewController,
+                   let model = player.mediaViewerModel {
+                    player.updateMetadata(model.viewerItem(from: renamedMetadata))
+                } else if let player = viewController as? NCVideoVLCViewController,
+                          let model = player.mediaViewerModel {
+                    player.updateMetadata(model.viewerItem(from: renamedMetadata))
+                }
             })
         }
 
@@ -131,7 +136,7 @@ class NCContextMenuViewer: NSObject {
 
         var finalMenuElements: [UIMenuElement] = []
 
-        if let topMenu = NCContextMenuActions.inlineMenu(children: topMenuItems, preferredElementSize: .medium) {
+        if let topMenu = NCContextMenuActions.inlineMenu(children: topMenuItems, preferredElementSize: preferredTopElementSize) {
             finalMenuElements.append(topMenu)
         }
 

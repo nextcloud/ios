@@ -67,7 +67,7 @@ final class NCVideoPlaybackController: ObservableObject {
         currentURL != nil
     }
     // Reuses the current player when the requested video is already loaded.
-    func loadVideo(metadata: tableMetadata, url: URL, fileName: String, userAgent: String?, httpHeaders: [String: String]) {
+    func loadVideo(metadata: NCMediaViewerItem, url: URL, fileName: String, userAgent: String?, httpHeaders: [String: String]) {
         if isSameLoadedVideo(metadata: metadata, url: url) {
             return
         }
@@ -276,7 +276,7 @@ final class NCVideoPlaybackController: ObservableObject {
         avProbeTimeoutTask = nil
     }
 
-    private func isSameLoadedVideo(metadata: tableMetadata, url: URL) -> Bool {
+    private func isSameLoadedVideo(metadata: NCMediaViewerItem, url: URL) -> Bool {
         currentOcId == metadata.ocId &&
         currentEtag == metadata.etag &&
         currentURL == url

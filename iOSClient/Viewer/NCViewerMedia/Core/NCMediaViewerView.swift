@@ -13,7 +13,7 @@ struct NCMediaViewerView: View {
 
     let contextMenuController: NCMainTabBarController?
     let navigationBar: UINavigationBar?
-    let onVisibleMetadataChanged: (_ metadata: tableMetadata?) -> Void
+    let onVisibleMetadataChanged: (_ metadata: NCMediaViewerItem?) -> Void
     let onZoomChanged: (Bool) -> Void
     let onClose: (_ ocId: String?) -> Void
     let adaptiveControlsState: NCMediaAdaptiveControlsState?
@@ -25,7 +25,7 @@ struct NCMediaViewerView: View {
         model: NCMediaViewerModel,
         contextMenuController: NCMainTabBarController? = nil,
         navigationBar: UINavigationBar? = nil,
-        onVisibleMetadataChanged: @escaping (_ metadata: tableMetadata?) -> Void = { _ in },
+        onVisibleMetadataChanged: @escaping (_ metadata: NCMediaViewerItem?) -> Void = { _ in },
         onZoomChanged: @escaping (Bool) -> Void = { _ in },
         onClose: @escaping (_ ocId: String?) -> Void = { _ in },
         adaptiveControlsState: NCMediaAdaptiveControlsState? = nil,
@@ -102,14 +102,14 @@ struct NCMediaViewerView: View {
 
 private extension NCMediaViewerView {
     static func previewView() -> some View {
-        let metadata = tableMetadata()
+        var metadata = NCMediaViewerItem()
         metadata.ocId = "preview-ocid"
         metadata.fileName = "preview.jpg"
         metadata.fileNameView = "preview.jpg"
         metadata.classFile = NKTypeClassFile.image.rawValue
 
         let model = NCMediaViewerModel(
-            currentMetadata: metadata.detachedCopy(),
+            currentMetadata: metadata,
             ocIds: [
                 metadata.ocId
             ],

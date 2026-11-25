@@ -81,7 +81,7 @@ class NCService: NSObject {
             return false
         }
 
-        let resultUserProfile = await NextcloudKit.shared.getUserMetadataAsync(account: account, userId: userId, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
+        let resultUserProfile = await NextcloudKit.shared.getUserMetadataAsync(account: account, userId: userId)
 
         if resultUserProfile.error == .success,
            let userProfile = resultUserProfile.userProfile,

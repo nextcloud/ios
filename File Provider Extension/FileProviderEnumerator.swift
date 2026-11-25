@@ -203,14 +203,17 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         var paginateOffset = 0
         if pageNumber > 0 {
            paginateOffset = getOffset(for: pageNumber)
+        } else {
+            // A listing restarting at page 0 must not reuse the cached result or the page counts of an earlier one.
+            paginateToken = nil
+            paginatedTotal = 0
+            paginateItems.removeAll()
         }
         let optionsPaginate = await FileProviderData.shared.isPaginatedAvailabile(serverUrl: serverUrl, session: session)
         let options = NKRequestOptions(paginate: optionsPaginate,
                                        paginateToken: self.paginateToken,
                                        paginateOffset: paginateOffset,
-                                       paginateCount: paginateCount,
-                                       queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue
-        )
+                                       paginateCount: paginateCount)
 
         // Read folder metadata
         //
@@ -230,7 +233,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         if let headers = resultsRead.responseData?.response?.allHeaderFields as? [String: String] {
             let normalizedHeaders = Dictionary(uniqueKeysWithValues: headers.map { ($0.key.lowercased(), $0.value) })
             ncPaginate = Bool(normalizedHeaders["x-nc-paginate"] ?? "false") ?? false
-            self.paginateToken = normalizedHeaders["x-nc-paginate-token"]
+            // Pages served from the server's cache may omit the token; it stays valid for the whole listing.
+            self.paginateToken = normalizedHeaders["x-nc-paginate-token"] ?? self.paginateToken
             if let totalString = normalizedHeaders["x-nc-paginate-total"],
                let total = Int(totalString) {
                 self.paginatedTotal = total

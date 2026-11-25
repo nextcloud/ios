@@ -14,7 +14,7 @@ struct NCMediaViewerPagingView: UIViewRepresentable {
 
     let contextMenuController: NCMainTabBarController?
     let navigationBar: UINavigationBar?
-    let onVisibleMetadataChanged: (_ metadata: tableMetadata?) -> Void
+    let onVisibleMetadataChanged: (_ metadata: NCMediaViewerItem?) -> Void
     let onZoomChanged: (Bool) -> Void
     let onClose: (_ ocId: String?) -> Void
     var adaptiveControlsState: NCMediaAdaptiveControlsState?
@@ -116,7 +116,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     weak var collectionView: UICollectionView?
     let contextMenuController: NCMainTabBarController?
     weak var navigationBar: UINavigationBar?
-    var onVisibleMetadataChanged: (_ metadata: tableMetadata?) -> Void
+    var onVisibleMetadataChanged: (_ metadata: NCMediaViewerItem?) -> Void
     var onZoomChanged: (Bool) -> Void
     var onClose: (_ ocId: String?) -> Void
     var adaptiveControlsState: NCMediaAdaptiveControlsState? {
@@ -139,7 +139,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         model: NCMediaViewerModel,
         contextMenuController: NCMainTabBarController?,
         navigationBar: UINavigationBar?,
-        onVisibleMetadataChanged: @escaping (_ metadata: tableMetadata?) -> Void,
+        onVisibleMetadataChanged: @escaping (_ metadata: NCMediaViewerItem?) -> Void,
         onZoomChanged: @escaping (Bool) -> Void,
         onClose: @escaping (_ ocId: String?) -> Void,
         adaptiveControlsState: NCMediaAdaptiveControlsState? = nil

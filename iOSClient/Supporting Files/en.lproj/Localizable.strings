@@ -299,10 +299,6 @@
 "_add_favorites_"               = "Favorite";
 "_share_"                       = "Share";
 "_remove_local_file_"           = "Remove locally";
-"_folders_"                     = "folders";
-"_folder_"                      = "folder";
-"_files_"                       = "files";
-"_file_"                        = "file";
 "_no_file_pull_down_"           = "Upload a file or pull down to refresh";
 "_no_file_no_permission_to_create_" = "You don't have permission to create or upload files in this folder.";
 "_limited_dimension_"           = "Maximum size reached";

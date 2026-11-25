@@ -524,6 +524,21 @@ final class NCMediaViewerPresenter: NSObject {
 // MARK: - UIGestureRecognizerDelegate
 
 extension NCMediaViewerPresenter: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        guard gestureRecognizer === dismissPanGesture else { return true }
+
+        // Check the touch origin before the pan can compete with EXIF scrolling or map gestures.
+        var touchedView = touch.view
+        while let view = touchedView {
+            if let layoutView = view as? NCMediaAdaptiveLayoutView,
+               !layoutView.allowsDismissGesture(at: touch.location(in: layoutView)) {
+                return false
+            }
+            touchedView = view.superview
+        }
+        return true
+    }
+
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         guard gestureRecognizer === dismissPanGesture,
               let panGesture = gestureRecognizer as? UIPanGestureRecognizer,

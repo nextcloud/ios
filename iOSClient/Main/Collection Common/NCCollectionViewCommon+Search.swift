@@ -8,13 +8,33 @@ import NextcloudKit
 extension NCCollectionViewCommon {
     @MainActor
     func search() async {
-        guard !networkSearchInProgress,
+        guard isSearchingMode,
+              activeSearchID == nil,
               !session.account.isEmpty,
               let text = searchResultText,
-              !text.isEmpty else {
+              text.count >= 2 else {
             return
         }
+
+        let searchID = UUID()
+        activeSearchID = searchID
+        completedSearchText = nil
+        setSearchBarLoading(true)
+        if dataSource.isEmpty() {
+            collectionView.reloadData()
+        }
+        defer {
+            if activeSearchID == searchID {
+                activeSearchID = nil
+                setSearchBarLoading(false)
+                if isSearchingMode {
+                    collectionView.reloadData()
+                }
+            }
+        }
+
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
+        guard isSearchingMode, activeSearchID == searchID else { return }
 
         // Force layoutList
         let layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
@@ -24,25 +44,22 @@ extension NCCollectionViewCommon {
 
         // STOP PREEMPTIVE SYNC METADATA
         await self.stopSyncMetadata()
-        // Start spinner
-        setSearchBarLoading(true)
-        networkSearchInProgress = true
+        guard isSearchingMode, activeSearchID == searchID else { return }
 
+        let completed: Bool
         if NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v20) {
-            await unifiedSearch(text: text)
+            completed = await unifiedSearch(text: text, searchID: searchID)
         } else {
-            await searchLiteral(text: text)
+            completed = await searchLiteral(text: text, searchID: searchID)
+        }
+        if completed, isSearchingMode, activeSearchID == searchID {
+            completedSearchText = text
         }
     }
 
     // MARK: - search Literal
 
-    private func searchLiteral(text: String) async {
-        defer {
-            networkSearchInProgress = false
-            setSearchBarLoading(false)
-        }
-
+    private func searchLiteral(text: String, searchID: UUID) async -> Bool {
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
         let urlBase = NCSession.shared.getSession(account: session.account).urlBase
 
@@ -58,36 +75,33 @@ extension NCCollectionViewCommon {
             }
         }
 
-        if results.error == .success,
-           let files = results.files {
-            let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
-            database.addMetadatas(metadatas)
-            dataSource = NCCollectionViewDataSource(
-                metadatas: metadatas,
-                layoutForView: self.layoutForView,
-                account: self.session.account
-            )
-        } else {
+        guard isSearchingMode, activeSearchID == searchID else { return false }
+        guard results.error == .success, let files = results.files else {
             await showErrorBanner(windowScene: windowScene,
                                   error: results.error)
+            return false
         }
 
-        collectionView.reloadData()
+        let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
+        guard isSearchingMode, activeSearchID == searchID else { return false }
+        database.addMetadatas(metadatas)
+        dataSource = NCCollectionViewDataSource(
+            metadatas: metadatas,
+            layoutForView: self.layoutForView,
+            account: self.session.account
+        )
+        return true
     }
 
     // MARK: - Unifield Search
 
-    private func unifiedSearch(text: String) async {
-        defer {
-            networkSearchInProgress = false
-            setSearchBarLoading(false)
-        }
-
+    private func unifiedSearch(text: String, searchID: UUID) async -> Bool {
         // Store the search
         self.searchResultStore = text
 
         // ---> In This folder
         let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[c] %@", session.account, self.serverUrl, text)) ?? []
+        guard isSearchingMode, activeSearchID == searchID else { return false }
         for metadatas in metadatas {
             metadatas.section = NSLocalizedString("_in_this_folder_", comment: "")
         }
@@ -108,15 +122,15 @@ extension NCCollectionViewCommon {
             return true
         }
 
+        guard isSearchingMode, activeSearchID == searchID else { return false }
         if results.error != .success {
             await showErrorBanner(windowScene: windowScene,
                                   error: results.error)
         }
 
-        guard isSearchingMode,
-              results.error == .success,
+        guard results.error == .success,
               var providers = results.providers else {
-            return
+            return false
         }
 
         // Added providers in DataSource
@@ -139,48 +153,56 @@ extension NCCollectionViewCommon {
                 handle: searchOperationHandle
             )
 
+            guard isSearchingMode, activeSearchID == searchID, searchResultText == text else { return false }
             if results.error != .success {
                 await showErrorBanner(windowScene: windowScene,
                                       error: results.error)
             }
 
-            guard isSearchingMode,
-                  self.searchResultText == text,
-                  results.error == .success,
+            guard results.error == .success,
                   let searchResult = results.searchResult else {
-                return
+                return false
             }
 
-            if let metadatas = await getSearchResultMetadatas(
+            let metadatas = await getSearchResultMetadatas(
                 session: session,
                 provider: provider,
                 searchResult: searchResult
-            ) {
+            )
+            guard isSearchingMode, activeSearchID == searchID, searchResultText == text else { return false }
+            if let metadatas {
                 self.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
             }
         }
 
-        // end
-        self.collectionView.reloadData()
+        return true
     }
 
+    @MainActor
     func unifiedSearchMore(metadataForSection: NCMetadataForSection?) async {
+        guard isSearchingMode,
+              let metadataForSection,
+              dataSource.getMetadataForSection(metadataForSection.section) === metadataForSection,
+              !metadataForSection.unifiedSearchInProgress,
+              let lastSearchResult = metadataForSection.lastSearchResult,
+              let cursor = lastSearchResult.cursor,
+              let searchResultStore else {
+            return
+        }
+
         defer {
-            metadataForSection?.unifiedSearchInProgress = false
-            Task {
-                if !isSearchingMode {
+            metadataForSection.unifiedSearchInProgress = false
+            if isSearchingMode {
+                if dataSource.getMetadataForSection(metadataForSection.section) === metadataForSection {
+                    collectionView.reloadData()
+                }
+            } else {
+                Task {
                     await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferReloadDataSource(serverUrl: self.serverUrl, requestData: true, status: nil)
                     }
                 }
             }
-        }
-
-        guard let metadataForSection = metadataForSection,
-              let lastSearchResult = metadataForSection.lastSearchResult,
-              let cursor = lastSearchResult.cursor,
-              let searchResultStore else {
-            return
         }
 
         metadataForSection.unifiedSearchInProgress = true
@@ -202,19 +224,29 @@ extension NCCollectionViewCommon {
         }
 
         guard isSearchingMode,
+              dataSource.getMetadataForSection(metadataForSection.section) === metadataForSection,
               results.error == .success,
               let searchResult = results.searchResult,
-                let provider = self.dataSource.getProvider(id: searchResult.id) else {
+              let provider = dataSource.getProvider(id: searchResult.id) else {
             return
         }
 
-        if let metadatas = await getSearchResultMetadatas(
+        let metadatas = await getSearchResultMetadatas(
             session: session,
             provider: provider,
             searchResult: searchResult
-        ) {
-            self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
-            self.collectionView.reloadData()
+        )
+        guard let metadatas,
+              isSearchingMode,
+              dataSource.getMetadataForSection(metadataForSection.section) === metadataForSection else {
+            return
+        }
+
+        // The Files provider can return a cursor even after it runs out of entries.
+        let isExhausted = provider.id == "files" && (searchResult.entries.isEmpty || searchResult.cursor == cursor)
+        metadataForSection.lastSearchResult = isExhausted ? nil : searchResult
+        if !metadatas.isEmpty {
+            dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection)
         }
     }
 

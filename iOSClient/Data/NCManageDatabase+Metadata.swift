@@ -889,12 +889,14 @@ extension NCManageDatabase {
     }
 
     /// Asynchronously sets the favorite status of a `tableMetadata` entry.
-    /// Optionally stores the previous favorite flag and updates the sync status.
-    func setMetadataFavoriteAsync(ocId: String, favorite: Bool?, saveOldFavorite: String?, status: Int) async {
+    /// Passing a sync status also updates the saved previous flag and the session date.
+    /// Without a sync status, only idle entries can be updated.
+    func setMetadataFavoriteAsync(ocId: String, favorite: Bool?, saveOldFavorite: String? = nil, status: Int? = nil) async {
         await core.performRealmWriteAsync { realm in
             guard let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
-                .first else {
+                .first,
+                status != nil || result.status == NCGlobal.shared.metadataStatusNormal else {
                 return
             }
 
@@ -902,9 +904,11 @@ extension NCManageDatabase {
                 result.favorite = favorite
             }
 
-            result.storeFlag = saveOldFavorite
-            result.status = status
-            result.sessionDate = (status == NCGlobal.shared.metadataStatusNormal) ? nil : Date()
+            if let status {
+                result.storeFlag = saveOldFavorite
+                result.status = status
+                result.sessionDate = (status == NCGlobal.shared.metadataStatusNormal) ? nil : Date()
+            }
         }
     }
 

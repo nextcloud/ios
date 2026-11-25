@@ -13,9 +13,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>Upload %ld file</string>
+			<string>Uaslódáil %ld comhad</string>
+			<key>two</key>
+			<string>Uaslódáil %ld comhad</string>
+			<key>few</key>
+			<string>Uaslódáil %ld comhad</string>
+			<key>many</key>
+			<string>Uaslódáil %ld comhad</string>
 			<key>other</key>
-			<string>Upload %ld files</string>
+			<string>Uaslódáil %ld comhad</string>
 		</dict>
 	</dict>
 	<key>_remaining_share_downloads_</key>
@@ -73,9 +79,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You have %d file to back up</string>
+			<string>Tá %d comhad le cúltaca agat</string>
+			<key>two</key>
+			<string>Tá %d comhad le cúltaca agat</string>
+			<key>few</key>
+			<string>Tá %d comhad le cúltaca agat</string>
+			<key>many</key>
+			<string>Tá %d comhad le cúltaca agat</string>
 			<key>other</key>
-			<string>You have %d files to back up</string>
+			<string>Tá %d comhad le cúltaca agat</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>
@@ -142,6 +154,38 @@
 			<string>%d grianghraf agus físeán</string>
 			<key>other</key>
 			<string>%d grianghraf agus físeán</string>
+		</dict>
+	</dict>
+	<key>_folders_count_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@folders@</string>
+		<key>folders</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>one</key>
+			<string>%ld folder</string>
+			<key>other</key>
+			<string>%ld folders</string>
+		</dict>
+	</dict>
+	<key>_files_count_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@files@</string>
+		<key>files</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>one</key>
+			<string>%ld file</string>
+			<key>other</key>
+			<string>%ld files</string>
 		</dict>
 	</dict>
 </dict>

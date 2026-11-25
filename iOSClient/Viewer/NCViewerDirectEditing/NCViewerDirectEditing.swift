@@ -15,16 +15,37 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     var userAgent: String
     private(set) var metadata: tableMetadata
     var imageIcon: UIImage?
-
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?
+    private var isClosingTextEditor = false
+    private var isUpdatingFavorite = false
+
+    // IPHONE DUO EXPERIMENTAL
+    private var usesAdaptiveLayout: Bool {
+        guard #available(iOS 27.1, *) else { return false }
+        return true
+    }
+
+    private final class AdaptiveEditorWebView: WKWebView {
+        override var inputAccessoryView: UIView? {
+            nil
+        }
+    }
+
+    private var foldedBottomConstraint: NSLayoutConstraint?
+    private var foldSeparatorView: UIView?
+    private var foldSeparatorCenterConstraint: NSLayoutConstraint?
+    private var isViewerVisible = false
+    private var isTextReadyForFocus = false
+    private var didFinishEditorNavigation = false
+    private var foldFocusAttempt: UUID?
+    // END IPHONE DUO EXPERIMENTAL
+
     var documentController: UIDocumentInteractionController?
     let utility = NCUtility()
     let utilityFileSystem = NCUtilityFileSystem()
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
-    var items: [UIBarButtonItem] = []
-    private var isClosingTextEditor = false
 
     @MainActor
     var session: NCSession.Session {
@@ -72,36 +93,39 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             image: NCImageCache.shared.getImageButtonMore(),
             primaryAction: nil,
             menu: UIMenu(title: "", children: [
-                UIDeferredMenuElement.uncached { [self] completion in
-                    if let menu = NCContextMenuViewer(metadata: self.metadata,
-                                                      controller: self.tabBarController as? NCMainTabBarController,
-                                                      viewController: self.tabBarController,
-                                                      webView: true,
-                                                      sender: self).viewMenu() {
-                        completion(menu.children)
+                UIDeferredMenuElement.uncached { [weak self] completion in
+                    guard let self else {
+                        completion([])
+                        return
                     }
+
+                    let menu = NCContextMenuViewer(metadata: self.metadata,
+                                                   controller: self.controller,
+                                                   viewController: self.tabBarController,
+                                                   webView: true,
+                                                   sender: self).viewMenu(preferredTopElementSize: .large) { [weak self] in
+                        self?.toggleFavorite()
+                    }
+                    completion(menu?.children ?? [])
                 }
             ]))
-        items.append(moreButton)
-
         let group = UIBarButtonItemGroup(
-            barButtonItems: items,
+            barButtonItems: [moreButton],
             representativeItem: nil
         )
         navigationItem.trailingItemGroups = [group]
         navigationItem.leftBarButtonItems = nil
 
-        // Text releases its lock on the file only when its own close runs (the in-page close
-        // button). Leaving with the system back button skipped that and left the file locked
-        // for everyone else, so for Text the back button runs the same close first.
         if editor == global.editorText {
-            navigationItem.hidesBackButton = true
-            navigationItem.leftBarButtonItem = UIBarButtonItem(
+            let backButton = UIBarButtonItem(
                 image: UIImage(systemName: "chevron.backward"),
                 style: .plain,
                 target: self,
-                action: #selector(closeTextEditor)
+                action: #selector(closeEditor)
             )
+            backButton.accessibilityLabel = NSLocalizedString("_back_", comment: "")
+            navigationItem.hidesBackButton = true
+            navigationItem.leftBarButtonItem = backButton
         }
 
         // Prevent back navigation gesture of iOS >= 26 as that can cause unintended swipe backs
@@ -120,7 +144,12 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             let dropSharedWorkersScript = WKUserScript(source: "delete window.SharedWorker;", injectionTime: WKUserScriptInjectionTime.atDocumentStart, forMainFrameOnly: false)
             config.userContentController.addUserScript(dropSharedWorkersScript)
         }
-        webView = WKWebView(frame: CGRect.zero, configuration: config)
+        if usesAdaptiveLayout {
+            extendedLayoutIncludesOpaqueBars = true
+            webView = AdaptiveEditorWebView(frame: .zero, configuration: config)
+        } else {
+            webView = WKWebView(frame: .zero, configuration: config)
+        }
         webView.navigationDelegate = self
         webView.uiDelegate = self
         webView.scrollView.isScrollEnabled = false
@@ -130,9 +159,14 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         webView.translatesAutoresizingMaskIntoConstraints = false
         webView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0).isActive = true
         webView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: 0).isActive = true
-        webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0).isActive = true
+        webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         bottomConstraint?.isActive = true
+
+        if #available(iOS 27.1, *), usesAdaptiveLayout {
+            foldedBottomConstraint = webView.bottomAnchor.constraint(equalTo: view.topAnchor)
+            configureFoldSeparator()
+        }
 
         if let url = URL(string: link) {
             var request = URLRequest(url: url)
@@ -146,6 +180,105 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     deinit {
         print("dealloc")
+    }
+
+    private func configureFoldSeparator() {
+        let separator = NCFoldSeparator.makeContentView()
+        separator.translatesAutoresizingMaskIntoConstraints = false
+        separator.isHidden = true
+        view.addSubview(separator)
+
+        let center = separator.centerYAnchor.constraint(equalTo: view.topAnchor)
+        NSLayoutConstraint.activate([
+            center,
+            separator.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            separator.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            separator.heightAnchor.constraint(equalToConstant: NCFoldSeparator.height)
+        ])
+        foldSeparatorView = separator
+        foldSeparatorCenterConstraint = center
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        guard usesAdaptiveLayout,
+              #available(iOS 27.1, *),
+              let bottomConstraint,
+              let foldedBottomConstraint,
+              let foldSeparatorCenterConstraint else {
+            return
+        }
+
+        let safeFrame = view.safeAreaLayoutGuide.layoutFrame
+        let fold = view.reservedRegions(kind: .division)
+            .filter(\.isActive)
+            .map { safeFrame.intersection($0.frame) }
+            .first { frame in
+                !frame.isNull &&
+                    frame.width >= safeFrame.width - 1 &&
+                    frame.width > frame.height &&
+                    frame.height > 0 &&
+                    frame.minY > safeFrame.minY &&
+                    frame.maxY < safeFrame.maxY
+            }
+
+        let isFolded = fold != nil
+        if let fold {
+            let editorBottom = fold.minY - view.bounds.minY
+            if foldedBottomConstraint.constant != editorBottom {
+                foldedBottomConstraint.constant = editorBottom
+            }
+            let separatorCenter = fold.midY - view.bounds.minY
+            if foldSeparatorCenterConstraint.constant != separatorCenter {
+                foldSeparatorCenterConstraint.constant = separatorCenter
+            }
+        }
+
+        if isFolded != foldedBottomConstraint.isActive {
+            if isFolded {
+                bottomConstraint.isActive = false
+                foldedBottomConstraint.isActive = true
+            } else {
+                foldedBottomConstraint.isActive = false
+                bottomConstraint.isActive = true
+                foldFocusAttempt = nil
+            }
+        }
+        foldSeparatorView?.isHidden = !(isFolded && didFinishEditorNavigation)
+        requestFoldedTextFocus()
+    }
+
+    private func requestFoldedTextFocus() {
+        guard usesAdaptiveLayout,
+              editor == global.editorText,
+              isViewerVisible,
+              didFinishEditorNavigation,
+              isTextReadyForFocus,
+              foldedBottomConstraint?.isActive == true,
+              foldFocusAttempt == nil else {
+            return
+        }
+
+        let attempt = UUID()
+        foldFocusAttempt = attempt
+        let script = """
+        (() => {
+            const editor = document.querySelector('#direct-editor .ProseMirror[contenteditable="true"]');
+            if (!editor) return false;
+            editor.focus({ preventScroll: true });
+            return document.activeElement === editor;
+        })()
+        """
+        webView.evaluateJavaScript(script) { [weak self] result, error in
+            guard let self, self.isViewerVisible, self.foldFocusAttempt == attempt else { return }
+            guard (result as? Bool) == true else {
+                print("[Duo Editor] Text focus failed: \(error?.localizedDescription ?? "editor did not take focus")")
+                return
+            }
+            let accepted = self.webView.becomeFirstResponder()
+            print("[Duo Editor] Text focused; first responder accepted: \(accepted)")
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -171,6 +304,10 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        if usesAdaptiveLayout {
+            isViewerVisible = true
+            requestFoldedTextFocus()
+        }
 
         Task {
             await NCNetworking.shared.transferDispatcher.addDelegate(self)
@@ -179,6 +316,9 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        if usesAdaptiveLayout {
+            isViewerVisible = false
+        }
 
         let isLeavingViewer = isMovingFromParent || isBeingDismissed || navigationController?.isBeingDismissed == true
         if isLeavingViewer {
@@ -215,19 +355,22 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         )
     }
 
-    @objc func viewUnload() {
-        navigationController?.popViewController(animated: true)
+    private func viewUnload() {
+        guard let navigationController, navigationController.topViewController === self else { return }
+        isClosingTextEditor = false
+        navigationController.popViewController(animated: true)
     }
 
-    /// Leaves the Text editor the same way its own close button does: Text saves, closes its
-    /// session (which releases the file lock) and then posts "close", which calls viewUnload().
-    @objc private func closeTextEditor() {
-        guard !isClosingTextEditor else {
+    @objc private func closeEditor() {
+        guard editor == global.editorText else {
+            viewUnload()
             return
         }
+        guard !isClosingTextEditor else { return }
         isClosingTextEditor = true
 
-        let pressClose = """
+        // Text saves and releases its editing session before sending the close message.
+        let pressCloseButton = """
             (function () {
                 const button = document.querySelector('#direct-editor .icon-close');
                 if (!button) { return false; }
@@ -235,22 +378,51 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
                 return true;
             })();
             """
-        webView.evaluateJavaScript(pressClose) { [weak self] result, _ in
-            guard let self else {
+        webView.evaluateJavaScript(pressCloseButton) { [weak self] result, _ in
+            guard let self, self.isClosingTextEditor, (result as? Bool) != true else { return }
+            self.viewUnload()
+        }
+
+        // Keep navigation available even if the web view never responds.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+            guard let self, self.isClosingTextEditor else { return }
+            self.viewUnload()
+        }
+    }
+
+    private func toggleFavorite() {
+        guard !isUpdatingFavorite, metadata.status == global.metadataStatusNormal else { return }
+        isUpdatingFavorite = true
+
+        Task {
+            defer { isUpdatingFavorite = false }
+
+            let account = metadata.account
+            let ocId = metadata.ocId
+            let serverUrl = metadata.serverUrl
+            let fileName = metadata.fileNameView
+            let filePath = utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: serverUrl, session: session)
+            let favorite = !metadata.favorite
+            let result = await NextcloudKit.shared.setFavoriteTagAsync(filePath: filePath, favorite: favorite, account: account)
+            guard result.error == .success else {
+                nkLog(tag: global.logTagViewer, emoji: .error, message: "Direct Editing favorite: \(result.error.logDescription)", consoleOnly: true)
+                let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                await showErrorBanner(windowScene: windowScene, error: result.error, context: .favorite(fileName: fileName))
                 return
             }
-            // The editor has not loaded yet: there is no session to close.
-            guard (result as? Bool) == true else {
-                self.viewUnload()
-                return
-            }
-            // Text waits up to 2 seconds for a save. Never leave the user stuck if "close"
-            // does not arrive.
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
-                guard let self, self.navigationController?.topViewController === self else {
-                    return
-                }
-                self.viewUnload()
+
+            await database.setMetadataFavoriteAsync(ocId: ocId, favorite: favorite)
+            metadata.favorite = favorite
+
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferChange(networkingStatus: self.global.networkingStatusFavorite,
+                                        account: account,
+                                        fileName: fileName,
+                                        serverUrl: serverUrl,
+                                        selector: nil,
+                                        ocId: ocId,
+                                        destination: nil,
+                                        error: .success)
             }
         }
     }
@@ -308,6 +480,10 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
         case "loaded", "documentLoaded":
             print(mobileMessage.command)
+            if usesAdaptiveLayout, editor == global.editorText, message.frameInfo.isMainFrame, mobileMessage.command == "loaded" {
+                isTextReadyForFocus = true
+                requestFoldedTextFocus()
+            }
 
         case "paste":
             UIApplication.shared.sendAction(
@@ -486,6 +662,13 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     }
 
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        if usesAdaptiveLayout {
+            isTextReadyForFocus = false
+            didFinishEditorNavigation = false
+            foldFocusAttempt = nil
+            foldSeparatorView?.isHidden = true
+            view.setNeedsLayout()
+        }
         NCActivityIndicator.shared.start(backgroundView: view)
     }
 
@@ -495,6 +678,10 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         NCActivityIndicator.shared.stop()
+        if usesAdaptiveLayout {
+            didFinishEditorNavigation = true
+            view.setNeedsLayout()
+        }
     }
 
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: any Error) {
@@ -602,11 +789,12 @@ extension NCViewerDirectEditing: NCTransferDelegate {
                         destination: String?,
                         error: NKError) {
         Task {@MainActor in
-            if networkingStatus == NCGlobal.shared.networkingStatusFavorite,
-               self.metadata.ocId == ocId,
-               let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) {
-                self.metadata = metadata
-            }
+            guard networkingStatus == global.networkingStatusFavorite,
+                  metadata.account == account, metadata.ocId == ocId,
+                  let metadata = await database.getMetadataFromOcIdAsync(ocId),
+                  !isUpdatingFavorite else { return }
+
+            self.metadata = metadata
         }
     }
 }

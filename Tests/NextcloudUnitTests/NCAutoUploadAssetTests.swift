@@ -311,4 +311,16 @@ struct NCAutoUploadAssetTests {
         #expect(try await history(database).isEmpty)
         #expect(try await database.uploadedPhotoLibraryAssets(account: account).isEmpty)
     }
+
+    @Test("Unknown and large resources use host upload; known small resources can use PhotoKit")
+    func resourceSizeRouting() {
+        guard #available(iOS 27, *) else { return }
+        let limit = NCGlobal.shared.chunkSize
+        #expect(NCBackgroundUploadExtensionManager.requiresHostUpload(resourceSize: nil))
+        #expect(NCBackgroundUploadExtensionManager.requiresHostUpload(resourceSize: 2_000_000_000))
+        #expect(NCBackgroundUploadExtensionManager.requiresHostUpload(resourceSize: limit + 1))
+        #expect(!NCBackgroundUploadExtensionManager.requiresHostUpload(resourceSize: limit))
+        #expect(!NCBackgroundUploadExtensionManager.requiresHostUpload(resourceSize: 1_024))
+    }
+
 }

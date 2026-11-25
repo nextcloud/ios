@@ -114,5 +114,37 @@
 			<string>%d fotoğraf ve görüntü</string>
 		</dict>
 	</dict>
+	<key>_folders_count_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@folders@</string>
+		<key>folders</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>one</key>
+			<string>%ld klasör</string>
+			<key>other</key>
+			<string>%ld klasör</string>
+		</dict>
+	</dict>
+	<key>_files_count_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@files@</string>
+		<key>files</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>one</key>
+			<string>%ld dosya</string>
+			<key>other</key>
+			<string>%ld dosya</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

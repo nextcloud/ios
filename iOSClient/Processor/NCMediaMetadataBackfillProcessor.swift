@@ -176,12 +176,13 @@ final class NCMediaMetadataBackfillProcessor {
             }
 
             if pageOffset < searchResultLimit,
-               (!result.paginate || files.count < limit) {
+               !result.paginate || files.count < limit {
                 await database.completeMediaMetadataBackfillAsync(account: account.account)
                 return .completed(account: account.account, processed: processed, inserted: inserted, updated: updated)
             }
 
-            token = result.token
+            // Pages served from the server's cache may omit the token; it stays valid for the whole search.
+            token = result.token ?? token
         }
 
         guard let cursorDate = oldestProcessedDate else {

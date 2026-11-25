@@ -18,7 +18,7 @@ enum NCVideoVLCPresenter {
     // MARK: - Public API
     // Presents or updates the single VLC fullscreen controller.
     static func present(
-        metadata: tableMetadata,
+        metadata: NCMediaViewerItem,
         preparedPlayback: NCVideoVLCPreparedPlayback,
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
