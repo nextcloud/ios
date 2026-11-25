@@ -257,7 +257,7 @@ struct NCMediaViewerModelTests {
 
         metadata.account = "second-account"
         let otherItem = loader.item(from: metadata)
-        #expect(loader.appMetadata(for: otherItem)?.permissions == "")
+        #expect(model.appMetadata(for: otherItem)?.permissions == "")
         #expect(model.appMetadata(for: item)?.permissions == "RGDNVW")
     }
 
