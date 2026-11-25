@@ -28,6 +28,16 @@ class NCMedia: UIViewController {
     var attributesZoomOut: UIMenuElement.Attributes = []
     var showOnlyImages = false
     var showOnlyVideos = false
+    private var preferredDateSort: NCMediaNetwork.DateSort = .modified
+    var supportsCaptureDateSort: Bool {
+        guard let capabilities = networking.capabilities[session.account] else {
+            return false
+        }
+        return NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v33)
+    }
+    var dateSort: NCMediaNetwork.DateSort {
+        supportsCaptureDateSort ? preferredDateSort : .modified
+    }
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
     let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
@@ -165,7 +175,9 @@ class NCMedia: UIViewController {
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
         layout.overlaysSectionHeader = true
         collectionView.collectionViewLayout = layout
-        layoutType = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layoutType: global.mediaLayoutRatio).layout
+        let mediaLayout = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layoutType: global.mediaLayoutRatio)
+        layoutType = mediaLayout.layout
+        preferredDateSort = NCMediaNetwork.DateSort(rawValue: mediaLayout.sort) ?? .modified
 
         // Gradient Layer
         gradientLayer.startPoint = CGPoint(x: 0, y: 0)
@@ -202,7 +214,9 @@ class NCMedia: UIViewController {
                     return
                 }
 
-                self.layoutType = self.database.getLayoutForView(account: account, key: self.global.layoutViewMedia, serverUrl: "").layout
+                let mediaLayout = self.database.getLayoutForView(account: account, key: self.global.layoutViewMedia, serverUrl: "")
+                self.layoutType = mediaLayout.layout
+                self.preferredDateSort = NCMediaNetwork.DateSort(rawValue: mediaLayout.sort) ?? .modified
 
                 self.imageCache.removeAll()
                 self.dataSource.clearCompactMetadatas()
@@ -319,6 +333,22 @@ class NCMedia: UIViewController {
     }
 
     // MARK: - Timer search media
+
+    func setDateSort(_ dateSort: NCMediaNetwork.DateSort) async {
+        guard supportsCaptureDateSort, self.dateSort != dateSort else { return }
+
+        let account = session.account
+        preferredDateSort = dateSort
+        database.setLayoutForView(account: account, key: global.layoutViewMedia, serverUrl: "", sort: dateSort.rawValue)
+        buildDataSourceTask?.cancel()
+        await networkRemoveAll()
+        guard session.account == account, self.dateSort == dateSort else { return }
+
+        lastVisibleDateRange = nil
+        collectionView.setContentOffset(CGPoint(x: collectionView.contentOffset.x, y: -collectionView.adjustedContentInset.top), animated: false)
+        await loadDataSource()
+        searchNewMedia()
+    }
 
     func searchNewMedia() {
         timerSearchNewMedia?.invalidate()

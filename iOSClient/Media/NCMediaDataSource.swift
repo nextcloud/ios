@@ -17,6 +17,7 @@ extension NCMedia {
         }
 
         let account = self.session.account
+        let dateSort = self.dateSort
 
         guard !Task.isCancelled else {
             return
@@ -47,12 +48,12 @@ extension NCMedia {
 
         let compactMetadatas = await self.database.getMediaCompactMetadatasAsync(
             predicate: mediaPredicate,
-            sortedByKeyPath: "date",
-            ascending: false
+            dateSort: dateSort
         )
 
         guard !Task.isCancelled,
-              self.session.account == account else {
+              self.session.account == account,
+              self.dateSort == dateSort else {
             return
         }
 
@@ -78,7 +79,8 @@ extension NCMedia {
             }
 
             let dataSource = NCMediaDataSource(
-                compactMetadatas: compactMetadatas
+                compactMetadatas: compactMetadatas,
+                dateSort: dateSort
             )
 
             guard !Task.isCancelled else {
@@ -87,9 +89,10 @@ extension NCMedia {
 
             await MainActor.run {
                 guard !Task.isCancelled,
+                      self.dateSort == dateSort,
+                      self.session.account == account,
                       forced || (
                           self.isViewActived &&
-                          self.session.account == account &&
                           self.view.window != nil &&
                           self.isMediaPresentationActive
                       ) else {
@@ -101,6 +104,7 @@ extension NCMedia {
                 }
 
                 self.dataSource = dataSource
+                self.lastVisibleDateRange = nil
                 self.collectionViewReloadData()
             }
         }
@@ -222,9 +226,18 @@ extension NCMedia {
         }
 
         let account = self.session.account
+        let dateSort = self.dateSort
         guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
             return
         }
+
+        if self.dataSource.dateSort != dateSort {
+            await self.loadDataSource(forced: true)
+        }
+        guard !Task.isCancelled,
+              self.session.account == account,
+              self.dateSort == dateSort,
+              self.dataSource.dateSort == dateSort else { return }
 
         var firstDateNew = Date.distantFuture
         var lastDateNew = Date.distantPast
@@ -294,11 +307,14 @@ extension NCMedia {
             return
         }
 
-        // SEARCH NEW MEDIA WITH AN ACTIVE FILTER (VIDEOS OR IMAGES)
-        //
-        if self.showOnlyImages || self.showOnlyVideos,
-           distant || lastDateNew == .distantPast {
-            await searchEarlierFilteredMedia(mediaPath: tblAccount.mediaPath, account: account)
+        let hasFilter = self.showOnlyImages || self.showOnlyVideos
+        if dateSort == .captured, hasFilter, visibleCells.isEmpty {
+            await searchEarlierMedia(mediaPath: tblAccount.mediaPath, account: account, dateSort: dateSort, fromLatest: true)
+            return
+        }
+        if (dateSort == .modified && hasFilter && (distant || lastDateNew == .distantPast))
+            || (dateSort == .captured && firstDateNew != .distantFuture && lastDateNew == .distantPast) {
+            await searchEarlierMedia(mediaPath: tblAccount.mediaPath, account: account, dateSort: dateSort)
             return
         }
 
@@ -308,7 +324,8 @@ extension NCMedia {
             await self.searchNetworkNewMedia(firstDate: firstDateNew,
                                              lastDate: lastDateNew,
                                              mediaPath: tblAccount.mediaPath,
-                                             account: account) { [weak self] in
+                                             account: account,
+                                             dateSort: dateSort) { [weak self] in
                 Task { [weak self] in
                     guard let self else {
                         return
@@ -329,6 +346,7 @@ extension NCMedia {
         guard !Task.isCancelled,
               self.isViewActived,
               self.session.account == account,
+              self.dateSort == dateSort,
               let firstVisibleCellDate,
               let lastVisibleCellDate else {
             return
@@ -342,6 +360,7 @@ extension NCMedia {
                                       lastDate: lastVisibleCellDate,
                                       mediaPath: tblAccount.mediaPath,
                                       account: account,
+                                      dateSort: dateSort,
                                       limit: verificationLimit) { [weak self] in
             Task { [weak self] in
                 guard let self else {
@@ -361,13 +380,19 @@ extension NCMedia {
     }
 
     /// Fetches both media types so switching filters never leaves a hole in the local timeline.
-    private func searchEarlierFilteredMedia(mediaPath: String, account: String) async {
+    private func searchEarlierMedia(mediaPath: String,
+                                    account: String,
+                                    dateSort: NCMediaNetwork.DateSort,
+                                    fromLatest: Bool = false) async {
         let onlyImages = self.showOnlyImages
         let onlyVideos = self.showOnlyVideos
-        let visibleOldestDate = self.dataSource.compactMetadatas.last?.date
-        let predicate = NCMedia.getMediaPredicate(session: self.session, mediaPath: mediaPath, showOnlyImages: false, showOnlyVideos: false)
-        let cachedMedia = await self.database.getMediaCompactMetadatasAsync(predicate: predicate, sortedByKeyPath: "date", ascending: false)
-        var upperDate = cachedMedia.last?.date ?? .distantFuture
+        let visibleOldestDate = fromLatest ? nil : self.dataSource.compactMetadatas.last?.date
+        var upperDate = Date.distantFuture
+        if !fromLatest {
+            let predicate = NCMedia.getMediaPredicate(session: self.session, mediaPath: mediaPath, showOnlyImages: false, showOnlyVideos: false)
+            let cachedMedia = await self.database.getMediaCompactMetadatasAsync(predicate: predicate, dateSort: dateSort)
+            upperDate = cachedMedia.last?.date ?? .distantFuture
+        }
         let pageSize = await MainActor.run {
             max(self.collectionView.visibleCells.count * 3, 300)
         }
@@ -376,6 +401,7 @@ extension NCMedia {
         while !Task.isCancelled,
               self.isViewActived,
               self.session.account == account,
+              self.dateSort == dateSort,
               self.showOnlyImages == onlyImages,
               self.showOnlyVideos == onlyVideos {
             var receivedFiles: [NKFile] = []
@@ -384,6 +410,7 @@ extension NCMedia {
                 firstDate: upperDate,
                 lastDate: .distantPast,
                 account: account,
+                dateSort: dateSort,
                 paginate: false,
                 limit: limit) { _ in
             } update: { files in
@@ -393,11 +420,13 @@ extension NCMedia {
             guard !Task.isCancelled,
                   self.isViewActived,
                   self.session.account == account,
+                  self.dateSort == dateSort,
                   self.showOnlyImages == onlyImages,
                   self.showOnlyVideos == onlyVideos,
-                  let oldestDate = receivedFiles.last?.date else {
+                  let oldestFile = receivedFiles.last else {
                 return
             }
+            let oldestDate = dateSort.date(for: oldestFile)
 
             // Keep the boundary inclusive: several files can have the same timestamp.
             await self.updateMediaMetadatas(
@@ -406,18 +435,21 @@ extension NCMedia {
                 lastDate: oldestDate as NSDate,
                 mediaPath: mediaPath,
                 account: account,
+                dateSort: dateSort,
                 verifyDeletions: false,
                 update: { })
             await self.loadDataSource()
 
             let foundMatchingMedia = receivedFiles.contains { file in
-                guard file.hasPreview, visibleOldestDate.map({ file.date < $0 }) ?? true else {
+                guard file.hasPreview,
+                      visibleOldestDate.map({ dateSort.date(for: file) < $0 }) ?? true else {
                     return false
                 }
                 if onlyVideos {
-                    return file.classFile == NKTypeClassFile.video.rawValue
+                    return file.classFile == NKTypeClassFile.video.rawValue && file.livePhotoFile.isEmpty
                 }
-                return file.classFile == NKTypeClassFile.image.rawValue || (file.classFile == NKTypeClassFile.video.rawValue && !file.livePhotoFile.isEmpty)
+                return file.classFile == NKTypeClassFile.image.rawValue
+                    || (!onlyImages && file.classFile == NKTypeClassFile.video.rawValue && file.livePhotoFile.isEmpty)
             }
             if foundMatchingMedia || receivedFiles.count < limit {
                 return
@@ -439,6 +471,7 @@ extension NCMedia {
                                         lastDate: Date,
                                         mediaPath: String,
                                         account: String,
+                                        dateSort: NCMediaNetwork.DateSort,
                                         update: @escaping () -> Void) async {
         let limit = await MainActor.run {
             max(self.collectionView.visibleCells.count * 3, 300)
@@ -449,11 +482,13 @@ extension NCMedia {
             firstDate: firstDate,
             lastDate: lastDate,
             account: account,
+            dateSort: dateSort,
             paginate: false,
             limit: limit) { _ in
             } update: { files in
                 guard !Task.isCancelled,
-                      self.session.account == account else {
+                      self.session.account == account,
+                      self.dateSort == dateSort else {
                     return
                 }
 
@@ -462,7 +497,9 @@ extension NCMedia {
                     firstDate: firstDate as NSDate,
                     lastDate: lastDate as NSDate,
                     mediaPath: mediaPath,
-                    account: account
+                    account: account,
+                    dateSort: dateSort,
+                    verifyDeletions: dateSort == .modified
                 ) {
                     guard !Task.isCancelled,
                           self.session.account == account else {
@@ -482,6 +519,7 @@ extension NCMedia {
                                      lastDate: Date,
                                      mediaPath: String,
                                      account: String,
+                                     dateSort: NCMediaNetwork.DateSort,
                                      limit: Int,
                                      update: @escaping () -> Void,
                                      finish: @escaping () -> Void) async {
@@ -490,23 +528,26 @@ extension NCMedia {
             firstDate: firstDate,
             lastDate: lastDate,
             account: account,
+            dateSort: dateSort,
             paginate: true,
             limit: limit) { _ in
             } update: { files in
                 guard !Task.isCancelled,
-                      self.session.account == account else {
+                      self.session.account == account,
+                      self.dateSort == dateSort else {
                     return
                 }
 
-                let pageFirstDate = (files.first?.date as? NSDate) ?? firstDate as NSDate
-                let pageLastDate = (files.last?.date as? NSDate) ?? lastDate as NSDate
+                let pageFirstDate = files.first.map { dateSort.date(for: $0) } ?? firstDate
+                let pageLastDate = files.last.map { dateSort.date(for: $0) } ?? lastDate
 
                 await self.updateMediaMetadatas(
                     files: files,
-                    firstDate: pageFirstDate,
-                    lastDate: pageLastDate,
+                    firstDate: pageFirstDate as NSDate,
+                    lastDate: pageLastDate as NSDate,
                     mediaPath: mediaPath,
-                    account: account
+                    account: account,
+                    dateSort: dateSort
                 ) {
                     guard !Task.isCancelled,
                           self.session.account == account else {
@@ -527,10 +568,12 @@ extension NCMedia {
                                       lastDate: NSDate,
                                       mediaPath: String,
                                       account: String,
+                                      dateSort: NCMediaNetwork.DateSort,
                                       verifyDeletions: Bool = true,
                                       update: @escaping () -> Void) async {
         guard !Task.isCancelled,
-              self.session.account == account else {
+              self.session.account == account,
+              self.dateSort == dateSort else {
             return
         }
         // DB
@@ -540,12 +583,9 @@ extension NCMedia {
             showOnlyImages: false,
             showOnlyVideos: false)
         let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-            NSPredicate(format: "date >= %@ AND date <= %@", lastDate, firstDate), mediaPredicate
+            NSPredicate(format: "%K >= %@ AND %K <= %@", dateSort.rawValue, lastDate, dateSort.rawValue, firstDate), mediaPredicate
         ])
-        let metadatas = await self.database.getMetadatasAsync(
-            predicate: predicate,
-            sortedByKeyPath: "date",
-            ascending: false) ?? []
+        let metadatas = verifyDeletions ? await self.database.getMetadatasAsync(predicate: predicate) : []
         guard !Task.isCancelled,
               self.session.account == account else {
             return
@@ -731,6 +771,7 @@ public class NCMediaDataSource: NSObject {
     private let global = NCGlobal.shared
     private(set) var compactMetadatas: [NCCompactMetadata] = []
     private(set) var sections: [NCMediaSection] = []
+    private(set) var dateSort: NCMediaNetwork.DateSort = .modified
 
     var availableYearMonths: [NCYearMonth] {
         sections.map(\.yearMonth)
@@ -738,9 +779,10 @@ public class NCMediaDataSource: NSObject {
 
     override init() { super.init() }
 
-    init(compactMetadatas: [NCCompactMetadata]) {
+    init(compactMetadatas: [NCCompactMetadata], dateSort: NCMediaNetwork.DateSort = .modified) {
         super.init()
 
+        self.dateSort = dateSort
         let result = makeDataSource(from: compactMetadatas)
 
         self.compactMetadatas = result.compactMetadatas
@@ -817,7 +859,8 @@ public class NCMediaDataSource: NSObject {
     // MARK: -
 
     func hasSameContent(as otherDataSource: NCMediaDataSource) -> Bool {
-        guard compactMetadatas.count == otherDataSource.compactMetadatas.count else {
+        guard dateSort == otherDataSource.dateSort,
+              compactMetadatas.count == otherDataSource.compactMetadatas.count else {
             return false
         }
 

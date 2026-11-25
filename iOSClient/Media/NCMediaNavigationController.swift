@@ -117,6 +117,21 @@ class NCMediaNavigationController: NCMainNavigationController {
             }
         ])
 
+        let dateSortMenu = UIDeferredMenuElement.uncached { [weak media] completion in
+            guard let media, media.supportsCaptureDateSort else {
+                completion([])
+                return
+            }
+
+            let modified = UIAction(title: NSLocalizedString("_media_date_modified_", comment: ""), state: media.dateSort == .modified ? .on : .off) { _ in
+                Task { await media.setDateSort(.modified) }
+            }
+            let captured = UIAction(title: NSLocalizedString("_media_date_captured_", comment: ""), state: media.dateSort == .captured ? .on : .off) { _ in
+                Task { await media.setDateSort(.captured) }
+            }
+            completion([UIMenu(title: NSLocalizedString("_order_by_", comment: ""), image: UIImage(systemName: "arrow.up.arrow.down"), options: .singleSelection, children: [modified, captured])])
+        }
+
         let viewLayoutMenu = UIMenu(title: "", options: .displayInline, children: [
             UIDeferredMenuElement.uncached { [weak self] completion in
                 guard let self else {
@@ -261,7 +276,7 @@ class NCMediaNavigationController: NCMainNavigationController {
             options: .displayInline,
             children: actionsInEditMode
         )
-        return UIMenu(title: "", children: !media.isEditMode ? [select, viewFilterMenu, viewLayoutMenu, viewFolderMedia, playFile, playURL] : [cancel, selectAll, editModeMenu])
+        return UIMenu(title: "", children: !media.isEditMode ? [select, viewFilterMenu, dateSortMenu, viewLayoutMenu, viewFolderMedia, playFile, playURL] : [cancel, selectAll, editModeMenu])
     }
 
     // MARK: - Album related handling

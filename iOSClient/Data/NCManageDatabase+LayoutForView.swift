@@ -26,7 +26,8 @@ extension NCManageDatabase {
     func setLayoutForView(account: String,
                           key: String,
                           serverUrl: String,
-                          layout: String? = nil) {
+                          layout: String? = nil,
+                          sort: String? = nil) {
         let keyStore = serverUrl.isEmpty ? key : serverUrl
         let indexKey = account + " " + keyStore
         var finalObject = NCDBLayoutForView()
@@ -41,6 +42,9 @@ extension NCManageDatabase {
             }
             if let layout {
                 finalObject.layout = layout
+            }
+            if let sort {
+                finalObject.sort = sort
             }
 
             realm.add(finalObject, update: .all)

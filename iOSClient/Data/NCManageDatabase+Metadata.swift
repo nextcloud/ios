@@ -590,7 +590,6 @@ extension NCManageDatabase {
                     remote.autoUploadServerUrlBase = metadata.autoUploadServerUrlBase
                     remote.sessionSelector = metadata.sessionSelector
                     remote.uploadDate = NSDate()
-                    remote.datePhotosOriginal = metadata.datePhotosOriginal
                     remote.nativeFormat = metadata.nativeFormat
                     remote.height = metadata.height
                     remote.width = metadata.width
@@ -960,107 +959,52 @@ extension NCManageDatabase {
             return (0, 0, [])
         }
 
-        // Build lookup maps for fast diffing.
-        // Using merge strategy avoids crashes when duplicated ocIds are present.
-        let filesByOcId: [String: NKFile] = Dictionary(
-            files.map { ($0.ocId, $0) },
-            uniquingKeysWith: { _, new in new }
-        )
+        let filesByOcId = Dictionary(files.map { ($0.ocId, $0) }, uniquingKeysWith: { _, new in new })
+        let deleted = metadatas.filter { filesByOcId[$0.ocId] == nil }
+        let counts = await core.performRealmWriteWithResultAsync { realm in
+            let existing = realm.objects(tableMetadata.self).filter("ocId IN %@", Array(filesByOcId.keys))
+            let metadatasByOcId = Dictionary(uniqueKeysWithValues: existing.map { ($0.ocId, $0) })
+            let createMetadata = NCManageDatabaseCreateMetadata()
+            var inserted = 0
+            var updated = 0
 
-        // Store detached copies because returned metadata objects must remain usable
-        // outside the Realm lifecycle.
-        let metadatasByOcId: [String: tableMetadata] = Dictionary(
-            metadatas.map { ($0.ocId, $0.detachedCopy()) },
-            uniquingKeysWith: { _, new in new }
-        )
-
-        let fileOcIds = Set(filesByOcId.keys)
-        let metadataOcIds = Set(metadatasByOcId.keys)
-
-        // INSERT: Remote files that are not present in the local date-window metadata list.
-        let toInsertOcIds = fileOcIds.subtracting(metadataOcIds)
-
-        // DELETE CANDIDATES: Local metadata entries that are no longer present
-        // in the current remote date-window result.
-        // They are returned to the caller and must be validated/deleted outside this function.
-        let toDeleteOcIds = metadataOcIds.subtracting(fileOcIds)
-
-        let deletedMetadatas: [tableMetadata] = toDeleteOcIds.compactMap { ocId in
-            metadatasByOcId[ocId]
-        }
-
-        // UPDATE: Refresh lightweight fields and permissions, even when the etag is unchanged.
-        let toUpdateOcIds: [String] = Array(fileOcIds.intersection(metadataOcIds)).filter { ocId in
-            guard let file = filesByOcId[ocId],
-                  let metadata = metadatasByOcId[ocId] else {
-                return false
-            }
-
-            return file.etag != metadata.etag ||
-                (!file.permissions.isEmpty && file.permissions != metadata.permissions)
-        }
-
-        let hasChanges = !toInsertOcIds.isEmpty ||
-                         !toUpdateOcIds.isEmpty
-
-        guard hasChanges else {
-            return (
-                inserted: 0,
-                updated: 0,
-                deleted: deletedMetadatas
-            )
-        }
-
-        let createMetadata = NCManageDatabaseCreateMetadata()
-
-        await core.performRealmWriteAsync { realm in
-            // MODIFY: Update lightweight fields for existing placeholder metadata entries.
-            if !toUpdateOcIds.isEmpty {
-                let resultsToModify = realm.objects(tableMetadata.self)
-                    .filter("ocId IN %@", Array(toUpdateOcIds))
-
-                for metadata in resultsToModify {
-                    guard let file = filesByOcId[metadata.ocId] else {
-                        continue
-                    }
-
-                    metadata.etag = file.etag
-                    metadata.date = file.date as NSDate
-
-                    // Preserve known permissions if the response omits this property.
-                    if !file.permissions.isEmpty {
-                        metadata.permissions = file.permissions
-                    }
-
-                    if let date = file.creationDate as? NSDate {
-                        metadata.creationDate = date
-                    }
-                }
-            }
-
-            // INSERT: Add placeholder metadata entries for files not currently present in the local date-window metadata list.
-            if !toInsertOcIds.isEmpty {
-                let insertedMetadatas: [tableMetadata] = toInsertOcIds.compactMap { ocId in
-                    guard let file = filesByOcId[ocId] else {
-                        return nil
-                    }
-
-                    let metadata = createMetadata.createMetadata(file)
-                    metadata.placeholder = true
-                    return metadata
+            for (ocId, file) in filesByOcId {
+                guard let metadata = metadatasByOcId[ocId] else {
+                    let placeholder = createMetadata.createMetadata(file)
+                    placeholder.placeholder = true
+                    realm.add(placeholder)
+                    inserted += 1
+                    continue
                 }
 
-                if !insertedMetadatas.isEmpty {
-                    realm.add(insertedMetadatas, update: .modified)
+                let captureDate = file.datePhotosOriginal ?? file.date
+                let permissionsChanged = !file.permissions.isEmpty && file.permissions != metadata.permissions
+                guard file.etag != metadata.etag ||
+                      file.date != metadata.date as Date ||
+                      captureDate != metadata.datePhotosOriginal as Date ||
+                      permissionsChanged else {
+                    continue
                 }
+
+                metadata.etag = file.etag
+                metadata.date = file.date as NSDate
+                metadata.datePhotosOriginal = captureDate as NSDate
+                if permissionsChanged {
+                    metadata.permissions = file.permissions
+                }
+                if let date = file.creationDate {
+                    metadata.creationDate = date as NSDate
+                }
+                updated += 1
             }
+
+            return (inserted, updated)
         }
 
-        return (
-            inserted: toInsertOcIds.count,
-            updated: toUpdateOcIds.count,
-            deleted: deletedMetadatas
-        )
+        guard let counts else {
+            return (0, 0, [])
+        }
+        return (counts.0, counts.1, deleted)
     }
 
     // MARK: - Realm Read
@@ -1714,16 +1658,12 @@ extension NCManageDatabase {
 #if !EXTENSION
     func getMediaCompactMetadatasAsync(
         predicate: NSPredicate,
-        sortedByKeyPath: String,
-        ascending: Bool = false
+        dateSort: NCMediaNetwork.DateSort
     ) async -> [NCMediaDataSource.NCCompactMetadata] {
         await core.performRealmReadAsync { realm in
             let results = realm.objects(tableMetadata.self)
                 .filter(predicate)
-                .sorted(
-                    byKeyPath: sortedByKeyPath,
-                    ascending: ascending
-                )
+                .sorted(byKeyPath: dateSort.rawValue, ascending: false)
 
             let allFileIds = Set(results.map(\.fileId))
 
@@ -1749,7 +1689,7 @@ extension NCManageDatabase {
 
                 compactMetadatas.append(
                     NCMediaDataSource.NCCompactMetadata(
-                        date: metadata.date as Date,
+                        date: (dateSort == .captured ? metadata.datePhotosOriginal : metadata.date) as Date,
                         etag: metadata.etag,
                         imageSize: CGSize(
                             width: metadata.width,

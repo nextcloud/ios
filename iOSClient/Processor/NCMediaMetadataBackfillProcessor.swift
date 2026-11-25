@@ -136,13 +136,11 @@ final class NCMediaMetadataBackfillProcessor {
 
             // Keep hidden files in the raw page count and cursor calculation because
             // Nextcloud applies pagination before NextcloudKit filters them locally.
-            let visibleFiles = files.filter { !isHiddenFile($0) }
-            let ocIds = visibleFiles.map(\.ocId)
-            let metadatas = await database.getMetadatasFromOcIdsAsync(ocIds)
+            let visibleFiles = files.filter { !NCMediaNetwork.isHiddenFile($0) }
 
             let resultPlaceholders = await database.syncPlaceholderMetadatasAsync(
                 files: visibleFiles,
-                metadatas: metadatas
+                metadatas: []
             )
 
             processed += files.count
@@ -217,12 +215,6 @@ final class NCMediaMetadataBackfillProcessor {
         )
     }
 
-    /// Mirrors NextcloudKit's hidden-path filtering without changing the raw paginated result count.
-    private func isHiddenFile(_ file: NKFile) -> Bool {
-        let pathComponents = (file.path as NSString).pathComponents + [file.fileName]
-        return pathComponents.contains { $0.hasPrefix(".") }
-    }
-
     /// Executes a single paginated media search and handles task cancellation.
     private func runSearch(mediaPath: String,
                            account: String,
@@ -263,13 +255,12 @@ final class NCMediaMetadataBackfillProcessor {
         let elementDate = "d:" + NCGlobal.shared.mediaPropOrder
         let lessDateString = firstDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
         let greaterDateString = Date.distantPast.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
-        let httpBodyString = String(format: NCMediaNetwork().getRequestBodySearchMedia(
+        let httpBodyString = NCMediaNetwork().getRequestBodySearchMedia(
             href: href,
             elementDate: elementDate,
             lessDate: lessDateString,
             greaterDate: greaterDateString,
             limit: String(searchResultLimit))
-        )
 
         guard let httpBody = httpBodyString.data(using: .utf8) else {
             return (nil, nil, false, NKError(errorCode: NCGlobal.shared.errorPreconditionFailed, errorDescription: "Body error for account: \(account)"))
