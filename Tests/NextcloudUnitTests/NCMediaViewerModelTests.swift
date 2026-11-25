@@ -523,7 +523,8 @@ struct NCMediaViewerModelTests {
         let url = URL(fileURLWithPath: services.originalPath(for: item))
         try Data().write(to: url)
         #expect(await loader.localMediaURL(for: item) == nil)
-        #expect(!FileManager.default.fileExists(atPath: url.path))
+        // The empty placeholder required by the File Provider extension is preserved.
+        #expect(fileSize(at: url) == 0)
         #expect(try await loader.downloadMedia(for: item) == url)
         #expect(try await loader.downloadMedia(for: item) == url)
         #expect(await services.downloadCounts[item.ocId] == 1)
@@ -574,7 +575,8 @@ struct NCMediaViewerModelTests {
         let jpgURL = URL(fileURLWithPath: services.originalPath(for: jpg))
         try Data([1]).write(to: jpgURL)
         #expect(await loader.localMediaURL(for: jpg) == nil)
-        #expect(!FileManager.default.fileExists(atPath: jpgURL.path))
+        // The undecodable content is discarded, leaving the File Provider placeholder.
+        #expect(fileSize(at: jpgURL) == 0)
     }
 
     @Test("On metered networks neighbors keep previews and only the selected page downloads its original")
@@ -614,6 +616,10 @@ struct NCMediaViewerModelTests {
             try await Task.sleep(for: .milliseconds(1))
         }
         #expect(showsPreviewOnly())
+    }
+
+    private func fileSize(at url: URL) -> Int64? {
+        (try? FileManager.default.attributesOfItem(atPath: url.path)[.size] as? NSNumber)?.int64Value
     }
 
     private func bufferItems() -> [NCMediaViewerItem] {

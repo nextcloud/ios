@@ -138,7 +138,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, Sendable {
         let validateAsImage = metadata.classFile == NKTypeClassFile.image.rawValue && metadata.fileExtension.lowercased() != "svg"
 
         guard isValidLocalFile(path: localPath, validateAsImage: validateAsImage) else {
-            removeInvalidLocalFileIfNeeded(path: localPath, validateAsImage: validateAsImage)
+            discardInvalidOriginalIfNeeded(path: localPath, validateAsImage: validateAsImage)
             return nil
         }
 
@@ -236,6 +236,20 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, Sendable {
         }
 
         try? fileManager.removeItem(atPath: path)
+    }
+
+    /// The File Provider extension relies on an empty placeholder at the original path:
+    /// never remove it. A non-empty file that fails validation is reset to that placeholder.
+    private func discardInvalidOriginalIfNeeded(path: String, validateAsImage: Bool) {
+        guard !path.isEmpty,
+              let attributes = try? fileManager.attributesOfItem(atPath: path),
+              let fileSize = attributes[.size] as? NSNumber,
+              fileSize.int64Value > 0,
+              !isValidLocalFile(path: path, validateAsImage: validateAsImage) else {
+            return
+        }
+
+        try? Data().write(to: URL(fileURLWithPath: path), options: .atomic)
     }
 }
 
