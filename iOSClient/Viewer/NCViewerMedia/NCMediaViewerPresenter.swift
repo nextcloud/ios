@@ -28,7 +28,7 @@ import UIKit
 ///    page states, metadata cache, prefetching, autoplay requests, and routes
 ///    media into image, audio, video, or generic states.
 ///
-/// 5. `NCNextcloudMediaViewerLoader`
+/// 5. `NCMediaViewerLoader` and its app services
 ///    Loader layer. Resolves metadata, preview URLs, local media URLs, full media
 ///    downloads, and Live Photo companion media.
 ///
@@ -460,9 +460,7 @@ final class NCMediaViewerPresenter: NSObject {
 
         case .deleted,
              .idle,
-             .loadingMetadata,
-             .metadataMissing,
-             .checkingLocalFile:
+             .metadataMissing:
             return nil
         }
     }

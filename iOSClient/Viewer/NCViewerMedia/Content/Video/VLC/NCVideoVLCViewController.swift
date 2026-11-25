@@ -42,13 +42,14 @@ final class NCVideoVLCViewController: UIViewController {
 
     func configureAdaptivePaging(model: NCMediaViewerModel?, onSelectPage: ((_ index: Int) -> Void)?) {
         mediaViewerModel = model
+        normalControlsView.setPlaybackProgressTint(model?.playbackProgressTint(metadata.account) ?? .accentColor)
         self.onSelectPage = onSelectPage
         updateAdaptivePagingIfFolded()
     }
 
     private func updateAdaptivePagingIfFolded() {
         guard (viewIfLoaded as? NCMediaAdaptiveLayoutView)?.isFoldedLayout == true else { return }
-        adaptiveControlsView.setFileName(metadata.fileNameView.isEmpty ? metadata.fileName : metadata.fileNameView, account: metadata.account)
+        adaptiveControlsView.setFileName(metadata.fileNameView.isEmpty ? metadata.fileName : metadata.fileNameView, playbackProgressTint: mediaViewerModel?.playbackProgressTint(metadata.account) ?? .accentColor)
         adaptiveControlsView.configurePaging(model: mediaViewerModel, onSelectPage: { [weak self] index in self?.onSelectPage?(index) })
     }
 
@@ -330,7 +331,7 @@ final class NCVideoVLCViewController: UIViewController {
     }
 
     private func updateTitleLabel(metadata: NCMediaViewerItem) {
-        normalControlsView.setAccount(metadata.account)
+        normalControlsView.setPlaybackProgressTint(mediaViewerModel?.playbackProgressTint(metadata.account) ?? .accentColor)
         let primaryTitle = metadata.fileNameView.isEmpty
             ? metadata.fileName
             : metadata.fileNameView

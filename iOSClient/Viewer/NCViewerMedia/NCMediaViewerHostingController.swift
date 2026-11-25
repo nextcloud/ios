@@ -452,7 +452,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     }
 
     /// Presents the SwiftUI media detail panel.
-    private func presentDetailView(metadata: NCMediaViewerItem, index: Int, exif: ExifData, animated: Bool) {
+    private func presentDetailView(metadata: NCMediaViewerItem, index: Int, exif: NCExifData, animated: Bool) {
         let detailView = NCMediaViewerDetailView(metadata: metadata, exif: exif)
 
         // Only images have inline information. Audio/video keep the standard Info sheet.

@@ -184,7 +184,7 @@ struct PhotosGridView: View {
         let model = NCMediaViewerModel(
             currentMetadata: selected,
             ocIds: ocIds,
-            session: NCSession.shared.getSession(account: account),
+            account: account,
             loader: NCMediaViewerLoader()
         )
         NCMediaViewerPresenter.shared.show(

@@ -5,9 +5,10 @@
 import Foundation
 @testable import Nextcloud
 
-/// In-memory media storage with controllable downloads; never touches disk or a server.
-actor NCMediaViewerTestLoader: NCMediaViewerLoading {
+/// Controllable media storage; optional temporary files exercise the common loader without a server.
+actor NCMediaViewerTestLoader: NCMediaViewerLoading, NCMediaViewerServices {
     let items: [String: NCMediaViewerItem]
+    let storageDirectory: URL?
     private(set) var originals = Set<String>()
     private(set) var liveOriginals = Set<String>()
     private(set) var downloadCounts: [String: Int] = [:]
@@ -18,7 +19,8 @@ actor NCMediaViewerTestLoader: NCMediaViewerLoading {
     private var pendingMetadata: [String: CheckedContinuation<NCMediaViewerItem?, Never>] = [:]
     private var pending: [String: CheckedContinuation<URL, Error>] = [:]
 
-    init(items: [NCMediaViewerItem], pausedOcIds: Set<String> = [], pausedMetadataOcIds: Set<String> = [], pausedReleaseOcIds: Set<String> = []) {
+    init(items: [NCMediaViewerItem], pausedOcIds: Set<String> = [], pausedMetadataOcIds: Set<String> = [], pausedReleaseOcIds: Set<String> = [], storageDirectory: URL? = nil) {
+        self.storageDirectory = storageDirectory
         self.items = Dictionary(uniqueKeysWithValues: items.map { ($0.ocId, $0) })
         self.pausedOcIds = pausedOcIds
         self.pausedReleaseOcIds = pausedReleaseOcIds
@@ -77,6 +79,7 @@ actor NCMediaViewerTestLoader: NCMediaViewerLoading {
         }
         originals.remove(metadata.ocId)
         liveOriginals.remove(metadata.ocId)
+        if storageDirectory != nil { try? FileManager.default.removeItem(atPath: originalPath(for: metadata)) }
     }
     func localLivePhotoURL(for metadata: NCMediaViewerItem) async -> URL? {
         liveOriginals.contains(metadata.ocId) ? URL(fileURLWithPath: "/original/\(metadata.ocId).mov") : nil
@@ -87,11 +90,28 @@ actor NCMediaViewerTestLoader: NCMediaViewerLoading {
         return await localLivePhotoURL(for: metadata)
     }
     func cancelLivePhotoMediaDownload(for metadata: NCMediaViewerItem) async { }
+    nonisolated func originalPath(for item: NCMediaViewerItem) -> String {
+        (storageDirectory ?? URL(fileURLWithPath: "/original")).appendingPathComponent(item.ocId).path
+    }
+    nonisolated func previewPath(for item: NCMediaViewerItem, ext: String) -> String {
+        originalPath(for: item) + ".preview"
+    }
+    nonisolated func storePreview(_ data: Data, for item: NCMediaViewerItem) { }
+    nonisolated func livePhotoMetadata(for item: NCMediaViewerItem) -> NCMediaViewerItem? {
+        items[item.livePhotoFile]
+    }
+    func download(for item: NCMediaViewerItem, isLivePhoto: Bool, taskHandler: @escaping @Sendable (URLSessionTask) -> Void) async throws -> NCMediaViewerItem {
+        _ = try await downloadMedia(for: item, onDownloadStarted: nil)
+        guard let storageDirectory else { throw URLError(.unsupportedURL) }
+        try FileManager.default.createDirectory(at: storageDirectory, withIntermediateDirectories: true)
+        try Data([1]).write(to: URL(fileURLWithPath: originalPath(for: item)))
+        return item
+    }
     nonisolated func fileProviderStorageExists(for metadata: NCMediaViewerItem) -> Bool { false }
     nonisolated func videoSubtitleTrack(for metadata: NCMediaViewerItem) -> Int? { nil }
     nonisolated func videoAudioTrack(for metadata: NCMediaViewerItem) -> Int? { nil }
     nonisolated func saveVideoSubtitleTrack(_ index: Int, for metadata: NCMediaViewerItem) { }
     nonisolated func saveVideoAudioTrack(_ index: Int, for metadata: NCMediaViewerItem) { }
     @MainActor
-    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (ExifData) -> Void) { completion(ExifData()) }
+    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (NCExifData) -> Void) { completion(NCExifData()) }
 }

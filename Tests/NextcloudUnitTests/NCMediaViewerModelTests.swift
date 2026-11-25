@@ -243,7 +243,7 @@ struct NCMediaViewerModelTests {
         let loader = NCMediaViewerLoader()
         let model = NCMediaViewerModel(
             currentMetadata: metadata, ocIds: [metadata.ocId],
-            session: NCSession().getSession(account: ""), loader: loader
+            account: "", loader: loader
         )
         let item = try #require(model.selectedMetadata)
         metadata.permissions = ""
@@ -257,7 +257,7 @@ struct NCMediaViewerModelTests {
 
         metadata.account = "second-account"
         let otherItem = loader.item(from: metadata)
-        #expect(loader.appMetadata(for: otherItem)?.permissions == "")
+        #expect(model.appMetadata(for: otherItem)?.permissions == "")
         #expect(model.appMetadata(for: item)?.permissions == "RGDNVW")
     }
 
@@ -266,7 +266,7 @@ struct NCMediaViewerModelTests {
         let items = bufferItems()
         let loader = NCMediaViewerTestLoader(items: items)
         let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
-                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+                                       account: items[0].account, loader: loader)
         await model.loadSelectedPageIfNeeded()
         try await waitForOriginals(Set((0...5).map(String.init)), in: loader)
 
@@ -293,7 +293,7 @@ struct NCMediaViewerModelTests {
         let items = bufferItems()
         let loader = NCMediaViewerTestLoader(items: items, pausedOcIds: ["0"])
         let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
-                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+                                       account: items[0].account, loader: loader)
         let loading = Task { await model.loadSelectedPageIfNeeded() }
         try await waitForOriginals(Set((1...5).map(String.init)), in: loader)
         try await waitForPendingDownload("0", in: loader)
@@ -311,7 +311,7 @@ struct NCMediaViewerModelTests {
         let items = bufferItems()
         let loader = NCMediaViewerTestLoader(items: items, pausedOcIds: ["0"])
         let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
-                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+                                       account: items[0].account, loader: loader)
         let loading = Task { await model.loadSelectedPageIfNeeded() }
         try await waitForPendingDownload("0", in: loader)
         model.finishPageTransition(at: 6)
@@ -343,7 +343,7 @@ struct NCMediaViewerModelTests {
         let items = bufferItems()
         let loader = NCMediaViewerTestLoader(items: items, pausedMetadataOcIds: ["1", "12"])
         let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
-                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+                                       account: items[0].account, loader: loader)
         let first = Task { await model.displayPreviewPage(at: 1) }
         try await waitForPendingMetadata("1", in: loader)
         let latest = Task { await model.displayPreviewPage(at: 12) }
@@ -363,7 +363,7 @@ struct NCMediaViewerModelTests {
         let items = bufferItems()
         let loader = NCMediaViewerTestLoader(items: items, pausedMetadataOcIds: ["12"])
         let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
-                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+                                       account: items[0].account, loader: loader)
         let pending = Task { await model.displayPreviewPage(at: 12) }
         try await waitForPendingMetadata("12", in: loader)
         await model.displayPreviewPage(at: 0)
@@ -386,7 +386,7 @@ struct NCMediaViewerModelTests {
         let items = bufferItems()
         let loader = NCMediaViewerTestLoader(items: items, pausedReleaseOcIds: ["0"])
         let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
-                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+                                       account: items[0].account, loader: loader)
         await model.loadSelectedPageIfNeeded()
         try await waitForOriginals(Set((0...5).map(String.init)), in: loader)
         model.finishPageTransition(at: 6)
@@ -420,7 +420,7 @@ struct NCMediaViewerModelTests {
         let items = bufferItems()
         let loader = NCMediaViewerTestLoader(items: items)
         let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
-                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+                                       account: items[0].account, loader: loader)
         await model.loadSelectedPageIfNeeded()
         let initialOriginals = Set((0...5).map(String.init))
         try await waitForOriginals(initialOriginals, in: loader)
@@ -451,7 +451,7 @@ struct NCMediaViewerModelTests {
         for index in items.indices { items[index].livePhotoFile = "\(index).mov" }
         let loader = NCMediaViewerTestLoader(items: items)
         let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
-                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+                                       account: items[0].account, loader: loader)
         await model.loadSelectedPageIfNeeded()
         let deadline = ContinuousClock.now.advanced(by: .seconds(2))
         while await loader.liveOriginals.count != 6, ContinuousClock.now < deadline {
@@ -479,7 +479,7 @@ struct NCMediaViewerModelTests {
         items[12].classFile = NKTypeClassFile.audio.rawValue
         let loader = NCMediaViewerTestLoader(items: items)
         let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
-                                       session: NCSession.Session(account: items[0].account, urlBase: "", user: "", userId: ""), loader: loader)
+                                       account: items[0].account, loader: loader)
         await model.loadSelectedPageIfNeeded()
         #expect(await model.loadAudioForThumbnail(at: 12) == false)
         model.beginThumbnailScrubbing()
@@ -492,6 +492,50 @@ struct NCMediaViewerModelTests {
         #expect(await model.loadAudioForThumbnail(at: 12))
         #expect(await loader.downloadCounts["12"] == 1)
         model.cancelAllDownloads()
+    }
+
+    @Test("The common loader validates and reuses originals through injected services")
+    func commonLoaderUsesHostStorageAndDownloads() async throws {
+        var item = imageMetadata(fileName: "audio.mp3")
+        item.ocId = "audio"
+        item.classFile = NKTypeClassFile.audio.rawValue
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let services = NCMediaViewerTestLoader(items: [item], storageDirectory: directory)
+        let loader = NCMediaViewerLoader(services: services)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let url = URL(fileURLWithPath: services.originalPath(for: item))
+        try Data().write(to: url)
+        #expect(await loader.localMediaURL(for: item) == nil)
+        #expect(!FileManager.default.fileExists(atPath: url.path))
+        #expect(try await loader.downloadMedia(for: item) == url)
+        #expect(try await loader.downloadMedia(for: item) == url)
+        #expect(await services.downloadCounts[item.ocId] == 1)
+        await loader.releaseOriginalImage(for: item)
+        #expect(!FileManager.default.fileExists(atPath: url.path))
+    }
+
+    @Test("The common loader resolves and releases a Live Photo companion through host services")
+    func commonLoaderUsesHostLivePhotoCompanion() async throws {
+        var image = imageMetadata(fileName: "photo.heic")
+        image.ocId = "photo"
+        image.livePhotoFile = "movie"
+        var movie = imageMetadata(fileName: "photo.mov")
+        movie.ocId = "movie"
+        movie.classFile = NKTypeClassFile.video.rawValue
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let services = NCMediaViewerTestLoader(items: [image, movie], storageDirectory: directory)
+        let loader = NCMediaViewerLoader(services: services)
+        let url = await loader.downloadLivePhotoMedia(for: image)
+        #expect(url == URL(fileURLWithPath: services.originalPath(for: movie)))
+        #expect(await services.downloadCounts[movie.ocId] == 1)
+        #expect(await services.downloadCounts[image.ocId] == nil)
+        let preview = URL(fileURLWithPath: services.previewPath(for: image, ext: "jpg"))
+        try Data([1]).write(to: preview)
+        await loader.releaseOriginalImage(for: image)
+        #expect(await loader.localLivePhotoURL(for: image) == nil)
+        #expect(FileManager.default.fileExists(atPath: preview.path))
     }
 
     private func bufferItems() -> [NCMediaViewerItem] {
@@ -519,7 +563,7 @@ struct NCMediaViewerModelTests {
         return NCMediaViewerModel(
             currentMetadata: metadata,
             ocIds: ["first", "second", "third"],
-            session: NCSession().getSession(account: ""),
+            account: "",
             loader: NCMediaViewerLoader()
         )
     }

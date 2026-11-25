@@ -6,7 +6,7 @@ import SwiftUI
 
 /// Lower audio panel. Observes the existing player model; never owns player creation or loading.
 struct NCAudioAdaptiveControlsView: View {
-    let account: String
+    var playbackProgressTint: Color = .accentColor
     @ObservedObject var playbackModel: NCAudioViewerModel
     let isSelected: Bool
     let canGoPrevious: Bool
@@ -58,7 +58,7 @@ struct NCAudioAdaptiveControlsView: View {
             // No page gesture on this row: horizontal drags seek within the current audio.
             HStack(spacing: NCMediaAdaptiveControlsLayout.spacing) {
                 Slider(value: Binding(get: { playbackModel.currentTime }, set: { playbackModel.seek(to: $0) }), in: 0...max(playbackModel.duration, 1))
-                    .tint(Color.ncViewerPlaybackProgressTint(account: account))
+                    .tint(playbackProgressTint)
                     .disabled(!isSelected || playbackModel.duration <= 0)
                 Text(playbackModel.remainingTimeText)
                     .font(.subheadline.monospacedDigit())
@@ -116,7 +116,6 @@ struct NCAudioAdaptiveControlsView: View {
 #if DEBUG
 #Preview("Adaptive Audio - Controls") {
     return NCAudioAdaptiveControlsView(
-        account: "",
         playbackModel: NCAudioViewerModel(),
         isSelected: true,
         canGoPrevious: true,

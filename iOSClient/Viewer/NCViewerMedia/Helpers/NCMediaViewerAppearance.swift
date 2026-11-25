@@ -137,10 +137,7 @@ extension Color {
     static var ncViewerAdaptiveControlBackground: Color { Color(uiColor: .ncViewerAdaptiveControlBackground) }
     static var ncViewerAdaptiveControlForeground: Color { Color(uiColor: .ncViewerAdaptiveControlForeground) }
     static var ncViewerAdaptiveControlBorder: Color { Color(uiColor: .ncViewerAdaptiveControlBorder) }
-    /// Played portion of audio/video sliders in either layout follows the selected file's account branding.
-    static func ncViewerPlaybackProgressTint(account: String) -> Color {
-        Color(NCBrandColor.shared.getElement(account: account))
-    }
+
 }
 
 extension View {
