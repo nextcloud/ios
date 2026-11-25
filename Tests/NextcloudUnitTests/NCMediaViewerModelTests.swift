@@ -538,6 +538,29 @@ struct NCMediaViewerModelTests {
         #expect(FileManager.default.fileExists(atPath: preview.path))
     }
 
+    @Test("SVG originals are kept, while undecodable raster originals are still discarded")
+    func commonLoaderKeepsSVGOriginals() async throws {
+        var svg = imageMetadata(fileName: "drawing.SVG")
+        svg.ocId = "drawing"
+        var jpg = imageMetadata(fileName: "photo.jpg")
+        jpg.ocId = "photo"
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let services = NCMediaViewerTestLoader(items: [svg, jpg], storageDirectory: directory)
+        let loader = NCMediaViewerLoader(services: services)
+
+        let svgURL = URL(fileURLWithPath: services.originalPath(for: svg))
+        #expect(try await loader.downloadMedia(for: svg) == svgURL)
+        #expect(FileManager.default.fileExists(atPath: svgURL.path))
+        #expect(await loader.localMediaURL(for: svg) == svgURL)
+        #expect(await services.downloadCounts[svg.ocId] == 1)
+
+        let jpgURL = URL(fileURLWithPath: services.originalPath(for: jpg))
+        try Data([1]).write(to: jpgURL)
+        #expect(await loader.localMediaURL(for: jpg) == nil)
+        #expect(!FileManager.default.fileExists(atPath: jpgURL.path))
+    }
+
     private func bufferItems() -> [NCMediaViewerItem] {
         let account = UUID().uuidString
         return (0..<13).map { index in

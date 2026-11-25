@@ -134,7 +134,8 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, Sendable {
 
     func localMediaURL(for metadata: NCMediaViewerItem) async -> URL? {
         let localPath = fullLocalPath(for: metadata)
-        let validateAsImage = metadata.classFile == NKTypeClassFile.image.rawValue
+        // ImageIO cannot decode SVG: the image view renders it separately, so only reject empty files.
+        let validateAsImage = metadata.classFile == NKTypeClassFile.image.rawValue && metadata.fileExtension.lowercased() != "svg"
 
         guard isValidLocalFile(path: localPath, validateAsImage: validateAsImage) else {
             removeInvalidLocalFileIfNeeded(path: localPath, validateAsImage: validateAsImage)
