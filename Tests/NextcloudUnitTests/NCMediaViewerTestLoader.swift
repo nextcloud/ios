@@ -78,6 +78,22 @@ actor NCMediaViewerTestLoader: NCMediaViewerLoading, NCMediaViewerServices {
     func resumeRelease(for ocId: String) {
         pendingReleases.removeValue(forKey: ocId)?.resume()
     }
+    /// Simulates originals that were already downloaded before the viewer opened.
+    func addLocalOriginals(_ ocIds: Set<String>) {
+        originals.formUnion(ocIds)
+    }
+    func releaseOriginal(for metadata: NCMediaViewerItem, includingOriginal: Bool, includingLivePhotoCompanion: Bool) async {
+        if pausedReleaseOcIds.remove(metadata.ocId) != nil {
+            await withCheckedContinuation { pendingReleases[metadata.ocId] = $0 }
+        }
+        if includingOriginal {
+            originals.remove(metadata.ocId)
+            if storageDirectory != nil { try? FileManager.default.removeItem(atPath: originalPath(for: metadata)) }
+        }
+        if includingLivePhotoCompanion {
+            liveOriginals.remove(metadata.ocId)
+        }
+    }
     func releaseOriginalImage(for metadata: NCMediaViewerItem) async {
         if pausedReleaseOcIds.remove(metadata.ocId) != nil {
             await withCheckedContinuation { pendingReleases[metadata.ocId] = $0 }

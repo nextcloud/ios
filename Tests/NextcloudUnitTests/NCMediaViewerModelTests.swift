@@ -528,7 +528,7 @@ struct NCMediaViewerModelTests {
         #expect(try await loader.downloadMedia(for: item) == url)
         #expect(try await loader.downloadMedia(for: item) == url)
         #expect(await services.downloadCounts[item.ocId] == 1)
-        await loader.releaseOriginalImage(for: item)
+        await loader.releaseOriginal(for: item, includingOriginal: true, includingLivePhotoCompanion: true)
         #expect(!FileManager.default.fileExists(atPath: url.path))
     }
 
@@ -550,7 +550,7 @@ struct NCMediaViewerModelTests {
         #expect(await services.downloadCounts[image.ocId] == nil)
         let preview = URL(fileURLWithPath: services.previewPath(for: image, ext: "jpg"))
         try Data([1]).write(to: preview)
-        await loader.releaseOriginalImage(for: image)
+        await loader.releaseOriginal(for: image, includingOriginal: true, includingLivePhotoCompanion: true)
         #expect(await loader.localLivePhotoURL(for: image) == nil)
         #expect(FileManager.default.fileExists(atPath: preview.path))
     }
@@ -646,6 +646,46 @@ struct NCMediaViewerModelTests {
         #expect(model.thumbnailReloadRevision > reloadRevision)
         #expect(page.metadata?.fileNameView == "renamed.jpg")
         model.cancelAllDownloads()
+    }
+
+    @Test("Originals that were already local before the viewer opened are never released")
+    func preexistingOriginalsAreKept() async throws {
+        let items = bufferItems()
+        let loader = NCMediaViewerTestLoader(items: items)
+        await loader.addLocalOriginals(["0", "1"])
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       account: items[0].account, loader: loader)
+        await model.loadSelectedPageIfNeeded()
+        try await waitForOriginals(Set((0...5).map(String.init)), in: loader)
+        #expect(await loader.downloadCounts["0"] == nil)
+        #expect(await loader.downloadCounts["1"] == nil)
+
+        model.cancelAllDownloads()
+        try await waitForOriginals(["0", "1"], in: loader)
+    }
+
+    @Test("A Live Photo whose image was already local releases only the companion the viewer downloaded")
+    func preexistingLivePhotoImageKeepsImage() async throws {
+        var items = bufferItems()
+        items[0].livePhotoFile = "0.mov"
+        let loader = NCMediaViewerTestLoader(items: items)
+        await loader.addLocalOriginals(["0"])
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       account: items[0].account, loader: loader)
+        await model.loadSelectedPageIfNeeded()
+        let deadline = ContinuousClock.now.advanced(by: .seconds(2))
+        while !(await loader.liveOriginals.contains("0")), ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        try #require(await loader.liveOriginals.contains("0"))
+
+        model.cancelAllDownloads()
+        try await waitForOriginals(["0"], in: loader)
+        let releaseDeadline = ContinuousClock.now.advanced(by: .seconds(2))
+        while !(await loader.liveOriginals.isEmpty), ContinuousClock.now < releaseDeadline {
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        #expect(await loader.liveOriginals.isEmpty)
     }
 
     private func fileSize(at url: URL) -> Int64? {

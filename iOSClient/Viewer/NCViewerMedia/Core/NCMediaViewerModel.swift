@@ -144,6 +144,9 @@ final class NCMediaViewerModel: ObservableObject {
 
     private var loadingTasksByOcId: [String: NCMediaViewerLoadingTask] = [:]
     private var bufferedOcIds = Set<String>()
+    // Only files the viewer downloaded itself are released; files that were already local stay.
+    private var viewerDownloadedOcIds = Set<String>()
+    private var viewerDownloadedLivePhotoOcIds = Set<String>()
     // Also serialize a quick close/reopen against the previous viewer's pending removals.
     private static var releasingImagesByAccount: [String: [String: Task<Void, Never>]] = [:]
     private var isClosed = false
@@ -739,6 +742,7 @@ final class NCMediaViewerModel: ObservableObject {
         guard thumbnailScrubID == nil else { return }
         do {
             let downloadedURL = try await loader.downloadMedia(for: metadata, onDownloadStarted: nil)
+            viewerDownloadedOcIds.insert(ocId)
 
             guard !Task.isCancelled else {
                 return
@@ -904,7 +908,12 @@ final class NCMediaViewerModel: ObservableObject {
                     }
                 }
             }
-            await loader.releaseOriginalImage(for: metadata)
+            // Decoded state is always dropped above; files are removed only if this viewer downloaded them.
+            let releasesOriginal = viewerDownloadedOcIds.remove(ocId) != nil
+            let releasesCompanion = viewerDownloadedLivePhotoOcIds.remove(ocId) != nil
+            guard releasesOriginal || releasesCompanion else { return }
+            await loader.releaseOriginal(for: metadata, includingOriginal: releasesOriginal,
+                                         includingLivePhotoCompanion: releasesCompanion)
         }
     }
 
@@ -1033,6 +1042,9 @@ final class NCMediaViewerModel: ObservableObject {
                 if livePhotoURL == nil, downloadsLivePhotoCompanion, !Task.isCancelled, thumbnailScrubID == nil,
                    loadingPolicy.shouldDownloadLivePhotoResources(for: metadata) {
                     livePhotoURL = await loader.downloadLivePhotoMedia(for: metadata)
+                    if livePhotoURL != nil {
+                        viewerDownloadedLivePhotoOcIds.insert(ocId)
+                    }
                 }
             } else {
                 livePhotoURL = nil

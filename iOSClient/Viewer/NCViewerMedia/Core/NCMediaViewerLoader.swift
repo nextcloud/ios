@@ -34,8 +34,9 @@ protocol NCMediaViewerLoading: Sendable {
 
     func cancelAllDownloads() async
 
-    /// Removes image, Live Photo and audio originals, preserving previews and offline files/folders.
-    func releaseOriginalImage(for metadata: NCMediaViewerItem) async
+    /// Removes the original and/or its Live Photo companion, preserving previews and offline files/folders.
+    /// The viewer only asks for files it downloaded itself.
+    func releaseOriginal(for metadata: NCMediaViewerItem, includingOriginal: Bool, includingLivePhotoCompanion: Bool) async
 
     func fileProviderStorageExists(for metadata: NCMediaViewerItem) -> Bool
 
@@ -193,9 +194,11 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, Sendable {
         await downloadTaskRegistry.cancelAllTasks()
     }
 
-    func releaseOriginalImage(for metadata: NCMediaViewerItem) async {
-        await services.releaseOriginalImage(for: metadata)
-        if let companion = services.livePhotoMetadata(for: metadata) {
+    func releaseOriginal(for metadata: NCMediaViewerItem, includingOriginal: Bool, includingLivePhotoCompanion: Bool) async {
+        if includingOriginal {
+            await services.releaseOriginalImage(for: metadata)
+        }
+        if includingLivePhotoCompanion, let companion = services.livePhotoMetadata(for: metadata) {
             await services.releaseOriginalImage(for: companion)
         }
     }

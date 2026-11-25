@@ -149,12 +149,16 @@ Live Photo companion. The app supplies this rule through
 runs on every prefetch, so moving to an unmetered network resumes neighbor
 originals at the next page change.
 Files explicitly available offline, including descendants of offline folders,
-are protected. Other pre-existing local originals are also eligible for eviction.
+are protected. Only files the viewer downloaded during the current session are
+eligible for eviction: originals that were already local when they were loaded stay
+on the device, while their decoded state is still dropped. For Live Photos the image
+and the companion video are tracked separately.
 
 Live Photo images and companion videos follow the same original-file buffer.
 The HD image appears as soon as it is ready; playback waits for the companion.
 Leaving a page stops playback without cancelling buffered downloads. Eviction
-removes both originals, checking offline protection independently for each file.
+removes whichever of the two originals the viewer downloaded, checking offline
+protection independently for each file.
 
 In-flight image and companion loads are cancelled and awaited before removal.
 Re-entry waits
