@@ -117,6 +117,7 @@
 		AC20261124DB000000000003 /* NCMediaViewerModel+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000003 /* NCMediaViewerModel+App.swift */; };
 		AC20261124DB000000000004 /* NCMediaViewerTestLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000004 /* NCMediaViewerTestLoader.swift */; };
 		AC20261125DB000000000000 /* NCMediaViewerLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261125DA000000000000 /* NCMediaViewerLoader.swift */; };
+		AC20261125EB000000000000 /* NCExifData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261125EA000000000000 /* NCExifData.swift */; };
 		AF1A9B6427D0CA1E00F17A9E /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */; };
 		AF1A9B6527D0CC0500F17A9E /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */; };
 		AF2D7C7C2742556F00ADF566 /* NCShareLinkCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2D7C7B2742556F00ADF566 /* NCShareLinkCell.swift */; };
@@ -1069,7 +1070,6 @@
 		F7FDFF6F2E437E55000D7688 /* NCAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FDFF592E437E55000D7688 /* NCAccount.swift */; };
 		F7FF2CB12842159500EBB7A1 /* NCSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */; };
 		F7FFFCA22FB300600015441E /* NCAssistantSharedTextStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FFFC9D2FB300440015441E /* NCAssistantSharedTextStore.swift */; };
-		AC20261125EB000000000000 /* NCExifData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261125EA000000000000 /* NCExifData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1425,6 +1425,7 @@
 		AC20261124DA000000000003 /* NCMediaViewerModel+App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMediaViewerModel+App.swift"; sourceTree = "<group>"; };
 		AC20261124DA000000000004 /* NCMediaViewerTestLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerTestLoader.swift; sourceTree = "<group>"; };
 		AC20261125DA000000000000 /* NCMediaViewerLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerLoader.swift; sourceTree = "<group>"; };
+		AC20261125EA000000000000 /* NCExifData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCExifData.swift; sourceTree = "<group>"; };
 		AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
 		AF2D7C7B2742556F00ADF566 /* NCShareLinkCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareLinkCell.swift; sourceTree = "<group>"; };
 		AF2D7C7D2742559100ADF566 /* NCShareUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareUserCell.swift; sourceTree = "<group>"; };
@@ -2098,7 +2099,6 @@
 		F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSectionHeader.xib; sourceTree = "<group>"; };
 		F7FFFC9D2FB300440015441E /* NCAssistantSharedTextStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantSharedTextStore.swift; sourceTree = "<group>"; };
 		F902B24E44354B6D9F329F12 /* NCPasscodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCPasscodeView.swift; sourceTree = "<group>"; };
-		AC20261125EA000000000000 /* NCExifData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCExifData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -2944,14 +2944,14 @@
 		F75175DF307F52E60057C9B0 /* NCViewerMedia */ = {
 			isa = PBXGroup;
 			children = (
+				F75175DB307F52E60057C9B0 /* NCMediaViewerHostingController.swift */,
+				F75175DC307F52E60057C9B0 /* NCMediaViewerPresenter.swift */,
+				F75175DE307F52E60057C9B0 /* README.md */,
 				F75175CC307F52E60057C9B0 /* Core */,
 				F75175DA307F52E60057C9B0 /* Views */,
 				F75175C6307F52E60057C9B0 /* Content */,
 				F75175D0307F52E60057C9B0 /* Helpers */,
-				F75175DB307F52E60057C9B0 /* NCMediaViewerHostingController.swift */,
-				F75175DC307F52E60057C9B0 /* NCMediaViewerPresenter.swift */,
 				AC20261124DC000000000001 /* AppIntegration */,
-				F75175DE307F52E60057C9B0 /* README.md */,
 			);
 			path = NCViewerMedia;
 			sourceTree = "<group>";
