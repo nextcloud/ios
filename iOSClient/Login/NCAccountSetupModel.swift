@@ -50,6 +50,7 @@ final class NCAccountSetupModel {
         var configuration = LoginFlowConfiguration()
 
         configuration.foregroundColor = NCBrandColor.shared.customer.isTooLight() ? .black : .white
+        configuration.serverAddressPrompt = NSLocalizedString("_login_url_", comment: "")
         configuration.serverAddressDescription = String.localizedStringWithFormat(NSLocalizedString("_login_address_detail_", comment: ""), brandOptions.brand)
         configuration.enforcedServersPrompt = NSLocalizedString("_select_server_", comment: "")
 

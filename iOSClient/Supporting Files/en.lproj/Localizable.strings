@@ -494,6 +494,7 @@
 "_monthly_"                 = "Monthly";
 "_yearly_"                  = "Yearly";
 "_daily_"                   = "Daily";
+"_login_url_"               = "Server address https:// …";
 "_login_address_detail_"    = "The link to your %@ web interface when you open it in the browser.";
 "_go_to_page_"              = "Go to page";
 "_page_"                    = "Page";
