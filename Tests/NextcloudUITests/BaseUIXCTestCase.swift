@@ -62,23 +62,25 @@ class BaseUIXCTestCase: XCTestCase {
     /// Sign in through the browser by default, or let the app provision a test account on the login screen.
     func logIn(usingAppConfig: Bool = false) async throws {
         let continueOnboarding = app.buttons["continueOnboarding"]
+        let serverAddress = app.textFields["serverAddress"].firstMatch
         let deadline = Date().addingTimeInterval(30)
         // Startup can restore the main interface after the first accessibility snapshot.
-        // Wait for either destination instead of assuming that the login screen will appear.
+        // Wait for any destination; the onboarding only shows until it was continued once.
         repeat {
             if app.buttons["openSidebar"].exists || app.buttons["accountSwitcher"].exists {
                 return
             }
-            if continueOnboarding.exists && continueOnboarding.isHittable {
+            if (continueOnboarding.exists && continueOnboarding.isHittable) || serverAddress.exists {
                 break
             }
             try await Task.sleep(for: .milliseconds(250))
         } while Date() < deadline
-        guard continueOnboarding.exists else {
+        if continueOnboarding.exists {
+            continueOnboarding.tap()
+        } else if !serverAddress.exists {
             attachAuthenticationDiagnostics()
-            throw UITestError.waitForExistence(continueOnboarding)
+            throw UITestError.waitForExistence(serverAddress)
         }
-        continueOnboarding.tap()
         if !usingAppConfig {
             try await authenticateInBrowser()
         }

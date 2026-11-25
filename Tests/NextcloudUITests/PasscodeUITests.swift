@@ -289,7 +289,8 @@ final class PasscodeUITests: BaseUIXCTestCase {
         // Relaunch without setup flags so they cannot hide an incomplete reset.
         app.launchArguments = languageArguments
         app.launch()
-        XCTAssertTrue(app.buttons["continueOnboarding"].waitForExistence(timeout: TestConstants.controlExistenceTimeout))
+        XCTAssertTrue(app.textFields["serverAddress"].firstMatch.waitForExistence(timeout: TestConstants.controlExistenceTimeout)
+                      || app.buttons["continueOnboarding"].exists)
         XCTAssertFalse(title.exists, "The app reset must remove the stored passcode.")
     }
 

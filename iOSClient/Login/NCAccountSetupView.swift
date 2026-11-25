@@ -17,7 +17,7 @@ struct NCAccountSetupView: View {
                                features: features,
                                tint: Color(uiColor: NCBrandColor.shared.customer)) {
                     withAnimation {
-                        model.showsOnboarding = false
+                        model.finishOnboarding()
                     }
                 }
                 .transition(.opacity)

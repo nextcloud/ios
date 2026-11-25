@@ -11,8 +11,8 @@ import UIKit
 @MainActor
 @Observable
 final class NCAccountSetupModel {
-    /// Shown before the login while the app has no account, unless the brand turned it off.
-    var showsOnboarding: Bool
+    /// Shown once before the first login, unless the brand turned it off.
+    private(set) var showsOnboarding: Bool
 
     var isPresentingCertificatePrompt = false
     var isPresentingInsecureConnectionPrompt = false
@@ -37,9 +37,14 @@ final class NCAccountSetupModel {
 
         let hasAccounts = !NCManageDatabase.shared.getAllTableAccount().isEmpty
 
-        showsOnboarding = !NCBrandOptions.shared.disable_intro && !hasAccounts
+        showsOnboarding = !NCBrandOptions.shared.disable_intro && !hasAccounts && !NCPreferences().hasSeenOnboarding
         configuration = makeConfiguration(showsCancelButton: controller != nil && hasAccounts)
         sharedAccounts = loadSharedAccounts()
+    }
+
+    func finishOnboarding() {
+        NCPreferences().hasSeenOnboarding = true
+        showsOnboarding = false
     }
 
     // MARK: - Configuration
