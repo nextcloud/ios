@@ -235,7 +235,7 @@ video playback behavior. Local builds and tests remain user-run in Xcode.
 | `Views/Controls/NCMediaAdaptiveControlsView.swift` | Lower composition for paged images, audio and video covers: standalone buttons, image-only inline information, playback/cover actions and thumbnails. Also contains the SwiftUI/UIKit bridge and its hosting support types. |
 | `Content/Audio/Controls/NCAudioAdaptiveControlsView.swift` | Independent lower audio controls: ±10 seconds, Play/Pause, seeking and Previous/Next; Repeat/Auto-advance belong to the shared top row, with no information island. Observes the existing playback model. |
 | `NCMediaViewerHostingController.swift` | Owns paged-media navigation actions, title updates and information loading. Hides the upper navigation bar when folded and routes information into the lower controls. |
-| `Core/NCMediaViewerView.swift` | Selects the normal composition or experimental paging bridge using the central switch. |
+| `Views/NCMediaViewerView.swift` | Selects the normal composition or experimental paging bridge using the central switch. |
 | `Views/NCMediaViewerThumbnail.swift` | Shared thumbnail strip and collection implementation for all media; callers own normal/adaptive visibility and spacing. |
 | `Content/Video/NCVideoPlaybackCoverView.swift` | Preview surface, shared cover presentation data/actions and the normal cover controls renderer. |
 | `Content/Video/Controls/NCVideoAdaptivePlaybackCoverControlsView.swift` | Exclusive adaptive cover controls renderer, with the same playback/download actions as normal mode. |

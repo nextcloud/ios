@@ -680,13 +680,7 @@ extension NCMediaViewerThumbnail {
                     return
                 }
 
-                let metadata: NCMediaViewerItem?
-
-                if let cachedMetadata = self.metadataProvider(index) {
-                    metadata = cachedMetadata
-                } else {
-                    metadata = await self.metadataResolver(index)
-                }
+                let metadata = await self.thumbnailMetadata(at: index, cached: self.metadataProvider(index))
 
                 // Let the normal viewer pipeline resolve/download the audio first.
                 // It can trigger a SwiftUI update that clears this thumbnail cache.
@@ -702,25 +696,7 @@ extension NCMediaViewerThumbnail {
                     return
                 }
 
-                guard let previewURL = await self.previewURLProvider(metadata),
-                      let image = await Self.makeImage(from: previewURL) else {
-                    _ = self.pendingPrefetchIndexes.remove(index)
-                    self.loadedAudioIndexes.insert(index)
-                    self.indexesWithoutPreview.insert(index)
-                    self.refreshThumbnailIfVisible(at: index)
-                    return
-                }
-
-                _ = self.pendingPrefetchIndexes.remove(index)
-                self.loadedAudioIndexes.insert(index)
-                self.indexesWithoutPreview.remove(index)
-
-                guard !self.isDeletedProvider(index) else {
-                    return
-                }
-
-                self.imageCache.setObject(image, forKey: metadata.ocId as NSString)
-                self.refreshThumbnailIfVisible(at: index)
+                await self.loadThumbnailImage(at: index, metadata: metadata, isAudio: true)
             }
         }
 
@@ -803,11 +779,7 @@ extension NCMediaViewerThumbnail {
                     return
                 }
 
-                let metadata = if let initialMetadata {
-                    initialMetadata
-                } else {
-                    await self.metadataResolver(index)
-                }
+                let metadata = await self.thumbnailMetadata(at: index, cached: initialMetadata)
 
                 guard let metadata,
                       !metadata.ocId.isEmpty else {
@@ -827,24 +799,29 @@ extension NCMediaViewerThumbnail {
                     return
                 }
 
-                guard let previewURL = await self.previewURLProvider(metadata),
-                      let image = await Self.makeImage(from: previewURL) else {
-                    self.indexesWithoutPreview.insert(index)
-                    self.pendingPrefetchIndexes.remove(index)
-                    self.refreshThumbnailIfVisible(at: index)
-                    return
-                }
-
-                self.indexesWithoutPreview.remove(index)
-                self.pendingPrefetchIndexes.remove(index)
-
-                guard !self.isDeletedProvider(index) else {
-                    return
-                }
-
-                self.imageCache.setObject(image, forKey: metadata.ocId as NSString)
-                self.refreshThumbnailIfVisible(at: index)
+                await self.loadThumbnailImage(at: index, metadata: metadata)
             }
+        }
+
+        private func thumbnailMetadata(at index: Int, cached: NCMediaViewerItem?) async -> NCMediaViewerItem? {
+            if let cached { return cached }
+            return await metadataResolver(index)
+        }
+
+        private func loadThumbnailImage(at index: Int, metadata: NCMediaViewerItem, isAudio: Bool = false) async {
+            let previewURL = await previewURLProvider(metadata)
+            let image = await Self.makeImage(from: previewURL)
+            pendingPrefetchIndexes.remove(index)
+            if isAudio { loadedAudioIndexes.insert(index) }
+
+            if let image {
+                indexesWithoutPreview.remove(index)
+                guard !isDeletedProvider(index) else { return }
+                imageCache.setObject(image, forKey: metadata.ocId as NSString)
+            } else {
+                indexesWithoutPreview.insert(index)
+            }
+            refreshThumbnailIfVisible(at: index)
         }
 
         private static func makeImage(from previewURL: URL?) async -> UIImage? {

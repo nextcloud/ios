@@ -37,9 +37,7 @@ struct NCMediaViewerPageView: View {
                 .ignoresSafeArea()
 
             switch page.state {
-            case .idle,
-                 .loadingMetadata,
-                 .checkingLocalFile:
+            case .idle:
                 Color.ncViewerBackground(backgroundStyle)
                     .ignoresSafeArea()
 

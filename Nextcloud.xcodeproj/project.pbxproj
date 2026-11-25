@@ -113,7 +113,6 @@
 		AC14ADAF2026101400000002 /* NCMediaAdaptiveControlsLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC14ADAF2026101400000001 /* NCMediaAdaptiveControlsLayout.swift */; };
 		AC14ADAF2026101400000012 /* NCMediaViewerPreviewLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC14ADAF2026101400000011 /* NCMediaViewerPreviewLoader.swift */; };
 		AC20261124DB000000000000 /* NCMediaViewerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000000 /* NCMediaViewerItem.swift */; };
-		AC20261124DB000000000001 /* NCMediaViewerLoading.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000001 /* NCMediaViewerLoading.swift */; };
 		AC20261124DB000000000002 /* NCMediaViewerItem+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000002 /* NCMediaViewerItem+App.swift */; };
 		AC20261124DB000000000003 /* NCMediaViewerModel+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000003 /* NCMediaViewerModel+App.swift */; };
 		AC20261124DB000000000004 /* NCMediaViewerTestLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000004 /* NCMediaViewerTestLoader.swift */; };
@@ -1422,7 +1421,6 @@
 		AC14ADAF2026101400000001 /* NCMediaAdaptiveControlsLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaAdaptiveControlsLayout.swift; sourceTree = "<group>"; };
 		AC14ADAF2026101400000011 /* NCMediaViewerPreviewLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerPreviewLoader.swift; sourceTree = "<group>"; };
 		AC20261124DA000000000000 /* NCMediaViewerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerItem.swift; sourceTree = "<group>"; };
-		AC20261124DA000000000001 /* NCMediaViewerLoading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerLoading.swift; sourceTree = "<group>"; };
 		AC20261124DA000000000002 /* NCMediaViewerItem+App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMediaViewerItem+App.swift"; sourceTree = "<group>"; };
 		AC20261124DA000000000003 /* NCMediaViewerModel+App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMediaViewerModel+App.swift"; sourceTree = "<group>"; };
 		AC20261124DA000000000004 /* NCMediaViewerTestLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerTestLoader.swift; sourceTree = "<group>"; };
@@ -2899,11 +2897,9 @@
 				F75175C7307F52E60057C9B0 /* NCMediaPlaybackOptions.swift */,
 				F75175C8307F52E60057C9B0 /* NCMediaViewerLoadingPolicy.swift */,
 				F75175C9307F52E60057C9B0 /* NCMediaViewerModel.swift */,
-				AC20261124DA000000000001 /* NCMediaViewerLoading.swift */,
 				AC20261125DA000000000000 /* NCMediaViewerLoader.swift */,
 				AC20261124DA000000000000 /* NCMediaViewerItem.swift */,
 				AC20261125EA000000000000 /* NCExifData.swift */,
-				F75175CA307F52E60057C9B0 /* NCMediaViewerView.swift */,
 				F75175CB307F52E60057C9B0 /* NCVideoPlaybackPresentationContext.swift */,
 			);
 			path = Core;
@@ -2933,6 +2929,7 @@
 		F75175DA307F52E60057C9B0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				F75175CA307F52E60057C9B0 /* NCMediaViewerView.swift */,
 				F75175D3307F52E60057C9B0 /* Controls */,
 				F75175D4307F52E60057C9B0 /* NCMediaAdaptiveLayoutView.swift */,
 				F75175D5307F52E60057C9B0 /* NCMediaViewerDetailView.swift */,
@@ -5236,7 +5233,6 @@
 				F7517605307F52E60057C9B0 /* NCMediaViewerModel.swift in Sources */,
 				AC20261124DB000000000003 /* NCMediaViewerModel+App.swift in Sources */,
 				AC20261124DB000000000002 /* NCMediaViewerItem+App.swift in Sources */,
-				AC20261124DB000000000001 /* NCMediaViewerLoading.swift in Sources */,
 				AC20261125DB000000000000 /* NCMediaViewerLoader.swift in Sources */,
 				AC20261124DB000000000000 /* NCMediaViewerItem.swift in Sources */,
 				AC20261125EB000000000000 /* NCExifData.swift in Sources */,

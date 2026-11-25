@@ -460,9 +460,7 @@ final class NCMediaViewerPresenter: NSObject {
 
         case .deleted,
              .idle,
-             .loadingMetadata,
-             .metadataMissing,
-             .checkingLocalFile:
+             .metadataMissing:
             return nil
         }
     }
