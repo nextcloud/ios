@@ -579,6 +579,31 @@ struct NCMediaViewerModelTests {
         #expect(fileSize(at: jpgURL) == 0)
     }
 
+    @Test("A complete original that ImageIO cannot decode is kept; an incomplete one is reset to the placeholder")
+    func completeUndecodableOriginalIsKept() async throws {
+        var complete = imageMetadata(fileName: "photo.CR3")
+        complete.ocId = "complete"
+        complete.size = 3
+        var partial = imageMetadata(fileName: "photo.CR3")
+        partial.ocId = "partial"
+        partial.size = 10
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let services = NCMediaViewerTestLoader(items: [complete, partial], storageDirectory: directory)
+        let loader = NCMediaViewerLoader(services: services)
+
+        let completeURL = URL(fileURLWithPath: services.originalPath(for: complete))
+        try Data([1, 2, 3]).write(to: completeURL)
+        #expect(await loader.localMediaURL(for: complete) == completeURL)
+        #expect(fileSize(at: completeURL) == 3)
+
+        let partialURL = URL(fileURLWithPath: services.originalPath(for: partial))
+        try Data([1, 2, 3]).write(to: partialURL)
+        #expect(await loader.localMediaURL(for: partial) == nil)
+        #expect(fileSize(at: partialURL) == 0)
+    }
+
     @Test("On metered networks neighbors keep previews and only the selected page downloads its original")
     func meteredNetworkKeepsNeighborPreviews() async throws {
         let items = bufferItems()

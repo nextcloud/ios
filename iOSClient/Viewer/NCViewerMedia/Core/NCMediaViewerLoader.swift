@@ -138,8 +138,8 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, Sendable {
         // ImageIO cannot decode SVG: the image view renders it separately, so only reject empty files.
         let validateAsImage = metadata.classFile == NKTypeClassFile.image.rawValue && metadata.fileExtension.lowercased() != "svg"
 
-        guard isValidLocalFile(path: localPath, validateAsImage: validateAsImage) else {
-            discardInvalidOriginalIfNeeded(path: localPath, validateAsImage: validateAsImage)
+        guard isValidLocalFile(path: localPath, validateAsImage: validateAsImage, expectedSize: metadata.size) else {
+            discardInvalidOriginalIfNeeded(path: localPath, validateAsImage: validateAsImage, expectedSize: metadata.size)
             return nil
         }
 
@@ -207,7 +207,10 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, Sendable {
         services.originalPath(for: metadata)
     }
 
-    private func isValidLocalFile(path: String, validateAsImage: Bool) -> Bool {
+    /// `expectedSize` is the server size of an original (0 when unknown). A file of exactly that size is a
+    /// complete download and stays valid even if this iOS version cannot decode its format (for example a
+    /// recent camera RAW): the image view then keeps showing the preview instead of downloading it again.
+    private func isValidLocalFile(path: String, validateAsImage: Bool, expectedSize: Int64 = 0) -> Bool {
         guard !path.isEmpty,
               fileManager.fileExists(atPath: path),
               let attributes = try? fileManager.attributesOfItem(atPath: path),
@@ -217,6 +220,10 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, Sendable {
         }
 
         guard validateAsImage else {
+            return true
+        }
+
+        if expectedSize > 0, fileSize.int64Value == expectedSize {
             return true
         }
 
@@ -243,12 +250,12 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, Sendable {
 
     /// The File Provider extension relies on an empty placeholder at the original path:
     /// never remove it. A non-empty file that fails validation is reset to that placeholder.
-    private func discardInvalidOriginalIfNeeded(path: String, validateAsImage: Bool) {
+    private func discardInvalidOriginalIfNeeded(path: String, validateAsImage: Bool, expectedSize: Int64) {
         guard !path.isEmpty,
               let attributes = try? fileManager.attributesOfItem(atPath: path),
               let fileSize = attributes[.size] as? NSNumber,
               fileSize.int64Value > 0,
-              !isValidLocalFile(path: path, validateAsImage: validateAsImage) else {
+              !isValidLocalFile(path: path, validateAsImage: validateAsImage, expectedSize: expectedSize) else {
             return
         }
 
