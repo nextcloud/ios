@@ -10,8 +10,8 @@
 # Closes issues only when the repository variable ISSUE_TRIAGE_LIVE is "true"; otherwise it
 # lists its findings in the run summary. Pull requests that change this workflow always get
 # such a preview run.
-# Each run continues where the last one stopped: checked issues are kept in the
-# "issue-triage-state" artifact (90 days) and skipped until there is new activity on them.
+# Each run checks the next 20 issues: checked issues are kept in the "issue-triage-state"
+# artifact (90 days) and skipped until there is new activity on them.
 
 name: Issue triage
 description: Checks whether open bug reports and feature requests are already fixed or implemented; closes them with evidence.
@@ -94,7 +94,7 @@ steps:
         const { execFileSync } = require('node:child_process');
         const { owner, repo } = context.repo;
         const ownRepo = `${owner}/${repo}`;
-        const limit = 1000;
+        const limit = 20;
         const live = process.env.ISSUE_TRIAGE_LIVE === 'true';
         const scannedAt = new Date().toISOString();
         const blockingLabels = ['human escalated', 'closed by agent', 'good first issue'];
@@ -550,4 +550,4 @@ Only use `fixed` when you are confident. Do not use it when:
 
 When in doubt, use `likely_fixed`: a wrong closure costs more than a missed one.
 
-Report each issue before you start the next one; a finding you have not reported is lost if the run stops. The run ends when its credit budget runs out, and the remaining candidates are checked in the next run. Budget warnings are expected: finish and report the issue you are on, then continue with the next one until the run is stopped. If there are no candidates, call `noop`.
+Check and report every candidate in the file before you finish; do not stop early or leave any for a later run. Report each issue before you start the next one, so a finding is not lost if the run stops. Budget warnings are expected: finish and report the issue you are on, then continue with the next one until the run is stopped. Call `noop` only if there are no candidates.
