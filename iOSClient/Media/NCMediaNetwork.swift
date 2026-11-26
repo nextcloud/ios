@@ -7,47 +7,92 @@ import NextcloudKit
 import Alamofire
 
 final class NCMediaNetwork {
+    private static let captureDateProperty = "nc:metadata-photos-original_date_time"
+
+    enum DateSort: String, Sendable {
+        case modified = "date"
+        case captured = "datePhotosOriginal"
+
+        func date(for file: NKFile) -> Date {
+            switch self {
+            case .modified: file.date
+            case .captured: file.datePhotosOriginal ?? file.date
+            }
+        }
+    }
+
+    @MainActor
     func searchMediaPage(path: String,
                          firstDate: Date,
                          lastDate: Date,
                          account: String,
+                         dateSort: DateSort,
                          paginate: Bool,
                          limit: Int,
                          taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                          update: @escaping (_ files: [NKFile]) async -> Void,
                          finish: @escaping () -> Void) async {
+        defer { finish() }
+
         guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
-            finish()
             return
         }
-        let nkComm = NextcloudKit.shared.nkCommonInstance
         let href = "/files/" + nkSession.userId + path
+        let modifiedProperty = "d:" + NCGlobal.shared.mediaPropOrder
+        let modifiedFirstDate = firstDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
+        let modifiedLastDate = lastDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
 
-        let elementDate = "d:" + NCGlobal.shared.mediaPropOrder
-        let lessDateString = firstDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
-        let greaterDateString = lastDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
+        if dateSort == .modified {
+            let body = getRequestBodySearchMedia(href: href, elementDate: modifiedProperty,
+                                                 lessDate: modifiedFirstDate, greaterDate: modifiedLastDate, limit: String(limit))
+            _ = await search(urlBase: nkSession.urlBase, account: account, body: body, paginate: paginate, taskHandler: taskHandler) { files in
+                await update(files.sorted { $0.date > $1.date })
+            }
+            return
+        }
 
+        // DAV can sort by either property, but cannot order by a fallback expression.
+        // Fetch the top results for each disjoint set before applying the shared limit.
+        let capturedFirstDate = Int64(firstDate.timeIntervalSince1970.rounded(.down))
+        let capturedLastDate = max(1, Int64(lastDate.timeIntervalSince1970.rounded(.up)))
+        var files: [NKFile] = []
+        if capturedFirstDate >= capturedLastDate {
+            let capturedBody = getRequestBodySearchMedia(href: href, elementDate: Self.captureDateProperty,
+                                                         lessDate: String(capturedFirstDate), greaterDate: String(capturedLastDate), limit: String(limit))
+            guard await search(urlBase: nkSession.urlBase, account: account, body: capturedBody, paginate: paginate, taskHandler: taskHandler, update: {
+                files.append(contentsOf: $0)
+            }) else {
+                return
+            }
+        }
+
+        let fallbackBody = getRequestBodySearchMedia(href: href, elementDate: modifiedProperty,
+                                                     lessDate: modifiedFirstDate, greaterDate: modifiedLastDate, limit: String(limit),
+                                                     missingCaptureDate: true)
+        guard await search(urlBase: nkSession.urlBase, account: account, body: fallbackBody, paginate: paginate, taskHandler: taskHandler, update: {
+            files.append(contentsOf: $0)
+        }), !Task.isCancelled else {
+            return
+        }
+
+        let sortedFiles = files.sorted { dateSort.date(for: $0) > dateSort.date(for: $1) }
+        await update(Array(sortedFiles.prefix(limit)))
+    }
+
+    @MainActor
+    private func search(urlBase: String,
+                        account: String,
+                        body: String,
+                        paginate: Bool,
+                        taskHandler: @escaping (URLSessionTask) -> Void,
+                        update: ([NKFile]) async -> Void) async -> Bool {
+        let nkComm = NextcloudKit.shared.nkCommonInstance
+        let httpBody = Data(body.utf8)
         var paginateToken: String?
-        var error = NKError()
         let paginateCount = 200
-        var page = 0
         var paginateOffset = 0
 
-        let httpBodyString = String(format: getRequestBodySearchMedia(
-            href: href,
-            elementDate: elementDate,
-            lessDate: lessDateString,
-            greaterDate: greaterDateString,
-            limit: String(limit))
-        )
-
-        guard let httpBody = httpBodyString.data(using: .utf8) else {
-            finish()
-            return
-        }
-
-        while true {
-            var isPaginate: Bool = false
+        while !Task.isCancelled {
             let options = NKRequestOptions(timeout: 180,
                                            taskDescription: NCGlobal.shared.taskDescriptionRetrievesProperties,
                                            paginate: paginate,
@@ -56,45 +101,51 @@ final class NCMediaNetwork {
                                            paginateCount: paginateCount,
                                            queue: .global(qos: .utility))
 
-            let results = await NextcloudKit.shared.searchAsync(serverUrl: nkSession.urlBase, httpBody: httpBody, showHiddenFiles: false, includeHiddenFiles: [], account: account, options: options, taskHandler: taskHandler)
-            error = results.error
-
-            if error == .success {
-                if let filesUnordered = results.files {
-                    let files = filesUnordered.sorted {
-                        $0.date > $1.date
-                    }
-                    await update(files)
-                }
-                let allHeaderFields = results.responseData?.response?.allHeaderFields
-                if let result = nkComm.findHeader("x-nc-paginate-token", allHeaderFields: allHeaderFields) {
-                    paginateToken = result
-                }
-                if let result = nkComm.findHeader("x-nc-paginate", allHeaderFields: allHeaderFields) {
-                    isPaginate = Bool(result) ?? false
-                }
-            } else {
-                finish()
-                break
+            let results = await NextcloudKit.shared.searchAsync(serverUrl: urlBase, httpBody: httpBody, showHiddenFiles: true, includeHiddenFiles: [], account: account, options: options, taskHandler: taskHandler)
+            guard results.error == .success, let files = results.files, !Task.isCancelled else {
+                return false
             }
 
-            nkLog(info: "\(lessDateString) - \(greaterDateString) - \(isPaginate)", consoleOnly: true)
-
-            if !isPaginate || (results.files?.count ?? 0) < paginateCount {
-                finish()
-                break
+            // Server offsets include hidden files.
+            await update(files.filter { !NCMediaNetwork.isHiddenFile($0) })
+            let headers = results.responseData?.response?.allHeaderFields
+            guard paginate,
+                  nkComm.findHeader("x-nc-paginate", allHeaderFields: headers) == "true",
+                  files.count == paginateCount else {
+                return true
             }
-
-            page += 1
-            paginateOffset = page * paginateCount
+            paginateToken = nkComm.findHeader("x-nc-paginate-token", allHeaderFields: headers) ?? paginateToken
+            paginateOffset += paginateCount
         }
+        return false
+    }
+
+    static func isHiddenFile(_ file: NKFile) -> Bool {
+        let pathComponents = (file.path as NSString).pathComponents + [file.fileName]
+        return pathComponents.contains { $0.hasPrefix(".") }
     }
 
     internal func getRequestBodySearchMedia(href: String,
                                             elementDate: String,
                                             lessDate: String,
                                             greaterDate: String,
-                                            limit: String) -> String {
+                                            limit: String,
+                                            missingCaptureDate: Bool = false) -> String {
+        let escapedHref = href.replacingOccurrences(of: "&", with: "&amp;")
+            .replacingOccurrences(of: "<", with: "&lt;")
+            .replacingOccurrences(of: ">", with: "&gt;")
+        let captureDateProperty = Self.captureDateProperty
+        let captureDateFilter = missingCaptureDate ? """
+            <d:or>
+                <d:not>
+                    <d:is-defined><d:prop><\(captureDateProperty)/></d:prop></d:is-defined>
+                </d:not>
+                <d:lte>
+                    <d:prop><\(captureDateProperty)/></d:prop>
+                    <d:literal>0</d:literal>
+                </d:lte>
+            </d:or>
+            """ : ""
         let request = """
         <?xml version=\"1.0\"?>
         <d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
@@ -115,6 +166,7 @@ final class NCMediaNetwork {
                     <size xmlns="http://owncloud.org/ns"/>
                     <has-preview xmlns="http://nextcloud.org/ns"/>
                     <metadata-files-live-photo xmlns="http://nextcloud.org/ns"/>
+                    <\(captureDateProperty)/>
                 </d:prop>
             </d:select>
 
@@ -124,7 +176,7 @@ final class NCMediaNetwork {
 
             <d:from>
                 <d:scope>
-                    <d:href>\(href)</d:href>
+                    <d:href>\(escapedHref)</d:href>
                     <d:depth>infinity</d:depth>
                 </d:scope>
             </d:from>
@@ -142,11 +194,11 @@ final class NCMediaNetwork {
                     <d:or>
                         <d:like>
                             <d:prop><d:getcontenttype/></d:prop>
-                            <d:literal>image/%%</d:literal>
+                            <d:literal>image/%</d:literal>
                         </d:like>
                         <d:like>
                             <d:prop><d:getcontenttype/></d:prop>
-                            <d:literal>video/%%</d:literal>
+                            <d:literal>video/%</d:literal>
                         </d:like>
                     </d:or>
 
@@ -161,6 +213,7 @@ final class NCMediaNetwork {
                             <d:literal>\(greaterDate)</d:literal>
                         </d:gte>
                     </d:and>
+                    \(captureDateFilter)
                 </d:and>
             </d:where>
 

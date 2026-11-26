@@ -338,6 +338,8 @@
 "_media_viewimage_show_"        = "Show only images";
 "_media_viewvideo_show_"        = "Show only video";
 "_media_show_all_"              = "Show both";
+"_media_date_modified_"         = "Last modified";
+"_media_date_captured_"         = "Date taken";
 "_good_morning_"                = "Good morning";
 "_good_day_"                    = "Good day";
 "_good_afternoon_"              = "Good afternoon";
