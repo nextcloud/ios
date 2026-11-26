@@ -157,6 +157,7 @@
 		C0DEA070306D000100000008 /* NCAutoUploadAssetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEA070306D000100000007 /* NCAutoUploadAssetTests.swift */; };
 		C0DECA022F65000100C0D001 /* NCCameraRollTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */; };
 		C0DEDA7E30C1000100A00002 /* NCAutoUploadDateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEDA7E30C1000100A00001 /* NCAutoUploadDateTests.swift */; };
+		4463A0C1300D000100A00004 /* NCAutoUploadKnownFilesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4463A0C1300D000100A00003 /* NCAutoUploadKnownFilesTests.swift */; };
 		CB3666201AF7550816B5CD6A /* NCContextMenuComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8932E90EC4278026D86CCCC9 /* NCContextMenuComment.swift */; };
 		D56DFFE5D5014F66A7C9FED0 /* PasscodeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6C501EF1104A6A8569D9C1 /* PasscodeUITests.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
@@ -363,6 +364,7 @@
 		F72CA0572F5048C3002E2F06 /* UIApplication+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72CA0562F5048C3002E2F06 /* UIApplication+Extension.swift */; };
 		F72CA05C2F5051DB002E2F06 /* AlertActionBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72CA05B2F5051DB002E2F06 /* AlertActionBannerView.swift */; };
 		F72CD63A25C19EBF00F46F9A /* NCAutoUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72CD63925C19EBF00F46F9A /* NCAutoUpload.swift */; };
+		4463A0C1300D000100A00002 /* NCAutoUploadKnownFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4463A0C1300D000100A00001 /* NCAutoUploadKnownFiles.swift */; };
 		F72D1007210B6882009C96B7 /* NCPushNotificationEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */; };
 		F72D404923D2082500A97FD0 /* NCViewerDirectEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72D404823D2082500A97FD0 /* NCViewerDirectEditing.swift */; };
 		F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */ = {isa = PBXBuildFile; productRef = F72DA9B325F53E4E00B87DB1 /* SwiftRichString */; };
@@ -1462,6 +1464,7 @@
 		C0DEA070306D000100000007 /* NCAutoUploadAssetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAutoUploadAssetTests.swift; sourceTree = "<group>"; };
 		C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCameraRollTests.swift; sourceTree = "<group>"; };
 		C0DEDA7E30C1000100A00001 /* NCAutoUploadDateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAutoUploadDateTests.swift; sourceTree = "<group>"; };
+		4463A0C1300D000100A00003 /* NCAutoUploadKnownFilesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAutoUploadKnownFilesTests.swift; sourceTree = "<group>"; };
 		CE0CD9A00D74B01055F238E9 /* NCErrorContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCErrorContext.swift; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
 		F0A1B2C330B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerFloatingTitleViewTests.swift; sourceTree = "<group>"; };
@@ -1582,6 +1585,7 @@
 		F72CA0562F5048C3002E2F06 /* UIApplication+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+Extension.swift"; sourceTree = "<group>"; };
 		F72CA05B2F5051DB002E2F06 /* AlertActionBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertActionBannerView.swift; sourceTree = "<group>"; };
 		F72CD63925C19EBF00F46F9A /* NCAutoUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAutoUpload.swift; sourceTree = "<group>"; };
+		4463A0C1300D000100A00001 /* NCAutoUploadKnownFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAutoUploadKnownFiles.swift; sourceTree = "<group>"; };
 		F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCPushNotificationEncryption.m; sourceTree = "<group>"; };
 		F72D1006210B6882009C96B7 /* NCPushNotificationEncryption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCPushNotificationEncryption.h; sourceTree = "<group>"; };
 		F72D404823D2082500A97FD0 /* NCViewerDirectEditing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerDirectEditing.swift; sourceTree = "<group>"; };
@@ -2320,6 +2324,7 @@
 			children = (
 				AC13ADAF2026101300000001 /* NCMediaAdaptiveLayoutViewTests.swift */,
 				C0DEDA7E30C1000100A00001 /* NCAutoUploadDateTests.swift */,
+				4463A0C1300D000100A00003 /* NCAutoUploadKnownFilesTests.swift */,
 				320C20803A58DAF7575440A8 /* NKErrorUserFriendlyMessageTests.swift */,
 				C0DEA070306D000100000007 /* NCAutoUploadAssetTests.swift */,
 				F76BED7B306D0000002E1442 /* NCPhotoLibraryAssetTests.swift */,
@@ -2781,6 +2786,7 @@
 				F7C30DF8291BCBF00017149B /* E2EE */,
 				F760A4882FE95CDB001B212E /* Actors */,
 				F72CD63925C19EBF00F46F9A /* NCAutoUpload.swift */,
+				4463A0C1300D000100A00001 /* NCAutoUploadKnownFiles.swift */,
 				F77BC3EC293E528A005F2B08 /* NCConfigServer.swift */,
 				F75A9EE523796C6F0044CFCE /* NCNetworking.swift */,
 				F70898662EDDB39300EF85BD /* NCNetworking+TransferDelegate.swift */,
@@ -4718,6 +4724,7 @@
 				BAF64949B487A080A98F83F2 /* NKErrorUserFriendlyMessageTests.swift in Sources */,
 				AC13ADAF2026101300000002 /* NCMediaAdaptiveLayoutViewTests.swift in Sources */,
 				C0DEDA7E30C1000100A00002 /* NCAutoUploadDateTests.swift in Sources */,
+				4463A0C1300D000100A00004 /* NCAutoUploadKnownFilesTests.swift in Sources */,
 				C0DEA070306D000100000008 /* NCAutoUploadAssetTests.swift in Sources */,
 				F76BED7E306D0000002E1442 /* NCPhotoLibraryAssetTests.swift in Sources */,
 				A1E2EE01000000000000000A /* NCEndToEndKeySetArchiveTests.swift in Sources */,
@@ -5109,6 +5116,7 @@
 				F714A1472ED84AF90050A43B /* HudBannerView.swift in Sources */,
 				F7A3DB932DDE23B5008F7EC8 /* NCDebouncer.swift in Sources */,
 				F72CD63A25C19EBF00F46F9A /* NCAutoUpload.swift in Sources */,
+				4463A0C1300D000100A00002 /* NCAutoUploadKnownFiles.swift in Sources */,
 				AF93471D27E2361E002537EE /* NCShareAdvancePermissionFooter.swift in Sources */,
 				AF1A9B6427D0CA1E00F17A9E /* UIAlertController+Extension.swift in Sources */,
 				F7FA80012C0F4F3B0072FC60 /* NCUploadAssetsView.swift in Sources */,
