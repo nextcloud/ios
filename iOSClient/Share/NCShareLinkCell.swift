@@ -12,7 +12,7 @@ class NCShareLinkCell: UITableViewCell {
 
     @IBOutlet weak var labelQuickStatus: UILabel!
     @IBOutlet weak var statusStackView: UIStackView!
-    @IBOutlet weak var menuButton: UIButton!
+    @IBOutlet weak var menuButton: NCMenuButton!
     @IBOutlet private weak var copyButton: UIButton!
     @IBOutlet weak var imageDownArrow: UIImageView!
 

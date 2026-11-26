@@ -11,12 +11,12 @@ class NCShareCommentsCell: UITableViewCell {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelUser: UILabel!
-    @IBOutlet weak var buttonMenu: UIButton!
+    @IBOutlet weak var buttonMenu: NCMenuButton!
     @IBOutlet weak var labelDate: UILabel!
     @IBOutlet weak var labelMessage: UILabel!
 
     private var index = IndexPath()
-    private var avatarButton: UIButton!
+    private var avatarButton: NCMenuButton!
 
     var tableComments: tableComments?
     weak var delegate: NCShareCommentsCellDelegate?
@@ -36,7 +36,7 @@ class NCShareCommentsCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        avatarButton = UIButton(type: .system)
+        avatarButton = NCMenuButton(type: .system)
         avatarButton.translatesAutoresizingMaskIntoConstraints = false
         avatarButton.backgroundColor = .clear
         contentView.addSubview(avatarButton)

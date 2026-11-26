@@ -170,24 +170,32 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
         await mainNavigationController?.updateMenuOption()
 
+        // Reloading recreates the cells and would close a "…" menu the user has open.
         await MainActor.run {
-            self.datasource = results
-            self.collectionView.reloadData()
+            NCMenuPresentationMonitor.shared.performWhenNoMenuVisible { [weak self] in
+                self?.applyDataSource(results)
+            }
+        }
+    }
 
-            guard let blinkFileId = self.blinkFileId else { return }
+    /// Shows `results` in the collection view, and briefly highlights `blinkFileId` if it is set.
+    private func applyDataSource(_ results: [tableTrash]) {
+        datasource = results
+        collectionView.reloadData()
 
-            for itemIx in 0..<results.count where results[itemIx].fileId.contains(blinkFileId) {
-                let indexPath = IndexPath(item: itemIx, section: 0)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    UIView.animate(withDuration: 0.3) {
-                        self.collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
-                    } completion: { _ in
-                        guard let cell = self.collectionView.cellForItem(at: indexPath) else { return }
-                        cell.backgroundColor = .darkGray
-                        UIView.animate(withDuration: 2) {
-                            cell.backgroundColor = .clear
-                            self.blinkFileId = nil
-                        }
+        guard let blinkFileId else { return }
+
+        for itemIx in 0..<results.count where results[itemIx].fileId.contains(blinkFileId) {
+            let indexPath = IndexPath(item: itemIx, section: 0)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                UIView.animate(withDuration: 0.3) {
+                    self.collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
+                } completion: { _ in
+                    guard let cell = self.collectionView.cellForItem(at: indexPath) else { return }
+                    cell.backgroundColor = .darkGray
+                    UIView.animate(withDuration: 2) {
+                        cell.backgroundColor = .clear
+                        self.blinkFileId = nil
                     }
                 }
             }

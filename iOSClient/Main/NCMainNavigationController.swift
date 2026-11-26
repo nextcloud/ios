@@ -38,6 +38,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let menuNavigation = NCContextMenuNavigation()
     var menuPlus: NCContextMenuPlus?
 
+    /// Latest option menu of each navigation item, read when its overflow menu opens. See `setOptionMenu(_:for:)`.
+    private let optionMenus = NSMapTable<UINavigationItem, UIMenu>.weakToStrongObjects()
+
     lazy var sidebarButtonItem: UIBarButtonItem = {
         let action = UIAction(title: NSLocalizedString("_sidebar_navigation_", comment: ""), image: UIImage(systemName: "sidebar.left")) { [weak self] _ in
             self?.controller?.presentSidebar()
@@ -260,11 +263,30 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     }
 
     /// Shares UIKit's overflow button with navigation items that no longer fit in the bar.
+    ///
+    /// Replacing `additionalOverflowItems` closes the overflow menu if the user has it open,
+    /// and the option menu is rebuilt on every data reload. So the overflow element is installed
+    /// once and reads the latest menu from `optionMenus` each time it opens.
     func setOptionMenu(_ menu: UIMenu?, for navigationItem: UINavigationItem) {
-        navigationItem.additionalOverflowItems = menu.map { menu in
-            UIDeferredMenuElement.uncached { completion in
-                completion(menu.children)
+        guard let menu else {
+            optionMenus.removeObject(forKey: navigationItem)
+            navigationItem.additionalOverflowItems = nil
+            return
+        }
+
+        let isInstalled = navigationItem.additionalOverflowItems != nil && optionMenus.object(forKey: navigationItem) != nil
+        optionMenus.setObject(menu, forKey: navigationItem)
+        guard !isInstalled else {
+            return
+        }
+
+        navigationItem.additionalOverflowItems = UIDeferredMenuElement.uncached { [weak self, weak navigationItem] completion in
+            guard let navigationItem,
+                  let menu = self?.optionMenus.object(forKey: navigationItem) else {
+                completion([])
+                return
             }
+            completion(menu.children)
         }
     }
 
@@ -366,7 +388,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     }
 }
 
-private final class NCMenuPlusButton: UIButton {
+private final class NCMenuPlusButton: NCMenuButton {
     // Keep hit testing so taps don't fall through if the button is disabled, hidden or low alpha.
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         if let view = super.hitTest(point, with: event) {

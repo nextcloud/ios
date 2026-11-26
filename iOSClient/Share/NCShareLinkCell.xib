@@ -48,7 +48,7 @@
                                     <action selector="touchUpCopy:" destination="qJF-Yc-gKE" eventType="touchUpInside" id="s3f-6n-cKF"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J1z-RG-U4A" userLabel="ButtonMenu">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J1z-RG-U4A" userLabel="ButtonMenu" customClass="NCMenuButton" customModule="Nextcloud" customModuleProvider="target">
                                 <rect key="frame" x="50" y="0.0" width="20" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="G48-LB-BsD"/>

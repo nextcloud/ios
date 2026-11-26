@@ -51,7 +51,7 @@
                         <color key="textColor" systemColor="systemGrayColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EJs-Ro-nbe" userLabel="buttonMoreGrid">
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EJs-Ro-nbe" userLabel="buttonMoreGrid" customClass="NCMenuButton" customModule="Nextcloud" customModuleProvider="target">
                         <rect key="frame" x="396" y="492" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="4Ba-Uy-pX2"/>

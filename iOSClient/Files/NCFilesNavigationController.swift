@@ -70,15 +70,6 @@ class NCFilesNavigationController: NCMainNavigationController {
         }
         let image = utility.loadUserImage(for: tableAccount.user, displayName: tableAccount.displayName, urlBase: tableAccount.urlBase)
 
-        class AccountSwitcherButton: UIButton {
-            var onMenuOpened: (() -> Void)?
-
-            override func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willDisplayMenuFor configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
-                super.contextMenuInteraction(interaction, willDisplayMenuFor: configuration, animator: animator)
-                onMenuOpened?()
-            }
-        }
-
         @MainActor
         func createLeftMenu() async -> UIMenu? {
             var childrenAccountSubmenu: [UIMenuElement] = []
@@ -145,7 +136,7 @@ class NCFilesNavigationController: NCMainNavigationController {
         let leftItems = groupedItems.isEmpty ? navigationItem?.leftBarButtonItems ?? [] : groupedItems
         let accountItem = leftItems.first { $0.customView?.accessibilityIdentifier == "accountSwitcher" }
         if accountItem == nil {
-            let accountButton = AccountSwitcherButton(type: .custom)
+            let accountButton = NCMenuButton(type: .custom)
 
             accountButton.accessibilityIdentifier = "accountSwitcher"
             accountButton.setImage(image, for: .normal)
@@ -155,7 +146,7 @@ class NCFilesNavigationController: NCMainNavigationController {
             accountButton.menu = await createLeftMenu()
             accountButton.showsMenuAsPrimaryAction = true
 
-            accountButton.onMenuOpened = {
+            accountButton.onMenuWillShow = {
                 self.collectionViewCommon?.dismissTip()
             }
 

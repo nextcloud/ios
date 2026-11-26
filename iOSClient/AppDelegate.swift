@@ -14,6 +14,7 @@ import SwiftUI
 import RealmSwift
 import Photos
 
+@main
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     var backgroundSessionCompletionHandler: (() -> Void)?
     var isUiTestingEnabled: Bool {
