@@ -77,8 +77,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     private func startNextcloud(scene: UIScene, withActivateSceneForAccount activateSceneForAccount: Bool) {
-        // App not in background
-        isAppInBackground = false
+        // iOS also connects scenes when it launches the app in the background (background
+        // tasks, URLSession events, location). The app stays in background mode then, so
+        // upload results are written to the database directly instead of waiting for a flush
+        // that only a foreground app performs.
+        if UIApplication.shared.applicationState != .background {
+            isAppInBackground = false
+        }
         // Open Realm
         NCManageDatabase.shared.openRealm()
         // Table account
@@ -223,6 +228,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
+        isAppInBackground = false
         hidePrivacyProtectionWindow()
 
         guard let controller = window?.rootViewController as? NCMainTabBarController else {

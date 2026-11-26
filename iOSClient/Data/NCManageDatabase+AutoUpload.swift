@@ -125,20 +125,29 @@ extension NCManageDatabase {
     /// - Parameters:
     ///   - account: The account identifier.
     ///   - autoUploadServerUrlBase: The server base URL used for auto-upload.
-    /// - Returns: File names queued or already uploaded to this destination.
-    func fetchAutoUploadFileNamesAsync(account: String, autoUploadServerUrlBase: String) async -> (queued: Set<String>, uploaded: Set<String>) {
+    /// - Returns: File names queued or already uploaded to this destination, plus the same
+    ///   information keyed by Photos asset, because generated file names are not always stable.
+    func fetchAutoUploadFileNamesAsync(account: String, autoUploadServerUrlBase: String) async -> (queued: Set<String>,
+                                                                                                    uploaded: Set<String>,
+                                                                                                    queuedAssets: Set<String>,
+                                                                                                    uploadedByAsset: [String: Set<String>]) {
         let result = await core.performRealmReadAsync { realm in
             let metadatas = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND autoUploadServerUrlBase == %@ AND status IN %@", account, autoUploadServerUrlBase, NCGlobal.shared.metadataStatusUploadingAllMode)
-                .map(\.fileNameView)
-
             let transfers = self.autoUploadHistory(in: realm, account: account, serverUrlBase: autoUploadServerUrlBase)
-                .map(\.fileName)
 
-            return (queued: Set(metadatas), uploaded: Set(transfers))
+            var uploadedByAsset: [String: Set<String>] = [:]
+            for transfer in transfers where !transfer.assetLocalIdentifier.isEmpty {
+                uploadedByAsset[transfer.assetLocalIdentifier, default: []].insert(transfer.fileName)
+            }
+
+            return (queued: Set(metadatas.map(\.fileNameView)),
+                    uploaded: Set(transfers.map(\.fileName)),
+                    queuedAssets: Set(metadatas.map(\.assetLocalIdentifier).filter { !$0.isEmpty }),
+                    uploadedByAsset: uploadedByAsset)
         }
 
-        return result ?? (queued: [], uploaded: [])
+        return result ?? (queued: [], uploaded: [], queuedAssets: [], uploadedByAsset: [:])
     }
 
     /// Keeps the bulk asset lookup while distinguishing tracked resources from confirmed uploads.

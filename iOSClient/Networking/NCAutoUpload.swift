@@ -38,11 +38,8 @@ class NCAutoUpload: NSObject {
             albumIds.contains($0.localIdentifier)
         }
 
-        let result = await getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: account)
-
-        guard let assets = result.assets,
-              !assets.isEmpty,
-              let fileNames = result.fileNames else {
+        guard let assets = await getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: account),
+              !assets.isEmpty else {
             return 0
         }
 
@@ -50,7 +47,6 @@ class NCAutoUpload: NSObject {
             controller: controller,
             tblAccount: account,
             assets: assets,
-            fileNames: fileNames,
             filterExistingQueue: true
         )
     }
@@ -88,18 +84,16 @@ class NCAutoUpload: NSObject {
                                        swipeToDismiss: false
         )
 
-        let result = await getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: tblAccount)
+        let assets = await getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: tblAccount)
 
         model.onViewAppear()
 
-        guard let assets = result.assets,
-              !assets.isEmpty,
-              let fileNames = result.fileNames else {
+        guard let assets, !assets.isEmpty else {
             nkLog(debug: "Automatic upload 0 upload")
             return
         }
 
-        let num = await uploadAssets(controller: controller, tblAccount: tblAccount, assets: assets, fileNames: fileNames, filterExistingQueue: false)
+        let num = await uploadAssets(controller: controller, tblAccount: tblAccount, assets: assets, filterExistingQueue: false)
         model.onViewAppear()
         nkLog(debug: "Automatic upload \(num) upload")
     }
@@ -107,7 +101,6 @@ class NCAutoUpload: NSObject {
     private func uploadAssets(controller: NCMainTabBarController?,
                               tblAccount: tableAccount,
                               assets: [PHAsset],
-                              fileNames: [String],
                               filterExistingQueue: Bool) async -> Int {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: tblAccount.account)
         let autoMkcol = NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v33)
@@ -117,19 +110,38 @@ class NCAutoUpload: NSObject {
         let formatCompatibility = NCPreferences().formatCompatibility
         let keychainLivePhoto = NCPreferences().livePhoto
         let fileSystem = NCUtilityFileSystem()
-        let knownFileNames = await self.database.fetchAutoUploadFileNamesAsync(account: tblAccount.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
+        let known = await self.database.fetchAutoUploadFileNamesAsync(account: tblAccount.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
+        let knownFiles = NCAutoUploadKnownFiles(queuedFileNames: known.queued,
+                                                uploadedFileNames: known.uploaded,
+                                                queuedAssets: known.queuedAssets,
+                                                uploadedFileNamesByAsset: known.uploadedByAsset)
 
         var lastUploadedDate: Date?
         var canAdvanceSinceDate = true
 
         nkLog(debug: "Automatic upload, new \(assets.count) assets found")
 
-        for (index, asset) in assets.enumerated() {
+        for asset in assets {
             guard !Task.isCancelled,
                   let current = await database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", tblAccount.account)),
                   current.autoUploadStart,
                   current.autoUploadSessionIdentifier == tblAccount.autoUploadSessionIdentifier else { return 0 }
-            let fileName = fileNames[index]
+
+            let mediaType = asset.mediaType
+            let isLivePhoto = asset.mediaSubtypes.contains(.photoLive) && keychainLivePhoto
+
+            // Check the asset before generating its name: a name without digits takes a new
+            // counter value on every call, so it never matches the history by name alone.
+            if knownFiles.isAssetUploaded(asset.localIdentifier, isLivePhoto: isLivePhoto) {
+                if canAdvanceSinceDate { lastUploadedDate = asset.creationDate ?? lastUploadedDate }
+                continue
+            }
+            if knownFiles.isAssetQueued(asset.localIdentifier) {
+                canAdvanceSinceDate = false
+                continue
+            }
+
+            let fileName = fileSystem.createFileName(asset.originalFilename, fileDate: asset.creationDate ?? Date(), fileType: mediaType)
 
             let sourceFileExtension = (fileName as NSString).pathExtension.lowercased()
             let fileNameCompatible = NCCameraRoll.outputFileName(
@@ -138,19 +150,15 @@ class NCAutoUpload: NSObject {
                 nativeFormat: !formatCompatibility
             )
 
-            let mediaType = asset.mediaType
-            let isLivePhoto = asset.mediaSubtypes.contains(.photoLive) && keychainLivePhoto
             let pairedFileName = (fileNameCompatible as NSString).deletingPathExtension + ".mov"
-            let primaryUploaded = knownFileNames.uploaded.contains(fileNameCompatible) || knownFileNames.uploaded.contains(fileName)
-            if primaryUploaded && (!isLivePhoto || knownFileNames.uploaded.contains(pairedFileName)) {
+            if knownFiles.isFileUploaded(fileName: fileName, fileNameCompatible: fileNameCompatible, pairedFileName: pairedFileName, isLivePhoto: isLivePhoto) {
                 if canAdvanceSinceDate { lastUploadedDate = asset.creationDate ?? lastUploadedDate }
                 continue
             }
 
             // A later success cannot move the restart date past an unfinished photo or Live Photo.
             canAdvanceSinceDate = false
-            if knownFileNames.queued.contains(fileNameCompatible) || knownFileNames.queued.contains(fileName) ||
-                (isLivePhoto && knownFileNames.queued.contains(pairedFileName)) {
+            if knownFiles.isFileQueued(fileName: fileName, fileNameCompatible: fileNameCompatible, pairedFileName: pairedFileName, isLivePhoto: isLivePhoto) {
                 continue
             }
             let serverUrl = tblAccount.autoUploadCreateSubfolder
@@ -242,14 +250,14 @@ class NCAutoUpload: NSObject {
 
     func getCameraRollAssets(controller: NCMainTabBarController?,
                              assetCollections: [PHAssetCollection] = [],
-                             tblAccount: tableAccount) async -> (assets: [PHAsset]?, fileNames: [String]?) {
+                             tblAccount: tableAccount) async -> [PHAsset]? {
         let hasPermission = await withCheckedContinuation { continuation in
             NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { granted in
                 continuation.resume(returning: granted)
             }
         }
         guard hasPermission else {
-            return (nil, nil)
+            return nil
         }
         var mediaPredicates: [NSPredicate] = []
         var datePredicates: [NSPredicate] = []
@@ -294,7 +302,7 @@ class NCAutoUpload: NSObject {
         }()
 
         guard !collections.isEmpty else {
-             return (nil, nil)
+             return nil
         }
 
         let allAssets = collections.flatMap { collection in
@@ -302,15 +310,10 @@ class NCAutoUpload: NSObject {
             return result.objects(at: IndexSet(0..<result.count))
         }
         // Selected albums may overlap and are not globally ordered.
-        let newAssets = OrderedSet(allAssets).sorted {
+        // File names are generated later, only for assets that still need uploading.
+        return OrderedSet(allAssets).sorted {
             ($0.creationDate ?? .distantPast) < ($1.creationDate ?? .distantPast)
         }
-        let fileNames = newAssets.compactMap { asset -> String? in
-            let date = asset.creationDate ?? Date()
-            return NCUtilityFileSystem().createFileName(asset.originalFilename, fileDate: date, fileType: asset.mediaType)
-        }
-
-        return(Array(newAssets), fileNames)
     }
 
     // MARK: -
