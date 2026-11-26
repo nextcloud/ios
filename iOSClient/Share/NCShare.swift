@@ -181,7 +181,7 @@ class NCShare: UIViewController, NCSharePagingContent {
 
     @objc func reloadData() {
         // Reloading recreates the cells and would close a share or profile menu the user has open.
-        NCMenuPresentationMonitor.shared.performWhenNoMenuVisible { [weak self] in
+        NCMenuPresentationMonitor.shared.performWhenNoMenuVisible(for: self) { [weak self] in
             guard let self else { return }
             shares = self.database.getTableShares(metadata: metadata)
             shareLinksCount = 0

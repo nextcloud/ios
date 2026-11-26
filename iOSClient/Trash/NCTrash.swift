@@ -172,7 +172,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
         // Reloading recreates the cells and would close a "…" menu the user has open.
         await MainActor.run {
-            NCMenuPresentationMonitor.shared.performWhenNoMenuVisible { [weak self] in
+            NCMenuPresentationMonitor.shared.performWhenNoMenuVisible(for: self) { [weak self] in
                 self?.applyDataSource(results)
             }
         }

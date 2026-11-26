@@ -71,12 +71,12 @@ struct NCMenuPresentationMonitorTests {
         let monitor = NCMenuPresentationMonitor(notificationCenter: NotificationCenter())
         var runs = 0
 
-        monitor.performWhenNoMenuVisible { runs += 1 }
+        monitor.performWhenNoMenuVisible(for: NSObject()) { runs += 1 }
 
         #expect(runs == 1)
     }
 
-    @Test("Deferred actions wait for the last menu to close and run in order")
+    @Test("Deferred actions of different owners wait for the last menu to close and run in order")
     func actionsWaitForLastMenu() {
         let monitor = NCMenuPresentationMonitor(notificationCenter: NotificationCenter())
         let first = NSObject()
@@ -85,8 +85,8 @@ struct NCMenuPresentationMonitorTests {
 
         monitor.menuWillShow(first)
         monitor.menuWillShow(second)
-        monitor.performWhenNoMenuVisible { runs.append(1) }
-        monitor.performWhenNoMenuVisible { runs.append(2) }
+        monitor.performWhenNoMenuVisible(for: first) { runs.append(1) }
+        monitor.performWhenNoMenuVisible(for: second) { runs.append(2) }
 
         monitor.menuDidHide(first)
         #expect(runs.isEmpty)
@@ -97,6 +97,22 @@ struct NCMenuPresentationMonitorTests {
         monitor.menuWillShow(first)
         monitor.menuDidHide(first)
         #expect(runs == [1, 2])
+    }
+
+    @Test("Only the last deferred action of the same owner runs")
+    func lastActionPerOwnerWins() {
+        let monitor = NCMenuPresentationMonitor(notificationCenter: NotificationCenter())
+        let menuOwner = NSObject()
+        let screen = NSObject()
+        var runs: [Int] = []
+
+        monitor.menuWillShow(menuOwner)
+        monitor.performWhenNoMenuVisible(for: screen) { runs.append(1) }
+        monitor.performWhenNoMenuVisible(for: screen) { runs.append(2) }
+        monitor.performWhenNoMenuVisible(for: screen) { runs.append(3) }
+        monitor.menuDidHide(menuOwner)
+
+        #expect(runs == [3])
     }
 
     @Test("Repeated or unmatched calls are ignored")

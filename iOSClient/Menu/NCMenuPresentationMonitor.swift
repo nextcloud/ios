@@ -19,7 +19,7 @@ import Foundation
 /// "at least one menu open" through `menuWillShowNotification` and
 /// `menuDidHideNotification`, both posted on the main thread.
 /// Screens without their own reload debouncer can wrap a reload in
-/// `performWhenNoMenuVisible(_:)` instead.
+/// `performWhenNoMenuVisible(for:_:)` instead.
 @MainActor
 final class NCMenuPresentationMonitor {
     static let shared = NCMenuPresentationMonitor()
@@ -32,7 +32,8 @@ final class NCMenuPresentationMonitor {
 
     private let notificationCenter: NotificationCenter
     private var openMenuOwners = Set<ObjectIdentifier>()
-    private var pendingActions: [@MainActor () -> Void] = []
+    /// At most one deferred action per owner, in the order they were last added.
+    private var pendingActions: [(owner: ObjectIdentifier, action: @MainActor () -> Void)] = []
 
     /// `true` while at least one menu is open.
     var isMenuVisible: Bool {
@@ -67,8 +68,8 @@ final class NCMenuPresentationMonitor {
 
         let actions = pendingActions
         pendingActions.removeAll()
-        for action in actions {
-            action()
+        for pending in actions {
+            pending.action()
         }
 
         notificationCenter.post(name: Self.menuDidHideNotification, object: self)
@@ -79,12 +80,22 @@ final class NCMenuPresentationMonitor {
     /// Use it for UI updates that would destroy the view hosting an open menu, for example
     /// assigning a new data source and calling `reloadData()`. Keep the data change and the
     /// reload in the same action, so the view never shows data it has not been reloaded with.
-    /// Deferred actions run in the order they were added.
-    func performWhenNoMenuVisible(_ action: @escaping @MainActor () -> Void) {
-        if isMenuVisible {
-            pendingActions.append(action)
-        } else {
+    ///
+    /// Only the last action of each `owner` is kept: if a screen receives several updates
+    /// while a menu is open, it reloads once, with the latest data, when the menu closes.
+    /// The action must therefore do the whole update on its own, not just a part of it.
+    ///
+    /// - Parameters:
+    ///   - owner: The object the update belongs to, usually the view controller.
+    ///   - action: The update to run.
+    func performWhenNoMenuVisible(for owner: AnyObject, _ action: @escaping @MainActor () -> Void) {
+        guard isMenuVisible else {
             action()
+            return
         }
+
+        let id = ObjectIdentifier(owner)
+        pendingActions.removeAll { $0.owner == id }
+        pendingActions.append((owner: id, action: action))
     }
 }
