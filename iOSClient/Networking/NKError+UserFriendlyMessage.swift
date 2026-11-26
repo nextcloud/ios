@@ -45,6 +45,10 @@ extension NKError {
         case (.createDocument, .forbidden), (.openDocument, .forbidden):
             return NSLocalizedString("_error_occurred_", comment: "")
 
+        // While logging in, a 404 means the address has no Nextcloud server, not a missing file.
+        case (.login, .notFound):
+            return NSLocalizedString("_error_login_server_not_found_", comment: "")
+
         default:
             return nil
         }

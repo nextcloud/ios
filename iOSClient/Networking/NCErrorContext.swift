@@ -16,6 +16,7 @@ enum NCErrorContext: Equatable {
     case favorite(fileName: String)
     case createDocument(fileName: String)
     case openDocument(fileName: String)
+    case login
 
     /// The context of a transfer event, from its `networkingStatus`.
     init(networkingStatus: String, fileName: String) {
@@ -111,6 +112,9 @@ enum NCErrorContext: Equatable {
 
         case .openDocument(let fileName):
             return String(format: NSLocalizedString("_error_title_open_document_", comment: ""), fileName)
+
+        case .login:
+            return NSLocalizedString("_error_title_login_", comment: "")
         }
     }
 }

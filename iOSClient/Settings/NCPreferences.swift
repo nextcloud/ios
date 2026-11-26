@@ -37,6 +37,15 @@ final class NCPreferences: NSObject {
         }
     }
 
+    var hasSeenOnboarding: Bool {
+        get {
+            return getBoolPreference(key: "hasSeenOnboarding", defaultValue: false)
+        }
+        set {
+            setUserDefaults(newValue, forKey: "hasSeenOnboarding")
+        }
+    }
+
     var showRecommendedFiles: Bool {
         get {
             return getBoolPreference(key: "showRecommendedFiles", defaultValue: true)

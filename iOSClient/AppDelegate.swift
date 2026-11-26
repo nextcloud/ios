@@ -21,10 +21,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     var notificationSettings: UNNotificationSettings?
 
-    var loginFlowV2Token = ""
-    var loginFlowV2Endpoint = ""
-    var loginFlowV2Login = ""
-
     let backgroundQueue = DispatchQueue(label: "com.nextcloud.bgTaskQueue")
     let global = NCGlobal.shared
 
@@ -281,7 +277,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { _ in
             if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController,
                let viewController = navigationController.topViewController as? NCViewCertificateDetails {
-                viewController.delegate = self
+                viewController.onClose = {
+                    self.trustCertificateError(host: host)
+                }
                 viewController.host = host
                 UIApplication.shared.mainAppWindow?.rootViewController?.present(navigationController, animated: true)
             }
@@ -330,15 +328,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         return false
     }
+
+    // MARK: - Orientation
+
+    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+        // The onboarding and login are laid out for portrait on iPhone.
+        if UIDevice.current.userInterfaceIdiom == .phone, NCAccountSetupView.isShown(in: window) {
+            return .portrait
+        }
+
+        return Self.infoPlistOrientations
+    }
+
+    /// The orientations the Info.plist allows on this device, which this delegate method otherwise replaces.
+    private static let infoPlistOrientations: UIInterfaceOrientationMask = {
+        let bundle = Bundle.main
+        let names = (UIDevice.current.userInterfaceIdiom == .pad ? bundle.object(forInfoDictionaryKey: "UISupportedInterfaceOrientations~ipad") as? [String] : nil)
+            ?? bundle.object(forInfoDictionaryKey: "UISupportedInterfaceOrientations") as? [String]
+            ?? []
+
+        let mask = names.reduce(into: UIInterfaceOrientationMask()) { mask, name in
+            switch name {
+            case "UIInterfaceOrientationPortrait":
+                mask.insert(.portrait)
+            case "UIInterfaceOrientationPortraitUpsideDown":
+                mask.insert(.portraitUpsideDown)
+            case "UIInterfaceOrientationLandscapeLeft":
+                mask.insert(.landscapeLeft)
+            case "UIInterfaceOrientationLandscapeRight":
+                mask.insert(.landscapeRight)
+            default:
+                break
+            }
+        }
+
+        return mask.isEmpty ? .all : mask
+    }()
 }
 
 // MARK: - Extension
-
-extension AppDelegate: NCViewCertificateDetailsDelegate {
-    func viewCertificateDetailsDismiss(host: String) {
-        trustCertificateError(host: host)
-    }
-}
 
 extension AppDelegate: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {

@@ -10,11 +10,10 @@ import NextcloudKit
 class NCAccount: NSObject {
     private static var accountsCheckingRemoteUser: Set<String> = []
     let database = NCManageDatabase.shared
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let global = NCGlobal.shared
     let utilityFileSystem = NCUtilityFileSystem()
 
-    func createAccount(viewController: UIViewController, urlBase: String, user: String, password: String, controller: NCMainTabBarController?) async {
+    func createAccount(viewController: UIViewController, urlBase: String, user: String, password: String, controller: NCMainTabBarController?) async throws {
         nkLog(debug: "Creating account...")
 
         var urlBase = urlBase
@@ -39,15 +38,13 @@ class NCAccount: NSObject {
         guard resultsGetUserProfile.error == .success, let userProfile = resultsGetUserProfile.userProfile else {
             NextcloudKit.shared.nkCommonInstance.nksessions.remove(account: account)
 
-            let error = resultsGetUserProfile.error == .success ? NKError.invalidData : resultsGetUserProfile.error
+            nkLog(error: "Getting the user profile failed: \(resultsGetUserProfile.error.logDescription)")
 
-            nkLog(error: "Getting the user profile failed: \(error.logDescription)")
+            // A reply that is no profile, such as the login page of a proxy, has no kind and so no message to show.
+            let isUnclassified = resultsGetUserProfile.error == .success || resultsGetUserProfile.error.kind == nil
+            let error = isUnclassified ? NKError.invalidData : resultsGetUserProfile.error
 
-            let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.userFriendlyMessage() ?? error.localizedGenericMessage, preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-            viewController.present(alertController, animated: true)
-
-            return
+            throw error
         }
 
         // Login log debug
@@ -68,13 +65,16 @@ class NCAccount: NSObject {
         if let controller {
             controller.account = account
             nkLog(debug: "Dismissing login provider view controller...")
-            viewController.dismiss(animated: true)
+            // From its presenter, so a sheet the login still shows, such as the QR code scanner, closes too.
+            (viewController.presentingViewController ?? viewController).dismiss(animated: true)
         } else if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
             nkLog(debug: "Presenting initial view controller from main storyboard...")
             controller.account = account
             controller.modalPresentationStyle = .fullScreen
             controller.view.alpha = 0
 
+            // A sheet the replaced login still shows, such as the QR code scanner, would stay on screen.
+            UIApplication.shared.mainAppWindow?.rootViewController?.dismiss(animated: false)
             UIApplication.shared.mainAppWindow?.rootViewController = controller
             UIApplication.shared.mainAppWindow?.makeKeyAndVisible()
 
@@ -176,6 +176,8 @@ class NCAccount: NSObject {
         NCPreferences().clearAllKeysPushNotification(account: account)
         // Remove Account Server in Error
         NCNetworking.shared.removeServerErrorAccount(account)
+        // Stop offering the account to other apps
+        _ = await updateAppsShareAccounts()
     }
 
     func deleteAllAccounts() async {
@@ -262,7 +264,7 @@ class NCAccount: NSObject {
             && NCPreferences().getPassword(account: session.account) == token
     }
 
-    /// Presents the login (or intro) screen if no account remains.
+    /// Presents the account setup if no account remains.
     func switchToFirstAvailableAccount(controller: NCMainTabBarController?) async {
         let accounts = await NCManageDatabase.shared.getAccountsAsync()
 
@@ -270,22 +272,7 @@ class NCAccount: NSObject {
            let account = accounts.first {
                 await changeAccount(account, userProfile: nil, controller: controller)
         } else {
-            if NCBrandOptions.shared.disable_intro {
-                if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
-                    viewController.controller = controller
-                    let navigationController = UINavigationController(rootViewController: viewController)
-                    navigationController.modalPresentationStyle = .fullScreen
-                    controller?.present(navigationController, animated: true)
-                }
-            } else {
-                if let navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController {
-                    if let viewController = navigationController.topViewController as? NCIntroViewController {
-                        viewController.controller = controller
-                    }
-                    navigationController.modalPresentationStyle = .fullScreen
-                    controller?.present(navigationController, animated: true)
-                }
-            }
+            controller?.present(NCAccountSetupView.viewController(controller: controller), animated: true)
         }
     }
 }
