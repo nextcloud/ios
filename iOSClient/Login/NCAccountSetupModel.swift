@@ -136,10 +136,7 @@ final class NCAccountSetupModel {
 
         let controller = self.controller ?? SceneManager.shared.getController(window: UIApplication.shared.mainAppWindow)
 
-        if let host = host.host {
-            NCNetworking.shared.writeCertificate(host: host)
-        }
-
+        // A certificate is trusted only from the prompt in recover(from:serverURL:), never by adding the account.
         try await NCAccount().createAccount(viewController: presenter, urlBase: host.absoluteString, user: user, password: password, controller: controller)
     }
 
