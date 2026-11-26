@@ -204,8 +204,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nextcloud/NextcloudKit",
       "state" : {
-        "branch" : "shared-login-swiftui",
-        "revision" : "bc0aec8e3548406a32a74078d8cb57ffca82b68a"
+        "revision" : "5898f5d7ea4148c3679959826cf23ed07d430fb1",
+        "version" : "7.7.0"
       }
     },
     {
