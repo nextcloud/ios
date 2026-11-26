@@ -357,12 +357,26 @@ class NCContextMenuMain: NSObject {
     }
 
     private func makeDeleteFileAction(metadata: tableMetadata) -> UIAction {
+        // On the top of a received share the server removes the share for this user
+        // instead of deleting the owner's data, so say "Leave share" rather than "Delete".
+        let parentPermissions = NCManageDatabase.shared.getTableDirectory(
+            predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)
+        )?.permissions
+        let isReceivedShareRoot = NCMetadataPermissions.isReceivedShareRoot(permissions: metadata.permissions, parentPermissions: parentPermissions)
+
+        let title: String
+        let imageName: String
+        if isReceivedShareRoot {
+            title = "_leave_share_"
+            imageName = "person.2.slash"
+        } else {
+            title = metadata.directory ? "_delete_folder_" : "_delete_file_"
+            imageName = "trash"
+        }
+
         return UIAction(
-            title: NSLocalizedString(
-                metadata.directory ? "_delete_folder_" : "_delete_file_",
-                comment: ""
-            ),
-            image: utility.loadImage(named: "trash"),
+            title: NSLocalizedString(title, comment: ""),
+            image: utility.loadImage(named: imageName),
             attributes: .destructive
         ) { _ in
             if self.viewController is NCCollectionViewCommon {

@@ -36,6 +36,23 @@ enum NCMetadataPermissions {
         return metadata.permissions.contains(permissionCanMove)
     }
 
+    /// Whether an item is the top of a share received from another user.
+    ///
+    /// The server marks every item inside a received share with `S`, so the top of the
+    /// share is the item that has `S` while its parent folder does not. Deleting that item
+    /// only removes the share for the current user; the owner's data is not touched.
+    ///
+    /// - Parameters:
+    ///   - permissions: The WebDAV permissions of the item.
+    ///   - parentPermissions: The WebDAV permissions of the folder that contains it, or `nil` if unknown.
+    /// - Returns: `false` when the parent folder is unknown.
+    static func isReceivedShareRoot(permissions: String, parentPermissions: String?) -> Bool {
+        guard let parentPermissions else {
+            return false
+        }
+        return permissions.contains(permissionShared) && !parentPermissions.contains(permissionShared)
+    }
+
     static func canRename(_ metadata: tableMetadata) -> Bool {
         return metadata.permissions.contains(permissionCanRename)
     }
