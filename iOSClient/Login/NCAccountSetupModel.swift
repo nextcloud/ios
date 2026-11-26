@@ -206,7 +206,9 @@ final class NCAccountSetupModel {
                 return
             }
 
-            guard let host = URL(string: serverURL) else { throw NKError.urlError }
+            guard let host = URL(string: serverURL) else {
+                throw NKError.urlError
+            }
 
             try await addAccount(host: host, user: user, password: password)
         } catch {
