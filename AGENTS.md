@@ -69,6 +69,10 @@ Avoid creating source files that implement multiple types; instead, place each t
 - Include a short summary of what changed. *Example:* `fix: prevent crash on empty file name`.
 - **Pull Request**: When the agent creates a PR, it should include a description summarizing the changes and why they were made. If a GitHub issue exists, reference it (e.g., “Closes #123”). Target `master` (the default branch); `stable-XX.Y.Z` branches are only for backports. Note that `README.md` still mentions a `develop` branch — it no longer exists.
 - **AI-assisted changes**: Declare AI tool use in the PR description (the org-level PR template includes an AI checkbox) and add an `Assisted-by: AGENT_NAME:MODEL_VERSION` trailer to each affected commit, per the org-wide policy in `nextcloud/.github`.
+- **Commit message bodies**: explain why the change was made, not how; the diff already shows what changed.
+- **Issues, PR descriptions and comments**: Issues, PR descriptions and comments may be drafted with AI and posted on the contributor's behalf when they ask for it. Write them for human readers: lead with what changed and why, keep the repository's issue or PR template intact, end AI-drafted issues and comments with an `Assisted by <Tool>:<model>` footer, and put agent-only details in a collapsed `<details>` block. For a bug report, also state whether the bug was validated and reproduced on a live Nextcloud instance.
+- **Testing**: Validate every change to runtime behavior on a live Nextcloud instance where you can, and give the contributor concrete steps to test it there themselves; your testing supports theirs, it does not replace it.
+- **Posting**: Don't open issues, submit pull requests, or post comments on your own initiative. Instead, post only what the contributor asked for, on their behalf, and tell them what you posted.
 
 ## iOS Specifics
 

@@ -114,6 +114,13 @@
 		AC13ADAF2026101300000002 /* NCMediaAdaptiveLayoutViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC13ADAF2026101300000001 /* NCMediaAdaptiveLayoutViewTests.swift */; };
 		AC14ADAF2026101400000002 /* NCMediaAdaptiveControlsLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC14ADAF2026101400000001 /* NCMediaAdaptiveControlsLayout.swift */; };
 		AC14ADAF2026101400000012 /* NCMediaViewerPreviewLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC14ADAF2026101400000011 /* NCMediaViewerPreviewLoader.swift */; };
+		AC20261124DB000000000000 /* NCMediaViewerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000000 /* NCMediaViewerItem.swift */; };
+		AC20261124DB000000000002 /* NCMediaViewerItem+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000002 /* NCMediaViewerItem+App.swift */; };
+		AC20261124DB000000000003 /* NCMediaViewerModel+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000003 /* NCMediaViewerModel+App.swift */; };
+		AC20261125DB000000000001 /* NCMediaViewerNetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261125DA000000000001 /* NCMediaViewerNetworkMonitor.swift */; };
+		AC20261124DB000000000004 /* NCMediaViewerTestLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000004 /* NCMediaViewerTestLoader.swift */; };
+		AC20261125DB000000000000 /* NCMediaViewerLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261125DA000000000000 /* NCMediaViewerLoader.swift */; };
+		AC20261125EB000000000000 /* NCExifData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261125EA000000000000 /* NCExifData.swift */; };
 		AF1A9B6427D0CA1E00F17A9E /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */; };
 		AF1A9B6527D0CC0500F17A9E /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */; };
 		AF2D7C7C2742556F00ADF566 /* NCShareLinkCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2D7C7B2742556F00ADF566 /* NCShareLinkCell.swift */; };
@@ -156,6 +163,7 @@
 		C0DEDA7E30C1000100A00002 /* NCAutoUploadDateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEDA7E30C1000100A00001 /* NCAutoUploadDateTests.swift */; };
 		C32F0D5074355BA3F35E7FCE /* NCAccountSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A84566BEF80733CC99BA52 /* NCAccountSetupView.swift */; };
 		C7724CB38D2A7B4B98CA1AFA /* NCLoginServerErrorClassifierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2A4CC67E2712B70FCFC090 /* NCLoginServerErrorClassifierTests.swift */; };
+		4437B0C1300D000100A00002 /* NCBackupExclusionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4437B0C1300D000100A00001 /* NCBackupExclusionTests.swift */; };
 		CB3666201AF7550816B5CD6A /* NCContextMenuComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8932E90EC4278026D86CCCC9 /* NCContextMenuComment.swift */; };
 		D56DFFE5D5014F66A7C9FED0 /* PasscodeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6C501EF1104A6A8569D9C1 /* PasscodeUITests.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
@@ -494,7 +502,7 @@
 		F7517601307F52E60057C9B0 /* NCVideoViewerContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75175C4307F52E60057C9B0 /* NCVideoViewerContentView.swift */; };
 		F7517602307F52E60057C9B0 /* NCVideoVLCPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75175BD307F52E60057C9B0 /* NCVideoVLCPresenter.swift */; };
 		F7517603307F52E60057C9B0 /* NCMediaViewerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75175D5307F52E60057C9B0 /* NCMediaViewerDetailView.swift */; };
-		F7517604307F52E60057C9B0 /* NCNextcloudMediaViewerLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75175DD307F52E60057C9B0 /* NCNextcloudMediaViewerLoader.swift */; };
+		F7517604307F52E60057C9B0 /* NCMediaViewerAppAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75175DD307F52E60057C9B0 /* NCMediaViewerAppAdapter.swift */; };
 		F7517605307F52E60057C9B0 /* NCMediaViewerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75175C9307F52E60057C9B0 /* NCMediaViewerModel.swift */; };
 		F7517606307F52E60057C9B0 /* NCVideoAVPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75175B3307F52E60057C9B0 /* NCVideoAVPlayerViewController.swift */; };
 		F7517608307F52E60057C9B0 /* NCMediaViewerAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75175CD307F52E60057C9B0 /* NCMediaViewerAppearance.swift */; };
@@ -1057,11 +1065,6 @@
 		F7FDFF6F2E437E55000D7688 /* NCAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FDFF592E437E55000D7688 /* NCAccount.swift */; };
 		F7FF2CB12842159500EBB7A1 /* NCSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */; };
 		F7FFFCA22FB300600015441E /* NCAssistantSharedTextStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FFFC9D2FB300440015441E /* NCAssistantSharedTextStore.swift */; };
-		AC20261124DB000000000000 /* NCMediaViewerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000000 /* NCMediaViewerItem.swift */; };
-		AC20261124DB000000000001 /* NCMediaViewerLoading.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000001 /* NCMediaViewerLoading.swift */; };
-		AC20261124DB000000000002 /* NCMediaViewerItem+Nextcloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000002 /* NCMediaViewerItem+Nextcloud.swift */; };
-		AC20261124DB000000000003 /* NCMediaViewerModel+Nextcloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000003 /* NCMediaViewerModel+Nextcloud.swift */; };
-		AC20261124DB000000000004 /* NCMediaViewerTestLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000004 /* NCMediaViewerTestLoader.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1415,6 +1418,13 @@
 		AC13ADAF2026101300000001 /* NCMediaAdaptiveLayoutViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaAdaptiveLayoutViewTests.swift; sourceTree = "<group>"; };
 		AC14ADAF2026101400000001 /* NCMediaAdaptiveControlsLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaAdaptiveControlsLayout.swift; sourceTree = "<group>"; };
 		AC14ADAF2026101400000011 /* NCMediaViewerPreviewLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerPreviewLoader.swift; sourceTree = "<group>"; };
+		AC20261124DA000000000000 /* NCMediaViewerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerItem.swift; sourceTree = "<group>"; };
+		AC20261124DA000000000002 /* NCMediaViewerItem+App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMediaViewerItem+App.swift"; sourceTree = "<group>"; };
+		AC20261124DA000000000003 /* NCMediaViewerModel+App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMediaViewerModel+App.swift"; sourceTree = "<group>"; };
+		AC20261125DA000000000001 /* NCMediaViewerNetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerNetworkMonitor.swift; sourceTree = "<group>"; };
+		AC20261124DA000000000004 /* NCMediaViewerTestLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerTestLoader.swift; sourceTree = "<group>"; };
+		AC20261125DA000000000000 /* NCMediaViewerLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerLoader.swift; sourceTree = "<group>"; };
+		AC20261125EA000000000000 /* NCExifData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCExifData.swift; sourceTree = "<group>"; };
 		AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
 		AF2D7C7B2742556F00ADF566 /* NCShareLinkCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareLinkCell.swift; sourceTree = "<group>"; };
 		AF2D7C7D2742559100ADF566 /* NCShareUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareUserCell.swift; sourceTree = "<group>"; };
@@ -1450,6 +1460,7 @@
 		C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCameraRollTests.swift; sourceTree = "<group>"; };
 		C0DEDA7E30C1000100A00001 /* NCAutoUploadDateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAutoUploadDateTests.swift; sourceTree = "<group>"; };
 		C4A84566BEF80733CC99BA52 /* NCAccountSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAccountSetupView.swift; sourceTree = "<group>"; };
+		4437B0C1300D000100A00001 /* NCBackupExclusionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCBackupExclusionTests.swift; sourceTree = "<group>"; };
 		CE0CD9A00D74B01055F238E9 /* NCErrorContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCErrorContext.swift; sourceTree = "<group>"; };
 		CE2A4CC67E2712B70FCFC090 /* NCLoginServerErrorClassifierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginServerErrorClassifierTests.swift; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
@@ -1660,7 +1671,7 @@
 		F75175D9307F52E60057C9B0 /* NCMediaViewerThumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerThumbnail.swift; sourceTree = "<group>"; };
 		F75175DB307F52E60057C9B0 /* NCMediaViewerHostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerHostingController.swift; sourceTree = "<group>"; };
 		F75175DC307F52E60057C9B0 /* NCMediaViewerPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerPresenter.swift; sourceTree = "<group>"; };
-		F75175DD307F52E60057C9B0 /* NCNextcloudMediaViewerLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNextcloudMediaViewerLoader.swift; sourceTree = "<group>"; };
+		F75175DD307F52E60057C9B0 /* NCMediaViewerAppAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerAppAdapter.swift; sourceTree = "<group>"; };
 		F75175DE307F52E60057C9B0 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		F752BA042E58C05200616A26 /* Maintenance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Maintenance.swift; sourceTree = "<group>"; };
 		F753701822723D620041C76C /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = gl.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2080,11 +2091,6 @@
 		F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSectionHeader.xib; sourceTree = "<group>"; };
 		F7FFFC9D2FB300440015441E /* NCAssistantSharedTextStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantSharedTextStore.swift; sourceTree = "<group>"; };
 		F902B24E44354B6D9F329F12 /* NCPasscodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCPasscodeView.swift; sourceTree = "<group>"; };
-		AC20261124DA000000000000 /* NCMediaViewerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMediaViewerItem.swift"; sourceTree = "<group>"; };
-		AC20261124DA000000000001 /* NCMediaViewerLoading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMediaViewerLoading.swift"; sourceTree = "<group>"; };
-		AC20261124DA000000000002 /* NCMediaViewerItem+Nextcloud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMediaViewerItem+Nextcloud.swift"; sourceTree = "<group>"; };
-		AC20261124DA000000000003 /* NCMediaViewerModel+Nextcloud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMediaViewerModel+Nextcloud.swift"; sourceTree = "<group>"; };
-		AC20261124DA000000000004 /* NCMediaViewerTestLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerTestLoader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -2305,6 +2311,7 @@
 				CE2A4CC67E2712B70FCFC090 /* NCLoginServerErrorClassifierTests.swift */,
 				AC13ADAF2026101300000001 /* NCMediaAdaptiveLayoutViewTests.swift */,
 				C0DEDA7E30C1000100A00001 /* NCAutoUploadDateTests.swift */,
+				4437B0C1300D000100A00001 /* NCBackupExclusionTests.swift */,
 				320C20803A58DAF7575440A8 /* NKErrorUserFriendlyMessageTests.swift */,
 				C0DEA070306D000100000007 /* NCAutoUploadAssetTests.swift */,
 				F76BED7B306D0000002E1442 /* NCPhotoLibraryAssetTests.swift */,
@@ -2367,6 +2374,17 @@
 				AB1028260000000000020004 /* NCShareViewModel+Upload.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		AC20261124DC000000000001 /* AppIntegration */ = {
+			isa = PBXGroup;
+			children = (
+				F75175DD307F52E60057C9B0 /* NCMediaViewerAppAdapter.swift */,
+				AC20261124DA000000000003 /* NCMediaViewerModel+App.swift */,
+				AC20261125DA000000000001 /* NCMediaViewerNetworkMonitor.swift */,
+				AC20261124DA000000000002 /* NCMediaViewerItem+App.swift */,
+			);
+			path = AppIntegration;
 			sourceTree = "<group>";
 		};
 		AF93471327E235EB002537EE /* Advanced */ = {
@@ -2873,9 +2891,9 @@
 				F75175C7307F52E60057C9B0 /* NCMediaPlaybackOptions.swift */,
 				F75175C8307F52E60057C9B0 /* NCMediaViewerLoadingPolicy.swift */,
 				F75175C9307F52E60057C9B0 /* NCMediaViewerModel.swift */,
-				AC20261124DA000000000001 /* NCMediaViewerLoading.swift */,
+				AC20261125DA000000000000 /* NCMediaViewerLoader.swift */,
 				AC20261124DA000000000000 /* NCMediaViewerItem.swift */,
-				F75175CA307F52E60057C9B0 /* NCMediaViewerView.swift */,
+				AC20261125EA000000000000 /* NCExifData.swift */,
 				F75175CB307F52E60057C9B0 /* NCVideoPlaybackPresentationContext.swift */,
 			);
 			path = Core;
@@ -2905,6 +2923,7 @@
 		F75175DA307F52E60057C9B0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				F75175CA307F52E60057C9B0 /* NCMediaViewerView.swift */,
 				F75175D3307F52E60057C9B0 /* Controls */,
 				F75175D4307F52E60057C9B0 /* NCMediaAdaptiveLayoutView.swift */,
 				F75175D5307F52E60057C9B0 /* NCMediaViewerDetailView.swift */,
@@ -2919,14 +2938,14 @@
 		F75175DF307F52E60057C9B0 /* NCViewerMedia */ = {
 			isa = PBXGroup;
 			children = (
+				F75175DB307F52E60057C9B0 /* NCMediaViewerHostingController.swift */,
+				F75175DC307F52E60057C9B0 /* NCMediaViewerPresenter.swift */,
+				F75175DE307F52E60057C9B0 /* README.md */,
 				F75175CC307F52E60057C9B0 /* Core */,
 				F75175DA307F52E60057C9B0 /* Views */,
 				F75175C6307F52E60057C9B0 /* Content */,
 				F75175D0307F52E60057C9B0 /* Helpers */,
-				F75175DB307F52E60057C9B0 /* NCMediaViewerHostingController.swift */,
-				F75175DC307F52E60057C9B0 /* NCMediaViewerPresenter.swift */,
-				AC20261124DC000000000001 /* Nextcloud */,
-				F75175DE307F52E60057C9B0 /* README.md */,
+				AC20261124DC000000000001 /* AppIntegration */,
 			);
 			path = NCViewerMedia;
 			sourceTree = "<group>";
@@ -3885,16 +3904,6 @@
 			path = Account;
 			sourceTree = "<group>";
 		};
-		AC20261124DC000000000001 /* Nextcloud */ = {
-			isa = PBXGroup;
-			children = (
-				F75175DD307F52E60057C9B0 /* NCNextcloudMediaViewerLoader.swift */,
-				AC20261124DA000000000003 /* NCMediaViewerModel+Nextcloud.swift */,
-				AC20261124DA000000000002 /* NCMediaViewerItem+Nextcloud.swift */,
-			);
-			path = Nextcloud;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -4681,6 +4690,7 @@
 				BAF64949B487A080A98F83F2 /* NKErrorUserFriendlyMessageTests.swift in Sources */,
 				AC13ADAF2026101300000002 /* NCMediaAdaptiveLayoutViewTests.swift in Sources */,
 				C0DEDA7E30C1000100A00002 /* NCAutoUploadDateTests.swift in Sources */,
+				4437B0C1300D000100A00002 /* NCBackupExclusionTests.swift in Sources */,
 				C0DEA070306D000100000008 /* NCAutoUploadAssetTests.swift in Sources */,
 				F76BED7E306D0000002E1442 /* NCPhotoLibraryAssetTests.swift in Sources */,
 				A1E2EE01000000000000000A /* NCEndToEndKeySetArchiveTests.swift in Sources */,
@@ -5197,12 +5207,14 @@
 				F7517601307F52E60057C9B0 /* NCVideoViewerContentView.swift in Sources */,
 				F7517602307F52E60057C9B0 /* NCVideoVLCPresenter.swift in Sources */,
 				F7517603307F52E60057C9B0 /* NCMediaViewerDetailView.swift in Sources */,
-				F7517604307F52E60057C9B0 /* NCNextcloudMediaViewerLoader.swift in Sources */,
+				F7517604307F52E60057C9B0 /* NCMediaViewerAppAdapter.swift in Sources */,
 				F7517605307F52E60057C9B0 /* NCMediaViewerModel.swift in Sources */,
-				AC20261124DB000000000003 /* NCMediaViewerModel+Nextcloud.swift in Sources */,
-				AC20261124DB000000000002 /* NCMediaViewerItem+Nextcloud.swift in Sources */,
-				AC20261124DB000000000001 /* NCMediaViewerLoading.swift in Sources */,
+				AC20261124DB000000000003 /* NCMediaViewerModel+App.swift in Sources */,
+				AC20261125DB000000000001 /* NCMediaViewerNetworkMonitor.swift in Sources */,
+				AC20261124DB000000000002 /* NCMediaViewerItem+App.swift in Sources */,
+				AC20261125DB000000000000 /* NCMediaViewerLoader.swift in Sources */,
 				AC20261124DB000000000000 /* NCMediaViewerItem.swift in Sources */,
+				AC20261125EB000000000000 /* NCExifData.swift in Sources */,
 				F7517606307F52E60057C9B0 /* NCVideoAVPlayerViewController.swift in Sources */,
 				F7517608307F52E60057C9B0 /* NCMediaViewerAppearance.swift in Sources */,
 				AC14ADAF2026101400000002 /* NCMediaAdaptiveControlsLayout.swift in Sources */,
@@ -6615,7 +6627,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
@@ -6682,7 +6694,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;

@@ -192,9 +192,9 @@ final class NCVideoAdaptiveControlsView: UIView, NCVideoPlaybackControls {
         ])
     }
 
-    func setFileName(_ name: String, account: String = "") {
+    func setFileName(_ name: String, playbackProgressTint: Color = .accentColor) {
         (actionsContainerView.subviews.first as? NCMediaAdaptiveActionsView)?.setFileName(name)
-        if layoutState.account != account { layoutState.account = account }
+        if layoutState.playbackProgressTint != playbackProgressTint { layoutState.playbackProgressTint = playbackProgressTint }
     }
 
     // Adaptive actions are already in the standalone header.
@@ -450,7 +450,7 @@ private struct NCVideoAdaptiveControlsSwiftUIView: View {
                 }
             )
             .disabled(!state.isSeekingEnabled)
-            .tint(Color.ncViewerPlaybackProgressTint(account: layoutState.account))
+            .tint(layoutState.playbackProgressTint)
             .opacity(state.isSeekingEnabled ? 1 : 0.45)
 
             timeLabel(state.remainingText.trimmingCharacters(in: CharacterSet(charactersIn: "−-")))

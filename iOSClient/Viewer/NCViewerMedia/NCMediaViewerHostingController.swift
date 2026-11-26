@@ -102,7 +102,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                     return
                 }
 
-                await self.model.reloadPage(index: self.model.selectedIndex)
+                await self.model.refreshPage(index: self.model.selectedIndex)
             }
         )
 
@@ -452,7 +452,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     }
 
     /// Presents the SwiftUI media detail panel.
-    private func presentDetailView(metadata: NCMediaViewerItem, index: Int, exif: ExifData, animated: Bool) {
+    private func presentDetailView(metadata: NCMediaViewerItem, index: Int, exif: NCExifData, animated: Bool) {
         let detailView = NCMediaViewerDetailView(metadata: metadata, exif: exif)
 
         // Only images have inline information. Audio/video keep the standard Info sheet.

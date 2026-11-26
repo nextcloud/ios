@@ -109,39 +109,44 @@ extension NCManageDatabase {
     }
 
     /// Evicts a viewer original without removing its previews or changing offline availability.
-    /// Check protection and remove the local record in the same Realm write as the file removal.
+    /// Protection is checked and the local record removed in one short Realm write; the file system
+    /// is touched only afterwards, so the shared Realm queue is never blocked by file I/O.
     func removeViewerOriginalIfNotOfflineAsync(ocId: String, account: String) async {
-        await core.performRealmWriteAsync { realm in
+        let released: (userId: String, urlBase: String, fileNames: [String])?? = await core.performRealmWriteWithResultAsync { realm in
             guard let metadata = realm.objects(tableMetadata.self)
                 .filter("ocId == %@ AND account == %@", ocId, account).first,
                   metadata.session.isEmpty,
                   metadata.status == NCGlobal.shared.metadataStatusNormal,
                   let local = realm.objects(tableLocalFile.self)
                 .filter("ocId == %@ AND account == %@", ocId, account).first,
-                  !local.offline else { return }
+                  !local.offline else { return nil }
 
             let offlineDirectories = realm.objects(tableDirectory.self)
                 .filter("account == %@ AND offline == true", account)
             for directory in offlineDirectories {
                 let folder = directory.serverUrl.hasSuffix("/") ? String(directory.serverUrl.dropLast()) : directory.serverUrl
                 if metadata.serverUrl == folder || metadata.serverUrl.hasPrefix(folder + "/") {
-                    return
+                    return nil
                 }
             }
 
-            let fileSystem = NCUtilityFileSystem()
-            let manager = FileManager.default
+            let fileNames = Set([metadata.fileName, metadata.fileNameView]).filter { !$0.isEmpty }
+            let result = (userId: metadata.userId, urlBase: metadata.urlBase, fileNames: Array(fileNames))
+            realm.delete(local)
+            return result
+        }
+
+        guard let released = released ?? nil else { return }
+
+        // Preserve the empty storage placeholder required by the File Provider extension,
+        // as the existing cache removal does.
+        let fileSystem = NCUtilityFileSystem()
+        for name in released.fileNames {
+            let path = fileSystem.getDirectoryProviderStorageOcId(ocId, fileName: name, userId: released.userId, urlBase: released.urlBase)
             do {
-                for name in Set([metadata.fileName, metadata.fileNameView]) where !name.isEmpty {
-                    let path = fileSystem.getDirectoryProviderStorageOcId(ocId, fileName: name, userId: metadata.userId, urlBase: metadata.urlBase)
-                    if manager.fileExists(atPath: path) {
-                        // Preserve the empty storage placeholder, as the existing cache removal does.
-                        try Data().write(to: URL(fileURLWithPath: path), options: .atomic)
-                    }
-                }
-                realm.delete(local)
+                try Data().write(to: URL(fileURLWithPath: path), options: .atomic)
             } catch {
-                nkLog(error: "Unable to release viewer image: \(error)")
+                nkLog(error: "Unable to release viewer original: \(error)")
             }
         }
     }

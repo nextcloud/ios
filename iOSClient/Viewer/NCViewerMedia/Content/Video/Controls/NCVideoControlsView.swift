@@ -146,8 +146,8 @@ final class NCVideoControlsView: UIView, NCVideoPlaybackControls {
         state.isPlaying = isPlaying
     }
 
-    func setAccount(_ account: String) {
-        if layoutState.account != account { layoutState.account = account }
+    func setPlaybackProgressTint(_ tint: Color) {
+        if layoutState.playbackProgressTint != tint { layoutState.playbackProgressTint = tint }
     }
 
     func updateProgress(progress: Float, elapsedText: String, remainingText: String) {
@@ -413,8 +413,8 @@ final class NCVideoControlsState: ObservableObject {
 @MainActor
 final class NCVideoControlsLayoutState: ObservableObject {
     @Published var topActionsTopOffset: CGFloat = 0
-    /// Selected file account for the seek bar branding color in either layout.
-    @Published var account = ""
+    /// Seek bar tint supplied by the host app.
+    @Published var playbackProgressTint: Color = .accentColor
 }
 
 // MARK: - SwiftUI Controls
@@ -539,7 +539,7 @@ private struct NCVideoControlsSwiftUIView: View {
                 }
             )
             .disabled(!state.isSeekingEnabled)
-            .tint(Color.ncViewerPlaybackProgressTint(account: layoutState.account))
+            .tint(layoutState.playbackProgressTint)
             .opacity(state.isSeekingEnabled ? 1 : 0.45)
 
             timeLabel(state.remainingText.trimmingCharacters(in: CharacterSet(charactersIn: "−-")))

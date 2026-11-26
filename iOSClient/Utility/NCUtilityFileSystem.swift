@@ -495,12 +495,27 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         let appScan = directoryGroup + "/" + NCGlobal.shared.appScan
         if !fileManager.fileExists(atPath: appScan) { try? fileManager.createDirectory(atPath: appScan, withIntermediateDirectories: true) }
         if !fileManager.fileExists(atPath: NSTemporaryDirectory()) { try? fileManager.createDirectory(atPath: NSTemporaryDirectory(), withIntermediateDirectories: true) }
-        // Directory Excluded From Backup
-        if let url = NSURL(string: directoryDocuments) {
-            try? url.setResourceValue(true, forKey: URLResourceKey.isExcludedFromBackupKey)
-        }
-        if let url = NSURL(string: directoryGroup) {
-            try? url.setResourceValue(true, forKey: URLResourceKey.isExcludedFromBackupKey)
+        // Keep downloaded and offline files out of iCloud Backup: they can be downloaded
+        // again from the server. The database and account data stay in the backup, so a
+        // restored device keeps its accounts.
+        excludeFromBackup(path: directoryDocuments)
+        excludeFromBackup(path: getDirectoryProviderStorage())
+        excludeFromBackup(path: appScan)
+    }
+
+    /// Excludes a directory and everything inside it from iCloud and device backups.
+    @discardableResult
+    func excludeFromBackup(path: String) -> Bool {
+        guard !path.isEmpty else { return false }
+        var url = URL(fileURLWithPath: path, isDirectory: true)
+        var values = URLResourceValues()
+        values.isExcludedFromBackup = true
+        do {
+            try url.setResourceValues(values)
+            return true
+        } catch {
+            nkLog(error: "Unable to exclude \(url.lastPathComponent) from backup: \(error)")
+            return false
         }
     }
 
