@@ -12,6 +12,7 @@ struct NCAudioViewerContentView: View {
     let metadata: NCMediaViewerItem
     let localURL: URL
     let previewURL: URL?
+    let playbackProgressTint: Color
     let backgroundStyle: NCViewerBackgroundStyle
     let navigationBar: UINavigationBar?
     let canGoPrevious: Bool
@@ -34,6 +35,7 @@ struct NCAudioViewerContentView: View {
         localURL: URL,
         previewURL: URL? = nil,
         backgroundStyle: NCViewerBackgroundStyle = .system,
+        playbackProgressTint: Color = .accentColor,
         navigationBar: UINavigationBar? = nil,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
@@ -52,6 +54,7 @@ struct NCAudioViewerContentView: View {
         self.localURL = localURL
         self.previewURL = previewURL
         self.backgroundStyle = backgroundStyle
+        self.playbackProgressTint = playbackProgressTint
         self.navigationBar = navigationBar
         self.canGoPrevious = canGoPrevious
         self.canGoNext = canGoNext
@@ -177,7 +180,7 @@ struct NCAudioViewerContentView: View {
                                 in: 0...max(model.duration, 1)
                             )
                             .disabled(!isSelected || model.duration <= 0)
-                            .tint(Color.ncViewerPlaybackProgressTint(account: metadata.account))
+                            .tint(playbackProgressTint)
 
                             Text(model.remainingTimeText)
                                 .font(.subheadline.monospacedDigit())

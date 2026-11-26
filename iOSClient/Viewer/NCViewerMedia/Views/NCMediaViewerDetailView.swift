@@ -9,7 +9,7 @@ import NextcloudKit
 // MARK: - Media Viewer Detail View
 struct NCMediaViewerDetailView: View {
     let metadata: NCMediaViewerItem
-    let exif: ExifData
+    let exif: NCExifData
     /// Adaptive inline use omits missing fields; normal sheets retain their existing presentation.
     var showsOnlyAvailableData = false
     /// Inline panels pass clear so their containing island owns the background.
@@ -436,8 +436,8 @@ private struct FlowingDetailValues: View {
         return metadata
     }()
 
-    let exif: ExifData = {
-        var exif = ExifData()
+    let exif: NCExifData = {
+        var exif = NCExifData()
         exif.make = "Apple"
         exif.model = "iPhone 17 Pro"
         exif.lensModel = "iPhone 17 Pro back triple camera 6.765mm f/1.78"
@@ -466,5 +466,5 @@ private struct FlowingDetailValues: View {
         return metadata
     }()
 
-    NCMediaViewerDetailView(metadata: metadata, exif: ExifData())
+    NCMediaViewerDetailView(metadata: metadata, exif: NCExifData())
 }

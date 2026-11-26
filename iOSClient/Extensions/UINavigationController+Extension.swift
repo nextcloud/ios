@@ -6,6 +6,9 @@ import Foundation
 import UIKit
 
 extension UINavigationController {
+    open override var childForStatusBarStyle: UIViewController? {
+        return topViewController?.childForStatusBarStyle ?? topViewController
+    }
 
     // https://stackoverflow.com/questions/6131205/how-to-find-topmost-view-controller-on-ios
     override func topMostViewController() -> UIViewController {

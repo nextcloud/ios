@@ -37,9 +37,7 @@ struct NCMediaViewerPageView: View {
                 .ignoresSafeArea()
 
             switch page.state {
-            case .idle,
-                 .loadingMetadata,
-                 .checkingLocalFile:
+            case .idle:
                 Color.ncViewerBackground(backgroundStyle)
                     .ignoresSafeArea()
 
@@ -205,6 +203,7 @@ struct NCMediaViewerPageView: View {
                 localURL: localURL,
                 previewURL: previewURL,
                 backgroundStyle: backgroundStyle,
+                playbackProgressTint: model.playbackProgressTint(metadata.account),
                 navigationBar: navigationBar,
                 canGoPrevious: canGoPrevious,
                 canGoNext: canGoNext,

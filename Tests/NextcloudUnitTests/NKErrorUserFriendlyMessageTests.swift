@@ -60,6 +60,16 @@ struct NKErrorUserFriendlyMessageTests {
         #expect(NKError(error: CancellationError()).userFriendlyMessage() == nil)
     }
 
+    @Test("Says no server was found when a login gets a 404")
+    func loginMessages() {
+        let notFound = NKError(errorCode: 404, errorDescription: "404: Not found")
+        let timeout = NKError(errorCode: NSURLErrorTimedOut, errorDescription: "The request timed out.")
+
+        #expect(notFound.userFriendlyMessage(for: .login) == localized("_error_login_server_not_found_"))
+        #expect(NKError.invalidData.userFriendlyMessage(for: .login) == NKError.invalidData.userFriendlyMessage())
+        #expect(timeout.userFriendlyMessage(for: .login) == timeout.userFriendlyMessage())
+    }
+
     @Test("Words different kinds of failure differently")
     func kindMessages() {
         let timeout = NKError(errorCode: NSURLErrorTimedOut, errorDescription: "The request timed out.").userFriendlyMessage()
@@ -91,7 +101,7 @@ struct NKErrorUserFriendlyMessageTests {
 
     @Test("Titles say what failed")
     func failureTitles() throws {
-        let contexts: [NCErrorContext] = [.upload(fileName: "f"), .download(fileName: "f"), .delete(fileName: "f"), .rename, .moveOrCopy(fileName: "f"), .createFolder(folderName: "f"), .favorite(fileName: "f"), .createDocument(fileName: "f"), .openDocument(fileName: "f")]
+        let contexts: [NCErrorContext] = [.upload(fileName: "f"), .download(fileName: "f"), .delete(fileName: "f"), .rename, .moveOrCopy(fileName: "f"), .createFolder(folderName: "f"), .favorite(fileName: "f"), .createDocument(fileName: "f"), .openDocument(fileName: "f"), .login]
 
         #expect(NCErrorContext.generic.failureTitle == nil)
         #expect(NCErrorContext.upload(fileName: "IMG_0042.jpg").failureTitle?.contains("IMG_0042.jpg") == true)

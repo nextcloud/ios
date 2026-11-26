@@ -13,7 +13,7 @@ struct NCMediaViewerPreviewLoader: NCMediaViewerLoading {
     func metadata(for ocId: String, account: String) async -> NCMediaViewerItem? { nil }
     func metadataForDetails(for metadata: NCMediaViewerItem) async -> NCMediaViewerItem { metadata }
     @MainActor
-    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (ExifData) -> Void) { completion(ExifData()) }
+    func exif(for metadata: NCMediaViewerItem, completion: @escaping @MainActor @Sendable (NCExifData) -> Void) { completion(NCExifData()) }
     func localMediaURL(for metadata: NCMediaViewerItem) async -> URL? { nil }
     func previewURL(for metadata: NCMediaViewerItem, ext: String) async -> URL? { imageURL }
     func downloadMedia(for metadata: NCMediaViewerItem, onDownloadStarted: (@Sendable () async -> Void)?) async throws -> URL { throw URLError(.unsupportedURL) }
@@ -22,7 +22,7 @@ struct NCMediaViewerPreviewLoader: NCMediaViewerLoading {
     func cancelDownload(for ocId: String) async { }
     func cancelLivePhotoMediaDownload(for metadata: NCMediaViewerItem) async { }
     func cancelAllDownloads() async { }
-    func releaseOriginalImage(for metadata: NCMediaViewerItem) async { }
+    func releaseOriginal(for metadata: NCMediaViewerItem, includingOriginal: Bool, includingLivePhotoCompanion: Bool) async { }
 
     func fileProviderStorageExists(for metadata: NCMediaViewerItem) -> Bool { false }
     func videoSubtitleTrack(for metadata: NCMediaViewerItem) -> Int? { nil }
@@ -54,7 +54,7 @@ struct NCMediaViewerPreviewLoader: NCMediaViewerLoading {
         }
         let model = NCMediaViewerModel(
             currentMetadata: items[selectedIndex], ocIds: items.map(\.ocId),
-            session: NCSession.Session(account: "", urlBase: "", user: "", userId: ""),
+            account: "",
             loader: NCMediaViewerPreviewLoader(imageURL: imageURL)
         )
         for (index, metadata) in items.enumerated() {

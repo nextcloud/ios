@@ -1,5 +1,5 @@
 {
-  "originHash" : "5236b0018852b3d5fa374f118d9825d5acd8f4ce80430d339706d09182995ba2",
+  "originHash" : "19cee9bce0527e84fb4b83b6cc3fd1f2677d81935be8a72347c0a85660fdc201",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -204,8 +204,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nextcloud/NextcloudKit",
       "state" : {
-        "branch" : "main",
-        "revision" : "5302228493cc4e62dfce9457beab58737b558495"
+        "revision" : "5898f5d7ea4148c3679959826cf23ed07d430fb1",
+        "version" : "7.7.0"
       }
     },
     {
@@ -233,15 +233,6 @@
       "state" : {
         "revision" : "f4a19a3c313dc2616c70bb49d29a799fb16be837",
         "version" : "2.4.1"
-      }
-    },
-    {
-      "identity" : "qrcodereader.swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/yannickl/QRCodeReader.swift",
-      "state" : {
-        "revision" : "5020b5a47199d8ba80c83a4b4fafd70e9dc9dc7f",
-        "version" : "10.1.1"
       }
     },
     {

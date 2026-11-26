@@ -11,11 +11,6 @@ import UIKit
 import NextcloudKit
 import Alamofire
 
-protocol ClientCertificateDelegate: AnyObject {
-    func onIncorrectPassword()
-    func didAskForClientCertificate()
-}
-
 protocol NCTransferDelegate: AnyObject {
     var sceneIdentifier: String { get }
 
@@ -72,7 +67,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     var lastReachability: Bool = true
     var networkReachability: NKTypeReachability?
-    weak var certificateDelegate: ClientCertificateDelegate?
     var p12Data: Data?
     var p12Password: String?
 
@@ -123,12 +117,11 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
             if let p12Data = self.p12Data,
                let cert = (p12Data, self.p12Password) as? UserCertificate,
                let pkcs12 = try? PKCS12(pkcs12Data: cert.data, password: cert.password, onIncorrectPassword: {
-                   self.certificateDelegate?.onIncorrectPassword()
+                   nkLog(error: "The client certificate password is incorrect.")
                }) {
                 let creds = PKCS12.urlCredential(for: pkcs12)
                 completionHandler(URLSession.AuthChallengeDisposition.useCredential, creds)
             } else {
-                self.certificateDelegate?.didAskForClientCertificate()
                 completionHandler(URLSession.AuthChallengeDisposition.cancelAuthenticationChallenge, nil)
             }
         } else {

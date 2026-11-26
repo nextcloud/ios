@@ -77,8 +77,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     private func startNextcloud(scene: UIScene, withActivateSceneForAccount activateSceneForAccount: Bool) {
-        // App not in background
-        isAppInBackground = false
+        // iOS also connects scenes when it launches the app in the background (background
+        // tasks, URLSession events, location). The app stays in background mode then, so
+        // upload results are written to the database directly instead of waiting for a flush
+        // that only a foreground app performs.
+        if UIApplication.shared.applicationState != .background {
+            isAppInBackground = false
+        }
         // Open Realm
         NCManageDatabase.shared.openRealm()
         // Table account
@@ -125,18 +130,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
 
-            if NCBrandOptions.shared.disable_intro {
-                if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
-                    let navigationController = UINavigationController(rootViewController: viewController)
-                    window?.rootViewController = navigationController
-                    window?.makeKeyAndVisible()
-                }
-            } else {
-                if let navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController {
-                    window?.rootViewController = navigationController
-                    window?.makeKeyAndVisible()
-                }
-            }
+            window?.rootViewController = NCAccountSetupView.viewController()
+            window?.makeKeyAndVisible()
         }
     }
 
@@ -223,6 +218,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
+        isAppInBackground = false
         hidePrivacyProtectionWindow()
 
         guard let controller = window?.rootViewController as? NCMainTabBarController else {

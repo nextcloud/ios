@@ -4,7 +4,14 @@
   SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-# Experimental adaptive media layout
+# Media viewer
+
+The viewer displays images, Live Photos, audio and video with AVPlayer or VLC.
+It shares paging and loading state between the normal layout and the experimental
+adaptive (DUO) layout. The sections below describe the data boundary, original-file
+buffer, component ownership and manual regression checks.
+
+## Experimental adaptive layout
 
 The viewer has independent normal and adaptive controls. In adaptive mode, the
 media occupies the area above an active horizontal fold, while standalone buttons and
@@ -16,13 +23,14 @@ The only feature switch is in [Views/NCMediaAdaptiveLayoutView.swift](Views/NCMe
 
 ```swift
 enum NCMediaAdaptiveLayoutConfiguration {
-    static let isAdaptiveLayoutEnabled = false
+    static let isAdaptiveLayoutEnabled = true
 }
 ```
 
-The switch is currently `false` for normal-mode regression verification in
-TestFlight. Setting it to `true` enables paged images, audio, video covers and
-both fullscreen video engines (AVPlayer and VLC). There is no user-facing setting.
+The switch is currently `true`. It enables adaptive layouts for paged images,
+audio, video covers and both fullscreen video engines (AVPlayer and VLC) when a
+suitable horizontal fold is active. Set it to `false` for normal-mode regression
+verification in TestFlight. There is no user-facing setting.
 Disabling the adaptive layout does not revert shared changes: normal audio uses
 −10/+10 seeking, normal audio/video progress bars use account branding and a
 single remaining-time label, information panels omit the repeated filename and prefer EXIF
@@ -80,47 +88,80 @@ canvas exploration does not change saved playback preferences. These are graphic
 previews, not verification of playback or navigation. Xcode still compiles preview
 code; running/installing the complete app is unnecessary.
 
-Live Photo images and companion videos follow the same original-file buffer.
-The HD image appears as soon as it is ready; playback waits for the companion.
-Leaving a page stops playback without cancelling buffered downloads. Eviction
-removes both originals, checking offline protection independently for each file.
-
 ## Viewer data boundary
+
+The model accepts an account identifier rather than the app session. The host
+also supplies its playback progress tint; app session lookup and branding stay
+outside the core.
 
 Pages, thumbnails, details and playback use `NCMediaViewerItem`, a `Sendable`
 value snapshot. `NCMediaViewerLoading` accepts and returns these values and also
-handles VLC track preferences. A different app can implement this protocol with
-its own persistence layer.
+handles VLC track preferences. The protocol lives beside the common implementation
+in `Core/NCMediaViewerLoader.swift`; it also allows preview and test loaders to
+replace the complete pipeline. To reuse the common loader with another database,
+implement `NCMediaViewerServices` instead.
 
 The current app still opens the viewer with `tableMetadata`. The overload in
-`Nextcloud/NCMediaViewerModel+Nextcloud.swift` converts it through `NCMediaViewerLoader`.
-The `Nextcloud/` directory groups the app-specific loader and conversion extensions.
-The loader retains detached full records for the lifetime of the viewer so app
+`AppIntegration/NCMediaViewerModel+App.swift` converts it through `NCMediaViewerLoader`.
+`Core/NCMediaViewerLoader.swift` is the common loader: it validates local files,
+downloads previews through NextcloudKit, coordinates original downloads and owns
+cancellation. Its `NCMediaViewerServices` dependency supplies the host app calls.
+`AppIntegration/NCMediaViewerAppAdapter.swift` implements those calls using the
+current database, networking, storage paths and EXIF helpers. A GRDB host supplies
+its own services implementation without replacing the loader.
+The `AppIntegration/` directory groups these app services and conversion extensions.
+The app adapter retains detached full records for the lifetime of the viewer so app
 menus and EXIF helpers keep all their fields, including permissions and metadata
 that is not persisted yet. Do not rebuild database records from the reduced item.
 
 Image details request placeholder hydration and EXIF through the loader. The
-Nextcloud implementation keeps the existing metadata fallback, local file reading
-and location lookup. EXIF reads alone do not download the original image.
+app adapter keeps the existing metadata fallback, local file reading
+and location lookup. `Core/NCExifData.swift` is the public, `Sendable` data container
+shared with the host app; reading EXIF remains an app service. EXIF reads alone do
+not download the original image.
 
 This is the data boundary, not the library extraction: the hosting controller,
 player menus, subtitle picker and other Nextcloud app services still need app
-integration when extracting the viewer. Verify rename, sharing, EXIF, Live Photos
+integration when extracting the viewer. Shared preferences, transfer coordination,
+certificate handling, rendering helpers and resources also need explicit placement
+before the folder can build as a separate library. Verify rename, sharing, EXIF, Live Photos
 and VLC track selection alongside the playback checks above.
 
-## Original image buffer
+## Original image, Live Photo and audio buffer
 
-The existing prefetch radius is five pages on either side of the current page.
-Image originals load inside this window; videos and audio retain their existing
-loading rules. During thumbnail dragging and deceleration, the original buffer
+The prefetch radius is five pages on either side of the current page.
+Image originals and their Live Photo companion videos load inside this window.
+Audio files download only for the selected page; neighbors and thumbnails use
+the server preview (embedded cover art) and never download the audio. Downloaded
+audio follows the same buffer as image originals. Standalone videos retain their
+existing loading rules. During thumbnail
+dragging and deceleration, the original buffer
 stays fixed while previews follow the selection. Once scrolling ends, the buffer
 moves once to the final selection. Already-started downloads can finish; they are
-not repeatedly cancelled and restarted for intermediate thumbnails. Leaving the window releases the original and decoded image state,
-preserving previews. Closing the viewer releases the remaining image originals.
+not repeatedly cancelled and restarted for intermediate thumbnails. Leaving the
+window releases image and audio originals and decoded image state, preserving
+previews. Closing the viewer releases the remaining buffered originals.
+On metered networks (cellular, personal hotspot or Low Data Mode) neighboring
+pages keep their previews: only the selected page downloads its original and
+Live Photo companion. The app supplies this rule through
+`NCMediaViewerLoadingPolicy.app`, which reads `NCMediaViewerNetworkMonitor`
+(`AppIntegration/`); the core policy defaults to downloading neighbors. The check
+runs on every prefetch, so moving to an unmetered network resumes neighbor
+originals at the next page change.
 Files explicitly available offline, including descendants of offline folders,
-are protected. Other pre-existing local originals are also eligible for eviction.
+are protected. Only files the viewer downloaded during the current session are
+eligible for eviction: originals that were already local when they were loaded stay
+on the device, while their decoded state is still dropped. For Live Photos the image
+and the companion video are tracked separately.
 
-In-flight image loads are cancelled and awaited before removal. Re-entry waits
+Live Photo images and companion videos follow the same original-file buffer.
+The HD image appears as soon as it is ready; playback waits for the companion.
+Leaving a page stops playback without cancelling buffered downloads. Eviction
+removes whichever of the two originals the viewer downloaded, checking offline
+protection independently for each file.
+
+In-flight image and companion loads are cancelled and awaited before removal.
+Re-entry waits
 for that removal before starting another load; opening Info shares the active
 page load. Verify fast forward/backward paging, closure during a download, and
 both individual-file and ancestor-folder offline protection on a device.
@@ -131,6 +172,8 @@ Keep these responsibilities separate when editing the viewer:
 
 | Data/state | Owner | Purpose |
 | --- | --- | --- |
+| Host database, original downloads and storage paths | `NCMediaViewerAppAdapter` | Implements `NCMediaViewerServices`; retains full app records and forwards calls to existing app services. |
+| Shared file loading and cancellation | `NCMediaViewerLoader` | Validates local files, retrieves previews through NextcloudKit and coordinates image/Live Photo downloads. |
 | File list, selected page and thumbnails | `NCMediaViewerModel` | One model shared by the pager and adaptive player footer. Video receives it as `mediaViewerModel`; no model is created for folding. |
 | Metadata of a specific page | `NCMediaViewerPageModel` / content view `metadata` | Identifies that page's file, including neighboring pages; do not replace it with `selectedMetadata`. |
 | Audio playback | `NCAudioViewerPlaybackRegistry` / `NCAudioViewerModel` | Existing audio player and position, observed by both normal and adaptive controls. |
@@ -159,11 +202,11 @@ default, but has its own customization entry.
 | Adaptive lower-panel background | `ncViewerAdaptivePanelBackgroundStyle(contentStyle:)` | Common paged-media lower panel only; upper content and normal mode remain independent. |
 | Presented adaptive video background | `ncViewerVideoPlaybackBackgroundStyle(for:isChromeHidden:isFoldedLayout:)` | AVPlayer/VLC root and rendering surface: folded playback stays black across both regions. |
 | Mapping a background style to a color | `UIColor.ncViewerBackground(_:)` | UIKit backgrounds and the SwiftUI `Color` wrapper. |
-| Control island/button fill | `UIColor.ncViewerAdaptiveControlBackground` | Adaptive image/audio islands, video-cover status controls and shared Close/Info/More buttons. |
+| Control island/button fill | `UIColor.ncViewerAdaptiveControlBackground` | Adaptive image/audio islands, video-cover status controls and shared Close/More buttons. |
 | Control text and icon color | `UIColor.ncViewerAdaptiveControlForeground` | Adaptive image/audio and video-cover controls, the common lower panel and shared action buttons. |
 | Control border color/width | `UIColor.ncViewerAdaptiveControlBorder` / `ncViewerAdaptiveControlBorderWidth` | All adaptive control islands and buttons, including thumbnails and video playback controls. |
 | Control contrast in light/dark appearance | `ncViewerAdaptiveControlsColorScheme(for:inherited:)` | The common lower panel: black uses dark appearance, white uses light, system/custom inherit. |
-| Audio/video played-track tint, both layouts | `Color.ncViewerPlaybackProgressTint(account:)` | Selected file account’s `NCBrandColor.shared.getElement(account:)`; other controls retain their palette. |
+| Audio/video played-track tint, both layouts | `NCMediaViewerModel.playbackProgressTint` | Supplied by the app for the selected file account; defaults to the host accent color. The app integration retains the current account branding. |
 | Loading indicator tint | `Color.ncViewerProgressTint(_:)` | Media loading indicators. |
 
 For example, changing an island fill requires editing only
@@ -217,6 +260,11 @@ video playback behavior. Local builds and tests remain user-run in Xcode.
 
 | Component | Responsibility |
 | --- | --- |
+| `Core/NCMediaViewerModel.swift` | Selection, page cache and original-file buffer. Selected-page and prefetch paths share metadata preparation while retaining distinct loading rules. |
+| `Core/NCMediaViewerLoader.swift` | Loading and host-service contracts, common loader and private download cancellation registry. |
+| `Core/NCMediaViewerItem.swift` / `Core/NCExifData.swift` | Persistence-independent media and EXIF values. |
+| `AppIntegration/NCMediaViewerAppAdapter.swift` | App database, networking, storage paths and EXIF operations. |
+| `AppIntegration/NCMediaViewerModel+App.swift` / `AppIntegration/NCMediaViewerItem+App.swift` | Default app construction, full-record access, metadata conversion and account branding injection. |
 | `Helpers/NCMediaAdaptiveControlsLayout.swift` | Shared spacing, middle-area budget and navigation/footer heights for all adaptive media. |
 | `Views/NCMediaAdaptiveLayoutView.swift` | Shared UIKit geometry, normal/adaptive visibility and layout change callback. Keeps the media view in place. |
 | `Content/Image/Controls/NCImageControlsView.swift` | Normal thumbnail overlay, with the existing visibility, spacing and selection actions. Normal navigation and the information sheet remain in the hosting controller. |
@@ -225,7 +273,7 @@ video playback behavior. Local builds and tests remain user-run in Xcode.
 | `Views/Controls/NCMediaAdaptiveControlsView.swift` | Lower composition for paged images, audio and video covers: standalone buttons, image-only inline information, playback/cover actions and thumbnails. Also contains the SwiftUI/UIKit bridge and its hosting support types. |
 | `Content/Audio/Controls/NCAudioAdaptiveControlsView.swift` | Independent lower audio controls: ±10 seconds, Play/Pause, seeking and Previous/Next; Repeat/Auto-advance belong to the shared top row, with no information island. Observes the existing playback model. |
 | `NCMediaViewerHostingController.swift` | Owns paged-media navigation actions, title updates and information loading. Hides the upper navigation bar when folded and routes information into the lower controls. |
-| `Core/NCMediaViewerView.swift` | Selects the normal composition or experimental paging bridge using the central switch. |
+| `Views/NCMediaViewerView.swift` | Selects the normal composition or experimental paging bridge using the central switch. |
 | `Views/NCMediaViewerThumbnail.swift` | Shared thumbnail strip and collection implementation for all media; callers own normal/adaptive visibility and spacing. |
 | `Content/Video/NCVideoPlaybackCoverView.swift` | Preview surface, shared cover presentation data/actions and the normal cover controls renderer. |
 | `Content/Video/Controls/NCVideoAdaptivePlaybackCoverControlsView.swift` | Exclusive adaptive cover controls renderer, with the same playback/download actions as normal mode. |
@@ -242,7 +290,8 @@ pager's `ignoresSafeArea()`. This lets the media cover the area behind the
 transparent navigation bar even with the experiment enabled and no active fold.
 The controls hosts retain their own safe-area handling. The adaptive lower panel
 extends through the bottom container safe area so its thumbnail lane stays near
-the lower edge with the 12-point bottom margin (5-point outer spacing plus 7-point thumbnail clearance); top and side safe areas remain
+the lower edge with the current 30-point bottom margin (5-point outer spacing
+plus `thumbnailBottomInset`, currently 25 points); top and side safe areas remain
 in effect for actions. The lower host is created
 only for a suitable active fold, retained across subsequent transitions and
 clipped to its region. If its factory cannot supply controls, the normal layout
@@ -350,8 +399,8 @@ thumbnail strip outside that content and the information panel: with multiple
 pages it remains visible in adaptive mode, even when the user hides normal
 chrome or opens information. Its height matches the normal thumbnail lane;
 the area remains reserved even with a single page, when no selection strip is
-needed. The lane retains its preferred height with 7 points of additional bottom clearance,
-configured by `NCMediaAdaptiveControlsLayout.thumbnailBottomInset`.
+needed. The lane retains its preferred height with additional bottom clearance
+configured by `NCMediaAdaptiveControlsLayout.thumbnailBottomInset` (currently 25 points).
 `ncAdaptiveThumbnailIsland()` in `NCMediaViewerThumbnail.swift` supplies the shared
 rounded preview island, with the adaptive button background and a small horizontal
 inset. Both adaptive containers use it; normal thumbnails keep their existing
@@ -367,7 +416,9 @@ horizontal swipes in the middle controls area also select the previous/next page
 using the same selection flow as the thumbnail strip. This excludes the action
 row and thumbnail strip. When information is open, lower page swipes are ignored
 to preserve vertical scrolling and map gestures. Page swipes are also ignored
-while another page transition is in progress. Audio handles lower swipes locally
+while another page transition is in progress. Swipe-to-dismiss starts only in
+the upper media region while folded, leaving the lower information panel's scroll
+and map gestures independent. Audio handles lower swipes locally
 on the playback island's free background, button/time rows and previous/next row.
 The seek slider is excluded so its horizontal drags only seek within the current
 audio. Local swipes call the same previous/next actions, with the same page-boundary
@@ -404,8 +455,9 @@ options. Normal audio geometry and playback lifecycle remain unchanged.
 
 Audio and video do not reserve an inline information island in adaptive mode.
 Audio uses the middle area for playback and previous/next controls.
-Its top action row is Close, Repeat, Auto-advance and More. Only audio shows
-these two options there; the middle playback row is −10 seconds, Play/Pause and
+Its top action row is Close, Name, Repeat, Auto-advance and More. Presented
+video also exposes repeat/auto-advance in its header; the audio middle playback
+row is −10 seconds, Play/Pause and
 +10 seconds, each in its own button island directly below the header. These three
 buttons fill the remaining middle area and absorb changes in available height.
 A separate 60-point island above Previous/Next contains the seek slider and a
@@ -440,13 +492,15 @@ horizontal region spanning the viewer width, with usable space above and below.
 It does not measure the hinge angle or enforce an exact 90-degree position.
 Without a suitable region, the normal layout remains visible.
 
-The API requires the Xcode 27.1 SDK, matching the CI configuration. These changes
-do not raise the deployment target and retain compatibility with iOS 18; older
-systems use the normal layout.
+The fold API requires an SDK that includes the iOS 27.1 reserved-region APIs;
+CI currently selects Xcode 27.2 in `.github/workflows/xcode.yml`. Runtime access is
+guarded by `#available(iOS 27.1, *)`; earlier supported systems use the normal layout.
+The viewer follows the host target's deployment settings.
 
 When paged media enters or leaves the folded layout, its open information panel is
-closed. In the folded layout, reopening information displays the existing
-`NCMediaViewerDetailView` below the image, using the existing download/EXIF flow.
+closed. Folded images automatically display `NCMediaViewerDetailView` below the
+image and refresh its EXIF when the buffered original becomes ready; there is no
+Info button to reopen a sheet in DUO.
 Live Photo badges and image-analysis interactions still belong to the image
 content; they have not been relocated into the lower controls.
 The LIVE badge uses the owning viewer's actual safe area in normal mode, including
@@ -485,18 +539,26 @@ creation. It does not simulate a particular device or system reserved regions.
 [NCImageZoomViewTests.swift](../../../Tests/NextcloudUnitTests/NCImageZoomViewTests.swift)
 also covers centering of horizontal, vertical and square images through a full /
 upper-region / full resize, and zoom/focal-point preservation through the same
-transition. Image rendering has not been changed for the video-cover correction.
+transition.
 
-Static review compares the normal thumbnail composition and media source files
-with the previous implementation. SwiftLint and project-reference checks cover
-source consistency, not runtime behavior.
-Local builds and tests have not been run, following the repository instructions.
+[NCMediaViewerModelTests.swift](../../../Tests/NextcloudUnitTests/NCMediaViewerModelTests.swift)
+covers value snapshots, app record preservation,
+buffer eviction and re-entry, shared original downloads, selection ordering,
+thumbnail scrubbing, deferred audio loading and injected loader services.
+The thumbnail coordinator shares metadata lookup, preview decoding and cache
+updates; audio still waits for its page load before resolving artwork and does
+not mark deferred loads as completed.
+
+SwiftLint and project-reference checks cover source consistency, not runtime
+behavior. Run builds and tests manually in Xcode, following the repository
+instructions; the coverage described here is not a claim that a particular CI
+run or device pass has succeeded.
 
 Verify the experiment in Xcode:
 
 - With `false`: image zoom, paging, thumbnails, information sheets and AVPlayer/VLC playback.
 - With `true`: folding/unfolding, retained zoom, playback continuity, lower buttons and information, video-cover Play/loading/Cancel actions, and selection of other media types.
-- On iOS 18: normal layout without access to the newer fold API.
+- On the oldest supported iOS version: normal layout without accessing unavailable fold APIs.
 
 The lower layout and relocation of content-specific image controls remain
 experimental work.
@@ -514,8 +576,9 @@ Start with the normal layout before testing the fold:
    pages by swiping both the upper surface and the middle controls area. Check
    that vertical drags do not change pages and map gestures in information do
    not select another page. Also check selecting
-   neighboring pages during a download. Verify Close, Info and More buttons,
-   including share popovers on iPad. Check horizontal and vertical video covers
+   neighboring pages during a download. Verify Close and More buttons, automatic
+   image information in DUO and normal-mode Info, including share popovers on iPad.
+   Check horizontal and vertical video covers
    for centering in the upper region before/after loading and unfolding. The
    `Video Playback Cover - Folded Upper Region` canvas preview isolates that area.
    For audio, verify artwork above, playback controls below without an information island, and
@@ -534,7 +597,7 @@ Start with the normal layout before testing the fold:
    leave playback running. Check rapid selections, dragging thumbnails, seeking,
    subtitle/audio-track menus, pause, close and folding/unfolding. Normal playback
    must not show the footer.
-5. Repeat on iOS 18 to verify the normal fallback.
+5. Repeat on the oldest supported iOS version to verify the normal fallback.
 6. With the switch `true`, repeat normal flows on iPhone and iPad without a fold.
    Rotate the device and resize iPad windows, with controls both visible and
    hidden. Verify thumbnail selection, zoom, navigation, information sheets,
