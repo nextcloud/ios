@@ -252,10 +252,9 @@ extension NCCollectionViewCommon {
 
     // MARK: - Helper
 
-    private func getSearchResultMetadatas(session: NCSession.Session,
-                                          provider: NKSearchProvider,
-                                          searchResult: NKSearchResult,
-    ) async -> [tableMetadata]? {
+    func getSearchResultMetadatas(session: NCSession.Session,
+                                 provider: NKSearchProvider,
+                                 searchResult: NKSearchResult) async -> [tableMetadata]? {
         var metadatas: [tableMetadata] = []
 
         switch provider.id {
@@ -305,6 +304,7 @@ extension NCCollectionViewCommon {
                    let metadata = database.getMetadataFromFileId(String(fileId), account: session.account) {
                     metadata.section = provider.name
                     metadatas.append(metadata)
+                    continue
                 }
 
                 if let filePath = entry.filePath,
