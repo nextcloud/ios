@@ -102,7 +102,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                     return
                 }
 
-                await self.model.reloadPage(index: self.model.selectedIndex)
+                await self.model.refreshPage(index: self.model.selectedIndex)
             }
         )
 

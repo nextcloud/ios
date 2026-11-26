@@ -99,6 +99,8 @@ final class NCVideoVLCViewController: UIViewController {
     internal let mediaPlayer = VLCMediaPlayer()
     private var externalSubtitleURL: URL?
     private var isStopInFlight = false
+    /// The URL whose media `start()` loaded; cleared once the player has fully stopped.
+    private var startedPlaybackURL: URL?
     private var hasEnteredPlaybackPipeline = false
     private var hasReportedPlaybackError = false
     private var playbackStartupTimeoutTask: Task<Void, Never>?
@@ -228,6 +230,15 @@ final class NCVideoVLCViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        // Returning from a full-screen presentation must not reload the media: that would
+        // restart playback from the beginning and drop an imported external subtitle.
+        guard startedPlaybackURL != url || mediaPlayer.media == nil else {
+            attachDrawable()
+            updatePlayPauseButton()
+            updateProgressControls()
+            return
+        }
 
         start()
     }
@@ -466,6 +477,7 @@ final class NCVideoVLCViewController: UIViewController {
     // MARK: - Playback
 
     private func start() {
+        startedPlaybackURL = url
         hasEnteredPlaybackPipeline = false
         hasReportedPlaybackError = false
         isPlaybackRequested = shouldAutoPlayOnStart
@@ -540,6 +552,7 @@ final class NCVideoVLCViewController: UIViewController {
 
     private func finishStop() {
         isStopInFlight = false
+        startedPlaybackURL = nil
         mediaPlayer.media = nil
         mediaPlayer.drawable = nil
         externalSubtitleURL = nil

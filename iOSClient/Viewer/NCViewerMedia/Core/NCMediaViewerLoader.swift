@@ -34,8 +34,9 @@ protocol NCMediaViewerLoading: Sendable {
 
     func cancelAllDownloads() async
 
-    /// Removes image and Live Photo originals, preserving previews and offline files/folders.
-    func releaseOriginalImage(for metadata: NCMediaViewerItem) async
+    /// Removes the original and/or its Live Photo companion, preserving previews and offline files/folders.
+    /// The viewer only asks for files it downloaded itself.
+    func releaseOriginal(for metadata: NCMediaViewerItem, includingOriginal: Bool, includingLivePhotoCompanion: Bool) async
 
     func fileProviderStorageExists(for metadata: NCMediaViewerItem) -> Bool
 
@@ -71,7 +72,8 @@ protocol NCMediaViewerServices: Sendable {
 /// Shared loading, validation and cancellation, independent of the host database.
 final class NCMediaViewerLoader: NCMediaViewerLoading, Sendable {
     let services: any NCMediaViewerServices
-    private let fileManager = FileManager.default
+    /// Computed so this `Sendable` class stores no non-`Sendable` value; `FileManager.default` is thread-safe.
+    private var fileManager: FileManager { .default }
     private let downloadTaskRegistry = NCMediaViewerDownloadTaskRegistry()
 
     init(services: any NCMediaViewerServices) {
@@ -134,10 +136,11 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, Sendable {
 
     func localMediaURL(for metadata: NCMediaViewerItem) async -> URL? {
         let localPath = fullLocalPath(for: metadata)
-        let validateAsImage = metadata.classFile == NKTypeClassFile.image.rawValue
+        // ImageIO cannot decode SVG: the image view renders it separately, so only reject empty files.
+        let validateAsImage = metadata.classFile == NKTypeClassFile.image.rawValue && metadata.fileExtension.lowercased() != "svg"
 
-        guard isValidLocalFile(path: localPath, validateAsImage: validateAsImage) else {
-            removeInvalidLocalFileIfNeeded(path: localPath, validateAsImage: validateAsImage)
+        guard isValidLocalFile(path: localPath, validateAsImage: validateAsImage, expectedSize: metadata.size) else {
+            discardInvalidOriginalIfNeeded(path: localPath, validateAsImage: validateAsImage, expectedSize: metadata.size)
             return nil
         }
 
@@ -192,9 +195,11 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, Sendable {
         await downloadTaskRegistry.cancelAllTasks()
     }
 
-    func releaseOriginalImage(for metadata: NCMediaViewerItem) async {
-        await services.releaseOriginalImage(for: metadata)
-        if let companion = services.livePhotoMetadata(for: metadata) {
+    func releaseOriginal(for metadata: NCMediaViewerItem, includingOriginal: Bool, includingLivePhotoCompanion: Bool) async {
+        if includingOriginal {
+            await services.releaseOriginalImage(for: metadata)
+        }
+        if includingLivePhotoCompanion, let companion = services.livePhotoMetadata(for: metadata) {
             await services.releaseOriginalImage(for: companion)
         }
     }
@@ -203,7 +208,10 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, Sendable {
         services.originalPath(for: metadata)
     }
 
-    private func isValidLocalFile(path: String, validateAsImage: Bool) -> Bool {
+    /// `expectedSize` is the server size of an original (0 when unknown). A file of exactly that size is a
+    /// complete download and stays valid even if this iOS version cannot decode its format (for example a
+    /// recent camera RAW): the image view then keeps showing the preview instead of downloading it again.
+    private func isValidLocalFile(path: String, validateAsImage: Bool, expectedSize: Int64 = 0) -> Bool {
         guard !path.isEmpty,
               fileManager.fileExists(atPath: path),
               let attributes = try? fileManager.attributesOfItem(atPath: path),
@@ -213,6 +221,10 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, Sendable {
         }
 
         guard validateAsImage else {
+            return true
+        }
+
+        if expectedSize > 0, fileSize.int64Value == expectedSize {
             return true
         }
 
@@ -235,6 +247,20 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, Sendable {
         }
 
         try? fileManager.removeItem(atPath: path)
+    }
+
+    /// The File Provider extension relies on an empty placeholder at the original path:
+    /// never remove it. A non-empty file that fails validation is reset to that placeholder.
+    private func discardInvalidOriginalIfNeeded(path: String, validateAsImage: Bool, expectedSize: Int64) {
+        guard !path.isEmpty,
+              let attributes = try? fileManager.attributesOfItem(atPath: path),
+              let fileSize = attributes[.size] as? NSNumber,
+              fileSize.int64Value > 0,
+              !isValidLocalFile(path: path, validateAsImage: validateAsImage, expectedSize: expectedSize) else {
+            return
+        }
+
+        try? Data().write(to: URL(fileURLWithPath: path), options: .atomic)
     }
 }
 

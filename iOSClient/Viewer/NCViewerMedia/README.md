@@ -127,25 +127,38 @@ certificate handling, rendering helpers and resources also need explicit placeme
 before the folder can build as a separate library. Verify rename, sharing, EXIF, Live Photos
 and VLC track selection alongside the playback checks above.
 
-## Original image and Live Photo buffer
+## Original image, Live Photo and audio buffer
 
 The prefetch radius is five pages on either side of the current page.
 Image originals and their Live Photo companion videos load inside this window.
-Standalone videos and audio retain their existing loading rules. During thumbnail
+Audio files download only for the selected page; neighbors and thumbnails use
+the server preview (embedded cover art) and never download the audio. Downloaded
+audio follows the same buffer as image originals. Standalone videos retain their
+existing loading rules. During thumbnail
 dragging and deceleration, the original buffer
 stays fixed while previews follow the selection. Once scrolling ends, the buffer
 moves once to the final selection. Already-started downloads can finish; they are
-not repeatedly cancelled and restarted for intermediate thumbnails. Deferred audio
-thumbnail loads are retried after scrubbing finishes. Leaving the window releases
-the originals and decoded image state, preserving previews. Closing the viewer
-releases the remaining buffered originals.
+not repeatedly cancelled and restarted for intermediate thumbnails. Leaving the
+window releases image and audio originals and decoded image state, preserving
+previews. Closing the viewer releases the remaining buffered originals.
+On metered networks (cellular, personal hotspot or Low Data Mode) neighboring
+pages keep their previews: only the selected page downloads its original and
+Live Photo companion. The app supplies this rule through
+`NCMediaViewerLoadingPolicy.app`, which reads `NCMediaViewerNetworkMonitor`
+(`AppIntegration/`); the core policy defaults to downloading neighbors. The check
+runs on every prefetch, so moving to an unmetered network resumes neighbor
+originals at the next page change.
 Files explicitly available offline, including descendants of offline folders,
-are protected. Other pre-existing local originals are also eligible for eviction.
+are protected. Only files the viewer downloaded during the current session are
+eligible for eviction: originals that were already local when they were loaded stay
+on the device, while their decoded state is still dropped. For Live Photos the image
+and the companion video are tracked separately.
 
 Live Photo images and companion videos follow the same original-file buffer.
 The HD image appears as soon as it is ready; playback waits for the companion.
 Leaving a page stops playback without cancelling buffered downloads. Eviction
-removes both originals, checking offline protection independently for each file.
+removes whichever of the two originals the viewer downloaded, checking offline
+protection independently for each file.
 
 In-flight image and companion loads are cancelled and awaited before removal.
 Re-entry waits

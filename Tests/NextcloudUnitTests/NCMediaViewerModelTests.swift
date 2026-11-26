@@ -473,25 +473,41 @@ struct NCMediaViewerModelTests {
         #expect(await loader.liveOriginals.isEmpty)
     }
 
-    @Test
-    func audioThumbnailRetriesAfterDeferredLoading() async {
+    @Test("Audio downloads only for the selected page and is released when it leaves the buffer or the viewer closes")
+    func audioOriginalsFollowBuffer() async throws {
         var items = bufferItems()
-        items[12].classFile = NKTypeClassFile.audio.rawValue
+        for index in items.indices { items[index].classFile = NKTypeClassFile.audio.rawValue }
         let loader = NCMediaViewerTestLoader(items: items)
         let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
                                        account: items[0].account, loader: loader)
         await model.loadSelectedPageIfNeeded()
-        #expect(await model.loadAudioForThumbnail(at: 12) == false)
-        model.beginThumbnailScrubbing()
-        await model.displayPreviewPage(at: 12)
-        #expect(await model.loadAudioForThumbnail(at: 12) == false)
-        #expect(await loader.downloadCounts["12"] == nil)
-        let revision = model.thumbnailReloadRevision
-        await model.endThumbnailScrubbing(at: 12)
-        #expect(model.thumbnailReloadRevision > revision)
-        #expect(await model.loadAudioForThumbnail(at: 12))
-        #expect(await loader.downloadCounts["12"] == 1)
+        try await waitForAudioWithoutFile(1...5, in: model)
+        #expect(await loader.originals == ["0"])
+        #expect(await loader.downloadCounts.keys.sorted() == ["0"])
+
+        model.finishPageTransition(at: 6)
+        await model.loadSelectedPageIfNeeded()
+        try await waitForOriginals(["6"], in: loader)
+        try await waitForAudioWithoutFile(0...0, in: model)
+
         model.cancelAllDownloads()
+        try await waitForOriginals([], in: loader)
+    }
+
+    private func waitForAudioWithoutFile(_ indexes: ClosedRange<Int>, in model: NCMediaViewerModel) async throws {
+        func hasNoFile() -> Bool {
+            indexes.allSatisfy { index in
+                if let page = model.pageModel(at: index), case .downloading = page.state {
+                    return true
+                }
+                return false
+            }
+        }
+        let deadline = ContinuousClock.now.advanced(by: .seconds(2))
+        while !hasNoFile(), ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        #expect(hasNoFile())
     }
 
     @Test("The common loader validates and reuses originals through injected services")
@@ -507,11 +523,12 @@ struct NCMediaViewerModelTests {
         let url = URL(fileURLWithPath: services.originalPath(for: item))
         try Data().write(to: url)
         #expect(await loader.localMediaURL(for: item) == nil)
-        #expect(!FileManager.default.fileExists(atPath: url.path))
+        // The empty placeholder required by the File Provider extension is preserved.
+        #expect(fileSize(at: url) == 0)
         #expect(try await loader.downloadMedia(for: item) == url)
         #expect(try await loader.downloadMedia(for: item) == url)
         #expect(await services.downloadCounts[item.ocId] == 1)
-        await loader.releaseOriginalImage(for: item)
+        await loader.releaseOriginal(for: item, includingOriginal: true, includingLivePhotoCompanion: true)
         #expect(!FileManager.default.fileExists(atPath: url.path))
     }
 
@@ -533,9 +550,171 @@ struct NCMediaViewerModelTests {
         #expect(await services.downloadCounts[image.ocId] == nil)
         let preview = URL(fileURLWithPath: services.previewPath(for: image, ext: "jpg"))
         try Data([1]).write(to: preview)
-        await loader.releaseOriginalImage(for: image)
+        await loader.releaseOriginal(for: image, includingOriginal: true, includingLivePhotoCompanion: true)
         #expect(await loader.localLivePhotoURL(for: image) == nil)
         #expect(FileManager.default.fileExists(atPath: preview.path))
+    }
+
+    @Test("SVG originals are kept, while undecodable raster originals are still discarded")
+    func commonLoaderKeepsSVGOriginals() async throws {
+        var svg = imageMetadata(fileName: "drawing.SVG")
+        svg.ocId = "drawing"
+        var jpg = imageMetadata(fileName: "photo.jpg")
+        jpg.ocId = "photo"
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let services = NCMediaViewerTestLoader(items: [svg, jpg], storageDirectory: directory)
+        let loader = NCMediaViewerLoader(services: services)
+
+        let svgURL = URL(fileURLWithPath: services.originalPath(for: svg))
+        #expect(try await loader.downloadMedia(for: svg) == svgURL)
+        #expect(FileManager.default.fileExists(atPath: svgURL.path))
+        #expect(await loader.localMediaURL(for: svg) == svgURL)
+        #expect(await services.downloadCounts[svg.ocId] == 1)
+
+        let jpgURL = URL(fileURLWithPath: services.originalPath(for: jpg))
+        try Data([1]).write(to: jpgURL)
+        #expect(await loader.localMediaURL(for: jpg) == nil)
+        // The undecodable content is discarded, leaving the File Provider placeholder.
+        #expect(fileSize(at: jpgURL) == 0)
+    }
+
+    @Test("A complete original that ImageIO cannot decode is kept; an incomplete one is reset to the placeholder")
+    func completeUndecodableOriginalIsKept() async throws {
+        var complete = imageMetadata(fileName: "photo.CR3")
+        complete.ocId = "complete"
+        complete.size = 3
+        var partial = imageMetadata(fileName: "photo.CR3")
+        partial.ocId = "partial"
+        partial.size = 10
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let services = NCMediaViewerTestLoader(items: [complete, partial], storageDirectory: directory)
+        let loader = NCMediaViewerLoader(services: services)
+
+        let completeURL = URL(fileURLWithPath: services.originalPath(for: complete))
+        try Data([1, 2, 3]).write(to: completeURL)
+        #expect(await loader.localMediaURL(for: complete) == completeURL)
+        #expect(fileSize(at: completeURL) == 3)
+
+        let partialURL = URL(fileURLWithPath: services.originalPath(for: partial))
+        try Data([1, 2, 3]).write(to: partialURL)
+        #expect(await loader.localMediaURL(for: partial) == nil)
+        #expect(fileSize(at: partialURL) == 0)
+    }
+
+    @Test("On metered networks neighbors keep previews and only the selected page downloads its original")
+    func meteredNetworkKeepsNeighborPreviews() async throws {
+        let items = bufferItems()
+        let loader = NCMediaViewerTestLoader(items: items)
+        let policy = NCMediaViewerLoadingPolicy(
+            automaticallyDownloadsOriginalImages: true,
+            automaticallyDownloadsLivePhotoResources: true,
+            allowsNeighborOriginalDownloads: { false }
+        )
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       account: items[0].account, loader: loader, loadingPolicy: policy)
+        await model.loadSelectedPageIfNeeded()
+        try await waitForPreviewOnlyPages(1...5, in: model)
+        #expect(await loader.originals == ["0"])
+
+        model.finishPageTransition(at: 1)
+        await model.loadSelectedPageIfNeeded()
+        try await waitForOriginals(["0", "1"], in: loader)
+        try await waitForPreviewOnlyPages(2...6, in: model)
+        #expect(await loader.originals == ["0", "1"])
+        model.cancelAllDownloads()
+    }
+
+    private func waitForPreviewOnlyPages(_ indexes: ClosedRange<Int>, in model: NCMediaViewerModel) async throws {
+        func showsPreviewOnly() -> Bool {
+            indexes.allSatisfy { index in
+                if let page = model.pageModel(at: index), case .image(.some, nil, _, _) = page.state {
+                    return true
+                }
+                return false
+            }
+        }
+        let deadline = ContinuousClock.now.advanced(by: .seconds(2))
+        while !showsPreviewOnly(), ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        #expect(showsPreviewOnly())
+    }
+
+    @Test("A data-source refresh keeps the page unless the file itself changed")
+    func refreshKeepsUnchangedPage() async throws {
+        let items = bufferItems()
+        let loader = NCMediaViewerTestLoader(items: items)
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       account: items[0].account, loader: loader)
+        await model.loadSelectedPageIfNeeded()
+        guard let page = model.pageModel(at: 0), case .image(_, .some, _, _) = page.state else {
+            Issue.record("The selected image must show its original")
+            return
+        }
+        // Only a full page reload bumps the thumbnail revision; neighbor prefetch does not.
+        let reloadRevision = model.thumbnailReloadRevision
+
+        await model.refreshPage(index: 0)
+        #expect(model.thumbnailReloadRevision == reloadRevision)
+        if case .image(_, .some, _, _) = page.state { } else {
+            Issue.record("An unchanged file must keep its loaded original")
+        }
+
+        var renamed = items[0]
+        renamed.fileName = "renamed.jpg"
+        renamed.fileNameView = "renamed.jpg"
+        await loader.updateItem(renamed)
+        await model.refreshPage(index: 0)
+        #expect(model.thumbnailReloadRevision > reloadRevision)
+        #expect(page.metadata?.fileNameView == "renamed.jpg")
+        model.cancelAllDownloads()
+    }
+
+    @Test("Originals that were already local before the viewer opened are never released")
+    func preexistingOriginalsAreKept() async throws {
+        let items = bufferItems()
+        let loader = NCMediaViewerTestLoader(items: items)
+        await loader.addLocalOriginals(["0", "1"])
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       account: items[0].account, loader: loader)
+        await model.loadSelectedPageIfNeeded()
+        try await waitForOriginals(Set((0...5).map(String.init)), in: loader)
+        #expect(await loader.downloadCounts["0"] == nil)
+        #expect(await loader.downloadCounts["1"] == nil)
+
+        model.cancelAllDownloads()
+        try await waitForOriginals(["0", "1"], in: loader)
+    }
+
+    @Test("A Live Photo whose image was already local releases only the companion the viewer downloaded")
+    func preexistingLivePhotoImageKeepsImage() async throws {
+        var items = bufferItems()
+        items[0].livePhotoFile = "0.mov"
+        let loader = NCMediaViewerTestLoader(items: items)
+        await loader.addLocalOriginals(["0"])
+        let model = NCMediaViewerModel(currentMetadata: items[0], ocIds: items.map(\.ocId),
+                                       account: items[0].account, loader: loader)
+        await model.loadSelectedPageIfNeeded()
+        let deadline = ContinuousClock.now.advanced(by: .seconds(2))
+        while !(await loader.liveOriginals.contains("0")), ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        try #require(await loader.liveOriginals.contains("0"))
+
+        model.cancelAllDownloads()
+        try await waitForOriginals(["0"], in: loader)
+        let releaseDeadline = ContinuousClock.now.advanced(by: .seconds(2))
+        while !(await loader.liveOriginals.isEmpty), ContinuousClock.now < releaseDeadline {
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        #expect(await loader.liveOriginals.isEmpty)
+    }
+
+    private func fileSize(at url: URL) -> Int64? {
+        (try? FileManager.default.attributesOfItem(atPath: url.path)[.size] as? NSNumber)?.int64Value
     }
 
     private func bufferItems() -> [NCMediaViewerItem] {

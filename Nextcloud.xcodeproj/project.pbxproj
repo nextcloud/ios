@@ -115,6 +115,7 @@
 		AC20261124DB000000000000 /* NCMediaViewerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000000 /* NCMediaViewerItem.swift */; };
 		AC20261124DB000000000002 /* NCMediaViewerItem+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000002 /* NCMediaViewerItem+App.swift */; };
 		AC20261124DB000000000003 /* NCMediaViewerModel+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000003 /* NCMediaViewerModel+App.swift */; };
+		AC20261125DB000000000001 /* NCMediaViewerNetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261125DA000000000001 /* NCMediaViewerNetworkMonitor.swift */; };
 		AC20261124DB000000000004 /* NCMediaViewerTestLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261124DA000000000004 /* NCMediaViewerTestLoader.swift */; };
 		AC20261125DB000000000000 /* NCMediaViewerLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261125DA000000000000 /* NCMediaViewerLoader.swift */; };
 		AC20261125EB000000000000 /* NCExifData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20261125EA000000000000 /* NCExifData.swift */; };
@@ -1423,6 +1424,7 @@
 		AC20261124DA000000000000 /* NCMediaViewerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerItem.swift; sourceTree = "<group>"; };
 		AC20261124DA000000000002 /* NCMediaViewerItem+App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMediaViewerItem+App.swift"; sourceTree = "<group>"; };
 		AC20261124DA000000000003 /* NCMediaViewerModel+App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMediaViewerModel+App.swift"; sourceTree = "<group>"; };
+		AC20261125DA000000000001 /* NCMediaViewerNetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerNetworkMonitor.swift; sourceTree = "<group>"; };
 		AC20261124DA000000000004 /* NCMediaViewerTestLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerTestLoader.swift; sourceTree = "<group>"; };
 		AC20261125DA000000000000 /* NCMediaViewerLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerLoader.swift; sourceTree = "<group>"; };
 		AC20261125EA000000000000 /* NCExifData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCExifData.swift; sourceTree = "<group>"; };
@@ -2387,6 +2389,7 @@
 			children = (
 				F75175DD307F52E60057C9B0 /* NCMediaViewerAppAdapter.swift */,
 				AC20261124DA000000000003 /* NCMediaViewerModel+App.swift */,
+				AC20261125DA000000000001 /* NCMediaViewerNetworkMonitor.swift */,
 				AC20261124DA000000000002 /* NCMediaViewerItem+App.swift */,
 			);
 			path = AppIntegration;
@@ -5232,6 +5235,7 @@
 				F7517604307F52E60057C9B0 /* NCMediaViewerAppAdapter.swift in Sources */,
 				F7517605307F52E60057C9B0 /* NCMediaViewerModel.swift in Sources */,
 				AC20261124DB000000000003 /* NCMediaViewerModel+App.swift in Sources */,
+				AC20261125DB000000000001 /* NCMediaViewerNetworkMonitor.swift in Sources */,
 				AC20261124DB000000000002 /* NCMediaViewerItem+App.swift in Sources */,
 				AC20261125DB000000000000 /* NCMediaViewerLoader.swift in Sources */,
 				AC20261124DB000000000000 /* NCMediaViewerItem.swift in Sources */,
