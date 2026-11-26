@@ -205,7 +205,7 @@
       "location" : "https://github.com/nextcloud/NextcloudKit",
       "state" : {
         "branch" : "shared-login-swiftui",
-        "revision" : "033ecef25631e79747dea05dd49eb8c8a3803d4a"
+        "revision" : "bc0aec8e3548406a32a74078d8cb57ffca82b68a"
       }
     },
     {
