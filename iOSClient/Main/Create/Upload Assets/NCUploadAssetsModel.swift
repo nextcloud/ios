@@ -356,12 +356,6 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
             for item in previewStore where item.tempURL != nil {
 
                 guard let url = item.tempURL else { continue }
-                let serverUrl = Self.manualUploadServerUrl(
-                    baseServerUrl: baseServerUrl,
-                    useAutoUploadFolder: useAutoUploadFolder,
-                    useAutoUploadSubFolder: false,
-                    granularityPath: baseServerUrl
-                )
 
                 let fileName = item.fileName.isEmpty
                     ? url.lastPathComponent
@@ -372,7 +366,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
                 let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
                     fileName: fileName,
                     ocId: ocId,
-                    serverUrl: serverUrl,
+                    serverUrl: baseServerUrl,
                     session: session,
                     sceneIdentifier: controller?.sceneIdentifier
                 )
