@@ -525,6 +525,17 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     func markItemAsDeleted(ocId: String) {
         model.markPageAsDeleted(ocId: ocId)
     }
+
+    /// Downloads the original of a photo for editing.
+    /// Returns `true` only if the viewer is still on screen and showing that photo once the download finishes.
+    func downloadOriginalForEditing(_ metadata: tableMetadata) async -> Bool {
+        do {
+            try await model.downloadOriginalImage(for: model.viewerItem(from: metadata))
+        } catch {
+            return false
+        }
+        return viewIfLoaded?.window != nil && model.selectedMetadata?.ocId == metadata.ocId
+    }
 }
 
 // MARK: - Media Viewer Transfer Delegate
