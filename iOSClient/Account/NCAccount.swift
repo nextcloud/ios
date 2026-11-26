@@ -10,7 +10,6 @@ import NextcloudKit
 class NCAccount: NSObject {
     private static var accountsCheckingRemoteUser: Set<String> = []
     let database = NCManageDatabase.shared
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let global = NCGlobal.shared
     let utilityFileSystem = NCUtilityFileSystem()
 

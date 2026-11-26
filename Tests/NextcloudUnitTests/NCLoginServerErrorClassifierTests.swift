@@ -30,7 +30,7 @@ struct NCLoginServerErrorClassifierTests {
         #expect(resolution == .insecureFallback(URL(string: "http://cloud.example.com:8443/nextcloud/")!))
     }
 
-    @Test("No network or an unknown host is shown, as http can't help", arguments: [NSURLErrorNotConnectedToInternet, NSURLErrorCannotFindHost, NSURLErrorDNSLookupFailed])
+    @Test("No network, an unknown host or a cancellation is shown, as http can't help", arguments: [NSURLErrorNotConnectedToInternet, NSURLErrorCannotFindHost, NSURLErrorDNSLookupFailed, NSURLErrorCancelled])
     func unreachable(errorCode: Int) {
         #expect(NCLoginServerErrorClassifier.classify(NKError(errorCode: errorCode), serverURL: httpsURL) == .generic)
     }
@@ -40,10 +40,5 @@ struct NCLoginServerErrorClassifierTests {
         let httpURL = URL(string: "http://cloud.example.com/")!
 
         #expect(NCLoginServerErrorClassifier.classify(NKError(errorCode: NSURLErrorCannotConnectToHost), serverURL: httpURL) == .generic)
-    }
-
-    @Test("Cancelled requests are shown")
-    func cancelled() {
-        #expect(NCLoginServerErrorClassifier.classify(NKError(errorCode: NSURLErrorCancelled), serverURL: httpsURL) == .generic)
     }
 }

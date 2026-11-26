@@ -71,7 +71,6 @@ final class NCAccountSetupModel {
         }
         configuration.upgradesInsecureHTTP = true
         configuration.loginURLScheme = brandOptions.webLoginAutenticationProtocol.replacingOccurrences(of: "://", with: "")
-        configuration.showsCancelButton = showsCancelButton
 
         // Branded apps link to neither the nextcloud.com providers nor its install page.
         if !brandOptions.disable_intro {
@@ -84,8 +83,10 @@ final class NCAccountSetupModel {
             }
         }
 
-        configuration.onCancel = { [weak self] in
-            self?.presenter?.dismiss(animated: true)
+        if showsCancelButton {
+            configuration.onCancel = { [weak self] in
+                self?.presenter?.dismiss(animated: true)
+            }
         }
 
         configuration.onServerError = { [weak self] error, serverURL in
@@ -130,7 +131,7 @@ final class NCAccountSetupModel {
     func addAccount(host: URL, user: String, password: String) async throws {
         guard let presenter else { return }
 
-        // The shared accounts sheet may still be closing, while the QR code scanner stays open and closes with the setup.
+        // The setup may still be sliding in, as for the managed auto-login, while the QR code scanner stays open and closes with the setup.
         await waitForTransitions()
 
         let controller = self.controller ?? SceneManager.shared.getController(window: UIApplication.shared.mainAppWindow)
@@ -179,38 +180,34 @@ final class NCAccountSetupModel {
     }
 
     private func runAppConfigAutoLoginIfNeeded() async {
-        let serverURL: String
-        let user: String
-        let password: String
+        do {
+            let serverURL: String
+            let user: String
+            let password: String
 
-        switch appConfigAction {
-        case .createAccount(let url, let name, let appPassword):
-            serverURL = url
-            user = name
-            password = appPassword
-        case .requestAppPassword(let url, let name, let userPassword):
-            let results = await NextcloudKit.shared.getAppPasswordAsync(url: url, user: name, password: userPassword)
+            switch appConfigAction {
+            case .createAccount(let url, let name, let appPassword):
+                serverURL = url
+                user = name
+                password = appPassword
+            case .requestAppPassword(let url, let name, let userPassword):
+                let results = await NextcloudKit.shared.getAppPasswordAsync(url: url, user: name, password: userPassword)
 
-            guard results.error == .success, let token = results.token else {
-                let isUnclassified = results.error == .success || results.error.kind == nil
+                guard results.error == .success, let token = results.token else {
+                    let isUnclassified = results.error == .success || results.error.kind == nil
 
-                await showErrorBanner(windowScene: presenter?.view.window?.windowScene, error: isUnclassified ? .invalidData : results.error, context: .login)
+                    throw isUnclassified ? NKError.invalidData : results.error
+                }
+
+                serverURL = url
+                user = name
+                password = token
+            case .prefill, nil:
                 return
             }
 
-            serverURL = url
-            user = name
-            password = token
-        case .prefill, nil:
-            return
-        }
+            guard let host = URL(string: serverURL) else { throw NKError.urlError }
 
-        guard let host = URL(string: serverURL) else {
-            await showErrorBanner(windowScene: presenter?.view.window?.windowScene, error: .urlError, context: .login)
-            return
-        }
-
-        do {
             try await addAccount(host: host, user: user, password: password)
         } catch {
             await showErrorBanner(windowScene: presenter?.view.window?.windowScene, error: error as? NKError ?? NKError(error: error), context: .login)

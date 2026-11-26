@@ -277,7 +277,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { _ in
             if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController,
                let viewController = navigationController.topViewController as? NCViewCertificateDetails {
-                viewController.delegate = self
+                viewController.onClose = {
+                    self.trustCertificateError(host: host)
+                }
                 viewController.host = host
                 UIApplication.shared.mainAppWindow?.rootViewController?.present(navigationController, animated: true)
             }
@@ -365,12 +367,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 }
 
 // MARK: - Extension
-
-extension AppDelegate: NCViewCertificateDetailsDelegate {
-    func viewCertificateDetailsDismiss(host: String) {
-        trustCertificateError(host: host)
-    }
-}
 
 extension AppDelegate: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {

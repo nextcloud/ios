@@ -5,22 +5,14 @@
 import UIKit
 import SwiftUI
 
-public protocol NCViewCertificateDetailsDelegate: AnyObject {
-    func viewCertificateDetailsDismiss(host: String)
-}
-
-// optional func
-public extension NCViewCertificateDetailsDelegate {
-    func viewCertificateDetailsDismiss(host: String) {}
-}
-
 class NCViewCertificateDetails: UIViewController {
     @IBOutlet weak var buttonCancel: UIBarButtonItem!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var privateKey: UILabel!
 
-    var delegate: NCViewCertificateDetailsDelegate?
+    /// Called when the details close, also when they close themselves.
+    var onClose: (() -> Void)?
     let utilityFileSystem = NCUtilityFileSystem()
 
     public var privateKeyString: String = ""
@@ -84,7 +76,7 @@ class NCViewCertificateDetails: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.delegate?.viewCertificateDetailsDismiss(host: host)
+        onClose?()
     }
 
     // MARK: ACTION
@@ -104,10 +96,6 @@ struct certificateDetailsView: UIViewControllerRepresentable {
     /// Called when the details close, also when they close themselves.
     var onClose: (() -> Void)?
 
-    func makeCoordinator() -> Coordinator {
-        Coordinator(onClose: onClose)
-    }
-
     func makeUIViewController(context: Context) -> UINavigationController {
         let storyboard = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil)
         let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
@@ -116,22 +104,10 @@ struct certificateDetailsView: UIViewControllerRepresentable {
         viewController?.privateKeyString = privateKeyString
         viewController?.host = host
         viewController?.certificateTitle = title
-        viewController?.delegate = context.coordinator
+        viewController?.onClose = onClose
 
         return navigationController!
     }
 
     func updateUIViewController(_ uiViewController: UINavigationController, context: Context) { }
-
-    final class Coordinator: NCViewCertificateDetailsDelegate {
-        let onClose: (() -> Void)?
-
-        init(onClose: (() -> Void)?) {
-            self.onClose = onClose
-        }
-
-        func viewCertificateDetailsDismiss(host: String) {
-            onClose?()
-        }
-    }
 }

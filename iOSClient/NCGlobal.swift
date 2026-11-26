@@ -48,11 +48,6 @@ final class NCGlobal: Sendable {
     let editorOnlyOffice: String                    = "onlyoffice"
     let editorWhiteboard: String                    = "whiteboard"
 
-    // Intro selector
-    //
-    let introLogin: Int                             = 0
-    let introSignUpWithProvider: Int                = 1
-
     // Avatar
     //
     // Shared download resolution for a 128-point avatar at 3x scale, also used without a UI context.
