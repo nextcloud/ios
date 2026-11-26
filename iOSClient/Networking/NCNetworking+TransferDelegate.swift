@@ -64,7 +64,10 @@ extension NCNetworking: NCTransferDelegate {
                                                                                           fileName: metadata.fileNameView,
                                                                                           userId: metadata.userId,
                                                                                           urlBase: metadata.urlBase)
-                let fileNameTemp = NSTemporaryDirectory() + metadata.fileNameView
+                // One stable copy per photo, so repeated edits overwrite it instead of piling up.
+                let directoryTemp = NSTemporaryDirectory() + "QuickLookEdit/" + metadata.ocId
+                try? FileManager.default.createDirectory(atPath: directoryTemp, withIntermediateDirectories: true)
+                let fileNameTemp = directoryTemp + "/" + metadata.fileNameView
                 let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameTemp), isEditingEnabled: true, metadata: metadata)
                 if let image = UIImage(contentsOfFile: fileNamePath) {
                     if let data = image.jpegData(compressionQuality: 1) {
