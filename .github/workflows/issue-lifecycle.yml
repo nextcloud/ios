@@ -1,0 +1,215 @@
+# SPDX-FileCopyrightText: Nextcloud GmbH
+# SPDX-FileCopyrightText: 2026 Milen Pivchev
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Labels issues "stale" after 30 days without a human comment and removes the label once someone replies.
+# Escalates issues closed by the AI triage agent (issue-triage.md) when a human objects.
+# Comment and reopen events only run from the default branch.
+
+name: Issue lifecycle
+
+on:
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Only log the label changes
+        type: boolean
+        default: false
+      max_writes:
+        description: Maximum number of label changes in this run
+        type: number
+        default: 200
+  # Pull requests that change this file run the scan too.
+  pull_request:
+    paths:
+      - .github/workflows/issue-lifecycle.yml
+  issue_comment:
+    types: [created]
+  issues:
+    types: [reopened]
+
+permissions: {}
+
+jobs:
+  scan:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    concurrency:
+      group: issue-lifecycle-scan
+    steps:
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          DRY_RUN: ${{ inputs.dry_run == true }}
+          MAX_WRITES: ${{ inputs.max_writes }}
+        with:
+          retries: 3
+          retry-exempt-status-codes: 400,401,404,422
+          script: |
+            const { owner, repo } = context.repo;
+            const dryRun = process.env.DRY_RUN === 'true';
+            // Empty for scheduled and pull request runs.
+            const maxWrites = process.env.MAX_WRITES ? Math.max(0, Math.floor(Number(process.env.MAX_WRITES)) || 0) : 200;
+            const staleAfter = 30 * 24 * 60 * 60 * 1000;
+            const now = Date.now();
+
+            const labels = {
+              'stale': { color: 'cfd3d7', description: 'No human comment in the last 30 days' },
+              'human escalated': { color: 'd93f0b', description: 'A human disagreed with the triage agent; needs a maintainer' },
+              'closed by agent': { color: 'ededed', description: 'Closed by the AI triage agent as already fixed' },
+            };
+
+            for (const [name, { color, description }] of Object.entries(labels)) {
+              try {
+                await github.rest.issues.getLabel({ owner, repo, name });
+              } catch (error) {
+                if (error.status !== 404) throw error;
+
+                core.info(`${dryRun ? 'Would create' : 'Creating'} label "${name}"`);
+
+                if (!dryRun) {
+                  await github.rest.issues.createLabel({ owner, repo, name, color, description });
+                }
+              }
+            }
+
+            const query = `query($owner: String!, $repo: String!, $cursor: String) {
+              repository(owner: $owner, name: $repo) {
+                issues(states: OPEN, first: 100, after: $cursor, orderBy: {field: CREATED_AT, direction: ASC}) {
+                  pageInfo { hasNextPage endCursor }
+                  nodes {
+                    number
+                    createdAt
+                    labels(first: 30) { nodes { name } }
+                    comments(last: 20) { nodes { createdAt author { __typename } } }
+                  }
+                }
+              }
+            }`;
+
+            const issues = [];
+            let cursor = null;
+
+            do {
+              const { repository } = await github.graphql(query, { owner, repo, cursor });
+              issues.push(...repository.issues.nodes);
+              cursor = repository.issues.pageInfo.hasNextPage ? repository.issues.pageInfo.endCursor : null;
+            } while (cursor);
+
+            // Deleted users have no author; they count as human.
+            const lastHumanActivity = issue => Math.max(
+              Date.parse(issue.createdAt),
+              ...issue.comments.nodes
+                .filter(comment => comment.author?.__typename !== 'Bot')
+                .map(comment => Date.parse(comment.createdAt)),
+            );
+
+            const changes = issues
+              .map(issue => ({
+                number: issue.number,
+                labeled: issue.labels.nodes.some(label => label.name.toLowerCase() === 'stale'),
+                stale: now - lastHumanActivity(issue) > staleAfter,
+              }))
+              .filter(change => change.labeled !== change.stale);
+
+            const link = number => `[#${number}](https://github.com/${owner}/${repo}/issues/${number})`;
+            const added = changes.filter(change => change.stale).map(change => change.number);
+            const removed = changes.filter(change => !change.stale).map(change => change.number);
+
+            await core.summary
+              .addHeading(`${dryRun ? 'Dry run: ' : ''}pending "stale" label changes`, 3)
+              .addRaw(`${issues.length} open issues.\n\nAdd to ${added.length}: ${added.map(link).join(', ') || 'none'}\n\nRemove from ${removed.length}: ${removed.map(link).join(', ') || 'none'}\n`)
+              .write();
+
+            if (dryRun) return;
+
+            for (const change of changes.slice(0, maxWrites)) {
+              core.info(`${change.stale ? 'Add' : 'Remove'} "stale" on #${change.number}`);
+
+              if (change.stale) {
+                await github.rest.issues.addLabels({ owner, repo, issue_number: change.number, labels: ['stale'] });
+              } else {
+                await github.rest.issues.removeLabel({ owner, repo, issue_number: change.number, name: 'stale' })
+                  .catch(error => { if (error.status !== 404) throw error; });
+              }
+
+              // Stays below GitHub's secondary limit for content-creating requests.
+              await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+
+            if (changes.length > maxWrites) {
+              core.notice(`${changes.length - maxWrites} label changes left for the next run`);
+            }
+
+  unstale:
+    if: >-
+      github.event_name == 'issue_comment' && !github.event.issue.pull_request &&
+      github.event.issue.state == 'open' && github.event.comment.user.type != 'Bot' &&
+      contains(github.event.issue.labels.*.name, 'stale')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          retries: 3
+          retry-exempt-status-codes: 400,401,404,422
+          script: |
+            await github.rest.issues.removeLabel({ ...context.repo, issue_number: context.issue.number, name: 'stale' })
+              .catch(error => { if (error.status !== 404) throw error; });
+
+  # Reporters can't reopen issues someone else closed, so a comment from a non-maintainer reopens it instead.
+  escalate:
+    if: >-
+      !github.event.issue.pull_request && contains(github.event.issue.labels.*.name, 'closed by agent') && (
+        (github.event_name == 'issues' && github.event.sender.type != 'Bot') ||
+        (github.event_name == 'issue_comment' && github.event.issue.state == 'closed' && github.event.comment.user.type != 'Bot')
+      )
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          retries: 3
+          retry-exempt-status-codes: 400,401,404,422
+          script: |
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+
+            if (context.eventName === 'issue_comment') {
+              let maintainer = false;
+
+              // When in doubt, escalate.
+              try {
+                const { data } = await github.rest.repos.getCollaboratorPermissionLevel({
+                  owner,
+                  repo,
+                  username: context.payload.comment.user.login,
+                });
+
+                maintainer = ['admin', 'maintain', 'write', 'triage'].includes(data.role_name) || ['admin', 'write'].includes(data.permission);
+              } catch (error) {
+                core.warning(`Permission lookup failed (${error.status}); treating the commenter as a reporter`);
+              }
+
+              if (maintainer) {
+                core.info('Comment from a maintainer; the issue stays closed.');
+                return;
+              }
+
+              await github.rest.issues.update({ owner, repo, issue_number, state: 'open' });
+            }
+
+            await github.rest.issues.addLabels({ owner, repo, issue_number, labels: ['human escalated'] });
+
+            // A reply also counts as activity; a bare reopen doesn't.
+            const obsolete = context.eventName === 'issue_comment' ? ['closed by agent', 'stale'] : ['closed by agent'];
+
+            for (const name of obsolete) {
+              await github.rest.issues.removeLabel({ owner, repo, issue_number, name })
+                .catch(error => { if (error.status !== 404) throw error; });
+            }
