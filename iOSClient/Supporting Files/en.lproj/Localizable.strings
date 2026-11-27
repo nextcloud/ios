@@ -131,6 +131,7 @@
 "_remove_file_"             = "Remove file";
 "_delete_file_"             = "Delete file";
 "_delete_folder_"           = "Delete folder";
+"_leave_share_"             = "Leave share";
 "_size_"                    = "Size";
 "_set_user_status_"         = "Online status";
 "_set_user_status_message_" = "Status message";

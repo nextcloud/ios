@@ -175,8 +175,19 @@ class NCListCell: UICollectionViewCell, NCCellMainProtocol {
         tagMore.setContentHuggingPriority(.required, for: .horizontal)
     }
 
+    /// Shows the avatar of the user who shared the item, cropped to a circle like avatars elsewhere in the app.
     func setSharedAvatarImage(_ image: UIImage) {
-        buttonShared.setImage(image, for: .normal)
+        let side = min(image.size.width, image.size.height)
+        let format = UIGraphicsImageRendererFormat.preferred()
+        format.scale = image.scale
+        let roundedImage = UIGraphicsImageRenderer(size: CGSize(width: side, height: side), format: format).image { _ in
+            let bounds = CGRect(x: 0, y: 0, width: side, height: side)
+            UIBezierPath(ovalIn: bounds).addClip()
+            // Center the image so a non-square avatar is cropped evenly.
+            image.draw(at: CGPoint(x: (side - image.size.width) / 2, y: (side - image.size.height) / 2))
+        }
+
+        buttonShared.setImage(roundedImage.withRenderingMode(.alwaysOriginal), for: .normal)
         buttonShared.imageEdgeInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
     }
 
