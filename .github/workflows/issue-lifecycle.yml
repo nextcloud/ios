@@ -4,8 +4,7 @@
 
 # Labels issues "stale" after 30 days without a human comment and removes the label once someone replies.
 # Escalates issues closed by the AI triage agent (issue-triage.md) when a human objects.
-# Stale labels are only logged until the repository variable ISSUE_LIFECYCLE_LIVE is "true".
-# Escalation always runs; it only touches issues the agent closed.
+# Comment and reopen events only run from the default branch.
 
 name: Issue lifecycle
 
@@ -22,7 +21,7 @@ on:
         description: Maximum number of label changes in this run
         type: number
         default: 200
-  # Pull requests that change this file get a dry run of the scan.
+  # Pull requests that change this file run the scan too.
   pull_request:
     paths:
       - .github/workflows/issue-lifecycle.yml
@@ -40,11 +39,11 @@ jobs:
     permissions:
       issues: write
     concurrency:
-      group: issue-lifecycle-scan-${{ github.event_name }}
+      group: issue-lifecycle-scan
     steps:
       - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
-          DRY_RUN: ${{ github.event_name == 'pull_request' || inputs.dry_run || vars.ISSUE_LIFECYCLE_LIVE != 'true' }}
+          DRY_RUN: ${{ inputs.dry_run == true }}
           MAX_WRITES: ${{ inputs.max_writes }}
         with:
           retries: 3
@@ -52,7 +51,8 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const dryRun = process.env.DRY_RUN === 'true';
-            const maxWrites = Number(process.env.MAX_WRITES) || 200;
+            // Empty for scheduled and pull request runs.
+            const maxWrites = process.env.MAX_WRITES ? Math.max(0, Math.floor(Number(process.env.MAX_WRITES)) || 0) : 200;
             const staleAfter = 30 * 24 * 60 * 60 * 1000;
             const now = Date.now();
 
@@ -154,17 +154,10 @@ jobs:
       issues: write
     steps:
       - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
-        env:
-          DRY_RUN: ${{ vars.ISSUE_LIFECYCLE_LIVE != 'true' }}
         with:
           retries: 3
           retry-exempt-status-codes: 400,401,404,422
           script: |
-            if (process.env.DRY_RUN === 'true') {
-              core.info(`Would remove "stale" from #${context.issue.number}`);
-              return;
-            }
-
             await github.rest.issues.removeLabel({ ...context.repo, issue_number: context.issue.number, name: 'stale' })
               .catch(error => { if (error.status !== 404) throw error; });
 
