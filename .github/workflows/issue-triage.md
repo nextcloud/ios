@@ -453,7 +453,7 @@ safe-outputs:
                 '',
                 '---',
                 `🤖 Closed by the [issue triage agent](${runUrl}) on behalf of the Nextcloud iOS maintainers.`,
-                'If something is still missing or broken in a version that includes this change, reply here and a maintainer will look at it again. If it works for you, no reply is needed.',
+                'If you think this issue or feature request is not completed, reply here and a human maintainer will look at it again. If it is fixed for you, no reply is needed.',
                 '',
                 `Assisted-by: GitHub Copilot:${process.env.AGENT_MODEL}`,
                 '<!-- gh-aw-workflow-id: issue-triage -->',
