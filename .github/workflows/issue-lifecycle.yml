@@ -21,10 +21,6 @@ on:
         description: Maximum number of label changes in this run
         type: number
         default: 200
-  # Pull requests that change this file run the scan too.
-  pull_request:
-    paths:
-      - .github/workflows/issue-lifecycle.yml
   issue_comment:
     types: [created]
   issues:
@@ -34,7 +30,7 @@ permissions: {}
 
 jobs:
   scan:
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -51,7 +47,7 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const dryRun = process.env.DRY_RUN === 'true';
-            // Empty for scheduled and pull request runs.
+            // Empty for scheduled runs.
             const maxWrites = process.env.MAX_WRITES ? Math.max(0, Math.floor(Number(process.env.MAX_WRITES)) || 0) : 200;
             const staleAfter = 30 * 24 * 60 * 60 * 1000;
             const now = Date.now();
