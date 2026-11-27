@@ -19,7 +19,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var imageRestore: UIImageView!
     @IBOutlet weak var imageMore: UIImageView!
-    @IBOutlet weak var buttonMore: UIButton!
+    @IBOutlet weak var buttonMore: NCMenuButton!
     @IBOutlet weak var buttonRestore: UIButton!
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!

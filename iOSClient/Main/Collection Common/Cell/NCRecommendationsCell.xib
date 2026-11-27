@@ -38,7 +38,7 @@
                         <color key="textColor" systemColor="systemGray2Color"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O9D-jq-8Iz">
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O9D-jq-8Iz" customClass="NCMenuButton" customModule="Nextcloud" customModuleProvider="target">
                         <rect key="frame" x="377" y="3" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="20" id="0SN-I9-Ijm"/>

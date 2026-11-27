@@ -59,7 +59,7 @@
                             <constraint firstItem="myy-Kj-m59" firstAttribute="leading" secondItem="mxe-fC-q7F" secondAttribute="leading" id="DHF-nb-rip"/>
                         </constraints>
                     </stackView>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhy-xd-w5C" userLabel="buttonMore">
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhy-xd-w5C" userLabel="buttonMore" customClass="NCMenuButton" customModule="Nextcloud" customModuleProvider="target">
                         <rect key="frame" x="580" y="50.5" width="40" height="60"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="40" id="ZgH-mI-l2k"/>

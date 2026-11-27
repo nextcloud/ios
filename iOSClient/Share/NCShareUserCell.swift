@@ -9,7 +9,7 @@ import NextcloudKit
 class NCShareUserCell: UITableViewCell {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var buttonMenu: UIButton!
+    @IBOutlet weak var buttonMenu: NCMenuButton!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var status: UILabel!
     @IBOutlet weak var stackViewQuickStatus: UIStackView!
@@ -17,7 +17,7 @@ class NCShareUserCell: UITableViewCell {
     @IBOutlet weak var imageDownArrow: UIImageView!
 
     var index = IndexPath()
-    var avatarButton: UIButton!
+    var avatarButton: NCMenuButton!
 
     var tableShare: tableShare?
     var isDirectory = false
@@ -111,7 +111,7 @@ class NCShareUserCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        avatarButton = UIButton(type: .system)
+        avatarButton = NCMenuButton(type: .system)
         avatarButton.translatesAutoresizingMaskIntoConstraints = false
         avatarButton.backgroundColor = .clear
         contentView.addSubview(avatarButton)

@@ -8,11 +8,10 @@ import NextcloudKit
 import RealmSwift
 
 protocol NCGridCellDelegate: AnyObject {
-    func onMenuIntent(with metadata: tableMetadata?)
     func openContextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any)
 }
 
-class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainProtocol {
+class NCGridCell: UICollectionViewCell, NCCellMainProtocol {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
@@ -24,7 +23,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     @IBOutlet weak var labelSubinfo: UILabel!
     @IBOutlet weak var labelExtension: UILabel!
 
-    @IBOutlet weak var buttonMore: UIButton!
+    @IBOutlet weak var buttonMore: NCMenuButton!
 
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var iconsStackView: UIStackView!
@@ -56,11 +55,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
 
     override func awakeFromNib() {
         super.awakeFromNib()
-
-        let tapObserver = UITapGestureRecognizer(target: self, action: #selector(handleTapObserver(_:)))
-        tapObserver.cancelsTouchesInView = false
-        tapObserver.delegate = self
-        contentView.addGestureRecognizer(tapObserver)
 
         initCell()
     }
@@ -144,14 +138,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
         return nil
-    }
-
-    @objc private func handleTapObserver(_ g: UITapGestureRecognizer) {
-        let location = g.location(in: contentView)
-
-        if buttonMore.frame.contains(location) {
-            delegate?.onMenuIntent(with: metadata)
-        }
     }
 
     func setButtonMore(image: UIImage) {

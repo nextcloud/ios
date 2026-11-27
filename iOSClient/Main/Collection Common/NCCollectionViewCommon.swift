@@ -289,9 +289,13 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             }
         }
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterUserInteractionMonitor), object: nil, queue: .main) { _ in
-            Task {
-                await self.debouncerReloadData.resume()
+        // A reload recreates the cells and would close a menu the user has open:
+        // hold reloads back while any menu is open.
+        for name in [NCMenuPresentationMonitor.menuWillShowNotification, NCMenuPresentationMonitor.menuDidHideNotification] {
+            NotificationCenter.default.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
+                Task { @MainActor [weak self] in
+                    await self?.syncReloadDataWithOpenMenus()
+                }
             }
         }
 
@@ -678,6 +682,27 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     }
 
     func getServerData(forced: Bool = false) async { }
+
+    /// Pauses `debouncerReloadData` while a menu is open and resumes it when all menus are closed.
+    ///
+    /// Pausing and resuming hop to the debouncer actor, so a menu can open or close
+    /// in between. The loop checks the state again afterwards until both agree.
+    @MainActor
+    func syncReloadDataWithOpenMenus() async {
+        while true {
+            let isMenuVisible = NCMenuPresentationMonitor.shared.isMenuVisible
+
+            if isMenuVisible {
+                await debouncerReloadData.pause()
+            } else {
+                await debouncerReloadData.resume()
+            }
+
+            if NCMenuPresentationMonitor.shared.isMenuVisible == isMenuVisible {
+                return
+            }
+        }
+    }
 
     // MARK: - Push metadata
 

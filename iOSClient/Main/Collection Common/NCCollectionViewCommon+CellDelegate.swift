@@ -32,12 +32,6 @@ extension NCCollectionViewCommon: NCListCellDelegate, NCGridCellDelegate {
         button.menu = UIMenu(children: [deferredMenu])
     }
 
-    func onMenuIntent(with metadata: tableMetadata?) {
-        Task {
-            await self.debouncerReloadData.pause()
-        }
-    }
-
     func tapShareListItem(with metadata: tableMetadata?, button: UIButton, sender: Any) {
         Task {
             guard let metadata else { return }

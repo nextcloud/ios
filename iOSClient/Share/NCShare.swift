@@ -46,7 +46,7 @@ class NCShare: UIViewController, NCSharePagingContent {
     var capabilities = NKCapabilities.Capabilities()
 
     private var dropDown = DropDown()
-    private var avatarButton: UIButton!
+    private var avatarButton: NCMenuButton!
     var networking: NCShareNetworking?
 
     // MARK: - View Life Cycle
@@ -129,7 +129,7 @@ class NCShare: UIViewController, NCSharePagingContent {
         sharedWithYouByImage.image = utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: session.urlBase)
         sharedWithYouByLabel.accessibilityHint = NSLocalizedString("_show_profile_", comment: "")
 
-        avatarButton = UIButton(type: .system)
+        avatarButton = NCMenuButton(type: .system)
         avatarButton.translatesAutoresizingMaskIntoConstraints = false
         avatarButton.backgroundColor = .clear
         sharedWithYouByView.addSubview(avatarButton)
@@ -180,9 +180,13 @@ class NCShare: UIViewController, NCSharePagingContent {
     // MARK: -
 
     @objc func reloadData() {
-        shares = self.database.getTableShares(metadata: metadata)
-        shareLinksCount = 0
-        tableView.reloadData()
+        // Reloading recreates the cells and would close a share or profile menu the user has open.
+        NCMenuPresentationMonitor.shared.performWhenNoMenuVisible(for: self) { [weak self] in
+            guard let self else { return }
+            shares = self.database.getTableShares(metadata: metadata)
+            shareLinksCount = 0
+            tableView.reloadData()
+        }
     }
 
     // MARK: - IBAction
