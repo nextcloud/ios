@@ -227,6 +227,19 @@ struct NCMediaViewerPageView: View {
     @ViewBuilder
     private func downloadingStateView(previewURL: URL?, _ progress: Double?) -> some View {
         switch page.metadata?.classFile {
+        case NKTypeClassFile.image.rawValue:
+            imageStateView(previewURL: previewURL, localURL: nil, livePhotoURL: nil)
+                .overlay {
+                    if isSelected {
+                        ProgressView()
+                            .tint(.white)
+                            .padding(12)
+                            .background(.black.opacity(0.65), in: Circle())
+                            .accessibilityLabel(Text(NSLocalizedString("_download_in_progress_", comment: "")))
+                            .allowsHitTesting(false)
+                    }
+                }
+
         case NKTypeClassFile.video.rawValue:
             if isSelected {
                 videoStateView(localURL: nil, previewURL: previewURL)

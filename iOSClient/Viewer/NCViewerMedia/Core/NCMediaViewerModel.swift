@@ -149,7 +149,7 @@ final class NCMediaViewerModel: ObservableObject {
     private var viewerDownloadedLivePhotoOcIds = Set<String>()
     // Also serialize a quick close/reopen against the previous viewer's pending removals.
     private static var releasingImagesByAccount: [String: [String: Task<Void, Never>]] = [:]
-    private var isClosed = false
+    private(set) var isClosed = false
     private var previewSelectionID: UUID?
     private var thumbnailScrubID: UUID?
 
@@ -740,6 +740,16 @@ final class NCMediaViewerModel: ObservableObject {
         }
 
         guard thumbnailScrubID == nil else { return }
+        let isImage = metadata.classFile == NKTypeClassFile.image.rawValue
+        if isImage {
+            setState(.downloading(previewURL: previewURL, progress: nil), for: ocId)
+        }
+        defer {
+            if isImage, case .downloading = pageState(for: ocId) {
+                setState(.image(previewURL: previewURL, localURL: nil, livePhotoURL: nil, progress: nil), for: ocId)
+            }
+        }
+
         do {
             let downloadedURL = try await loader.downloadMedia(for: metadata, onDownloadStarted: nil)
             viewerDownloadedOcIds.insert(ocId)

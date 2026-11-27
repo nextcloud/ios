@@ -529,12 +529,25 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     /// Downloads the original of a photo for editing.
     /// Returns `true` only if the viewer is still on screen and showing that photo once the download finishes.
     func downloadOriginalForEditing(_ metadata: tableMetadata) async -> Bool {
+        let ocId = metadata.ocId
+        var isStillViewingPhoto: Bool {
+            !model.isClosed && viewIfLoaded?.window != nil && model.selectedMetadata?.ocId == ocId
+        }
+        guard isStillViewingPhoto else { return false }
+
         do {
+            // This delegates to loadPageIfNeeded instead of downloading directly.
+            // NCMediaViewerLoadingPolicy.shouldDownloadOriginalImage controls the fetch
+            // (enabled by automaticallyDownloadsOriginalImages: true in NCMediaViewerModel+App.swift).
+            // If the policy skips the original, CancellationError is reported below.
             try await model.downloadOriginalImage(for: model.viewerItem(from: metadata))
         } catch {
+            if isStillViewingPhoto {
+                await showErrorBanner(windowScene: viewIfLoaded?.window?.windowScene, text: "_status_download_error_")
+            }
             return false
         }
-        return viewIfLoaded?.window != nil && model.selectedMetadata?.ocId == metadata.ocId
+        return isStillViewingPhoto
     }
 }
 
