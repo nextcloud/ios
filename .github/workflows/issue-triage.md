@@ -98,7 +98,7 @@ steps:
         const { owner, repo } = context.repo;
         const ownRepo = `${owner}/${repo}`;
         const limit = 1000;
-        const closeLimit = 5;
+        const closeLimit = 20;
         const scannedAt = new Date().toISOString();
         const blockingLabels = ['human escalated', 'closed by agent', 'good first issue'];
 
