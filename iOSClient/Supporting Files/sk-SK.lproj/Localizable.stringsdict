@@ -153,9 +153,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%ld folder</string>
+			<string>%ld priečinok</string>
+			<key>few</key>
+			<string>%ld priečinky</string>
+			<key>many</key>
+			<string>%ld priečinka</string>
 			<key>other</key>
-			<string>%ld folders</string>
+			<string>%ld priečinkov</string>
 		</dict>
 	</dict>
 	<key>_files_count_</key>
@@ -169,9 +173,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%ld file</string>
+			<string>%ld súbor</string>
+			<key>few</key>
+			<string>%ld súbory</string>
+			<key>many</key>
+			<string>%ld súboru</string>
 			<key>other</key>
-			<string>%ld files</string>
+			<string>%ld súborov</string>
 		</dict>
 	</dict>
 </dict>

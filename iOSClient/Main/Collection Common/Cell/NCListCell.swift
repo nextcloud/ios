@@ -7,12 +7,11 @@ import UIKit
 import NextcloudKit
 
 protocol NCListCellDelegate: AnyObject {
-    func onMenuIntent(with metadata: tableMetadata?)
     func openContextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any)
     func tapShareListItem(with metadata: tableMetadata?, button: UIButton, sender: Any)
 }
 
-class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainProtocol {
+class NCListCell: UICollectionViewCell, NCCellMainProtocol {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
@@ -29,7 +28,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     @IBOutlet weak var labelExtension: UILabel!
 
     @IBOutlet weak var buttonShared: UIButton!
-    @IBOutlet weak var buttonMore: UIButton!
+    @IBOutlet weak var buttonMore: NCMenuButton!
     @IBOutlet weak var shareContainer: UIView!
     @IBOutlet weak var moreContainer: UIView!
     @IBOutlet weak var separator: UIView!
@@ -79,11 +78,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
 
     override func awakeFromNib() {
         super.awakeFromNib()
-
-        let tapObserver = UITapGestureRecognizer(target: self, action: #selector(handleTapObserver(_:)))
-        tapObserver.cancelsTouchesInView = false
-        tapObserver.delegate = self
-        contentView.addGestureRecognizer(tapObserver)
 
         initCell()
     }
@@ -203,21 +197,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
 
     @IBAction func touchUpInsideShare(_ sender: Any) {
         delegate?.tapShareListItem(with: metadata, button: buttonShared, sender: sender)
-    }
-
-    @objc private func handleTapObserver(_ g: UITapGestureRecognizer) {
-        let locationInButton = g.location(in: buttonMore)
-
-        if buttonMore.bounds.contains(locationInButton) {
-            delegate?.onMenuIntent(with: metadata)
-        }
-    }
-
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        let locationInButton = touch.location(in: buttonMore)
-        let result = buttonMore.bounds.contains(locationInButton)
-
-        return result
     }
 
     func setButtonMore(image: UIImage) {

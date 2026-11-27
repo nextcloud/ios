@@ -189,6 +189,21 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         })
     }
 
+    // Report long-press menus to the monitor, so reloads wait until the menu is closed.
+    func collectionView(_ collectionView: UICollectionView, willDisplayContextMenu configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
+        NCMenuPresentationMonitor.shared.menuWillShow(collectionView)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willEndContextMenuInteraction configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
+        if let animator {
+            animator.addCompletion {
+                NCMenuPresentationMonitor.shared.menuDidHide(collectionView)
+            }
+        } else {
+            NCMenuPresentationMonitor.shared.menuDidHide(collectionView)
+        }
+    }
+
     func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
         animator.addCompletion {
             if let indexPath = configuration.identifier as? IndexPath {

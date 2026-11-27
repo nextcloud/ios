@@ -406,6 +406,21 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
         })
 #endif
     }
+
+    // Report long-press menus to the monitor, so reloads wait until the menu is closed.
+    func collectionView(_ collectionView: UICollectionView, willDisplayContextMenu configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
+        NCMenuPresentationMonitor.shared.menuWillShow(collectionView)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willEndContextMenuInteraction configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
+        if let animator {
+            animator.addCompletion {
+                NCMenuPresentationMonitor.shared.menuDidHide(collectionView)
+            }
+        } else {
+            NCMenuPresentationMonitor.shared.menuDidHide(collectionView)
+        }
+    }
 }
 
 extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
@@ -424,15 +439,6 @@ extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
             return
         }
         button.menu = NCContextMenuMain(metadata: metadata, viewController: viewController, controller: self.controller, sender: sender).viewMenu(showViewInFolder: true)
-#endif
-    }
-
-    func onMenuIntent(with metadata: tableMetadata?) {
-#if !EXTENSION
-        Task {
-            let collectionViewCommon = (self.viewController as? NCCollectionViewCommon)
-            await collectionViewCommon?.debouncerReloadData.pause()
-        }
 #endif
     }
 }

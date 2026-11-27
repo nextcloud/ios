@@ -5,16 +5,15 @@
 import UIKit
 
 protocol NCRecommendationsCellDelegate: AnyObject {
-    func onMenuIntent(with metadata: tableMetadata?)
     func openContextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any)
 }
 
-class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
+class NCRecommendationsCell: UICollectionViewCell {
     @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var labelFilename: UILabel!
     @IBOutlet weak var labelExtensionFilename: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
-    @IBOutlet weak var buttonMore: UIButton!
+    @IBOutlet weak var buttonMore: NCMenuButton!
 
     var delegate: NCRecommendationsCellDelegate?
     var representedFileId: String?
@@ -40,11 +39,6 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-
-        let tapObserver = UITapGestureRecognizer(target: self, action: #selector(handleTapObserver(_:)))
-        tapObserver.cancelsTouchesInView = false
-        tapObserver.delegate = self
-        contentView.addGestureRecognizer(tapObserver)
 
         initCell()
     }
@@ -109,14 +103,6 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
 
         buttonMore.menu = nil
         buttonMore.showsMenuAsPrimaryAction = true
-    }
-
-    @objc private func handleTapObserver(_ g: UITapGestureRecognizer) {
-        let location = g.location(in: contentView)
-
-        if buttonMore.frame.contains(location) {
-            delegate?.onMenuIntent(with: metadata)
-        }
     }
 
     func setImageCorner(withBorder: Bool) {

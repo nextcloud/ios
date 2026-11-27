@@ -15,7 +15,7 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
     @IBOutlet weak var labelExtension: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
-    @IBOutlet weak var buttonMore: UIButton!
+    @IBOutlet weak var buttonMore: NCMenuButton!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
 
     weak var delegate: NCTrashGridCellDelegate?

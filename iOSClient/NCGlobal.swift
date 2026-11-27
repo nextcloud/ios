@@ -263,8 +263,6 @@ final class NCGlobal: Sendable {
     let notificationCenterPlayerIsPlaying                       = "playerIsPlaying"
     let notificationCenterPlayerStoppedPlaying                  = "playerStoppedPlaying"
 
-    let notificationCenterUserInteractionMonitor                = "serInteractionMonitor"
-
     let notificationCenterNetworkingProcess                     = "networkingProcess"
     let notificationCenterTransferCountChanged                  = "transferCountChanged"
 

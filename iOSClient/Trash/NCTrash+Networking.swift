@@ -22,7 +22,11 @@ extension NCTrash {
         let resultsListingTrash = await NextcloudKit.shared.listingTrashAsync(filename: filename, showHiddenFiles: false, account: session.account) { task in
             Task { @MainActor in
                 self.dataSourceTask = task
-                self.collectionView.reloadData()
+                // While a menu is open, skip this reload: it would close the menu, and the
+                // listing ends with `reloadDataSource()`, which reloads once the menu is closed.
+                if !NCMenuPresentationMonitor.shared.isMenuVisible {
+                    self.collectionView.reloadData()
+                }
             }
         }
 
