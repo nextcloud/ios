@@ -19,10 +19,9 @@ public extension NCViewerQuickLookDelegate {
     func dismissQuickLook(fileNameSource: String, hasChangesQuickLook: Bool) {}
 }
 
-/// Flag indicating If the document has any changes
-private var hasChangesQuickLook: Bool = false
-
 @objc class NCViewerQuickLook: QLPreviewController {
+    /// Flag indicating If the document has any changes
+    private var hasChangesQuickLook: Bool = false
     private let url: URL
     private let fileNameSource: String
     private var previewItems: [PreviewItem] = []
@@ -61,7 +60,6 @@ private var hasChangesQuickLook: Bool = false
         self.dataSource = self
         self.delegate = self
         self.currentPreviewItemIndex = 0
-        hasChangesQuickLook = false
     }
 
     override func viewDidLoad() {
@@ -133,7 +131,7 @@ private var hasChangesQuickLook: Bool = false
         } else {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_overwrite_original_", comment: ""), style: .default) { _ in
                 self.saveModifiedFile(override: true)
-                self.delegateQuickLook?.dismissQuickLook(fileNameSource: self.fileNameSource, hasChangesQuickLook: hasChangesQuickLook)
+                self.delegateQuickLook?.dismissQuickLook(fileNameSource: self.fileNameSource, hasChangesQuickLook: self.hasChangesQuickLook)
             })
         }
 
@@ -142,7 +140,7 @@ private var hasChangesQuickLook: Bool = false
         if saveAsCopyAlert {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_save_as_copy_", comment: ""), style: .default) { _ in
                 self.saveModifiedFile(override: false)
-                self.delegateQuickLook?.dismissQuickLook(fileNameSource: self.fileNameSource, hasChangesQuickLook: hasChangesQuickLook)
+                self.delegateQuickLook?.dismissQuickLook(fileNameSource: self.fileNameSource, hasChangesQuickLook: self.hasChangesQuickLook)
             })
         }
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in
@@ -156,7 +154,7 @@ private var hasChangesQuickLook: Bool = false
 
     @objc private func dismissView(_ sender: Any?) {
         dismiss(animated: true) {
-            if hasChangesQuickLook {
+            if self.hasChangesQuickLook {
                 self.showSaveAlert()
             }
         }

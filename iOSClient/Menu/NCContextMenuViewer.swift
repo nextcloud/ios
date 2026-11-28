@@ -108,7 +108,7 @@ class NCContextMenuViewer: NSObject {
         if !webView,
            metadata.isImage,
            metadata.isModifiableWithQuickLook,
-           utilityFileSystem.fileSizeIfExists(metadata) {
+           NCNetworking.shared.isOnline || utilityFileSystem.fileSizeIfExists(metadata) {
             editingActions.append(makeModifyPhoto())
         }
 
@@ -296,10 +296,17 @@ class NCContextMenuViewer: NSObject {
 
     private func makeModifyPhoto() -> UIAction {
         return UIAction(
-            title: NSLocalizedString("_modify_", comment: ""),
+            title: NSLocalizedString("_edit_", comment: ""),
             image: utility.loadImage(named: "pencil.tip.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
             Task {
+                if !self.utilityFileSystem.fileSizeIfExists(self.metadata) {
+                    // Only a preview is on the device: let the media viewer download the original first.
+                    guard let viewer = self.viewController as? NCMediaViewerHostingController,
+                          await viewer.downloadOriginalForEditing(self.metadata) else {
+                        return
+                    }
+                }
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(
                         networkingStatus: NCGlobal.shared.networkingStatusDownloaded,
