@@ -162,6 +162,7 @@
 		C0DEA070306D000100000008 /* NCAutoUploadAssetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEA070306D000100000007 /* NCAutoUploadAssetTests.swift */; };
 		C0DECA022F65000100C0D001 /* NCCameraRollTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */; };
 		C0DEDA7E30C1000100A00002 /* NCAutoUploadDateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEDA7E30C1000100A00001 /* NCAutoUploadDateTests.swift */; };
+		BD83FC9730C1000100A00002 /* NCUploadAssetsModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD83FC9730C1000100A00001 /* NCUploadAssetsModelTests.swift */; };
 		C32F0D5074355BA3F35E7FCE /* NCAccountSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A84566BEF80733CC99BA52 /* NCAccountSetupView.swift */; };
 		C7724CB38D2A7B4B98CA1AFA /* NCLoginServerErrorClassifierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2A4CC67E2712B70FCFC090 /* NCLoginServerErrorClassifierTests.swift */; };
 		4463A0C1300D000100A00004 /* NCAutoUploadKnownFilesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4463A0C1300D000100A00003 /* NCAutoUploadKnownFilesTests.swift */; };
@@ -1466,6 +1467,7 @@
 		C0DEA070306D000100000007 /* NCAutoUploadAssetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAutoUploadAssetTests.swift; sourceTree = "<group>"; };
 		C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCameraRollTests.swift; sourceTree = "<group>"; };
 		C0DEDA7E30C1000100A00001 /* NCAutoUploadDateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAutoUploadDateTests.swift; sourceTree = "<group>"; };
+		BD83FC9730C1000100A00001 /* NCUploadAssetsModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUploadAssetsModelTests.swift; sourceTree = "<group>"; };
 		C4A84566BEF80733CC99BA52 /* NCAccountSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAccountSetupView.swift; sourceTree = "<group>"; };
 		4463A0C1300D000100A00003 /* NCAutoUploadKnownFilesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAutoUploadKnownFilesTests.swift; sourceTree = "<group>"; };
 		4E3A0C13000D000100A00011 /* NCReceivedShareRootTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCReceivedShareRootTests.swift; sourceTree = "<group>"; };
@@ -2325,6 +2327,7 @@
 				CE2A4CC67E2712B70FCFC090 /* NCLoginServerErrorClassifierTests.swift */,
 				AC13ADAF2026101300000001 /* NCMediaAdaptiveLayoutViewTests.swift */,
 				C0DEDA7E30C1000100A00001 /* NCAutoUploadDateTests.swift */,
+				BD83FC9730C1000100A00001 /* NCUploadAssetsModelTests.swift */,
 				4463A0C1300D000100A00003 /* NCAutoUploadKnownFilesTests.swift */,
 				4437B0C1300D000100A00001 /* NCBackupExclusionTests.swift */,
 				4E3A0C13000D000100A00011 /* NCReceivedShareRootTests.swift */,
@@ -4708,6 +4711,7 @@
 				BAF64949B487A080A98F83F2 /* NKErrorUserFriendlyMessageTests.swift in Sources */,
 				AC13ADAF2026101300000002 /* NCMediaAdaptiveLayoutViewTests.swift in Sources */,
 				C0DEDA7E30C1000100A00002 /* NCAutoUploadDateTests.swift in Sources */,
+				BD83FC9730C1000100A00002 /* NCUploadAssetsModelTests.swift in Sources */,
 				4463A0C1300D000100A00004 /* NCAutoUploadKnownFilesTests.swift in Sources */,
 				4437B0C1300D000100A00002 /* NCBackupExclusionTests.swift in Sources */,
 				4E3A0C13000D000100A00012 /* NCReceivedShareRootTests.swift in Sources */,

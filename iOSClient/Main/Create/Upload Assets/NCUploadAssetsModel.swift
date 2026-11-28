@@ -248,6 +248,13 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         }
     }
 
+    static func manualUploadServerUrl(baseServerUrl: String,
+                                      useAutoUploadFolder: Bool,
+                                      useAutoUploadSubFolder: Bool,
+                                      granularityPath: @autoclosure () -> String) -> String {
+        useAutoUploadFolder && useAutoUploadSubFolder ? granularityPath() : baseServerUrl
+    }
+
     func save(completion: @escaping (_ metadatasNOConflict: [tableMetadata], _ metadatasUploadInConflict: [tableMetadata]) -> Void) {
         Task { @MainActor in
 
@@ -256,8 +263,8 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
             var metadatasUploadInConflict: [tableMetadata] = []
 
             let autoUploadServerUrlBase = database.getAccountAutoUploadServerUrlBase(session: self.session)
-            var serverUrl = useAutoUploadFolder ? autoUploadServerUrlBase : self.serverUrl
-            let isInDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
+            let baseServerUrl = useAutoUploadFolder ? autoUploadServerUrlBase : self.serverUrl
+            let isInDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: baseServerUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
 
             for tlAsset in assets {
 
@@ -276,9 +283,12 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
                     && NCPreferences().livePhoto
                     && preview.data == nil
 
-                if useAutoUploadSubFolder {
-                    serverUrl = utilityFileSystem.createGranularityPath(asset: asset, serverUrlBase: autoUploadServerUrlBase)
-                }
+                let serverUrl = Self.manualUploadServerUrl(
+                    baseServerUrl: baseServerUrl,
+                    useAutoUploadFolder: useAutoUploadFolder,
+                    useAutoUploadSubFolder: useAutoUploadSubFolder,
+                    granularityPath: utilityFileSystem.createGranularityPath(asset: asset, serverUrlBase: autoUploadServerUrlBase)
+                )
 
                 let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''",
                                             session.account, serverUrl, fileName)
@@ -356,7 +366,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
                 let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
                     fileName: fileName,
                     ocId: ocId,
-                    serverUrl: serverUrl,
+                    serverUrl: baseServerUrl,
                     session: session,
                     sceneIdentifier: controller?.sceneIdentifier
                 )
