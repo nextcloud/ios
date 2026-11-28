@@ -1,5 +1,5 @@
-# gh-aw-metadata: {"schema_version":"v4","frontmatter_hash":"3f0afb672ee34407300bd85a4587ee33f2b04cc6dec94c7402c0ad79eb01558d","body_hash":"1e466adc3fb42770f90b96dca9258be1f3fc4747587e555ba4bab51dec122cd0","compiler_version":"v1.2.2","strict":true,"agent_id":"copilot","agent_model":"claude-sonnet-5.5","detection_agent_id":"copilot","detection_agent_model":"claude-haiku-5.5","engine_versions":{"copilot":"1.0.103"}}
-# gh-aw-manifest: {"version":1,"secrets":["COPILOT_GITHUB_TOKEN","GH_AW_DEFAULT_OTLP_ENDPOINT","GH_AW_DEFAULT_OTLP_HEADERS","GH_AW_GITHUB_MCP_SERVER_TOKEN","GH_AW_GITHUB_TOKEN","GITHUB_TOKEN"],"actions":[{"repo":"actions/checkout","sha":"3d3c42e5aac5ba805825da76410c181273ba90b1","version":"v7.0.1"},{"repo":"actions/download-artifact","sha":"9000827ccba6bdab643e8b6fd33ac0654aef8333","version":"v8.0.2"},{"repo":"actions/github-script","sha":"3a2844b7e9c422d3c10d287c895573f7108da1b3","version":"v9.0.0"},{"repo":"actions/setup-node","sha":"949feb2413d6458794dcd2491c4babbbce0c15c1","version":"v7.1.0"},{"repo":"actions/upload-artifact","sha":"cf430e030ddbb5b0abf93d22962f4752f3646cd9","version":"v7.0.2"},{"repo":"github/gh-aw-actions/setup","sha":"53d0749e19424a918acd82b4d140264ce48f2f14","version":"v1.2.2"}],"containers":[{"image":"ghcr.io/github/gh-aw-firewall/agent:0.29.11","digest":"sha256:8774a73c351395b41d2ad0af4ddb4689007c67de3cd08bd9f43bb8a0e300690e","pinned_image":"ghcr.io/github/gh-aw-firewall/agent:0.29.11@sha256:8774a73c351395b41d2ad0af4ddb4689007c67de3cd08bd9f43bb8a0e300690e"},{"image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.29.11","digest":"sha256:88d2d0e315a504d93fd4fb8847fd0f6b7f4469f41a6fc6047b3dc9654c56ab2c","pinned_image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.29.11@sha256:88d2d0e315a504d93fd4fb8847fd0f6b7f4469f41a6fc6047b3dc9654c56ab2c"},{"image":"ghcr.io/github/gh-aw-firewall/squid:0.29.11","digest":"sha256:861739ecf924dd2db5e5fb652db2ad82aaafd1615623297ddabc8f41a36b2847","pinned_image":"ghcr.io/github/gh-aw-firewall/squid:0.29.11@sha256:861739ecf924dd2db5e5fb652db2ad82aaafd1615623297ddabc8f41a36b2847"},{"image":"ghcr.io/github/gh-aw-mcpg:v0.5.6","digest":"sha256:342cd624e1f179d91be2de7a146fc4f387092e62e6c8a47506d7932e113d2311","pinned_image":"ghcr.io/github/gh-aw-mcpg:v0.5.6@sha256:342cd624e1f179d91be2de7a146fc4f387092e62e6c8a47506d7932e113d2311"},{"image":"ghcr.io/github/gh-aw-node","digest":"sha256:8735428c2d4e602f90781ba0c571c400e8ff93c7ee1508a75d71f87e34e415cc","pinned_image":"ghcr.io/github/gh-aw-node@sha256:8735428c2d4e602f90781ba0c571c400e8ff93c7ee1508a75d71f87e34e415cc"},{"image":"ghcr.io/github/github-mcp-server:v2.1.0","digest":"sha256:f6056fc10bfffcc8c81a6417a2e9ca12808647e8dd6049642a4feaadee0e0f8a","pinned_image":"ghcr.io/github/github-mcp-server:v2.1.0@sha256:f6056fc10bfffcc8c81a6417a2e9ca12808647e8dd6049642a4feaadee0e0f8a"}],"has_pull_request":true,"mcp_servers":[{"name":"github","tools":["pull_request_read","search_pull_requests"]},{"name":"safeoutputs","tools":["noop","report_finding","report_incomplete"]}],"threat_detection":{"mode":"enabled"},"admission":false,"agent_metadata":{}}
+# gh-aw-metadata: {"schema_version":"v4","frontmatter_hash":"1d6c3e74022fd1023fa3a5a16f098475d7e4993e22dcbbd73500d8a6c474698a","body_hash":"71ed99e9561ebfc9eef3cb5ca6ea7809b309b365b5c93dbf1e4a0b487596bd2d","compiler_version":"v1.2.2","strict":true,"agent_id":"copilot","agent_model":"claude-sonnet-5.5","detection_agent_id":"copilot","detection_agent_model":"claude-haiku-5.5","engine_versions":{"copilot":"1.0.103"}}
+# gh-aw-manifest: {"version":1,"secrets":["COPILOT_GITHUB_TOKEN","GH_AW_DEFAULT_OTLP_ENDPOINT","GH_AW_DEFAULT_OTLP_HEADERS","GH_AW_GITHUB_MCP_SERVER_TOKEN","GH_AW_GITHUB_TOKEN","GITHUB_TOKEN"],"actions":[{"repo":"actions/checkout","sha":"3d3c42e5aac5ba805825da76410c181273ba90b1","version":"v7.0.1"},{"repo":"actions/download-artifact","sha":"9000827ccba6bdab643e8b6fd33ac0654aef8333","version":"v8.0.2"},{"repo":"actions/github-script","sha":"3a2844b7e9c422d3c10d287c895573f7108da1b3","version":"v9.0.0"},{"repo":"actions/setup-node","sha":"949feb2413d6458794dcd2491c4babbbce0c15c1","version":"v7.1.0"},{"repo":"actions/upload-artifact","sha":"cf430e030ddbb5b0abf93d22962f4752f3646cd9","version":"v7.0.2"},{"repo":"github/gh-aw-actions/setup","sha":"53d0749e19424a918acd82b4d140264ce48f2f14","version":"v1.2.2"}],"containers":[{"image":"ghcr.io/github/gh-aw-firewall/agent:0.29.11","digest":"sha256:8774a73c351395b41d2ad0af4ddb4689007c67de3cd08bd9f43bb8a0e300690e","pinned_image":"ghcr.io/github/gh-aw-firewall/agent:0.29.11@sha256:8774a73c351395b41d2ad0af4ddb4689007c67de3cd08bd9f43bb8a0e300690e"},{"image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.29.11","digest":"sha256:88d2d0e315a504d93fd4fb8847fd0f6b7f4469f41a6fc6047b3dc9654c56ab2c","pinned_image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.29.11@sha256:88d2d0e315a504d93fd4fb8847fd0f6b7f4469f41a6fc6047b3dc9654c56ab2c"},{"image":"ghcr.io/github/gh-aw-firewall/squid:0.29.11","digest":"sha256:861739ecf924dd2db5e5fb652db2ad82aaafd1615623297ddabc8f41a36b2847","pinned_image":"ghcr.io/github/gh-aw-firewall/squid:0.29.11@sha256:861739ecf924dd2db5e5fb652db2ad82aaafd1615623297ddabc8f41a36b2847"},{"image":"ghcr.io/github/gh-aw-mcpg:v0.5.6","digest":"sha256:342cd624e1f179d91be2de7a146fc4f387092e62e6c8a47506d7932e113d2311","pinned_image":"ghcr.io/github/gh-aw-mcpg:v0.5.6@sha256:342cd624e1f179d91be2de7a146fc4f387092e62e6c8a47506d7932e113d2311"},{"image":"ghcr.io/github/gh-aw-node","digest":"sha256:8735428c2d4e602f90781ba0c571c400e8ff93c7ee1508a75d71f87e34e415cc","pinned_image":"ghcr.io/github/gh-aw-node@sha256:8735428c2d4e602f90781ba0c571c400e8ff93c7ee1508a75d71f87e34e415cc"},{"image":"ghcr.io/github/github-mcp-server:v2.1.0","digest":"sha256:f6056fc10bfffcc8c81a6417a2e9ca12808647e8dd6049642a4feaadee0e0f8a","pinned_image":"ghcr.io/github/github-mcp-server:v2.1.0@sha256:f6056fc10bfffcc8c81a6417a2e9ca12808647e8dd6049642a4feaadee0e0f8a"}],"mcp_servers":[{"name":"github","tools":["pull_request_read","search_pull_requests"]},{"name":"safeoutputs","tools":["noop","report_finding","report_incomplete"]}],"threat_detection":{"mode":"enabled"},"admission":false,"agent_metadata":{}}
 # This file was automatically generated by gh-aw (v1.2.2). DO NOT EDIT. To debug this workflow, load the skill at https://github.com/github/gh-aw/blob/main/debug.md
 #
 #    ___                   _   _
@@ -53,10 +53,6 @@
 
 name: "Issue triage"
 on:
-  pull_request:
-    paths:
-      - .github/workflows/issue-triage.md
-      - .github/workflows/issue-triage.lock.yml
   schedule:
     - cron: "10 4 * * 1"  # Friendly format: weekly on monday around 06:00 utc+1 (scattered)
   workflow_dispatch:
@@ -66,10 +62,25 @@ on:
         description: "Agent caller context (Reserved for Agentic Workflows)."
         required: false
         type: string
+      close_limit:
+        default: 20
+        description: Maximum number of issues to close (at least 1; use dry_run to close none)
+        required: false
+        type: number
+      dry_run:
+        default: false
+        description: Only list the findings; close nothing
+        required: false
+        type: boolean
       issue_numbers:
         description: Comma-separated issue numbers to check, even if they were checked before
         required: false
         type: string
+      max_issues:
+        default: 1000
+        description: Maximum number of issues to check
+        required: false
+        type: number
 
 # Jobs receive only their explicitly declared permissions.
 permissions: {}
@@ -94,11 +105,6 @@ env:
 jobs:
   activation:
     name: activation
-    needs: pre_activation
-    if: >
-      needs.pre_activation.outputs.activated == 'true' && ((github.event_name != 'pull_request' || github.event.pull_request.head.repo.id == github.repository_id) &&
-      ((github.event_name != 'pull_request' && github.event_name != 'pull_request_review') || github.event.pull_request.stack == null ||
-      github.event.pull_request.stack.position == github.event.pull_request.stack.size))
     runs-on: ubuntu-slim
     # Permissions for the activation job (workflow permissions default to none).
     permissions:
@@ -109,7 +115,6 @@ jobs:
       GH_AW_RUNTIME_FEATURES: ${{ vars.GH_AW_RUNTIME_FEATURES }}
     outputs:
       aw_context: ${{ steps.generate_aw_info.outputs.aw_context }}
-      body: ${{ steps.sanitized.outputs.body }}
       comment_id: ""
       comment_repo: ""
       daily_ai_credits_estimated: ${{ steps.daily-ai-credits-workflow-guardrail.outputs.daily_ai_credits_estimated || '' }}
@@ -127,8 +132,6 @@ jobs:
       setup-span-id: ${{ steps.setup.outputs.span-id }}
       setup-trace-id: ${{ steps.setup.outputs.trace-id }}
       stale_lock_file_failed: ${{ steps.check-lock-file.outputs.stale_lock_file_failed == 'true' }}
-      text: ${{ steps.sanitized.outputs.text }}
-      title: ${{ steps.sanitized.outputs.title }}
     steps:
       - name: Setup Scripts
         id: setup
@@ -136,8 +139,6 @@ jobs:
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
-          trace-id: ${{ needs.pre_activation.outputs.setup-trace-id }}
-          parent-span-id: ${{ needs.pre_activation.outputs.setup-parent-span-id || needs.pre_activation.outputs.setup-span-id }}
           safe-output-artifact-client: ${{ env.GH_AW_MAX_DAILY_AI_CREDITS != '' }}
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Issue triage"
@@ -248,7 +249,6 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          ref: ${{ (github.event_name == 'pull_request' || github.event_name == 'pull_request_review' || github.event_name == 'pull_request_review_comment') && github.event.pull_request != null && github.event.pull_request.base.sha || github.sha }}
           sparse-checkout: |
             .github
             .agents
@@ -292,19 +292,6 @@ jobs:
             const { setupGlobals } = require(path.join(actionsDir, 'setup_globals.cjs'));
             setupGlobals(core, github, context, exec, io, getOctokit);
             const { main } = require(path.join(actionsDir, 'check_version_updates.cjs'));
-            await main();
-      - name: Compute current body text
-        id: sanitized
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
-        env:
-          GH_AW_ALLOWED_DOMAINS: "archive.ubuntu.com,azure.archive.ubuntu.com,crl.geotrust.com,crl.globalsign.com,crl.identrust.com,crl.sectigo.com,crl.thawte.com,crl.usertrust.com,crl.verisign.com,crl3.digicert.com,crl4.digicert.com,crls.ssl.com,json-schema.org,json.schemastore.org,keyserver.ubuntu.com,ocsp.digicert.com,ocsp.geotrust.com,ocsp.globalsign.com,ocsp.identrust.com,ocsp.sectigo.com,ocsp.ssl.com,ocsp.thawte.com,ocsp.usertrust.com,ocsp.verisign.com,s.symcb.com,s.symcd.com,security.ubuntu.com,ts-crl.ws.symantec.com,ts-ocsp.ws.symantec.com"
-        with:
-          script: |
-            const path = require('path');
-            const actionsDir = path.join(process.env.RUNNER_TEMP, 'gh-aw', 'actions');
-            const { setupGlobals } = require(path.join(actionsDir, 'setup_globals.cjs'));
-            setupGlobals(core, github, context, exec, io, getOctokit);
-            const { main } = require(path.join(actionsDir, 'compute_text.cjs'));
             await main();
       - name: Log runtime features
         if: ${{ contains(toJSON(vars), '"GH_AW_RUNTIME_FEATURES":') }}
@@ -436,9 +423,10 @@ jobs:
                - `git tag --contains <sha> --sort=creatordate | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' | head -1` gives the first release that shipped it (such as `4.8.0` or `35.2.2`; other tags are not releases);
                - if no tag contains it, `git branch -r --contains <sha>` must list `origin/master`; then it ships with the next release;
                - if neither contains it, it is not fixed yet: never use `fixed` for it;
-               - if that release came out before the issue was created (`git log -1 --format=%cs <tag>`, compared with `created`), the reporter most likely already had the change, so it is not the fix: use `likely_fixed` at most.
+               - if that release came out before the issue was created (`git log -1 --format=%cs <tag>`, compared with `created`), the reporter most likely already had the change, so it is not the fix: use `likely_fixed` at most;
+               - confirm that people could use it in that release, not just code preparing it: take the name of what they reach (the screen, menu item, setting, or the call that runs the fix) and run `git grep -wc '<name>' <release> -- iOSClient | head -n 3`, on `origin/master` if it ships with the next release. No output means it was not usable yet: find the later change that made it usable and cite that one instead.
             4. Call `report_finding` right away with the issue number, a verdict and the comment for the issue:
-               - `fixed`: 2–4 sentences on what the app does today and which change did it, linking the pull request or commit, and naming the first release ("fixed since 4.8.0") or saying it ships with the next release. Describe only what the current code does. The release you name must be the one step 3 gives for the commit you cite; never mention older releases or earlier versions of the feature. This comment is posted when the issue is closed, with a footer that asks the reporter to reply if something is still missing; do not add follow-up instructions of your own.
+               - `fixed`: 2–4 sentences on what the app does today and which change did it, linking the pull request or commit, and naming the first release ("fixed since 4.8.0") or saying it ships with the next release. Describe only what the current code does, and credit each part you describe to the change that added it. The release you name must be the one step 3 gives for the commit you cite; never mention older releases or earlier versions of the feature. This comment is posted when the issue is closed, with a footer that asks the reporter to reply if something is still missing; do not add follow-up instructions of your own.
                - `likely_fixed`: name the likely fix and ask the reporter to confirm with the latest version.
                - `not_fixed`: say briefly what shows that it still happens or still needs work.
                - `no_evidence`: say briefly that no fix for it was found yet.
@@ -450,6 +438,7 @@ jobs:
             - a maintainer (`[team]`) said it is not fixed or still needs work;
             - you cannot name the pull request or commit that fixed it, or step 3 did not confirm where it landed;
             - the evidence only looks similar, is partial, or covers only some of several reported problems;
+            - the request names several things or alternatives (for example favorites and recently used folders) and not all of them are in `master` today;
             - part of what was asked for is not in `master` today, for example because it was removed after it was added;
             - the problem may be server-side or depend on a setup you cannot verify;
             - the only argument is that the report is old.
@@ -469,14 +458,14 @@ jobs:
         with:
           github-token: no-authentication
           script: |
-            const promptEnvironment = new Set(["GH_AW_ACTIONS_DIR","GH_AW_ENGINE_ID","GH_AW_EXPR_76DF9333","GH_AW_EXPR_77C1A4D2","GH_AW_EXPR_7C248226","GH_AW_EXPR_C19C384F","GH_AW_GITHUB_ACTOR","GH_AW_GITHUB_REPOSITORY","GH_AW_GITHUB_RUN_ID","GH_AW_GITHUB_WORKSPACE","GH_AW_MCP_CLI_SERVERS_LIST","GH_AW_NEEDS_PRE_ACTIVATION_OUTPUTS_ACTIVATED","GH_AW_PROMPT","GH_AW_SKILL_DIR","GH_AW_SKILL_EXT","GH_AW_SUB_AGENT_DIR","GH_AW_SUB_AGENT_EXT","GITHUB_ACTION","GITHUB_ACTOR","GITHUB_API_URL","GITHUB_EVENT_NAME","GITHUB_EVENT_PATH","GITHUB_GRAPHQL_URL","GITHUB_JOB","GITHUB_OUTPUT","GITHUB_REF","GITHUB_REPOSITORY","GITHUB_RUN_ATTEMPT","GITHUB_RUN_ID","GITHUB_RUN_NUMBER","GITHUB_SERVER_URL","GITHUB_SHA","GITHUB_STEP_SUMMARY","GITHUB_WORKFLOW","GITHUB_WORKSPACE","PATH","RUNNER_ARCH","RUNNER_OS","RUNNER_TEMP"]);
+            const promptEnvironment = new Set(["GH_AW_ACTIONS_DIR","GH_AW_ENGINE_ID","GH_AW_EXPR_76DF9333","GH_AW_EXPR_77C1A4D2","GH_AW_EXPR_7C248226","GH_AW_EXPR_C19C384F","GH_AW_GITHUB_ACTOR","GH_AW_GITHUB_REPOSITORY","GH_AW_GITHUB_RUN_ID","GH_AW_GITHUB_WORKSPACE","GH_AW_MCP_CLI_SERVERS_LIST","GH_AW_PROMPT","GH_AW_SKILL_DIR","GH_AW_SKILL_EXT","GH_AW_SUB_AGENT_DIR","GH_AW_SUB_AGENT_EXT","GITHUB_ACTION","GITHUB_ACTOR","GITHUB_API_URL","GITHUB_EVENT_NAME","GITHUB_EVENT_PATH","GITHUB_GRAPHQL_URL","GITHUB_JOB","GITHUB_OUTPUT","GITHUB_REF","GITHUB_REPOSITORY","GITHUB_RUN_ATTEMPT","GITHUB_RUN_ID","GITHUB_RUN_NUMBER","GITHUB_SERVER_URL","GITHUB_SHA","GITHUB_STEP_SUMMARY","GITHUB_WORKFLOW","GITHUB_WORKSPACE","PATH","RUNNER_ARCH","RUNNER_OS","RUNNER_TEMP"]);
             for (const name of Object.keys(process.env)) {
               if (!promptEnvironment.has(name)) delete process.env[name];
             }
             global.core = core;
             global.context = context;
             const { main } = require(process.env.GH_AW_ACTIONS_DIR + '/interpolate_prompt.cjs');
-            await main({ authorExpressions: {"needs.pre_activation.outputs.activated":"GH_AW_NEEDS_PRE_ACTIVATION_OUTPUTS_ACTIVATED"} });
+            await main();
         env:
           GH_AW_ACTIONS_DIR: ${{ runner.temp }}/gh-aw/actions
           GH_AW_ENGINE_ID: copilot
@@ -491,7 +480,6 @@ jobs:
           GH_AW_MCP_CLI_SERVERS_LIST: |-
             - `github` — run `github --help` to see available tools
             - `safeoutputs` — run `safeoutputs --help` to see available tools
-          GH_AW_NEEDS_PRE_ACTIVATION_OUTPUTS_ACTIVATED: ${{ needs.pre_activation.outputs.activated }}
           GH_AW_OTLP_ENDPOINTS: ""
           GH_AW_OTLP_IF_MISSING: ""
           GH_AW_OTLP_LOGS_ENABLED: ""
@@ -511,7 +499,7 @@ jobs:
         with:
           github-token: no-authentication
           script: |
-            const promptEnvironment = new Set(["GH_AW_ACTIONS_DIR","GH_AW_EXPR_76DF9333","GH_AW_EXPR_77C1A4D2","GH_AW_EXPR_7C248226","GH_AW_EXPR_C19C384F","GH_AW_GITHUB_ACTOR","GH_AW_GITHUB_REPOSITORY","GH_AW_GITHUB_RUN_ID","GH_AW_GITHUB_WORKSPACE","GH_AW_MCP_CLI_SERVERS_LIST","GH_AW_NEEDS_PRE_ACTIVATION_OUTPUTS_ACTIVATED","GH_AW_PROMPT","GITHUB_ACTION","GITHUB_ACTOR","GITHUB_API_URL","GITHUB_EVENT_NAME","GITHUB_EVENT_PATH","GITHUB_GRAPHQL_URL","GITHUB_JOB","GITHUB_OUTPUT","GITHUB_REF","GITHUB_REPOSITORY","GITHUB_RUN_ATTEMPT","GITHUB_RUN_ID","GITHUB_RUN_NUMBER","GITHUB_SERVER_URL","GITHUB_SHA","GITHUB_STEP_SUMMARY","GITHUB_WORKFLOW","GITHUB_WORKSPACE","PATH","RUNNER_ARCH","RUNNER_OS","RUNNER_TEMP"]);
+            const promptEnvironment = new Set(["GH_AW_ACTIONS_DIR","GH_AW_EXPR_76DF9333","GH_AW_EXPR_77C1A4D2","GH_AW_EXPR_7C248226","GH_AW_EXPR_C19C384F","GH_AW_GITHUB_ACTOR","GH_AW_GITHUB_REPOSITORY","GH_AW_GITHUB_RUN_ID","GH_AW_GITHUB_WORKSPACE","GH_AW_MCP_CLI_SERVERS_LIST","GH_AW_PROMPT","GITHUB_ACTION","GITHUB_ACTOR","GITHUB_API_URL","GITHUB_EVENT_NAME","GITHUB_EVENT_PATH","GITHUB_GRAPHQL_URL","GITHUB_JOB","GITHUB_OUTPUT","GITHUB_REF","GITHUB_REPOSITORY","GITHUB_RUN_ATTEMPT","GITHUB_RUN_ID","GITHUB_RUN_NUMBER","GITHUB_SERVER_URL","GITHUB_SHA","GITHUB_STEP_SUMMARY","GITHUB_WORKFLOW","GITHUB_WORKSPACE","PATH","RUNNER_ARCH","RUNNER_OS","RUNNER_TEMP"]);
             for (const name of Object.keys(process.env)) {
               if (!promptEnvironment.has(name)) delete process.env[name];
             }
@@ -532,8 +520,7 @@ jobs:
                 GH_AW_GITHUB_REPOSITORY: process.env.GH_AW_GITHUB_REPOSITORY,
                 GH_AW_GITHUB_RUN_ID: process.env.GH_AW_GITHUB_RUN_ID,
                 GH_AW_GITHUB_WORKSPACE: process.env.GH_AW_GITHUB_WORKSPACE,
-                GH_AW_MCP_CLI_SERVERS_LIST: process.env.GH_AW_MCP_CLI_SERVERS_LIST,
-                GH_AW_NEEDS_PRE_ACTIVATION_OUTPUTS_ACTIVATED: process.env.GH_AW_NEEDS_PRE_ACTIVATION_OUTPUTS_ACTIVATED
+                GH_AW_MCP_CLI_SERVERS_LIST: process.env.GH_AW_MCP_CLI_SERVERS_LIST
               }
             });
         env:
@@ -549,7 +536,6 @@ jobs:
           GH_AW_MCP_CLI_SERVERS_LIST: |-
             - `github` — run `github --help` to see available tools
             - `safeoutputs` — run `safeoutputs --help` to see available tools
-          GH_AW_NEEDS_PRE_ACTIVATION_OUTPUTS_ACTIVATED: ${{ needs.pre_activation.outputs.activated }}
           GH_AW_OTLP_ENDPOINTS: ""
           GH_AW_OTLP_IF_MISSING: ""
           GH_AW_OTLP_LOGS_ENABLED: ""
@@ -749,12 +735,15 @@ jobs:
           name: activation
           path: /tmp/gh-aw
       - env:
+          CLOSE_LIMIT: ${{ github.event.inputs.close_limit }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
           GH_AW_SAFE_OUTPUTS: ${{ runner.temp }}/gh-aw/safeoutputs/outputs.jsonl
           ISSUE_NUMBERS: ${{ github.event.inputs.issue_numbers }}
+          MAX_ISSUES: ${{ github.event.inputs.max_issues }}
         name: Select candidate issues
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
-          script: "const fs = require('node:fs');\nconst path = require('node:path');\nconst { execFileSync } = require('node:child_process');\nconst { owner, repo } = context.repo;\nconst ownRepo = `${owner}/${repo}`;\nconst limit = 1000;\nconst closeLimit = 20;\nconst scannedAt = new Date().toISOString();\nconst blockingLabels = ['human escalated', 'closed by agent', 'good first issue'];\n\nfs.mkdirSync('/tmp/issue-triage', { recursive: true });\n\n// Findings of earlier runs, handed from run to run as an artifact.\nlet state = {};\n\nconst { data: { artifacts } } = await github.rest.actions.listArtifactsForRepo({ owner, repo, name: 'issue-triage-state', per_page: 20 });\nconst latest = artifacts.filter(artifact => !artifact.expired).sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))[0];\n\nif (!latest && artifacts.length) {\n  core.warning('Earlier findings have expired; every issue is checked again.');\n}\n\nif (latest) {\n  const { data } = await github.rest.actions.downloadArtifact({ owner, repo, artifact_id: latest.id, archive_format: 'zip' });\n  fs.writeFileSync('/tmp/issue-triage/state.zip', Buffer.from(data));\n  execFileSync('unzip', ['-o', '/tmp/issue-triage/state.zip', 'state.json', '-d', '/tmp/issue-triage']);\n  state = JSON.parse(fs.readFileSync('/tmp/issue-triage/state.json', 'utf8'));\n}\n\nconst scanQuery = `query($owner: String!, $repo: String!, $cursor: String) {\n  repository(owner: $owner, name: $repo) {\n    issues(states: OPEN, first: 50, after: $cursor, orderBy: {field: CREATED_AT, direction: ASC}) {\n      pageInfo { hasNextPage endCursor }\n      nodes {\n        number\n        title\n        createdAt\n        author { login }\n        body\n        labels(first: 30) { nodes { name } }\n        reopenedEvents: timelineItems(itemTypes: [REOPENED_EVENT]) { totalCount }\n        closedByPullRequestsReferences(first: 5, includeClosedPrs: true) {\n          nodes { number title merged mergedAt baseRefName repository { nameWithOwner } }\n        }\n        timelineItems(last: 20, itemTypes: [CROSS_REFERENCED_EVENT, REFERENCED_EVENT]) {\n          nodes {\n            __typename\n            ... on CrossReferencedEvent {\n              createdAt\n              source { ... on PullRequest { number title merged mergedAt baseRefName repository { nameWithOwner } } }\n            }\n            ... on ReferencedEvent {\n              createdAt\n              commitRepository { nameWithOwner }\n              commit { oid messageHeadline committedDate }\n            }\n          }\n        }\n        comments(last: 8) { totalCount nodes { createdAt body authorAssociation author { login __typename } } }\n      }\n    }\n  }\n}`;\n\nconst issues = [];\nlet cursor = null;\n\ndo {\n  const { repository } = await github.graphql(scanQuery, { owner, repo, cursor });\n  issues.push(...repository.issues.nodes);\n  cursor = repository.issues.pageInfo.hasNextPage ? repository.issues.pageInfo.endCursor : null;\n} while (cursor);\n\n// `date` is when the work landed; `linked` is when it was linked to the issue, which counts as new activity.\nconst signals = new Map(issues.map(issue => {\n  const pullRequests = new Map();\n\n  const references = [\n    ...issue.closedByPullRequestsReferences.nodes.map(pr => ({ pr, linked: pr.mergedAt })),\n    ...issue.timelineItems.nodes.filter(item => item.__typename === 'CrossReferencedEvent').map(item => ({ pr: item.source, linked: item.createdAt })),\n  ];\n\n  for (const { pr, linked } of references) {\n    if (pr?.merged && pr.repository?.nameWithOwner === ownRepo) {\n      const known = pullRequests.get(pr.number);\n\n      pullRequests.set(pr.number, {\n        kind: 'pull_request',\n        number: pr.number,\n        title: pr.title,\n        base: pr.baseRefName,\n        date: pr.mergedAt,\n        linked: known && known.linked > linked ? known.linked : linked,\n      });\n    }\n  }\n\n  const commits = issue.timelineItems.nodes\n    .filter(item => item.__typename === 'ReferencedEvent' && item.commit && item.commitRepository?.nameWithOwner === ownRepo)\n    .map(item => ({ kind: 'commit', sha: item.commit.oid, title: item.commit.messageHeadline, date: item.commit.committedDate, linked: item.createdAt }));\n\n  return [issue.number, [...pullRequests.values(), ...commits]];\n}));\n\nconst lastActivity = issue => Math.max(\n  0,\n  ...issue.comments.nodes.filter(comment => comment.author?.__typename !== 'Bot').map(comment => Date.parse(comment.createdAt)),\n  ...signals.get(issue.number).flatMap(signal => [Date.parse(signal.date), Date.parse(signal.linked)]).filter(Number.isFinite),\n);\n\n// Checked issues wait for a new human comment or new linked work. \"fixed\" findings that were not\n// closed (preview runs, close limit, failures) are checked again.\nconst checked = issue => {\n  const entry = state[issue.number];\n\n  if (!entry || (entry.verdict === 'fixed' && !entry.handled)) return false;\n\n  return lastActivity(issue) <= Date.parse(entry.checked_at);\n};\n\n// Issues a human reopened before, or escalated, are never closed again.\nconst eligible = issues.filter(issue =>\n  issue.reopenedEvents.totalCount === 0 &&\n  !issue.labels.nodes.some(label => blockingLabels.includes(label.name.toLowerCase())));\n\nconst requested = (process.env.ISSUE_NUMBERS ?? '').split(/[\\s,#]+/).map(Number).filter(number => Number.isInteger(number) && number > 0);\nlet picked;\n\nif (requested.length) {\n  picked = eligible.filter(issue => requested.includes(issue.number));\n\n  const skipped = requested.filter(number => !picked.some(issue => issue.number === number));\n\n  if (skipped.length) {\n    core.warning(`Skipped (closed, escalated or reopened before): ${skipped.join(', ')}`);\n  }\n} else {\n  const latestSignal = issue => Math.max(0, ...signals.get(issue.number).map(signal => Date.parse(signal.date)));\n\n  // Issues that merged work references come first, newest work first; then the rest, oldest first.\n  picked = eligible\n    .filter(issue => !checked(issue))\n    .sort((a, b) => latestSignal(b) - latestSignal(a) || a.number - b.number);\n}\n\npicked = picked.slice(0, limit);\n\n// The permission lookup is exact but costs a request per person, so it covers the most active commenters.\nconst commenters = new Map();\n\nfor (const issue of picked) {\n  for (const comment of issue.comments.nodes) {\n    if (comment.author && comment.author.__typename !== 'Bot') {\n      commenters.set(comment.author.login, (commenters.get(comment.author.login) ?? 0) + 1);\n    }\n  }\n}\n\nconst team = new Set();\n\nfor (const [login] of [...commenters].sort((a, b) => b[1] - a[1]).slice(0, 150)) {\n  try {\n    const { data } = await github.rest.repos.getCollaboratorPermissionLevel({ owner, repo, username: login });\n\n    if (['admin', 'maintain', 'write', 'triage'].includes(data.role_name) || ['admin', 'write'].includes(data.permission)) {\n      team.add(login);\n    }\n  } catch {\n    // Treated as not a maintainer.\n  }\n}\n\n// The agent reads every entry into its context, so text is stripped of markup and whitespace and kept short.\nconst clean = text => (text ?? '')\n  .replace(/\\r/g, '')\n  .replace(/<!--[\\s\\S]*?-->/g, '')\n  .replace(/!\\[[^\\]]*\\]\\([^)]*\\)|<img\\b[^>]*>/gi, '[image]')\n  // Only the script may write these markers.\n  .replace(/\\[(team|reporter)\\]/gi, '($1)')\n  .replace(/[ \\t]+/g, ' ')\n  .replace(/ ?\\n ?/g, '\\n')\n  .replace(/\\n{3,}/g, '\\n\\n')\n  .trim();\n\n// Never splits an emoji: jq rejects the whole file on a lone surrogate.\nconst cut = (text, length) => text.length > length ? `${text.slice(0, length).toWellFormed()}…` : text;\n\n// The \"How to use GitHub\" notes from the issue templates.\nconst templateNotes = /(?:#+ )?How to use GitHub\\n+(?:\\* [^\\n]*\\n+){1,4}(?:---\\n*)?/;\n\nconst day = date => date?.slice(0, 10) ?? '?';\n\nconst describe = signal => signal.kind === 'pull_request'\n  ? `PR #${signal.number} \"${signal.title}\" merged ${day(signal.date)} into ${signal.base}`\n  : `commit ${signal.sha} \"${signal.title}\" ${day(signal.date)}`;\n\nconst candidates = picked.map(issue => {\n  const comments = issue.comments.nodes.filter(comment => comment.author?.__typename !== 'Bot');\n\n  return {\n    number: issue.number,\n    title: issue.title,\n    created: day(issue.createdAt),\n    labels: issue.labels.nodes.map(label => label.name),\n    body: cut(clean(issue.body).replace(templateNotes, ''), 1200),\n    comments: issue.comments.totalCount,\n    recent_comments: comments.map(comment => {\n      const login = comment.author?.login ?? 'ghost';\n      const maintainer = team.has(login) || ['OWNER', 'MEMBER', 'COLLABORATOR'].includes(comment.authorAssociation);\n      const reporter = issue.author && login === issue.author.login;\n\n      return `${day(comment.createdAt)} ${login}${maintainer ? ' [team]' : ''}${reporter ? ' [reporter]' : ''}: ${cut(clean(comment.body).replace(/\\n+/g, ' '), 300)}`;\n    }),\n    signals: signals.get(issue.number).map(describe),\n  };\n});\n\nconst { repository: { latestRelease } } = await github.graphql(\n  `query($owner: String!, $repo: String!) { repository(owner: $owner, name: $repo) { latestRelease { tagName publishedAt } } }`,\n  { owner, repo },\n);\n\nfs.mkdirSync('/tmp/gh-aw/agent', { recursive: true });\n\n// Summarizes `git log -G $id -p` per commit: lines naming $id as a whole word added, removed, and left afterwards.\n// Keeps the newest commits, every possible removal with the commit after it, and the oldest. A jq program,\n// because the agent may run jq but no scripts.\nfs.writeFileSync('/tmp/gh-aw/agent/history.jq', String.raw`def word: test(\"[A-Za-z0-9_]\");\ndef mentions: ($id[:1] | word) as $l | ($id[-1:] | word) as $r | split($id) as $p\n  | any(range(1; $p | length); (($l and ($p[. - 1][-1:] | word)) or ($r and ($p[.][:1] | word))) | not);\nsplit(\"\\n\")\n| reduce .[] as $line ([];\n    if ($line | startswith(\"@ \")) then . + [{commit: $line[2:], added: 0, removed: 0}]\n    elif length == 0 or ($line | startswith(\"+++ \") or startswith(\"--- \")) or ($line | mentions | not) then .\n    elif ($line | startswith(\"+\")) then .[-1].added += 1\n    elif ($line | startswith(\"-\")) then .[-1].removed += 1\n    else . end)\n| map(select(.added + .removed > 0))\n| reverse\n| reduce .[] as $c ({left: 0, out: []}; .left += $c.added - $c.removed | .out += [$c + {left: .left}])\n| .out | reverse\n| if length == 0 then \"No commits found: check the name and the quoted folder.\"\n  else\n    . as $all\n    | [range(0; length) | select(. < 5 or . == ($all | length) - 1 or $all[.].left <= 0 or (. + 1 < ($all | length) and $all[. + 1].left <= 0))]\n    | reduce .[] as $i ({previous: -1, lines: []};\n        (if $i - .previous > 1 then .lines += [\"… \\($i - .previous - 1) commits not shown\"] else . end)\n        | .lines += [\"\\($all[$i].commit)  +\\($all[$i].added) -\\($all[$i].removed)  left \\($all[$i].left)\"]\n        | .previous = $i)\n    | .lines[]\n  end`);\n\nfs.writeFileSync('/tmp/gh-aw/agent/candidates.json', JSON.stringify({ repository: ownRepo, latest_release: latestRelease, close_limit: closeLimit, candidates }));\n\n// Uploaded before the agent starts, so report-finding can trust them.\nfs.writeFileSync('/tmp/issue-triage/candidates.json', JSON.stringify({ scanned_at: scannedAt, close_limit: closeLimit, numbers: candidates.map(candidate => candidate.number) }));\nfs.writeFileSync('/tmp/issue-triage/state.json', JSON.stringify(state));\n\ncore.info(`${eligible.length} eligible issues, ${Object.keys(state).length} checked before; ${candidates.length} to check`);\n\n// An early noop ends the run before the agent spends AI credits.\nif (!candidates.length) {\n  fs.mkdirSync(path.dirname(process.env.GH_AW_SAFE_OUTPUTS), { recursive: true });\n  fs.appendFileSync(process.env.GH_AW_SAFE_OUTPUTS, JSON.stringify({ type: 'noop', message: 'No issues to check.' }) + '\\n');\n}\n"
+          script: "const fs = require('node:fs');\nconst path = require('node:path');\nconst { execFileSync } = require('node:child_process');\nconst { owner, repo } = context.repo;\nconst ownRepo = `${owner}/${repo}`;\n\n// Inputs are empty for scheduled runs.\nconst count = (value, fallback) => value ? Math.max(0, Math.floor(Number(value)) || 0) : fallback;\n\nconst limit = count(process.env.MAX_ISSUES, 1000);\n// At least 1: the agent stops after that many \"fixed\" findings. dry_run closes nothing.\nconst closeLimit = Math.max(1, count(process.env.CLOSE_LIMIT, 20));\nconst dryRun = process.env.DRY_RUN === 'true';\nconst scannedAt = new Date().toISOString();\nconst blockingLabels = ['human escalated', 'closed by agent', 'good first issue'];\n\nfs.mkdirSync('/tmp/issue-triage', { recursive: true });\n\n// Findings of earlier runs, handed from run to run as an artifact.\nlet state = {};\n\nconst { data: { artifacts } } = await github.rest.actions.listArtifactsForRepo({ owner, repo, name: 'issue-triage-state', per_page: 20 });\nconst latest = artifacts.filter(artifact => !artifact.expired).sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))[0];\n\nif (!latest && artifacts.length) {\n  core.warning('Earlier findings have expired; every issue is checked again.');\n}\n\nif (latest) {\n  const { data } = await github.rest.actions.downloadArtifact({ owner, repo, artifact_id: latest.id, archive_format: 'zip' });\n  fs.writeFileSync('/tmp/issue-triage/state.zip', Buffer.from(data));\n  execFileSync('unzip', ['-o', '/tmp/issue-triage/state.zip', 'state.json', '-d', '/tmp/issue-triage']);\n  state = JSON.parse(fs.readFileSync('/tmp/issue-triage/state.json', 'utf8'));\n}\n\nconst scanQuery = `query($owner: String!, $repo: String!, $cursor: String) {\n  repository(owner: $owner, name: $repo) {\n    issues(states: OPEN, first: 50, after: $cursor, orderBy: {field: CREATED_AT, direction: ASC}) {\n      pageInfo { hasNextPage endCursor }\n      nodes {\n        number\n        title\n        createdAt\n        author { login }\n        body\n        labels(first: 30) { nodes { name } }\n        reopenedEvents: timelineItems(itemTypes: [REOPENED_EVENT]) { totalCount }\n        closedByPullRequestsReferences(first: 5, includeClosedPrs: true) {\n          nodes { number title merged mergedAt baseRefName repository { nameWithOwner } }\n        }\n        timelineItems(last: 20, itemTypes: [CROSS_REFERENCED_EVENT, REFERENCED_EVENT]) {\n          nodes {\n            __typename\n            ... on CrossReferencedEvent {\n              createdAt\n              source { ... on PullRequest { number title merged mergedAt baseRefName repository { nameWithOwner } } }\n            }\n            ... on ReferencedEvent {\n              createdAt\n              commitRepository { nameWithOwner }\n              commit { oid messageHeadline committedDate }\n            }\n          }\n        }\n        comments(last: 8) { totalCount nodes { createdAt body authorAssociation author { login __typename } } }\n      }\n    }\n  }\n}`;\n\nconst issues = [];\nlet cursor = null;\n\ndo {\n  const { repository } = await github.graphql(scanQuery, { owner, repo, cursor });\n  issues.push(...repository.issues.nodes);\n  cursor = repository.issues.pageInfo.hasNextPage ? repository.issues.pageInfo.endCursor : null;\n} while (cursor);\n\n// `date` is when the work landed; `linked` is when it was linked to the issue, which counts as new activity.\nconst signals = new Map(issues.map(issue => {\n  const pullRequests = new Map();\n\n  const references = [\n    ...issue.closedByPullRequestsReferences.nodes.map(pr => ({ pr, linked: pr.mergedAt })),\n    ...issue.timelineItems.nodes.filter(item => item.__typename === 'CrossReferencedEvent').map(item => ({ pr: item.source, linked: item.createdAt })),\n  ];\n\n  for (const { pr, linked } of references) {\n    if (pr?.merged && pr.repository?.nameWithOwner === ownRepo) {\n      const known = pullRequests.get(pr.number);\n\n      pullRequests.set(pr.number, {\n        kind: 'pull_request',\n        number: pr.number,\n        title: pr.title,\n        base: pr.baseRefName,\n        date: pr.mergedAt,\n        linked: known && known.linked > linked ? known.linked : linked,\n      });\n    }\n  }\n\n  const commits = issue.timelineItems.nodes\n    .filter(item => item.__typename === 'ReferencedEvent' && item.commit && item.commitRepository?.nameWithOwner === ownRepo)\n    .map(item => ({ kind: 'commit', sha: item.commit.oid, title: item.commit.messageHeadline, date: item.commit.committedDate, linked: item.createdAt }));\n\n  return [issue.number, [...pullRequests.values(), ...commits]];\n}));\n\nconst lastActivity = issue => Math.max(\n  0,\n  ...issue.comments.nodes.filter(comment => comment.author?.__typename !== 'Bot').map(comment => Date.parse(comment.createdAt)),\n  ...signals.get(issue.number).flatMap(signal => [Date.parse(signal.date), Date.parse(signal.linked)]).filter(Number.isFinite),\n);\n\n// Checked issues wait for a new human comment or new linked work. \"fixed\" findings that were not\n// closed (preview runs, close limit, failures) are checked again.\nconst checked = issue => {\n  const entry = state[issue.number];\n\n  if (!entry || (entry.verdict === 'fixed' && !entry.handled)) return false;\n\n  return lastActivity(issue) <= Date.parse(entry.checked_at);\n};\n\n// Issues a human reopened before, or escalated, are never closed again.\nconst eligible = issues.filter(issue =>\n  issue.reopenedEvents.totalCount === 0 &&\n  !issue.labels.nodes.some(label => blockingLabels.includes(label.name.toLowerCase())));\n\nconst requested = (process.env.ISSUE_NUMBERS ?? '').split(/[\\s,#]+/).map(Number).filter(number => Number.isInteger(number) && number > 0);\nlet picked;\n\nif (requested.length) {\n  picked = eligible.filter(issue => requested.includes(issue.number));\n\n  const skipped = requested.filter(number => !picked.some(issue => issue.number === number));\n\n  if (skipped.length) {\n    core.warning(`Skipped (closed, escalated or reopened before): ${skipped.join(', ')}`);\n  }\n} else {\n  const latestSignal = issue => Math.max(0, ...signals.get(issue.number).map(signal => Date.parse(signal.date)));\n\n  // Issues that merged work references come first, newest work first; then the rest, oldest first.\n  picked = eligible\n    .filter(issue => !checked(issue))\n    .sort((a, b) => latestSignal(b) - latestSignal(a) || a.number - b.number);\n}\n\npicked = picked.slice(0, limit);\n\n// The permission lookup is exact but costs a request per person, so it covers the most active commenters.\nconst commenters = new Map();\n\nfor (const issue of picked) {\n  for (const comment of issue.comments.nodes) {\n    if (comment.author && comment.author.__typename !== 'Bot') {\n      commenters.set(comment.author.login, (commenters.get(comment.author.login) ?? 0) + 1);\n    }\n  }\n}\n\nconst team = new Set();\n\nfor (const [login] of [...commenters].sort((a, b) => b[1] - a[1]).slice(0, 150)) {\n  try {\n    const { data } = await github.rest.repos.getCollaboratorPermissionLevel({ owner, repo, username: login });\n\n    if (['admin', 'maintain', 'write', 'triage'].includes(data.role_name) || ['admin', 'write'].includes(data.permission)) {\n      team.add(login);\n    }\n  } catch {\n    // Treated as not a maintainer.\n  }\n}\n\n// The agent reads every entry into its context, so text is stripped of markup and whitespace and kept short.\nconst clean = text => (text ?? '')\n  .replace(/\\r/g, '')\n  .replace(/<!--[\\s\\S]*?-->/g, '')\n  .replace(/!\\[[^\\]]*\\]\\([^)]*\\)|<img\\b[^>]*>/gi, '[image]')\n  // Only the script may write these markers.\n  .replace(/\\[(team|reporter)\\]/gi, '($1)')\n  .replace(/[ \\t]+/g, ' ')\n  .replace(/ ?\\n ?/g, '\\n')\n  .replace(/\\n{3,}/g, '\\n\\n')\n  .trim();\n\n// Never splits an emoji: jq rejects the whole file on a lone surrogate.\nconst cut = (text, length) => text.length > length ? `${text.slice(0, length).toWellFormed()}…` : text;\n\n// The \"How to use GitHub\" notes from the issue templates.\nconst templateNotes = /(?:#+ )?How to use GitHub\\n+(?:\\* [^\\n]*\\n+){1,4}(?:---\\n*)?/;\n\nconst day = date => date?.slice(0, 10) ?? '?';\n\nconst describe = signal => signal.kind === 'pull_request'\n  ? `PR #${signal.number} \"${signal.title}\" merged ${day(signal.date)} into ${signal.base}`\n  : `commit ${signal.sha} \"${signal.title}\" ${day(signal.date)}`;\n\nconst candidates = picked.map(issue => {\n  const comments = issue.comments.nodes.filter(comment => comment.author?.__typename !== 'Bot');\n\n  return {\n    number: issue.number,\n    title: issue.title,\n    created: day(issue.createdAt),\n    labels: issue.labels.nodes.map(label => label.name),\n    body: cut(clean(issue.body).replace(templateNotes, ''), 1200),\n    comments: issue.comments.totalCount,\n    recent_comments: comments.map(comment => {\n      const login = comment.author?.login ?? 'ghost';\n      const maintainer = team.has(login) || ['OWNER', 'MEMBER', 'COLLABORATOR'].includes(comment.authorAssociation);\n      const reporter = issue.author && login === issue.author.login;\n\n      return `${day(comment.createdAt)} ${login}${maintainer ? ' [team]' : ''}${reporter ? ' [reporter]' : ''}: ${cut(clean(comment.body).replace(/\\n+/g, ' '), 300)}`;\n    }),\n    signals: signals.get(issue.number).map(describe),\n  };\n});\n\nconst { repository: { latestRelease } } = await github.graphql(\n  `query($owner: String!, $repo: String!) { repository(owner: $owner, name: $repo) { latestRelease { tagName publishedAt } } }`,\n  { owner, repo },\n);\n\nfs.mkdirSync('/tmp/gh-aw/agent', { recursive: true });\n\n// Summarizes `git log -G $id -p` per commit: lines naming $id as a whole word added, removed, and left afterwards.\n// Keeps the newest commits, every possible removal with the commit after it, and the oldest. A jq program,\n// because the agent may run jq but no scripts.\nfs.writeFileSync('/tmp/gh-aw/agent/history.jq', String.raw`def word: test(\"[A-Za-z0-9_]\");\ndef mentions: ($id[:1] | word) as $l | ($id[-1:] | word) as $r | split($id) as $p\n  | any(range(1; $p | length); (($l and ($p[. - 1][-1:] | word)) or ($r and ($p[.][:1] | word))) | not);\nsplit(\"\\n\")\n| reduce .[] as $line ([];\n    if ($line | startswith(\"@ \")) then . + [{commit: $line[2:], added: 0, removed: 0}]\n    elif length == 0 or ($line | startswith(\"+++ \") or startswith(\"--- \")) or ($line | mentions | not) then .\n    elif ($line | startswith(\"+\")) then .[-1].added += 1\n    elif ($line | startswith(\"-\")) then .[-1].removed += 1\n    else . end)\n| map(select(.added + .removed > 0))\n| reverse\n| reduce .[] as $c ({left: 0, out: []}; .left += $c.added - $c.removed | .out += [$c + {left: .left}])\n| .out | reverse\n| if length == 0 then \"No commits found: check the name and the quoted folder.\"\n  else\n    . as $all\n    | [range(0; length) | select(. < 5 or . == ($all | length) - 1 or $all[.].left <= 0 or (. + 1 < ($all | length) and $all[. + 1].left <= 0))]\n    | reduce .[] as $i ({previous: -1, lines: []};\n        (if $i - .previous > 1 then .lines += [\"… \\($i - .previous - 1) commits not shown\"] else . end)\n        | .lines += [\"\\($all[$i].commit)  +\\($all[$i].added) -\\($all[$i].removed)  left \\($all[$i].left)\"]\n        | .previous = $i)\n    | .lines[]\n  end`);\n\nfs.writeFileSync('/tmp/gh-aw/agent/candidates.json', JSON.stringify({ repository: ownRepo, latest_release: latestRelease, close_limit: closeLimit, candidates }));\n\n// Uploaded before the agent starts, so report-finding can trust them.\nfs.writeFileSync('/tmp/issue-triage/candidates.json', JSON.stringify({ scanned_at: scannedAt, close_limit: closeLimit, dry_run: dryRun, numbers: candidates.map(candidate => candidate.number) }));\nfs.writeFileSync('/tmp/issue-triage/state.json', JSON.stringify(state));\n\ncore.info(`${eligible.length} eligible issues, ${Object.keys(state).length} checked before; ${candidates.length} to check`);\n\n// An early noop ends the run before the agent spends AI credits.\nif (!candidates.length) {\n  fs.mkdirSync(path.dirname(process.env.GH_AW_SAFE_OUTPUTS), { recursive: true });\n  fs.appendFileSync(process.env.GH_AW_SAFE_OUTPUTS, JSON.stringify({ type: 'noop', message: 'No issues to check.' }) + '\\n');\n}\n"
       - name: Upload candidate list and earlier findings
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -1534,9 +1523,9 @@ jobs:
       cancel-in-progress: false
       queue: max
     env:
-      GH_AW_JOB_DISPLAY_NAMES: "{\"activation\":\"activation\",\"agent\":\"agent\",\"conclusion\":\"conclusion\",\"detection\":\"detection\",\"pre_activation\":\"pre_activation\",\"report_finding\":\"report_finding\"}"
+      GH_AW_JOB_DISPLAY_NAMES: "{\"activation\":\"activation\",\"agent\":\"agent\",\"conclusion\":\"conclusion\",\"detection\":\"detection\",\"report_finding\":\"report_finding\"}"
       GH_AW_JOB_RESULTS: "{\"activation\":{\"result\":\"${{ needs.activation.result }}\"},\"agent\":{\"result\":\"${{ needs.agent.result }}\"},\"detection\":{\"result\":\"${{ needs.detection.result }}\"},\"report_finding\":{\"result\":\"${{ needs.report_finding.result }}\"}}"
-      GH_AW_JOB_TIMING_ELIGIBLE: "{\"activation\":true,\"agent\":true,\"conclusion\":true,\"detection\":true,\"pre_activation\":true,\"report_finding\":true}"
+      GH_AW_JOB_TIMING_ELIGIBLE: "{\"activation\":true,\"agent\":true,\"conclusion\":true,\"detection\":true,\"report_finding\":true}"
       GH_AW_RUNTIME_FEATURES: ${{ vars.GH_AW_RUNTIME_FEATURES }}
     outputs:
       incomplete_count: ${{ steps.report_incomplete.outputs.incomplete_count }}
@@ -2176,50 +2165,6 @@ jobs:
           if-no-files-found: ignore
           retention-days: ${{ vars.GH_AW_DEFAULT_ARTIFACT_RETENTION_DAYS || '0' }}
 
-  pre_activation:
-    name: pre_activation
-    if: >
-      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.id == github.repository_id) &&
-      ((github.event_name != 'pull_request' && github.event_name != 'pull_request_review') || github.event.pull_request.stack == null ||
-      github.event.pull_request.stack.position == github.event.pull_request.stack.size)
-    runs-on: ubuntu-slim
-    env:
-      GH_AW_RUNTIME_FEATURES: ${{ vars.GH_AW_RUNTIME_FEATURES }}
-    outputs:
-      activated: ${{ steps.check_membership.outputs.is_team_member == 'true' }}
-      matched_command: ''
-      setup-parent-span-id: ${{ steps.setup.outputs.parent-span-id || steps.setup.outputs.span-id }}
-      setup-span-id: ${{ steps.setup.outputs.span-id }}
-      setup-trace-id: ${{ steps.setup.outputs.trace-id }}
-    steps:
-      - name: Setup Scripts
-        id: setup
-        uses: github/gh-aw-actions/setup@53d0749e19424a918acd82b4d140264ce48f2f14 # v1.2.2
-        with:
-          destination: ${{ runner.temp }}/gh-aw/actions
-          job-name: ${{ github.job }}
-        env:
-          GH_AW_SETUP_WORKFLOW_NAME: "Issue triage"
-          GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/issue-triage.lock.yml@${{ github.ref }}
-          GH_AW_INFO_VERSION: "1.0.103"
-          GH_AW_INFO_AWF_VERSION: "v0.29.11"
-          GH_AW_INFO_ENGINE_ID: "copilot"
-          GH_AW_SETUP_AW_CONTEXT: ${{ inputs.aw_context }}
-      - name: Check team membership for workflow
-        id: check_membership
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
-        env:
-          GH_AW_REQUIRED_ROLES: "admin,maintainer,write"
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const path = require('path');
-            const actionsDir = path.join(process.env.RUNNER_TEMP, 'gh-aw', 'actions');
-            const { setupGlobals } = require(path.join(actionsDir, 'setup_globals.cjs'));
-            setupGlobals(core, github, context, exec, io, getOctokit);
-            const { main } = require(path.join(actionsDir, 'check_membership.cjs'));
-            await main();
-
   report_finding:
     name: report_finding
     needs:
@@ -2242,7 +2187,6 @@ jobs:
       GH_AW_DETECTION_THREAT_KINDS: ${{ needs.detection.outputs.detection_threat_kinds }}
       GH_AW_ENGINE_ID: "copilot"
       GH_AW_ENGINE_MODEL: "claude-sonnet-5.5"
-      GH_AW_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
       GH_AW_OBJECT_PACK_FETCH_DEPTHS: ${{ vars.GH_AW_OBJECT_PACK_FETCH_DEPTHS }}
       GH_AW_OBJECT_PACK_MAX_BYTES: ${{ vars.GH_AW_OBJECT_PACK_MAX_BYTES }}
       GH_AW_OBJECT_PACK_MAX_OBJECTS: ${{ vars.GH_AW_OBJECT_PACK_MAX_OBJECTS }}
@@ -2293,8 +2237,8 @@ jobs:
               return;
             }
 
-            const canClose = detection === 'success';
-            const { scanned_at: scannedAt, close_limit: closeLimit, numbers: candidates } = JSON.parse(fs.readFileSync('/tmp/issue-triage/candidates.json', 'utf8'));
+            const { scanned_at: scannedAt, close_limit: closeLimit, dry_run: dryRun, numbers: candidates } = JSON.parse(fs.readFileSync('/tmp/issue-triage/candidates.json', 'utf8'));
+            const canClose = detection === 'success' && !dryRun;
             const state = JSON.parse(fs.readFileSync('/tmp/issue-triage/state.json', 'utf8'));
             const blockingLabels = ['human escalated', 'closed by agent', 'good first issue'];
             const verdicts = { fixed: 'Fixed', likely_fixed: 'Likely fixed', not_fixed: 'Not fixed', no_evidence: 'No evidence' };
@@ -2365,8 +2309,6 @@ jobs:
 
               if (commentedSince) return { outcome: 'Not closed: new comment since the check', handled: false };
 
-              if (!canClose) return { outcome: 'Would close', handled: false };
-
               if (attempts >= closeLimit) return { outcome: `Would close, but this run reached its limit of ${closeLimit}`, handled: false };
 
               // A mistyped hash or number would link nowhere.
@@ -2379,6 +2321,9 @@ jobs:
               }
 
               attempts += 1;
+
+              // Dry runs and unfinished threat detection go through every check above, so previews match real runs.
+              if (!canClose) return { outcome: 'Would close', handled: false };
 
               let commented = false;
 
@@ -2441,6 +2386,7 @@ jobs:
 
             await core.summary
               .addHeading('Triage findings', 2)
+              .addRaw(dryRun ? 'Dry run: nothing was closed.\n\n' : '')
               .addRaw(detection === 'success' ? '' : `Threat detection did not complete ("${detection}"), so nothing was closed.\n\n`)
               .addRaw(`Checked ${findings.size} of ${candidates.length} candidates: ${counts}. Closed ${closed} (limit ${closeLimit}).${remaining ? ` The other ${remaining} continue in the next run.` : ''}\n\n`)
               .addRaw(sections.join('\n'))
