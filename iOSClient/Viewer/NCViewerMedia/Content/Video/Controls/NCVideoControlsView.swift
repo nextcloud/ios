@@ -736,12 +736,15 @@ private struct NCVideoControlsSwiftUIView: View {
 // MARK: - AirPlay Route Picker
 
 struct NCVideoAirPlayRoutePickerView: UIViewRepresentable {
+    /// Lists video-capable receivers first. Audio playback passes `false`.
+    var prioritizesVideoDevices = true
+
     func makeUIView(context: Context) -> AVRoutePickerView {
         let routePickerView = AVRoutePickerView()
         routePickerView.backgroundColor = .clear
         routePickerView.tintColor = .label
         routePickerView.activeTintColor = .label
-        routePickerView.prioritizesVideoDevices = true
+        routePickerView.prioritizesVideoDevices = prioritizesVideoDevices
         return routePickerView
     }
 

@@ -84,6 +84,7 @@ struct NCAudioViewerContentView: View {
             }
 
             model.configurePlaybackCompletion(options: playbackOptions, onPlayNextMedia: onPlayNextMedia)
+            model.configureNowPlaying(fileName: metadata.fileNameView, previewURL: previewURL)
             await model.load(url: localURL)
             await consumeAutoPlayIfNeeded()
         }
@@ -95,9 +96,18 @@ struct NCAudioViewerContentView: View {
 
             Task { @MainActor in
                 model.configurePlaybackCompletion(options: playbackOptions, onPlayNextMedia: onPlayNextMedia)
+                model.configureNowPlaying(fileName: metadata.fileNameView, previewURL: previewURL)
                 await model.load(url: localURL)
                 await consumeAutoPlayIfNeeded()
             }
+        }
+        // The server preview can arrive after playback started; refresh the Lock Screen artwork.
+        .onChange(of: previewURL) { _, newPreviewURL in
+            guard isSelected else {
+                return
+            }
+
+            model.configureNowPlaying(fileName: metadata.fileNameView, previewURL: newPreviewURL)
         }
         .onChange(of: shouldAutoPlay) { _, newValue in
             guard newValue else {
@@ -157,8 +167,12 @@ struct NCAudioViewerContentView: View {
                         }
 
                         Spacer()
+
+                        NCVideoAirPlayRoutePickerView(prioritizesVideoDevices: false)
+                            .frame(width: 38, height: 38)
+                            .audioControlGlassBackground(shape: Circle())
                     }
-                    .padding(.leading, 28)
+                    .padding(.horizontal, 28)
                     .padding(.bottom, mainSpacing)
 
                     VStack(spacing: mainSpacing) {
@@ -430,6 +444,10 @@ final class NCAudioViewerModel: ObservableObject {
     private weak var playbackOptions: NCMediaPlaybackOptions?
     private var onPlayNextMedia: NCMediaPlaybackAdvanceRequest?
 
+    // Lock Screen / Control Center description: file-based fallback, overridden by embedded tags.
+    private var fileNowPlayingMetadata = NCAudioNowPlayingMetadata()
+    private var embeddedNowPlayingMetadata: NCAudioNowPlayingMetadata?
+
     // MARK: - Public API
 
     var remainingTimeText: String {
@@ -442,6 +460,13 @@ final class NCAudioViewerModel: ObservableObject {
     func configurePlaybackCompletion(options: NCMediaPlaybackOptions, onPlayNextMedia: @escaping NCMediaPlaybackAdvanceRequest) {
         playbackOptions = options
         self.onPlayNextMedia = onPlayNextMedia
+    }
+
+    /// Sets the fallback title and artwork shown on the Lock Screen when the file has no embedded tags.
+    func configureNowPlaying(fileName: String, previewURL: URL?) {
+        let previewData = previewURL.flatMap { $0.isFileURL ? try? Data(contentsOf: $0) : nil }
+        fileNowPlayingMetadata = .fallback(fileName: fileName, previewData: previewData)
+        updateNowPlaying()
     }
 
     func load(url: URL) async {
@@ -480,6 +505,8 @@ final class NCAudioViewerModel: ObservableObject {
                 loadedDuration = 0
             }
 
+            let embeddedMetadata = await Self.embeddedNowPlayingMetadata(of: asset)
+
             await MainActor.run {
                 guard let self,
                       self.currentURL == url,
@@ -488,6 +515,8 @@ final class NCAudioViewerModel: ObservableObject {
                 }
 
                 self.duration = loadedDuration
+                self.embeddedNowPlayingMetadata = embeddedMetadata
+                self.updateNowPlaying()
             }
         }
     }
@@ -528,6 +557,10 @@ final class NCAudioViewerModel: ObservableObject {
             }
 
             player.play()
+
+            // Show this file on the Lock Screen and in Control Center.
+            NCAudioNowPlayingController.shared.activate(self)
+            updateNowPlaying()
         }
     }
 
@@ -559,6 +592,7 @@ final class NCAudioViewerModel: ObservableObject {
         let time = CMTime(seconds: clampedSeconds, preferredTimescale: 600)
 
         player.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero)
+        updateNowPlaying()
     }
 
     func pause() {
@@ -566,11 +600,17 @@ final class NCAudioViewerModel: ObservableObject {
         playbackTask = nil
         player?.pause()
         isPlaying = false
+        // Keep the Now Playing session so the Lock Screen can resume playback.
+        updateNowPlaying()
     }
 
     func stop() {
         playbackTask?.cancel()
         playbackTask = nil
+
+        // Removes the Lock Screen controls, but only if this model owns them.
+        NCAudioNowPlayingController.shared.deactivate(self)
+        embeddedNowPlayingMetadata = nil
 
         if let player {
             player.pause()
@@ -597,13 +637,43 @@ final class NCAudioViewerModel: ObservableObject {
 
     // MARK: - Private
 
+    private func updateNowPlaying() {
+        NCAudioNowPlayingController.shared.update(
+            self,
+            metadata: fileNowPlayingMetadata.overridden(by: embeddedNowPlayingMetadata),
+            duration: duration,
+            elapsedTime: currentTime,
+            isPlaying: isPlaying
+        )
+    }
+
+    /// Reads the title, artist, album and cover art tagged inside the audio file, if any.
+    nonisolated private static func embeddedNowPlayingMetadata(of asset: AVURLAsset) async -> NCAudioNowPlayingMetadata? {
+        guard let items = try? await asset.load(.commonMetadata), !items.isEmpty else {
+            return nil
+        }
+
+        func firstItem(_ identifier: AVMetadataIdentifier) -> AVMetadataItem? {
+            AVMetadataItem.metadataItems(from: items, filteredByIdentifier: identifier).first
+        }
+
+        let title = try? await firstItem(.commonIdentifierTitle)?.load(.stringValue)
+        let artist = try? await firstItem(.commonIdentifierArtist)?.load(.stringValue)
+        let albumTitle = try? await firstItem(.commonIdentifierAlbumName)?.load(.stringValue)
+        let artworkData = try? await firstItem(.commonIdentifierArtwork)?.load(.dataValue)
+
+        return NCAudioNowPlayingMetadata(title: title ?? "", artist: artist, albumTitle: albumTitle, artworkData: artworkData)
+    }
+
     private func configureAudioSession() async -> Bool {
         do {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 DispatchQueue.global(qos: .userInitiated).async {
                     do {
                         let session = AVAudioSession.sharedInstance()
-                        try session.setCategory(.playback, mode: .default, options: [])
+                        // `.longFormAudio` marks this as music/podcast-style playback: iOS routes it
+                        // like the Music app and enables AirPlay 2 buffered streaming (e.g. Sonos).
+                        try session.setCategory(.playback, mode: .default, policy: .longFormAudio, options: [])
                         if #unavailable(iOS 27.0) {
                             try session.setActive(true)
                         }
@@ -667,17 +737,20 @@ final class NCAudioViewerModel: ObservableObject {
 
                             player.play()
                             self.isPlaying = true
+                            self.updateNowPlaying()
                         }
                     }
 
                 case .playNextItem:
                     self.currentTime = self.duration
                     self.isPlaying = false
+                    self.updateNowPlaying()
                     self.onPlayNextMedia? { _ in }
 
                 case .stop:
                     self.currentTime = self.duration
                     self.isPlaying = false
+                    self.updateNowPlaying()
                 }
             }
         }

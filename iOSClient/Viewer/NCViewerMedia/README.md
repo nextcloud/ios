@@ -48,6 +48,10 @@ On iPhone and iPad, check light/dark appearance and portrait/landscape:
   offline use; delete an image while its information is open and then change pages.
 - Audio: Play/Pause, −10/+10 at the beginning/end, slider, repeat, automatic advance
   and switching to another media type while playing.
+- Audio Now Playing: lock the device while playing and check the Lock Screen and
+  Control Center player (title/artist/artwork, Play/Pause, −10/+10, scrubbing);
+  the controls disappear after closing the viewer or swiping to a non-audio page.
+  Stream to an AirPlay receiver from the AirPlay button and from Control Center.
 - Video: both AVPlayer and VLC, local/remote cover and loading/cancel states,
   Play/Pause, seeking, repeat, automatic advance, VLC tracks and subtitle import.
   Check PiP/AirPlay on a device where they are supported.
@@ -177,6 +181,7 @@ Keep these responsibilities separate when editing the viewer:
 | File list, selected page and thumbnails | `NCMediaViewerModel` | One model shared by the pager and adaptive player footer. Video receives it as `mediaViewerModel`; no model is created for folding. |
 | Metadata of a specific page | `NCMediaViewerPageModel` / content view `metadata` | Identifies that page's file, including neighboring pages; do not replace it with `selectedMetadata`. |
 | Audio playback | `NCAudioViewerPlaybackRegistry` / `NCAudioViewerModel` | Existing audio player and position, observed by both normal and adaptive controls. |
+| Lock Screen / Control Center audio controls | `NCAudioNowPlayingController` | Owned by the audio model that started playing; other models cannot update or clear it. Released by `stop()`. |
 | Video playback | Prepared AVPlayer/VLC playback and their controllers | Existing player engine; the adaptive footer adds paging data and selection callbacks only. |
 | Feature enabled | `NCMediaAdaptiveLayoutConfiguration` | Central experimental switch. |
 | Currently folded | `NCMediaAdaptiveLayoutView` | Geometry determines the active mode; SwiftUI content receives it through `mediaViewerIsFoldedLayout`. |
@@ -271,6 +276,8 @@ video playback behavior. Local builds and tests remain user-run in Xcode.
 | `Content/Image/Controls/NCImageAdaptiveControlsView.swift` | Always hosts the shared information view inside its fixed island, plus previous/next buttons; the shared panel owns actions and thumbnails. |
 | `Views/Controls/NCMediaAdaptivePagingFooterView.swift` | Presented adaptive video footer: persistent previous/next and thumbnails sharing the viewer model, with dismissal-aware selection. |
 | `Views/Controls/NCMediaAdaptiveControlsView.swift` | Lower composition for paged images, audio and video covers: standalone buttons, image-only inline information, playback/cover actions and thumbnails. Also contains the SwiftUI/UIKit bridge and its hosting support types. |
+| `Content/Audio/NCAudioNowPlayingController.swift` | Publishes the playing audio file to `MPNowPlayingInfoCenter` and forwards `MPRemoteCommandCenter` commands (play, pause, ±10 s, scrubbing) to the owning `NCAudioViewerModel`. |
+| `Content/Audio/NCAudioNowPlayingMetadata.swift` | Lock Screen title/artist/album/artwork: file-name and preview fallback, overridden by tags embedded in the audio file. |
 | `Content/Audio/Controls/NCAudioAdaptiveControlsView.swift` | Independent lower audio controls: ±10 seconds, Play/Pause, seeking and Previous/Next; Repeat/Auto-advance belong to the shared top row, with no information island. Observes the existing playback model. |
 | `NCMediaViewerHostingController.swift` | Owns paged-media navigation actions, title updates and information loading. Hides the upper navigation bar when folded and routes information into the lower controls. |
 | `Views/NCMediaViewerView.swift` | Selects the normal composition or experimental paging bridge using the central switch. |
